@@ -26,7 +26,7 @@ uv run prc brief --source fixture:claims           # one PR comment from diff, d
 
 `review` prints the snapshot, semantic and published-view identities and writes `index.html`, `infographic.svg`, `flow.svg` (when relations exist), `entry.md`, `semantic.json`, `snapshot.json`, `manifest.json` and `view.json`. `decide` refuses (exit 2) when the expected snapshot/view is no longer the current local exposure.
 
-`brief` computes one GitHub comment from the diff, the PR description and CI results, with no model calls and no store writes. It writes `<out>/<snapshot id short>/brief.md` and `brief.json` (default `--out artifacts/briefs`) and prints the paths, the mismatch count and the look-first files. Domain: `prc.brief`; renderer: `prc.presentation.render_brief`, which routes every PR-controlled string through one code-span helper.
+`brief` computes one GitHub comment from the diff, the PR description and CI results, with no model calls and no store writes. It writes `<out>/<snapshot id short>/brief.md` and `brief.json` (default `--out artifacts/briefs`) and prints the `brief.md` path, the mismatch count and the look-first files. Domain: `prc.brief`; renderer: `prc.presentation.render_brief`, which routes every PR-controlled string through one code-span helper.
 
 ## Contract map
 

@@ -218,6 +218,10 @@ def _manifest_records(
     return records
 
 
+def diff_body(record: str) -> str:
+    return record.partition("\n")[2]
+
+
 def _context_text(repo: Path, comparison: CodeComparison, path: str) -> str:
     try:
         return run_git(repo, "show", f"{comparison.head_sha}:{path}").decode("utf-8", "replace")

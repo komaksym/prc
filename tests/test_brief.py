@@ -528,3 +528,19 @@ def test_size_line_counts_files_that_could_not_be_inspected() -> None:
 
     assert "(1 code, 1 opaque). 1 file could not be inspected." in one
     assert "2 files could not be inspected." in two
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "testdata/case/want.stdout",
+        "pkg/testdata/in.go",
+        "src/__mocks__/api.ts",
+        "__fixtures__/a.json",
+    ],
+)
+def test_test_data_directories_are_test_files(path: str) -> None:
+    brief = make("Adds a regression test", delta(path))
+
+    assert [f.kind for f in brief.files] == ["test"]
+    assert brief.mismatches == () and brief.look_first == ()

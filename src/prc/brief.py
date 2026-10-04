@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Literal
 
-from prc.snapshot import Acquisition
+from prc.snapshot import Acquisition, diff_body
 
 Kind = Literal["code", "test", "docs", "config", "generated", "opaque"]
 MismatchKind = Literal[
@@ -16,6 +16,13 @@ MismatchKind = Literal[
     "tests_claim_no_test_files",
 ]
 CheckState = Literal["passed", "failed", "pending"]
+Fact = Literal[
+    "no changed file matches",
+    "no changed line or file contains",
+    "these checks failed on this commit:",
+    "no checks ran on this commit",
+    "no test file changed",
+]
 
 MAX_POINTERS = 3
 MANIFEST_LINES = 3
@@ -51,7 +58,7 @@ class FileChange:
 class Mismatch:
     kind: MismatchKind
     quote: str
-    fact: str
+    fact: Fact
     subjects: tuple[str, ...] = ()
 
 
@@ -105,7 +112,7 @@ KIND_RULES: tuple[Rule, ...] = (
     ),
     (
         _path(
-            r"(^|/)(tests?|__tests__|spec|specs)/|(^|/)test_[^/]*$|_tests?\.[a-z]+$"
+            r"(^|/)(tests?|__tests__|spec|specs|testdata|__mocks__|__fixtures__)/|(^|/)test_[^/]*$|_tests?\.[a-z]+$"
             r"|\.(test|spec)\.[a-z]+$|(^|/)conftest\.py$|Tests?\.(java|kt|cs)$"
         ),
         "test",
@@ -293,6 +300,7 @@ _BARE = re.compile(
 )
 _LINE_SUFFIX = re.compile(r"(?:::?[\w$]+|#[\w$.-]+)+$")
 _PATH_CHARS = re.compile(r"[\w.+@\[\]()/-]+")
+_LETTER = re.compile(r"[^\W\d_]")
 _DOMAIN = re.compile(r"\.(?:com|org|io|dev|ai|app|net|co)$", re.IGNORECASE)
 _IDENT = re.compile(r"^([A-Za-z_$][\w$]*(?:(?:\.|::|->|#)[A-Za-z_$][\w$]*)*)\s*(?:\(.*\))?$")
 _SEGMENTS = re.compile(r"\.|::|->|#")
@@ -301,16 +309,16 @@ _SEGMENTS = re.compile(r"\.|::|->|#")
 def _is_path(token: str) -> bool:
     segments = [part for part in token.split("/") if part]
 
-    if (
+    slash_command = token.startswith("/") and len(segments) == 1
+
+    return not (
         not segments
-        or not re.search(r"[^\W\d_]", token)
+        or not _LETTER.search(token)
         or not _PATH_CHARS.fullmatch(token)
         or token.startswith("@")
         or _DOMAIN.search(segments[0])
-    ):
-        return False
-
-    return len(segments) > 1 or not token.startswith("/")
+        or slash_command
+    )
 
 
 def path_tokens(text: str) -> tuple[str, ...]:
@@ -353,22 +361,22 @@ def hits(token: str, path: str) -> bool:
 
 class Tree:
     def __init__(self, paths: Iterable[str]) -> None:
-        self.files: set[str] = set()
-        self.dirs: set[str] = set()
+        self.suffixes: set[str] = set()
+        self.dir_runs: set[str] = set()
 
         for path in paths:
             parts = path.split("/")
 
             for i in range(len(parts)):
-                self.files.add("/".join(parts[i:]))
+                self.suffixes.add("/".join(parts[i:]))
 
                 for j in range(i + 1, len(parts)):
-                    self.dirs.add("/".join(parts[i:j]))
+                    self.dir_runs.add("/".join(parts[i:j]))
 
     def has(self, token: str) -> bool:
         key = token.removeprefix("./").strip("/")
 
-        return key in self.dirs or (not token.endswith("/") and key in self.files)
+        return key in self.dir_runs or (not token.endswith("/") and key in self.suffixes)
 
 
 _CHANGE_VERB = re.compile(
@@ -427,7 +435,7 @@ def _mismatches(
     has_tests = any(file.kind == "test" for file in files)
     opaque = any(delta.opaque for delta in deltas)
 
-    def add(unit: Unit, kind: MismatchKind, fact: str, subjects: tuple[str, ...] = ()) -> None:
+    def add(unit: Unit, kind: MismatchKind, fact: Fact, subjects: tuple[str, ...] = ()) -> None:
         found.setdefault((kind, unit.text), Mismatch(kind, unit.text, fact, subjects))
 
     for unit in units:
@@ -607,7 +615,7 @@ def build_brief(acquisition: Acquisition, known: frozenset[str]) -> Brief:
             item.opaque,
             item.added_lines,
             item.removed_lines,
-            records.get(f"diff:{item.path}", "").partition("\n")[2],
+            diff_body(records.get(f"diff:{item.path}", "")),
             records.get(f"head:{item.path}", ""),
         )
         for item in acquisition.inventory.items
