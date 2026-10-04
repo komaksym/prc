@@ -12,6 +12,7 @@ from prc.brief import Brief, build_brief
 from prc.capture import Clock, capture_bundle
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
 from prc.freshness import FreshnessReport, StoredBasis, reconcile
+from prc.gitutil import list_paths
 from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_hex, to_jsonable
 from prc.model import PrRef
 from prc.presentation.build import build_document
@@ -176,7 +177,12 @@ def run_brief(
     acquisition = build_snapshot(
         bundle, source.label, source.live_verified, source.repo_path(ref), policy
     )
-    brief = build_brief(acquisition)
+    repo = source.repo_path(ref)
+    comparison = acquisition.snapshot.comparison
+    known = frozenset(list_paths(repo, comparison.merge_base_sha)) | frozenset(
+        list_paths(repo, comparison.head_sha)
+    )
+    brief = build_brief(acquisition, known)
     snapshot_id = acquisition.snapshot.snapshot_id
     out_dir = _write_bundle(
         out_root,

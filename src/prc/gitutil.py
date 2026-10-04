@@ -124,3 +124,13 @@ def unified_diff(repo: Path, old_oid: str, new_oid: str) -> str:
             n=3,
         )
     )
+
+
+def list_paths(repo: Path, commit: str) -> tuple[str, ...]:
+    """Every file path in the commit's tree."""
+
+    raw = run_git(repo, "ls-tree", "-r", "--name-only", "-z", commit)
+
+    return tuple(
+        name.decode("utf-8", errors="surrogateescape") for name in raw.split(b"\x00") if name
+    )

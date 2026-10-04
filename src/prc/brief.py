@@ -188,7 +188,18 @@ _DETAILS = re.compile(r"<details\b[^>]*>|</details\s*>", re.IGNORECASE)
 _QUOTE = re.compile(r"^\s{0,3}>")
 _HEADING = re.compile(r"^\s{0,3}#{1,6}(\s|$)")
 _BULLET = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+(?:\[([ xX])\]\s+)?(\S.*?)\s*$")
+_TABLE = re.compile(r"^\s*\|")
+_TABLE_RULE = re.compile(r"^\s*\|[\s|:-]*$")
+_EMPHASIS = re.compile(r"\*\*|__")
 _SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9`\"'(\[])")
+
+
+def _unemphasize(line: str) -> str:
+    """Strip `**` and `__` outside code spans, so `.** This` splits and `__init__` survives."""
+
+    parts = re.split(r"(`[^`\n]*`)", line)
+
+    return "".join(p if i % 2 else _EMPHASIS.sub("", p) for i, p in enumerate(parts))
 
 
 def _drop_fences(text: str) -> str:
@@ -246,11 +257,17 @@ def units_of(title: str, body: str) -> tuple[Unit, ...]:
         paragraph.clear()
         units.extend(Unit(part.strip(), None) for part in _SENTENCE_END.split(text) if part.strip())
 
-    for line in visible.splitlines():
+    for raw in visible.splitlines():
+        line = _unemphasize(raw)
         bullet = _BULLET.match(line)
 
         if not line.strip() or _HEADING.match(line) or _QUOTE.match(line):
             flush()
+        elif _TABLE.match(line):
+            flush()
+
+            if not _TABLE_RULE.match(line):
+                units.append(Unit(line.strip(), None))
         elif bullet:
             flush()
             box = bullet.group(1)
@@ -276,9 +293,28 @@ _FILE_EXT = re.compile(rf"\.(?:{_EXTS})$", re.IGNORECASE)
 _BARE = re.compile(
     rf"(?<![\w@/.:-])((?:[\w.-]+/)*[\w.-]+\.(?:{_EXTS})|(?:[\w.-]+/)+)(?![\w@-])", re.IGNORECASE
 )
-_LINE_SUFFIX = re.compile(r"(?::\d+)+$|#L\d+(?:-L?\d+)?$")
+_LINE_SUFFIX = re.compile(r"(?:::?[\w$]+|#[\w$.-]+)+$")
+_PATH_CHARS = re.compile(r"[\w.+@\[\]()/-]+")
+_DOMAIN = re.compile(r"\.(?:com|org|io|dev|ai|app|net|co)$", re.IGNORECASE)
 _IDENT = re.compile(r"^([A-Za-z_$][\w$]*(?:(?:\.|::|->|#)[A-Za-z_$][\w$]*)*)\s*(?:\(.*\))?$")
 _SEGMENTS = re.compile(r"\.|::|->|#")
+
+
+def _is_path(token: str) -> bool:
+    """A real path shape: not a route, URL, package scope, slash command or domain."""
+
+    segments = [part for part in token.split("/") if part]
+
+    if (
+        not segments
+        or not re.search(r"[^\W\d_]", token)
+        or not _PATH_CHARS.fullmatch(token)
+        or token.startswith("@")
+        or _DOMAIN.search(segments[0])
+    ):
+        return False
+
+    return len(segments) > 1 or not token.startswith("/")
 
 
 def path_tokens(text: str) -> tuple[str, ...]:
@@ -290,26 +326,24 @@ def path_tokens(text: str) -> tuple[str, ...]:
     for tick in _TICKS.findall(clean):
         token = _LINE_SUFFIX.sub("", tick.strip())
 
-        if (
-            token
-            and not re.search(r"[\s*(){}<>]", token)
-            and ("/" in token or _FILE_EXT.search(token))
-        ):
+        if token and ("/" in token or _FILE_EXT.search(token)):
             found.append(token)
 
-    found.extend(match.group(1) for match in _BARE.finditer(clean))
+    found.extend(match.group(1) for match in _BARE.finditer(_TICKS.sub(" ", clean)))
 
-    return tuple(dict.fromkeys(found))
+    return tuple(dict.fromkeys(token for token in found if _is_path(token)))
 
 
-def identifiers(text: str) -> tuple[str, ...]:
-    """Backticked identifiers that are not paths; `a::b(x)` is checked as `b`."""
+def symbol_objects(text: str) -> tuple[str, ...]:
+    """Backticked identifiers that are the direct object of a create or remove verb.
 
-    clean = _URL.sub(" ", text)
+    `a::b(x)` is checked as `b`. Data such as a table name is not an object, so it is skipped.
+    """
+
     names: list[str] = []
 
-    for tick in _TICKS.findall(clean):
-        token = tick.strip()
+    for match in _SYMBOL_OBJECT.finditer(_URL.sub(" ", text)):
+        token = match.group(1).strip()
         shape = _IDENT.match(token)
 
         if shape and not _FILE_EXT.search(token.split("(", 1)[0]):
@@ -330,19 +364,48 @@ def hits(token: str, path: str) -> bool:
     return (not token.endswith("/") and full.endswith(target)) or target + "/" in full
 
 
+class Tree:
+    """Segment-boundary index of repository paths, built once so each token is a set lookup."""
+
+    def __init__(self, paths: Iterable[str]) -> None:
+        self.files: set[str] = set()
+        self.dirs: set[str] = set()
+
+        for path in paths:
+            parts = path.split("/")
+
+            for i in range(len(parts)):
+                self.files.add("/".join(parts[i:]))
+
+                for j in range(i + 1, len(parts)):
+                    self.dirs.add("/".join(parts[i:j]))
+
+    def has(self, token: str) -> bool:
+        key = token.removeprefix("./").strip("/")
+
+        return key in self.dirs or (not token.endswith("/") and key in self.files)
+
+
 # Claim detectors.
 
 _CHANGE_VERB = re.compile(
-    r"\b(?:add(?:s|ed|ing)?|updat(?:e|es|ed|ing)|modif(?:y|ies|ied|ying)|chang(?:e|es|ed|ing)"
+    r"(?<![\w-])(?:add(?:s|ed|ing)?|updat(?:e|es|ed|ing)|modif(?:y|ies|ied|ying)|chang(?:e|es|ed|ing)"
     r"|fix(?:es|ed|ing)?|bump(?:s|ed|ing)?|remov(?:e|es|ed|ing)|delet(?:e|es|ed|ing)"
     r"|renam(?:e|es|ed|ing)|mov(?:e|es|ed|ing)|replac(?:e|es|ed|ing)|creat(?:e|es|ed|ing)"
-    r"|edit(?:s|ed|ing)?|rewr(?:ite|ites|ote|itten|iting)|refactor(?:s|ed|ing)?)\b"
+    r"|edit(?:s|ed|ing)?|rewr(?:ite|ites|ote|itten|iting)|refactor(?:s|ed|ing)?)(?![\w-])"
     r"|→|->",
     re.IGNORECASE,
 )
-_SYMBOL_VERB = re.compile(
-    r"\b(?:add(?:s|ed|ing)?|creat(?:e|es|ed|ing)|introduc(?:e|es|ed|ing)|new"
-    r"|remov(?:e|es|ed|ing)|delet(?:e|es|ed|ing)|renam(?:e|es|ed|ing))\b",
+_SYMBOL_OBJECT = re.compile(
+    r"(?<![\w-])(?:add(?:s|ed|ing)?|creat(?:e|es|ed|ing)|introduc(?:e|es|ed|ing)|new"
+    r"|remov(?:e|es|ed|ing)|delet(?:e|es|ed|ing)|renam(?:e|es|ed|ing))(?![\w-])"
+    r"(?:\s+(?:a|an|the|new|old|this|that|existing|public|private|static|async|helper"
+    r"|function|method|class|type|constant)(?![\w-])){0,3}\s+`([^`\n]+)`",
+    re.IGNORECASE,
+)
+_HEDGE = re.compile(
+    r"(?<![\w-])(?:not|no|never|without|kept|unchanged|untouched|already|would|could|instead)"
+    r"(?![\w-])|n't",
     re.IGNORECASE,
 )
 _CI_NOUN = re.compile(
@@ -374,11 +437,12 @@ _DEFINED = re.compile(
 
 def _mismatches(
     units: tuple[Unit, ...], deltas: tuple[Delta, ...], files: tuple[FileChange, ...],
-    checks: tuple[Check, ...],
+    checks: tuple[Check, ...], tree: Tree,
 ) -> tuple[Mismatch, ...]:  # fmt: skip
     found: dict[tuple[str, str], Mismatch] = {}
     failed = tuple(check.name for check in checks if check.state == "failed")
     has_tests = any(file.kind == "test" for file in files)
+    opaque = any(delta.opaque for delta in deltas)
 
     def add(unit: Unit, kind: MismatchKind, fact: str, subjects: tuple[str, ...] = ()) -> None:
         found.setdefault((kind, unit.text), Mismatch(kind, unit.text, fact, subjects))
@@ -388,21 +452,23 @@ def _mismatches(
             continue
 
         text = _URL.sub(" ", unit.text)
+        bare = _TICKS.sub(" ", text)
+        hedged = _HEDGE.search(bare) is not None
 
-        if _CHANGE_VERB.search(text):
+        if not hedged and _CHANGE_VERB.search(bare):
             missing = tuple(
                 token
                 for token in path_tokens(text)
-                if not any(hits(token, delta.path) for delta in deltas)
+                if tree.has(token) and not any(hits(token, delta.path) for delta in deltas)
             )
 
             if missing:
                 add(unit, "changed_claim_not_in_diff", "no changed file matches", missing)
 
-        if _SYMBOL_VERB.search(text):
+        if not hedged and not opaque:
             absent = tuple(
                 name
-                for name in identifiers(text)
+                for name in symbol_objects(text)
                 if not any(name in delta.diff or name in delta.head for delta in deltas)
             )
 
@@ -489,9 +555,12 @@ def _check_state(conclusion: str) -> CheckState:
 
 def brief_of(
     pr: str, title: str, body: str, head_sha: str, deltas: tuple[Delta, ...],
-    checks: tuple[Check, ...],
+    checks: tuple[Check, ...], known: frozenset[str],
 ) -> Brief:  # fmt: skip
-    """Pure core: every number and claim in the brief comes from these arguments."""
+    """Pure core: every number and claim in the brief comes from these arguments.
+
+    `known` is every path in the base and head trees; a token is a path claim only if it names one.
+    """
 
     units = units_of(title, body)
     text = " ".join(_URL.sub(" ", unit.text) for unit in units)
@@ -509,7 +578,7 @@ def brief_of(
         )
         for d in sorted(deltas, key=lambda d: d.path)
     )
-    mismatches = _mismatches(units, deltas, files, checks)
+    mismatches = _mismatches(units, deltas, files, checks, Tree(known))
 
     return Brief(
         pr,
@@ -522,7 +591,7 @@ def brief_of(
     )
 
 
-def build_brief(acquisition: Acquisition) -> Brief:
+def build_brief(acquisition: Acquisition, known: frozenset[str]) -> Brief:
     """Read the frozen acquisition: inventory, metadata, diff and head records, head-commit checks."""
 
     snapshot = acquisition.snapshot
@@ -563,4 +632,5 @@ def build_brief(acquisition: Acquisition) -> Brief:
         snapshot.comparison.head_sha,
         deltas,
         checks,
+        known,
     )
