@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import shutil
 import tempfile
@@ -10,6 +11,7 @@ from pathlib import Path
 
 from prc.brief import Brief, build_brief
 from prc.capture import Clock, capture_bundle
+from prc.changemap import ChangeMap, build_change_map
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
 from prc.freshness import FreshnessReport, StoredBasis, reconcile
 from prc.gitutil import list_paths
@@ -25,6 +27,7 @@ from prc.presentation.check import (
 from prc.presentation.render_brief import render_brief
 from prc.presentation.render_entry import render_entry
 from prc.presentation.render_html import render_html
+from prc.presentation.render_map import render_map
 from prc.presentation.render_svg import render_flow, render_infographic
 from prc.presentation.versions import PRESENTATION_POLICY_VERSION, RENDERER_VERSIONS
 from prc.semantics import ValidatedSemanticArtifact
@@ -164,13 +167,9 @@ class BriefResult:
     path: Path
 
 
-def run_brief(
-    source: PullRequestSource,
-    ref: PrRef,
-    clock: Clock,
-    policy: EligibilityPolicy,
-    out_root: Path,
-) -> BriefResult:
+def _acquire_brief(
+    source: PullRequestSource, ref: PrRef, clock: Clock, policy: EligibilityPolicy
+) -> tuple[Acquisition, Path, Brief]:
     bundle = capture_bundle(source, ref, clock)
     repo = source.repo_path(ref)
     acquisition = build_snapshot(bundle, source.label, source.live_verified, repo, policy)
@@ -178,7 +177,18 @@ def run_brief(
     known = frozenset(list_paths(repo, comparison.merge_base_sha)) | frozenset(
         list_paths(repo, comparison.head_sha)
     )
-    brief = build_brief(acquisition, known)
+
+    return acquisition, repo, build_brief(acquisition, known)
+
+
+def run_brief(
+    source: PullRequestSource,
+    ref: PrRef,
+    clock: Clock,
+    policy: EligibilityPolicy,
+    out_root: Path,
+) -> BriefResult:
+    acquisition, _, brief = _acquire_brief(source, ref, clock, policy)
     snapshot_id = acquisition.snapshot.snapshot_id
     out_dir = _write_bundle(
         out_root,
@@ -189,6 +199,38 @@ def run_brief(
     )
 
     return BriefResult(snapshot_id, brief, out_dir / "brief.md")
+
+
+@dataclass(frozen=True, slots=True)
+class MapResult:
+    snapshot_id: str
+    map: ChangeMap
+    html: Path
+    json: Path
+
+
+def run_map(
+    source: PullRequestSource,
+    ref: PrRef,
+    clock: Clock,
+    policy: EligibilityPolicy,
+    out_root: Path,
+) -> MapResult:
+    acquisition, repo, brief = _acquire_brief(source, ref, clock, policy)
+    url = f"https://github.com/{ref.owner}/{ref.repo}/pull/{ref.number}"
+    change_map = dataclasses.replace(
+        build_change_map(acquisition, repo, brief), url=url if source.live_verified else None
+    )
+    snapshot_id = acquisition.snapshot.snapshot_id
+    out_dir = _write_bundle(
+        out_root,
+        snapshot_id,
+        {"index.html": render_map(change_map).encode()},
+        {"map.json": to_jsonable(change_map)},
+        replace=True,
+    )
+
+    return MapResult(snapshot_id, change_map, out_dir / "index.html", out_dir / "map.json")
 
 
 def _write_bundle(

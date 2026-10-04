@@ -15,13 +15,16 @@ from prc.fixture_source import FIXTURE_EPOCH
 from prc.github_source import GitHubSource
 from prc.identity import to_jsonable
 from prc.model import PrRef
-from prc.pipeline import run_brief, run_decide, run_review, run_status
+from prc.pipeline import run_brief, run_decide, run_map, run_review, run_status
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
 from prc.source import PullRequestSource
 from prc.store import StaleExpectation, Store
 from prc.verification import EligibilityPolicy
 
 _GITHUB = re.compile(r"^github:([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)#(\d+)$")
+_PR_URL = re.compile(
+    r"^https?://(?:www\.)?github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/pull/(\d+)(?:[/?#].*)?$"
+)
 
 
 class FixtureClock:
@@ -47,10 +50,13 @@ def _resolve(spec: str, store_dir: Path) -> tuple[PullRequestSource, PrRef]:
 
         return source, ref
 
-    match = _GITHUB.match(spec)
+    match = _GITHUB.match(spec) or _PR_URL.match(spec)
 
     if match is None:
-        raise SystemExit("source must be fixture:<name> or github:<owner>/<repo>#<number>")
+        raise SystemExit(
+            "source must be fixture:<name>, github:<owner>/<repo>#<number> "
+            "or https://github.com/<owner>/<repo>/pull/<number>"
+        )
 
     return GitHubSource(store_dir / "git-cache"), PrRef(match[1], match[2], int(match[3]))
 
@@ -67,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="prc", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("review", "status", "decide", "brief"):
+    for name in ("review", "status", "decide", "brief", "map"):
         cmd = sub.add_parser(name)
         cmd.add_argument("--source", required=True)
         cmd.add_argument("--store", type=Path, default=Path("artifacts/store"))
@@ -83,6 +89,9 @@ def build_parser() -> argparse.ArgumentParser:
 
         if name == "brief":
             cmd.add_argument("--out", type=Path, default=Path("artifacts/briefs"))
+
+        if name == "map":
+            cmd.add_argument("--out", type=Path, default=Path("artifacts/maps"))
 
         if name == "decide":
             cmd.add_argument("--expect-snapshot", required=True)
@@ -140,6 +149,26 @@ def main(argv: list[str] | None = None) -> int:
                     "brief": str(brief.path),
                     "mismatches": len(brief.brief.mismatches),
                     "look_first": [pointer.path for pointer in brief.brief.look_first],
+                },
+                indent=2,
+            )
+        )
+
+        return 0
+
+    if args.command == "map":
+        mapped = run_map(source, ref, _clock(args.source, args.clock_offset), policy, args.out)
+        print(
+            json.dumps(
+                {
+                    "source": source.label,
+                    "live_verified": source.live_verified,
+                    "snapshot_id": mapped.snapshot_id,
+                    "html": str(mapped.html),
+                    "json": str(mapped.json),
+                    "symbols": sum(s.status != "context" for s in mapped.map.symbols),
+                    "edges": len(mapped.map.edges),
+                    "steps": len(mapped.map.tour),
                 },
                 indent=2,
             )

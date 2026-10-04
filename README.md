@@ -22,11 +22,14 @@ uv run prc fixture-mutate basic edit-title         # simulate a provider change 
 uv run prc eval-analyze results.json               # solo pilot analysis
 uv run prc review --source github:<owner>/<repo>#<n>   # live adapter, unverified
 uv run prc brief --source fixture:claims           # one PR comment from diff, description and CI; no model
+uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>   # interactive map of what the PR rewired; also fixture:shop
 ```
 
 `review` prints the snapshot, semantic and published-view identities and writes `index.html`, `infographic.svg`, `flow.svg` (when relations exist), `entry.md`, `semantic.json`, `snapshot.json`, `manifest.json` and `view.json`. `decide` refuses (exit 2) when the expected snapshot/view is no longer the current local exposure.
 
 `brief` computes one GitHub comment from the diff, the PR description and CI results, with no model calls and no store writes. It writes `<out>/<snapshot id short>/brief.md` and `brief.json` (default `--out artifacts/briefs`) and prints the `brief.md` path, the mismatch count and the look-first files. Domain: `prc.brief`; renderer: `prc.presentation.render_brief`, which routes every PR-controlled string through one code-span helper.
+
+`map` parses the base and head code and writes `<out>/<snapshot id short>/index.html` and `map.json` (default `--out artifacts/maps`). The page is one offline file: a left-to-right call map of the changed symbols with their callers, callees and tests, a diff drawer per node, and a computed tour exposed as `window.prcTour`. It prints the paths and the symbol, edge and step counts. Layout: `prc.presentation.map_layout`; page: `prc.presentation.render_map` with its CSS and JS in `map_assets/`. `--source` also accepts a GitHub PR URL.
 
 ## Contract map
 
