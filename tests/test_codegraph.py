@@ -104,6 +104,7 @@ def test_method_and_function_with_the_same_name() -> None:
     assert edges({"m.py": source}) == {
         ("m.py::Job.run", "m.py::run", "exact"),
         ("m.py::Job.run", "m.py::Job.run", "exact"),
+        ("m.py::go", "m.py::Job.run", "name"),
     }
 
 
@@ -117,14 +118,87 @@ def test_self_and_this_resolve_to_the_enclosing_class() -> None:
     }
 
 
-def test_unique_attribute_name_resolves_by_name_and_ambiguous_ones_drop() -> None:
+NAMED = {
+    "shop/cart.py": "class Cart:\n    def subtotal(self):\n        pass\n\n    def total(self):\n        pass\n",
+    "shop/order.py": "class Order:\n    def total(self):\n        pass\n",
+    "legacy/order.py": "class Order:\n    def total(self):\n        pass\n",
+    "lib/pushbutton_download.py": "def prepare():\n    pass\n",
+    "runner.py": "class EnvCliRunner:\n    def invoke(self):\n        pass\n",
+    "scratch.py": (
+        "class _ScratchProof:\n    def execute(self):\n        pass\n\n"
+        "    def __enter__(self):\n        pass\n"
+    ),
+    "base.py": "class Base:\n    def helper(self):\n        pass\n",
+    "utils.py": "def json():\n    pass\n",
+    "strings.py": "class Joiner:\n    def join(self, parts):\n        pass\n",
+    "pkg/billing/__init__.py": "def charge():\n    pass\n",
+}
+
+
+def named(call: str, prelude: str = "") -> set[str]:
+    source = f"{prelude}\n\nclass Child(Base):\n    def run(self, x):\n        {call}\n"
+    found = edges({**NAMED, "app.py": source})
+
+    assert all(resolution == "name" for _, _, resolution in found)
+
+    return {target for _, target, _ in found}
+
+
+@pytest.mark.parametrize(
+    ("call", "target"),
+    [
+        ("cart.subtotal()", "shop/cart.py::Cart.subtotal"),
+        ("cart.total()", "shop/cart.py::Cart.total"),
+        ("self._cart.subtotal()", "shop/cart.py::Cart.subtotal"),
+        ("self.cli_runner.invoke()", "runner.py::EnvCliRunner.invoke"),
+        ("scratch_proof.execute()", "scratch.py::_ScratchProof.execute"),
+        ("download.prepare()", "lib/pushbutton_download.py::prepare"),
+        ("billing.charge()", "pkg/billing/__init__.py::charge"),
+        ("self.helper()", "base.py::Base.helper"),
+    ],
+)
+def test_name_match_accepts_a_receiver_named_after_its_class_or_module(
+    call: str, target: str
+) -> None:
+    assert named(call) == {target}
+
+
+@pytest.mark.parametrize(
+    ("call", "prelude"),
+    [
+        pytest.param("scratch_proof.__enter__()", "", id="dunder"),
+        pytest.param("self.__enter__()", "", id="inherited-dunder"),
+        pytest.param('"".join(x)', "", id="literal"),
+        pytest.param("make().join(x)", "", id="call-result"),
+        pytest.param("super().helper()", "", id="super"),
+        pytest.param("cart.subtotal()", "from session import cart", id="import-bound"),
+        pytest.param("db.execute()", "", id="not-a-subset"),
+        pytest.param("res.json()", "", id="module-stem-mismatch"),
+        pytest.param("self.json()", "", id="inherited-non-method"),
+        pytest.param("order.total()", "", id="ambiguous"),
+        pytest.param("_.subtotal()", "", id="no-receiver-words"),
+    ],
+)
+def test_name_match_rejects(call: str, prelude: str) -> None:
+    assert named(call, prelude) == set()
+
+
+def test_name_match_needs_an_enclosing_class_for_self() -> None:
+    assert edges({**NAMED, "app.py": "def go(self):\n    self.helper()\n"}) == set()
+
+
+def test_name_match_splits_camel_case_and_digit_runs() -> None:
     files = {
-        "a.py": "class A:\n    def ping(self):\n        pass\n\n    def twin(self):\n        pass\n",
-        "b.py": "class B:\n    def twin(self):\n        pass\n",
-        "c.py": "def use(x):\n    x.ping()\n    x.twin()\n    ping()\n    undefined()\n",
+        "store.ts": "export class CartStore {\n  load() {}\n}\n",
+        "s3.ts": "export class S3Client {\n  put() {}\n}\n",
+        "app.ts": "function go(cartStore, s3Client) {\n  cartStore.load();\n  s3Client.put();\n}\n"
+        "function client(store) {\n  store.put();\n}\n",
     }
 
-    assert edges(files) == {("c.py::use", "a.py::A.ping", "name")}
+    assert edges(files) == {
+        ("app.ts::go", "store.ts::CartStore.load", "name"),
+        ("app.ts::go", "s3.ts::S3Client.put", "name"),
+    }
 
 
 def test_name_resolution_never_crosses_language_families() -> None:

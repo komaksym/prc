@@ -5,6 +5,7 @@ from __future__ import annotations
 import bisect
 import itertools
 import posixpath
+import re
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from functools import cache
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
 
 MAX_PARSE_BYTES = 512 * 1024
 MAX_HOPS = 8
+_WORD = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+|[0-9]+")
 Receiver = Literal["bare", "self", "other"]
 Family = Literal["python", "js"]
 Locate = Callable[["Index", str, str, tuple[str, ...]], "tuple[str, tuple[str, ...]] | None"]
@@ -549,10 +551,16 @@ class Index:
         if call.receiver == "self":
             owner = self._enclosing_class(path, call.scope)
 
-            if owner is not None and f"{owner}.{call.name}" in local:
+            if owner is None:
+                return None
+
+            if f"{owner}.{call.name}" in local:
                 return f"{path}::{owner}.{call.name}", "exact"
 
-        elif call.chain:
+        elif not call.chain:
+            return None
+
+        else:
             root, rest = call.chain[0], (*call.chain[1:], call.name)
             scoped = self._scoped(path, call.scope, root)
 
@@ -565,10 +573,33 @@ class Index:
             elif root in self.bindings[path]:
                 return self._imported(path, root, rest)
 
-        family = LANGUAGES[posixpath.splitext(path)[1]].family
-        candidates = self.by_name.get((family, call.name), ())
+        named = self._named(path, call)
 
-        return (candidates[0], "name") if len(candidates) == 1 else None
+        return None if named is None else (named, "name")
+
+    def _named(self, path: str, call: Call) -> str | None:
+        """The one candidate rule 4.4 leaves for an unresolved `obj.x()` or inherited `self.x()`."""
+
+        if call.name.startswith("__") and call.name.endswith("__"):
+            return None
+
+        receiver = _words(call.chain[-1]) if call.receiver == "other" else frozenset()
+
+        def fits(candidate: str) -> bool:
+            where, _, qualname = candidate.rpartition("::")
+            owner = qualname.rpartition(".")[0]
+
+            if call.receiver == "self":
+                return self.definitions[where][qualname].kind == "method"
+
+            return bool(receiver) and receiver <= _words(
+                owner.rpartition(".")[2] if owner else _module_name(where)
+            )
+
+        family = LANGUAGES[posixpath.splitext(path)[1]].family
+        found = [c for c in self.by_name.get((family, call.name), ()) if fits(c)]
+
+        return found[0] if len(found) == 1 else None
 
     def _imported(
         self, path: str, local: str, rest: tuple[str, ...]
@@ -638,6 +669,19 @@ class Index:
         scopes = [] if scope is None else [scope, *_prefixes(scope)]
 
         return next((s for s in scopes if s in local and local[s].kind == "class"), None)
+
+
+@cache
+def _words(name: str) -> frozenset[str]:
+    """Lowercased snake_case, camelCase, PascalCase and digit-run parts of an identifier."""
+
+    return frozenset(part.lower() for part in _WORD.findall(name))
+
+
+def _module_name(path: str) -> str:
+    stem = posixpath.splitext(posixpath.basename(path))[0]
+
+    return posixpath.basename(posixpath.dirname(path)) if stem in ("__init__", "index") else stem
 
 
 def _prefixes(qualname: str) -> list[str]:
