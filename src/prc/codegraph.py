@@ -199,6 +199,15 @@ _JS_CALLS = """
 (new_expression constructor: (member_expression
   object: (_) @receiver property: (property_identifier) @name)) @call
 """
+_JSX_CALLS = """
+([(jsx_opening_element name: (identifier) @name)
+  (jsx_self_closing_element name: (identifier) @name)] @call
+  (#match? @name "^[A-Z]"))
+(jsx_opening_element
+  name: (member_expression object: (_) @receiver property: (property_identifier) @name)) @call
+(jsx_self_closing_element
+  name: (member_expression object: (_) @receiver property: (property_identifier) @name)) @call
+"""
 _REQUIRE = """(call_expression
   function: (identifier) @require (#eq? @require "require")
   arguments: (arguments . (string (string_fragment) @module) .))"""
@@ -242,13 +251,15 @@ _PYTHON = Spec(
 )
 
 
-def _js(language: Language, grammar: Callable[[], object], definitions: str) -> Spec:
+def _js(
+    language: Language, grammar: Callable[[], object], definitions: str, calls: str = ""
+) -> Spec:
     return Spec(
         language=language,
         family="js",
         grammar=grammar,
         definitions=_JS_DEFINITIONS + definitions,
-        calls=_JS_CALLS,
+        calls=_JS_CALLS + calls,
         imports=_JS_IMPORTS,
         wrappers=frozenset({"export_statement", "lexical_declaration", "variable_declaration"}),
         member=("member_expression", "object", "property"),
@@ -258,9 +269,9 @@ def _js(language: Language, grammar: Callable[[], object], definitions: str) -> 
     )
 
 
-_JAVASCRIPT = _js("javascript", tree_sitter_javascript.language, _JS_ONLY_DEFINITIONS)
+_JAVASCRIPT = _js("javascript", tree_sitter_javascript.language, _JS_ONLY_DEFINITIONS, _JSX_CALLS)
 _TYPESCRIPT = _js("typescript", tree_sitter_typescript.language_typescript, _TS_ONLY_DEFINITIONS)
-_TSX = _js("tsx", tree_sitter_typescript.language_tsx, _TS_ONLY_DEFINITIONS)
+_TSX = _js("tsx", tree_sitter_typescript.language_tsx, _TS_ONLY_DEFINITIONS, _JSX_CALLS)
 
 LANGUAGES: dict[str, Spec] = {
     ".py": _PYTHON,

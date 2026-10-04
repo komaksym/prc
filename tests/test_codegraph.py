@@ -427,3 +427,43 @@ def test_only_require_calls_bind() -> None:
     }
 
     assert edges(files) == {("app.ts::go", "lib/fs.ts::writeFile", "name")}
+
+
+def test_jsx_components_are_calls_and_intrinsic_tags_are_not() -> None:
+    files = {
+        "web/src/CartView.tsx": "export function CartView() {\n  return null;\n}\n",
+        "web/src/ui/index.tsx": "export function Button() {\n  return null;\n}\n",
+        "web/src/App.tsx": (
+            'import { CartView } from "./CartView";\n'
+            'import * as Ui from "./ui";\n'
+            "function div() {}\n"
+            "function span() {}\n"
+            "export function App() {\n"
+            "  return (\n"
+            "    <div>\n"
+            "      <CartView />\n"
+            "      <Ui.Button>go</Ui.Button>\n"
+            "      <span />\n"
+            "    </div>\n"
+            "  );\n"
+            "}\n"
+        ),
+    }
+    app = "web/src/App.tsx::App"
+
+    assert edges(files) == {
+        (app, "web/src/CartView.tsx::CartView", "exact"),
+        (app, "web/src/ui/index.tsx::Button", "exact"),
+    }
+    assert [(c.name, c.line) for c in parse("web/src/App.tsx", files["web/src/App.tsx"]).calls] == [
+        ("CartView", 8),
+        ("Button", 9),
+    ]
+
+
+def test_jsx_components_count_in_the_javascript_grammar() -> None:
+    source = (
+        "function Widget() {}\nexport const Page = () => <section><Widget>x</Widget></section>;\n"
+    )
+
+    assert edges({"page.jsx": source}) == {("page.jsx::Page", "page.jsx::Widget", "exact")}
