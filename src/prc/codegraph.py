@@ -197,7 +197,10 @@ _JS_CALLS = """
 (new_expression constructor: (member_expression
   object: (_) @receiver property: (property_identifier) @name)) @call
 """
-_JS_IMPORTS = """
+_REQUIRE = """(call_expression
+  function: (identifier) @require (#eq? @require "require")
+  arguments: (arguments . (string (string_fragment) @module) .))"""
+_JS_IMPORTS = f"""
 (import_statement (import_clause (identifier) @local) source: (string (string_fragment) @module)) @default
 (import_statement
   (import_clause (named_imports (import_specifier name: (_) @name alias: (_)? @local)))
@@ -214,6 +217,12 @@ _JS_IMPORTS = """
   (generator_function_declaration name: (identifier) @exported)
   (class_declaration name: (_) @exported)])
 (export_statement "default" value: (identifier) @exported)
+(variable_declarator name: (identifier) @local value: {_REQUIRE})
+(variable_declarator
+  name: (object_pattern [
+    (shorthand_property_identifier_pattern) @name
+    (pair_pattern key: (property_identifier) @name value: (identifier) @local)])
+  value: {_REQUIRE})
 """
 
 _PYTHON = Spec(

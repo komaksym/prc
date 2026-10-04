@@ -312,3 +312,44 @@ def test_duplicate_qualnames_merge_into_one_symbol_id() -> None:
     assert [d.qualname for d in parsed.definitions].count("A.x") == 2
     assert parsed.innermost(7) == "A.x" and parsed.innermost(1) == "A"
     assert parsed.innermost(5) == "A"
+
+
+def test_commonjs_require_binds_modules_and_destructured_names() -> None:
+    files = {
+        "lib/x.js": "function f() {}\nmodule.exports = { f };\n",
+        "lib/y.js": "function a() {}\nfunction b() {}\nmodule.exports = { a, b };\n",
+        "lib/app.js": (
+            'const x = require("./x");\n'
+            'const { a, b: c } = require("./y");\n'
+            "function go() {\n  x.f();\n  a();\n  c();\n}\n"
+        ),
+    }
+
+    assert edges(files) == {
+        ("lib/app.js::go", "lib/x.js::f", "exact"),
+        ("lib/app.js::go", "lib/y.js::a", "exact"),
+        ("lib/app.js::go", "lib/y.js::b", "exact"),
+    }
+
+
+def test_non_relative_require_binds_so_its_calls_drop() -> None:
+    files = {
+        "tests/helpers/fs.js": "function writeFile() {}\nmodule.exports = { writeFile };\n",
+        "src/save.js": (
+            'const fs = require("fs");\n'
+            'const { join } = require("path");\n'
+            "function save() {\n  fs.writeFile();\n  join();\n}\n"
+        ),
+        "src/join.js": "function join() {}\n",
+    }
+
+    assert edges(files) == set()
+
+
+def test_only_require_calls_bind() -> None:
+    files = {
+        "lib/fs.ts": "export function writeFile() {}\n",
+        "app.ts": 'const fs = load("./lib/fs");\nfunction go() {\n  fs.writeFile();\n}\n',
+    }
+
+    assert edges(files) == {("app.ts::go", "lib/fs.ts::writeFile", "name")}
