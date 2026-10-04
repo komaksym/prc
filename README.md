@@ -1,14 +1,37 @@
-# prc: GitHub PR comprehension MVP
+# prc map: see what a pull request rewired
 
-`prc` turns one GitHub pull request into a pinned, evidence-linked review view for a human reviewing an AI-generated change: an overview, behavioural concepts with adjacent evidence, a required infographic, a relation flow diagram, a change-surface table, the agent trace (as reports, not proof), and visible coverage gaps. The reviewer records approve, reject or request changes. Nothing is merged or decided automatically.
+Your agent wrote 800 lines. `prc map` shows which functions it changed, which calls it added or removed, and what it left untested, as one interactive page and a 30-second video. Every box and arrow is computed by parsing the base and head code. No model draws anything, so no arrow is made up.
 
-The design contracts live in `CONTEXT.md`, `docs/design/` and `docs/adr/` (provenance in `docs/PROVENANCE.md`). The implementation plan is `PLANS.md`.
+## Try it in 10 seconds
+
+```sh
+uv sync
+uv run prc map --source fixture:shop                       # offline sample, no network
+uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>
+open artifacts/maps/*/index.html
+```
+
+A public PR needs no token. Set `GITHUB_TOKEN` for private repos or higher rate limits. Add `--video` for `tour.mp4` and `card.png` (see below).
+
+## What you get
+
+- **The map.** Changed functions and classes sit in the middle, layered by call depth. Their unchanged callers sit on the left, their callees on the right, and tests along the bottom. Green dashed arrows are calls the PR added, red ones calls it removed, and grey ones calls it kept. A dotted arrow was matched by name only.
+- **The drawer.** Click any card for its diff, callers, callees and the tests that call it.
+- **The tour.** Press Play. The camera walks from each entry point through the code it calls, with one caption per step, and ends on a summary card: symbols changed, calls added and removed, call sites affected, changed symbols with no direct test, CI on the head commit.
+- **Overlay facts.** CI status on the head commit, and risky files (CI workflows, dependency manifests, auth), flagged when the PR description never mentions them.
+- **One offline file.** `index.html` loads nothing from the network, and its strict CSP blocks scripts from the PR's own content.
+
+Python, JavaScript, TypeScript and TSX are parsed with tree-sitter. A call is drawn only when an import, the same file, `self`/`this`, or a receiver named after the target's class or module proves it. On 19 public agent-authored PRs, 879 of 882 drawn arrows have a call of the target on a line of the source. The other 3 are generic calls such as `useReport<T>(...)` or calls through a re-export, and they are correct on inspection.
+
+## The rest of prc
+
+`prc` began as a PR comprehension MVP for a human reviewing an AI-generated change. The commands below remain: an evidence-linked review view (`review`), a freshness check (`status`), a recorded decision (`decide`), and a one-comment text brief (`brief`).
 
 ## What is real and what is a fixture
 
 - All development and the E2E test use deterministic **local fixtures**: real local git repositories plus fixture provider data. Every artifact and page from them is labelled `fixture` / `live_verified: false`.
 - The comprehension, support-assessor and closure-falsifier "models" are deterministic **fixture heuristics** behind typed protocols (`prc.comprehension`). No LLM is wired in. Their output is labelled `fixture` in every artifact.
-- `prc.github_source.GitHubSource` implements the same `PullRequestSource` contract against the GitHub REST API and `git fetch`. It is covered only by contract tests with canned payloads. **It has not been run against live GitHub.** It reads `GITHUB_TOKEN` from the environment and never writes it to output.
+- `prc.github_source.GitHubSource` implements the same `PullRequestSource` contract against the GitHub REST API and `git fetch`. It has contract tests with canned payloads, and `brief` and `map` have run it read-only against 19 public PRs. It reads `GITHUB_TOKEN` from the environment and never writes it to output.
 
 ## Usage
 
@@ -20,7 +43,7 @@ uv run prc decide --source fixture:basic --expect-snapshot <id> --expect-view <i
     --reviewer me --decision request_changes --confidence 70 --note "..."
 uv run prc fixture-mutate basic edit-title         # simulate a provider change (fixture only)
 uv run prc eval-analyze results.json               # solo pilot analysis
-uv run prc review --source github:<owner>/<repo>#<n>   # live adapter, unverified
+uv run prc review --source github:<owner>/<repo>#<n>   # live adapter
 uv run prc brief --source fixture:claims           # one PR comment from diff, description and CI; no model
 uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>   # interactive map of what the PR rewired; also fixture:shop; add --video for tour.mp4 and card.png
 ```

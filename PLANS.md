@@ -126,6 +126,17 @@ Next milestones, in parallel from `visual-map`:
 - **M3c page (lead, `visual-map`).** Rules 7, 11, 12 and 13 in the layout, page script and styles, checked on screenshots of real PRs.
 - **M4 (delegate F, `map-video`).** As above. The video module injects its capture styles itself and reads only `window.prcTour` and stable element ids, so it does not edit the page assets.
 
+### M3b, M3c and M4 results (2026-10-04)
+
+All three landed on `visual-map` (merges 5371d38 and 6a671a7, page commits 316cef0 to 92b464b). The verify passes with 320 tests and none skipped when run outside the sandbox, where Chromium can launch.
+
+- **Name edges.** The 19-PR corpus now draws 100 name edges, against 114 before. Every receiver names its target's class or module (`serving.as_of_date` to `ServingDB`, `cli_runner.invoke` to `EnvCliRunner`, `config.*_rules` to `PolicyConfig`). The false matches from M3 are gone. Exact edges are 782 of 785 with a call line, and the 3 left are the known generic and re-export cases.
+- **Size.** Tours run 9 to 53 s, against 60 to 226 s before. Maps over 30 symbols use grouped rows and draw edges on hover only. The page opens at a legible zoom on the changed lane.
+- **Routing.** A test samples every route of four maps and fails if any point enters a card. Planted bugs (no passages, a channel through a test card) fail it.
+- **Video.** `prc map --video` on SFHacks2026#21 writes a 34 s 1920x1080 H.264 tour in about 85 s, at roughly 70 ms per frame. `card.png` is the page's opening view.
+- **Open.** When a context lane splits into two columns (moonproject#216 has 20 callees), the edges to the second column bundle through the gaps of the first. They stay correct but look busy. The fix is a layout choice: allow taller context columns, or shrink context cards to one line.
+- **Prior art checked.** [code-review-graph](https://github.com/tirth8205/code-review-graph) (MIT, about 32k stars) builds a tree-sitter call graph of 30+ languages for MCP context, with a force-directed D3 view. It is a candidate language backend but brings MCP, fastmcp and watchdog as hard dependencies, and it graphs a working tree, not base against head. ELK's layered algorithm routes long edges through dummy nodes, as our router does. Inlining elkjs would move layout into the browser and add about 1.4 MB (unmeasured) for little gain at our graph sizes. Existing PR video tools narrate with an LLM over code slides. None computes the call wiring.
+
 ## Phase 2 (done): PR brief, the free tier
 
 ### Summary
