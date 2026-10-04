@@ -128,3 +128,13 @@ def test_eval_analyze_runs_on_synthetic_input() -> None:
 
     assert report["decision"] in ("success", "inconclusive", "no promising signal")
     assert len(report["pair_rows"]) == 12
+
+
+def test_default_relative_store_path_works(tmp_path: Path) -> None:
+    completed = subprocess.run(
+        [sys.executable, "-m", "prc.cli", "review", "--source", "fixture:basic"],
+        cwd=tmp_path, capture_output=True, text=True, check=False,
+    )  # fmt: skip
+
+    assert completed.returncode == 0, completed.stderr[-500:]
+    assert (tmp_path / "artifacts" / "reviews").is_dir()

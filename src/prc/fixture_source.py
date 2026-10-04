@@ -107,6 +107,7 @@ def commit_tree(repo: Path, files: dict[str, Entry], parents: list[str]) -> str:
 
 
 def init_repo(path: Path) -> Path:
+    path = path.resolve()
     path.mkdir(parents=True, exist_ok=True)
 
     if not (path / "HEAD").exists():
