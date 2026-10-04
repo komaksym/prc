@@ -749,6 +749,7 @@
   }
 
   function fillSummary() {
+    summary.replaceChildren();
     const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
     const grid = add(el("div", "sum-grid"),
       cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
@@ -757,7 +758,10 @@
       cell(callSites, "call sites affected"),
       cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
       cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
-    summary.replaceChildren(el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid,
+    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
+    const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
+    const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+    add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
       el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
   }
 

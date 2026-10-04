@@ -715,6 +715,12 @@ body:not(.touring) .dense .e:not(.lit) { opacity: 0; }
 .sum-cell.bad .sum-num { color: var(--red); }
 .sum-cell.warn .sum-num { color: var(--amber); }
 
+.sum-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .sum-brand {
   margin-top: 24px;
   font-size: 12px;
