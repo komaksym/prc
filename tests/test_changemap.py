@@ -344,3 +344,102 @@ def test_tour_orders_entries_by_size_and_removed_calls_last_without_self_loops(
         ("entry", ("a.py::alpha",), None),
         ("summary", (), None),
     ]
+
+
+def test_missing_final_newline_never_glues_lines_or_counts_the_marker(tmp_path: Path) -> None:
+    change = custom_map(
+        tmp_path,
+        {"tail.py": b"def f():\n    return 1"},
+        {"tail.py": b"def f():\n    return 2\n"},
+    )
+    symbol = by_id(change)["tail.py::f"]
+
+    assert (change.files[0].added, change.files[0].removed) == (1, 1)
+    assert (symbol.added, symbol.removed) == (1, 1)
+    assert [(line.op, line.text) for hunk in symbol.hunks for line in hunk.lines] == [
+        (" ", "def f():"),
+        ("-", "    return 1"),
+        ("+", "    return 2"),
+    ]
+
+
+def test_kept_callee_is_context_only_when_its_call_line_changed(tmp_path: Path) -> None:
+    base = b"def helper():\n    return 1\n\n\ndef other(n):\n    return n\n\n\n"
+    change = custom_map(
+        tmp_path,
+        {"a.py": base + b"def f():\n    x = helper()\n    y = other(1)\n    return x + other(y)\n"},
+        {"a.py": base + b"def f():\n    x = helper()\n    y = other(1)\n    return x - other(y)\n"},
+    )
+
+    assert {sid: s.status for sid, s in by_id(change).items()} == {
+        "a.py::f": "modified",
+        "a.py::other": "context",
+    }
+    assert {(e.source, e.target, e.status) for e in change.edges} == {
+        ("a.py::f", "a.py::other", "kept")
+    }
+
+
+def test_callees_are_capped_by_edge_status_before_file_and_line(tmp_path: Path) -> None:
+    helpers = b"".join(
+        b"def %s(*args):\n    return 1\n\n\n" % name
+        for name in (b"t1", b"t2", b"r1", b"r2", b"a1", b"a2", b"a3", b"k1")
+    )
+    change = custom_map(
+        tmp_path,
+        {
+            "h.py": helpers,
+            "hub.py": b"from h import *\n\n\ndef hub():\n"
+            b"    t1(0)\n    t2(0)\n    k1()\n    r1()\n    r2()\n",
+        },
+        {
+            "h.py": helpers,
+            "hub.py": b"from h import *\n\n\ndef hub():\n"
+            b"    t1(1)\n    t2(1)\n    k1()\n    a1()\n    a2()\n    a3()\n",
+        },
+    )
+
+    assert {(e.target, e.status) for e in change.edges} == {
+        ("h.py::a1", "added"),
+        ("h.py::a2", "added"),
+        ("h.py::a3", "added"),
+        ("h.py::r1", "removed"),
+        ("h.py::r2", "removed"),
+        ("h.py::t1", "kept"),
+    }
+    assert {s.id for s in change.symbols} == {"hub.py::hub"} | {e.target for e in change.edges}
+
+
+def test_tour_caps_risky_files_at_three_and_symbol_steps_at_ten(tmp_path: Path) -> None:
+    def module(bump: int) -> bytes:
+        return b"".join(
+            b"def f%02d():\n%s    return 1\n\n\n" % (n, b"    x = 1\n" * (n % 3 + bump))
+            for n in range(12)
+        )
+
+    workflows = [f".github/workflows/w{n}.yml" for n in range(4)]
+    change = custom_map(
+        tmp_path,
+        {"m.py": module(0), **{path: b"on: push\n" for path in workflows}},
+        {"m.py": module(1), **{path: b"on: pull_request\n" for path in workflows}},
+    )
+    sizes = sorted((-s.added - s.removed, s.id) for s in change.symbols)
+
+    assert len(sizes) == 12
+    assert [(s.kind, s.focus) for s in change.tour] == [
+        ("overview", ()),
+        *(("risky_file", (path,)) for path in workflows[:3]),
+        *(("entry", (symbol_id,)) for _, symbol_id in sizes[:10]),
+        ("summary", ()),
+    ]
+
+
+def test_tour_has_one_test_step_with_at_most_six_tests(tmp_path: Path) -> None:
+    tests = b"".join(b"def test_%d():\n    assert True\n\n\n" % n for n in range(8))
+    change = custom_map(tmp_path, {"tests/test_a.py": b"X = 1\n"}, {"tests/test_a.py": tests})
+
+    assert [(s.kind, s.focus) for s in change.tour] == [
+        ("overview", ()),
+        ("test", tuple(f"tests/test_a.py::test_{n}" for n in range(6))),
+        ("summary", ()),
+    ]

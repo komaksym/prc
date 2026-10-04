@@ -104,6 +104,7 @@ def test_method_and_function_with_the_same_name() -> None:
     assert edges({"m.py": source}) == {
         ("m.py::Job.run", "m.py::run", "exact"),
         ("m.py::Job.run", "m.py::Job.run", "exact"),
+        ("m.py::go", "m.py::Job.run", "name"),
     }
 
 
@@ -117,14 +118,87 @@ def test_self_and_this_resolve_to_the_enclosing_class() -> None:
     }
 
 
-def test_unique_attribute_name_resolves_by_name_and_ambiguous_ones_drop() -> None:
+NAMED = {
+    "shop/cart.py": "class Cart:\n    def subtotal(self):\n        pass\n\n    def total(self):\n        pass\n",
+    "shop/order.py": "class Order:\n    def total(self):\n        pass\n",
+    "legacy/order.py": "class Order:\n    def total(self):\n        pass\n",
+    "lib/pushbutton_download.py": "def prepare():\n    pass\n",
+    "runner.py": "class EnvCliRunner:\n    def invoke(self):\n        pass\n",
+    "scratch.py": (
+        "class _ScratchProof:\n    def execute(self):\n        pass\n\n"
+        "    def __enter__(self):\n        pass\n"
+    ),
+    "base.py": "class Base:\n    def helper(self):\n        pass\n",
+    "utils.py": "def json():\n    pass\n",
+    "strings.py": "class Joiner:\n    def join(self, parts):\n        pass\n",
+    "pkg/billing/__init__.py": "def charge():\n    pass\n",
+}
+
+
+def named(call: str, prelude: str = "") -> set[str]:
+    source = f"{prelude}\n\nclass Child(Base):\n    def run(self, x):\n        {call}\n"
+    found = edges({**NAMED, "app.py": source})
+
+    assert all(resolution == "name" for _, _, resolution in found)
+
+    return {target for _, target, _ in found}
+
+
+@pytest.mark.parametrize(
+    ("call", "target"),
+    [
+        ("cart.subtotal()", "shop/cart.py::Cart.subtotal"),
+        ("cart.total()", "shop/cart.py::Cart.total"),
+        ("self._cart.subtotal()", "shop/cart.py::Cart.subtotal"),
+        ("self.cli_runner.invoke()", "runner.py::EnvCliRunner.invoke"),
+        ("scratch_proof.execute()", "scratch.py::_ScratchProof.execute"),
+        ("download.prepare()", "lib/pushbutton_download.py::prepare"),
+        ("billing.charge()", "pkg/billing/__init__.py::charge"),
+        ("self.helper()", "base.py::Base.helper"),
+    ],
+)
+def test_name_match_accepts_a_receiver_named_after_its_class_or_module(
+    call: str, target: str
+) -> None:
+    assert named(call) == {target}
+
+
+@pytest.mark.parametrize(
+    ("call", "prelude"),
+    [
+        pytest.param("scratch_proof.__enter__()", "", id="dunder"),
+        pytest.param("self.__enter__()", "", id="inherited-dunder"),
+        pytest.param('"".join(x)', "", id="literal"),
+        pytest.param("make().join(x)", "", id="call-result"),
+        pytest.param("super().helper()", "", id="super"),
+        pytest.param("cart.subtotal()", "from session import cart", id="import-bound"),
+        pytest.param("db.execute()", "", id="not-a-subset"),
+        pytest.param("res.json()", "", id="module-stem-mismatch"),
+        pytest.param("self.json()", "", id="inherited-non-method"),
+        pytest.param("order.total()", "", id="ambiguous"),
+        pytest.param("_.subtotal()", "", id="no-receiver-words"),
+    ],
+)
+def test_name_match_rejects(call: str, prelude: str) -> None:
+    assert named(call, prelude) == set()
+
+
+def test_name_match_needs_an_enclosing_class_for_self() -> None:
+    assert edges({**NAMED, "app.py": "def go(self):\n    self.helper()\n"}) == set()
+
+
+def test_name_match_splits_camel_case_and_digit_runs() -> None:
     files = {
-        "a.py": "class A:\n    def ping(self):\n        pass\n\n    def twin(self):\n        pass\n",
-        "b.py": "class B:\n    def twin(self):\n        pass\n",
-        "c.py": "def use(x):\n    x.ping()\n    x.twin()\n    ping()\n    undefined()\n",
+        "store.ts": "export class CartStore {\n  load() {}\n}\n",
+        "s3.ts": "export class S3Client {\n  put() {}\n}\n",
+        "app.ts": "function go(cartStore, s3Client) {\n  cartStore.load();\n  s3Client.put();\n}\n"
+        "function client(store) {\n  store.put();\n}\n",
     }
 
-    assert edges(files) == {("c.py::use", "a.py::A.ping", "name")}
+    assert edges(files) == {
+        ("app.ts::go", "store.ts::CartStore.load", "name"),
+        ("app.ts::go", "s3.ts::S3Client.put", "name"),
+    }
 
 
 def test_name_resolution_never_crosses_language_families() -> None:
@@ -312,3 +386,84 @@ def test_duplicate_qualnames_merge_into_one_symbol_id() -> None:
     assert [d.qualname for d in parsed.definitions].count("A.x") == 2
     assert parsed.innermost(7) == "A.x" and parsed.innermost(1) == "A"
     assert parsed.innermost(5) == "A"
+
+
+def test_commonjs_require_binds_modules_and_destructured_names() -> None:
+    files = {
+        "lib/x.js": "function f() {}\nmodule.exports = { f };\n",
+        "lib/y.js": "function a() {}\nfunction b() {}\nmodule.exports = { a, b };\n",
+        "lib/app.js": (
+            'const x = require("./x");\n'
+            'const { a, b: c } = require("./y");\n'
+            "function go() {\n  x.f();\n  a();\n  c();\n}\n"
+        ),
+    }
+
+    assert edges(files) == {
+        ("lib/app.js::go", "lib/x.js::f", "exact"),
+        ("lib/app.js::go", "lib/y.js::a", "exact"),
+        ("lib/app.js::go", "lib/y.js::b", "exact"),
+    }
+
+
+def test_non_relative_require_binds_so_its_calls_drop() -> None:
+    files = {
+        "tests/helpers/fs.js": "function writeFile() {}\nmodule.exports = { writeFile };\n",
+        "src/save.js": (
+            'const fs = require("fs");\n'
+            'const { join } = require("path");\n'
+            "function save() {\n  fs.writeFile();\n  join();\n}\n"
+        ),
+        "src/join.js": "function join() {}\n",
+    }
+
+    assert edges(files) == set()
+
+
+def test_only_require_calls_bind() -> None:
+    files = {
+        "lib/fs.ts": "export function writeFile() {}\n",
+        "app.ts": 'const fs = load("./lib/fs");\nfunction go() {\n  fs.writeFile();\n}\n',
+    }
+
+    assert edges(files) == {("app.ts::go", "lib/fs.ts::writeFile", "name")}
+
+
+def test_jsx_components_are_calls_and_intrinsic_tags_are_not() -> None:
+    files = {
+        "web/src/CartView.tsx": "export function CartView() {\n  return null;\n}\n",
+        "web/src/ui/index.tsx": "export function Button() {\n  return null;\n}\n",
+        "web/src/App.tsx": (
+            'import { CartView } from "./CartView";\n'
+            'import * as Ui from "./ui";\n'
+            "function div() {}\n"
+            "function span() {}\n"
+            "export function App() {\n"
+            "  return (\n"
+            "    <div>\n"
+            "      <CartView />\n"
+            "      <Ui.Button>go</Ui.Button>\n"
+            "      <span />\n"
+            "    </div>\n"
+            "  );\n"
+            "}\n"
+        ),
+    }
+    app = "web/src/App.tsx::App"
+
+    assert edges(files) == {
+        (app, "web/src/CartView.tsx::CartView", "exact"),
+        (app, "web/src/ui/index.tsx::Button", "exact"),
+    }
+    assert [(c.name, c.line) for c in parse("web/src/App.tsx", files["web/src/App.tsx"]).calls] == [
+        ("CartView", 8),
+        ("Button", 9),
+    ]
+
+
+def test_jsx_components_count_in_the_javascript_grammar() -> None:
+    source = (
+        "function Widget() {}\nexport const Page = () => <section><Widget>x</Widget></section>;\n"
+    )
+
+    assert edges({"page.jsx": source}) == {("page.jsx::Page", "page.jsx::Widget", "exact")}
