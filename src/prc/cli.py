@@ -15,7 +15,7 @@ from prc.fixture_source import FIXTURE_EPOCH
 from prc.github_source import GitHubSource
 from prc.identity import to_jsonable
 from prc.model import PrRef
-from prc.pipeline import run_decide, run_review, run_status
+from prc.pipeline import run_brief, run_decide, run_review, run_status
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
 from prc.source import PullRequestSource
 from prc.store import StaleExpectation, Store
@@ -67,7 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="prc", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("review", "status", "decide"):
+    for name in ("review", "status", "decide", "brief"):
         cmd = sub.add_parser(name)
         cmd.add_argument("--source", required=True)
         cmd.add_argument("--store", type=Path, default=Path("artifacts/store"))
@@ -80,6 +80,9 @@ def build_parser() -> argparse.ArgumentParser:
 
         if name == "review":
             cmd.add_argument("--out", type=Path, default=Path("artifacts/reviews"))
+
+        if name == "brief":
+            cmd.add_argument("--out", type=Path, default=Path("artifacts/briefs"))
 
         if name == "decide":
             cmd.add_argument("--expect-snapshot", required=True)
@@ -125,6 +128,25 @@ def main(argv: list[str] | None = None) -> int:
         policy = EligibilityPolicy(required_names=())
 
     source, ref = _resolve(args.source, args.store)
+
+    if args.command == "brief":
+        brief = run_brief(source, ref, _clock(args.source, args.clock_offset), policy, args.out)
+        print(
+            json.dumps(
+                {
+                    "source": source.label,
+                    "live_verified": source.live_verified,
+                    "snapshot_id": brief.snapshot_id,
+                    "brief": str(brief.path),
+                    "mismatches": len(brief.brief.mismatches),
+                    "look_first": [pointer.path for pointer in brief.brief.look_first],
+                },
+                indent=2,
+            )
+        )
+
+        return 0
+
     store = Store(args.store / "prc.sqlite")
     clock = _clock(args.source, args.clock_offset)
 

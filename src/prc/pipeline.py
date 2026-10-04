@@ -8,6 +8,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from prc.brief import Brief, build_brief
 from prc.capture import Clock, capture_bundle
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
 from prc.freshness import FreshnessReport, StoredBasis, reconcile
@@ -20,6 +21,7 @@ from prc.presentation.check import (
     check_html,
     check_svg,
 )
+from prc.presentation.render_brief import render_brief
 from prc.presentation.render_entry import render_entry
 from prc.presentation.render_html import render_html
 from prc.presentation.render_svg import render_flow, render_infographic
@@ -154,14 +156,54 @@ def run_review(
     )
 
 
+@dataclass(frozen=True, slots=True)
+class BriefResult:
+    snapshot_id: str
+    brief: Brief
+    path: Path
+
+
+def run_brief(
+    source: PullRequestSource,
+    ref: PrRef,
+    clock: Clock,
+    policy: EligibilityPolicy,
+    out_root: Path,
+) -> BriefResult:
+    """Capture, snapshot, compute and write the brief. No model calls, no store."""
+
+    bundle = capture_bundle(source, ref, clock)
+    acquisition = build_snapshot(
+        bundle, source.label, source.live_verified, source.repo_path(ref), policy
+    )
+    brief = build_brief(acquisition)
+    snapshot_id = acquisition.snapshot.snapshot_id
+    out_dir = _write_bundle(
+        out_root,
+        snapshot_id,
+        {"brief.md": render_brief(brief).encode()},
+        {"brief.json": to_jsonable(brief)},
+        replace=True,
+    )
+
+    return BriefResult(snapshot_id, brief, out_dir / "brief.md")
+
+
 def _write_bundle(
-    out_root: Path, view_id: str, files: dict[str, bytes], extras: dict[str, object]
+    out_root: Path,
+    view_id: str,
+    files: dict[str, bytes],
+    extras: dict[str, object],
+    replace: bool = False,
 ) -> Path:
-    """Write into a temp dir and rename into place; a view's bundle is never partially visible."""
+    """Write into a temp dir and rename into place; a view's bundle is never partially visible.
+
+    `replace` is for outputs that a code change can alter without changing the key.
+    """
 
     out_dir = out_root / view_id.rsplit(":", 1)[-1][:16]
 
-    if out_dir.exists():
+    if out_dir.exists() and not replace:
         return out_dir
 
     out_root.mkdir(parents=True, exist_ok=True)
@@ -172,6 +214,9 @@ def _write_bundle(
 
     for name, body in extras.items():
         (staging / name).write_text(json.dumps(body, indent=2, sort_keys=True, ensure_ascii=False))
+
+    if replace:
+        shutil.rmtree(out_dir, ignore_errors=True)
 
     try:
         staging.rename(out_dir)

@@ -14,16 +14,19 @@ The design contracts live in `CONTEXT.md`, `docs/design/` and `docs/adr/` (prove
 
 ```sh
 uv sync
-uv run prc review --source fixture:basic          # fixtures: basic, hostile, opaque, gaps
+uv run prc review --source fixture:basic          # fixtures: basic, hostile, opaque, gaps, advanced, claims
 uv run prc status --source fixture:basic          # reconcile freshness: match / stale / unknown + deadline
 uv run prc decide --source fixture:basic --expect-snapshot <id> --expect-view <id> \
     --reviewer me --decision request_changes --confidence 70 --note "..."
 uv run prc fixture-mutate basic edit-title         # simulate a provider change (fixture only)
 uv run prc eval-analyze results.json               # solo pilot analysis
 uv run prc review --source github:<owner>/<repo>#<n>   # live adapter, unverified
+uv run prc brief --source fixture:claims           # one PR comment from diff, description and CI; no model
 ```
 
 `review` prints the snapshot, semantic and published-view identities and writes `index.html`, `infographic.svg`, `flow.svg` (when relations exist), `entry.md`, `semantic.json`, `snapshot.json`, `manifest.json` and `view.json`. `decide` refuses (exit 2) when the expected snapshot/view is no longer the current local exposure.
+
+`brief` computes one GitHub comment from the diff, the PR description and CI results, with no model calls and no store writes. It writes `<out>/<snapshot id short>/brief.md` and `brief.json` (default `--out artifacts/briefs`) and prints the paths, the mismatch count and the look-first files. Domain: `prc.brief`; renderer: `prc.presentation.render_brief`, which routes every PR-controlled string through one code-span helper.
 
 ## Contract map
 
