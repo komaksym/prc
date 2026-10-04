@@ -335,8 +335,6 @@ def _claims_checks(
 
 
 def claims(root: Path) -> tuple[FixtureSource, PrRef]:
-    """Description claims that disagree with the diff and CI, plus hostile-looking markup."""
-
     lock_base = "".join(f"pkg-{n} 1.0\n" for n in range(10)).encode()
     lock_head = "".join(f"pkg-{n} 2.0\n" for n in range(60)).encode()
     base: dict[str, Entry] = {

@@ -1,5 +1,3 @@
-"""Brief domain and renderer failure modes that the E2E cannot reach cheaply."""
-
 from __future__ import annotations
 
 import subprocess

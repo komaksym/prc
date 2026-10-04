@@ -1,5 +1,3 @@
-"""PR brief domain: facts computed from the diff, the description and CI. Pure; no I/O, no markdown."""
-
 from __future__ import annotations
 
 import re
@@ -25,8 +23,6 @@ MANIFEST_LINES = 3
 
 @dataclass(frozen=True, slots=True)
 class Delta:
-    """One changed file as the brief reads it. `diff` and `head` are empty when not inspectable."""
-
     path: str
     opaque: bool
     added: int
@@ -53,8 +49,6 @@ class FileChange:
 
 @dataclass(frozen=True, slots=True)
 class Mismatch:
-    """`fact` is our fixed sentence. Anything taken from the PR goes in `subjects`."""
-
     kind: MismatchKind
     quote: str
     fact: str
@@ -81,8 +75,6 @@ class Brief:
 
 @dataclass(frozen=True, slots=True)
 class Unit:
-    """One claim-bearing piece of the description. `checked` is None outside a checkbox."""
-
     text: str
     checked: bool | None
 
@@ -207,8 +199,6 @@ _SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9`\"'(\[])")
 
 
 def _unemphasize(line: str) -> str:
-    """Strip `**` and `__` outside code spans, so `.** This` splits and `__init__` survives."""
-
     parts = re.split(r"(`[^`\n]*`)", line)
 
     return "".join(p if i % 2 else _EMPHASIS.sub("", p) for i, p in enumerate(parts))
@@ -258,8 +248,6 @@ def _drop_details(text: str) -> str:
 
 
 def units_of(title: str, body: str) -> tuple[Unit, ...]:
-    """Title, bullet and checkbox lines, and sentences of paragraphs, minus non-claim markup."""
-
     visible = _drop_details(_COMMENT.sub("", _drop_fences(body)))
     units = [Unit(title.strip(), None)] if title.strip() else []
     paragraph: list[str] = []
@@ -311,8 +299,6 @@ _SEGMENTS = re.compile(r"\.|::|->|#")
 
 
 def _is_path(token: str) -> bool:
-    """A real path shape: not a route, URL, package scope, slash command or domain."""
-
     segments = [part for part in token.split("/") if part]
 
     if (
@@ -328,8 +314,6 @@ def _is_path(token: str) -> bool:
 
 
 def path_tokens(text: str) -> tuple[str, ...]:
-    """Backticked tokens with a slash or file extension, and bare tokens with an extension."""
-
     clean = _URL.sub(" ", text)
     found: list[str] = []
 
@@ -345,11 +329,6 @@ def path_tokens(text: str) -> tuple[str, ...]:
 
 
 def symbol_objects(text: str) -> tuple[str, ...]:
-    """Backticked identifiers that are the direct object of a create or remove verb.
-
-    `a::b(x)` is checked as `b`. Data such as a table name is not an object, so it is skipped.
-    """
-
     names: list[str] = []
 
     for match in _SYMBOL_OBJECT.finditer(_URL.sub(" ", text)):
@@ -366,8 +345,6 @@ def symbol_objects(text: str) -> tuple[str, ...]:
 
 
 def hits(token: str, path: str) -> bool:
-    """Full path, suffix on a segment boundary, basename, or a directory prefix."""
-
     target = "/" + token.removeprefix("./").lstrip("/").rstrip("/")
     full = "/" + path
 
@@ -375,8 +352,6 @@ def hits(token: str, path: str) -> bool:
 
 
 class Tree:
-    """Segment-boundary index of repository paths, built once so each token is a set lookup."""
-
     def __init__(self, paths: Iterable[str]) -> None:
         self.files: set[str] = set()
         self.dirs: set[str] = set()
@@ -521,8 +496,6 @@ def _norm(name: str) -> str:
 
 
 def _named_by(name: str, words: set[str], flat: set[str]) -> bool:
-    """The whole name in any spelling, or every part of 3+ characters as a word (plural ok)."""
-
     if len(_norm(name)) >= 3 and _norm(name) in flat:
         return True
 
@@ -595,11 +568,6 @@ def brief_of(
     pr: str, title: str, body: str, head_sha: str, deltas: tuple[Delta, ...],
     checks: tuple[Check, ...], known: frozenset[str],
 ) -> Brief:  # fmt: skip
-    """Pure core: every number and claim in the brief comes from these arguments.
-
-    `known` is every path in the base and head trees; a token is a path claim only if it names one.
-    """
-
     units = units_of(title, body)
     text = " ".join(_URL.sub(" ", unit.text) for unit in units)
     tokens = path_tokens(text)
@@ -631,8 +599,6 @@ def brief_of(
 
 
 def build_brief(acquisition: Acquisition, known: frozenset[str]) -> Brief:
-    """Read the frozen acquisition: inventory, metadata, diff and head records, head-commit checks."""
-
     snapshot = acquisition.snapshot
     records = acquisition.records
     deltas = tuple(
@@ -641,7 +607,6 @@ def build_brief(acquisition: Acquisition, known: frozenset[str]) -> Brief:
             item.opaque,
             item.added_lines,
             item.removed_lines,
-            # the record's first line is our own `# <path>` header, not diff content
             records.get(f"diff:{item.path}", "").partition("\n")[2],
             records.get(f"head:{item.path}", ""),
         )

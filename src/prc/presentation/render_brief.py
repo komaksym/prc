@@ -1,5 +1,3 @@
-"""Brief as one GitHub comment. Every PR-controlled string goes through `span`, nothing else."""
-
 from __future__ import annotations
 
 import re
@@ -13,8 +11,6 @@ KIND_ORDER: tuple[Kind, ...] = ("code", "config", "test", "docs", "opaque")
 
 
 def span(value: str) -> str:
-    """The only door for untrusted text: one inline code span, single line, bounded."""
-
     flat = "".join(" " if unicodedata.category(ch).startswith("C") else ch for ch in value)
     text = re.sub(r"\s+", " ", flat.replace("`", "'")).strip()
 

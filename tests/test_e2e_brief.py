@@ -1,5 +1,3 @@
-"""End to end `prc brief` through the CLI. Leaves a repeatable artifact in artifacts/e2e/briefs/."""
-
 from __future__ import annotations
 
 import json

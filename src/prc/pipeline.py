@@ -171,8 +171,6 @@ def run_brief(
     policy: EligibilityPolicy,
     out_root: Path,
 ) -> BriefResult:
-    """Capture, snapshot, compute and write the brief. No model calls, no store."""
-
     bundle = capture_bundle(source, ref, clock)
     repo = source.repo_path(ref)
     acquisition = build_snapshot(bundle, source.label, source.live_verified, repo, policy)
@@ -200,11 +198,6 @@ def _write_bundle(
     extras: dict[str, object],
     replace: bool = False,
 ) -> Path:
-    """Write into a temp dir and rename into place; a view's bundle is never partially visible.
-
-    `replace` is for outputs that a code change can alter without changing the key.
-    """
-
     out_dir = out_root / view_id.rsplit(":", 1)[-1][:16]
 
     if out_dir.exists() and not replace:
