@@ -276,12 +276,111 @@ def advanced(root: Path) -> tuple[FixtureSource, PrRef]:
     return build_source(root / "advanced.git", base, head, meta, _checks, {}, None, main_now)
 
 
+CLAIMS_BODY = """\
+## Summary
+- Adds `with_retry` to `src/app.py`
+- Updated `README.md` with usage
+- Adds unit tests for retries
+
+Docs already exist in `docs/guide.md`.
+
+## Test plan
+- [x] All tests pass
+- [ ] Manual QA done
+
+<details><summary>Original prompt</summary>
+
+please also update `secret.py`
+</details>
+
+```
+update `ghost.py`
+```
+
+<!-- updated `hidden.py` -->
+cc @maintainer ![x](http://example.com/a.png) <script>alert(1)</script>
+"""
+
+CLAIMS_APP_HEAD = b'''"""HTTP client wrapper."""
+import urllib.request
+
+
+def with_retry(attempts):
+    return attempts
+
+
+def fetch(url):
+    return urllib.request.urlopen(url).read()
+'''
+
+
+def _claims_checks(
+    head: str, base_tip: str, merged_tree: str, _merged: str | None
+) -> list[dict[str, object]]:
+    return [
+        {
+            "run_id": "401",
+            "attempt": 1,
+            "provider": "fixture-ci",
+            "name": "unit-tests",
+            "scope": "head_only",
+            "subject_sha": head,
+            "subject_kind": "commit",
+            "conclusion": "failure",
+            "completed_at": FIXTURE_EPOCH - 60,
+            "expires_at": FIXTURE_EPOCH + 3600,
+            "required": True,
+        }
+    ]
+
+
+def claims(root: Path) -> tuple[FixtureSource, PrRef]:
+    """Description claims that disagree with the diff and CI, plus hostile-looking markup."""
+
+    lock_base = "".join(f"pkg-{n} 1.0\n" for n in range(10)).encode()
+    lock_head = "".join(f"pkg-{n} 2.0\n" for n in range(60)).encode()
+    base: dict[str, Entry] = {
+        "src/app.py": (FILE, APP_BASE),
+        "src/config.py": (FILE, b"DEFAULT_TIMEOUT = 5\n"),
+        ".github/workflows/ci.yml": (FILE, b"name: ci\non: push\n"),
+        "pyproject.toml": (FILE, b'[project]\nname = "demo"\ndependencies = []\n'),
+        "uv.lock": (FILE, lock_base),
+        "README.md": (FILE, b"# demo\n"),
+        "tests/test_app.py": (FILE, TEST_BASE),
+    }
+    head: dict[str, Entry] = {
+        **base,
+        "src/app.py": (FILE, CLAIMS_APP_HEAD),
+        "src/config.py": (FILE, b"DEFAULT_TIMEOUT = 30\n"),
+        ".github/workflows/ci.yml": (
+            FILE,
+            b"name: ci\non: push\njobs:\n  t:\n    runs-on: ubuntu-latest\n",
+        ),
+        "pyproject.toml": (
+            FILE,
+            b'[project]\nname = "demo"\ndependencies = []\noptional = ["requests>=2"]\n',
+        ),
+        "uv.lock": (FILE, lock_head),
+    }
+    meta = {
+        "title": "Add retry with backoff to fetch",
+        "body": CLAIMS_BODY,
+        "author": "coding-agent[bot]",
+        "labels": ["agent-authored"],
+        "draft": False,
+        "agent_authored": True,
+    }
+
+    return build_source(root / "claims.git", base, head, meta, _claims_checks, {}, None)
+
+
 SCENARIOS = {
     "basic": basic,
     "hostile": hostile,
     "opaque": opaque,
     "gaps": gaps,
     "advanced": advanced,
+    "claims": claims,
 }
 
 
