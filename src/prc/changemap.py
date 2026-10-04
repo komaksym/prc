@@ -97,6 +97,9 @@ class ChangeMap:
 
 
 MAX_CONTEXT = 6
+MAX_RISKY = 3
+MAX_SYMBOL_STEPS = 10
+MAX_TESTS = 6
 CHANGED: frozenset[str] = frozenset({"added", "modified", "deleted"})
 FILE_STATUS: dict[str, FileStatus] = {"A": "added", "D": "deleted"}
 EDGE_STATUS: dict[tuple[bool, bool], EdgeStatus] = {
@@ -413,13 +416,13 @@ def _tour(
             callees.setdefault(edge.source, []).append((int(removed), line, edge.target))
             called.add(edge.target)
 
+    risky = sorted(
+        (f for f in brief.files if f.sensitive is not None), key=lambda f: (f.named, f.path)
+    )
     steps = [Step("overview", (), None)]
-    steps += [
-        Step("risky_file", (f.path,), None)
-        for f in sorted(brief.files, key=lambda f: (f.named, f.path))
-        if f.sensitive is not None
-    ]
+    steps += [Step("risky_file", (f.path,), None) for f in risky[:MAX_RISKY]]
     seen: set[str] = set()
+    walked: list[Step] = []
 
     def walk(root: str) -> Iterator[Step]:
         stack = [(root, iter(sorted(callees.get(root, []))))]
@@ -442,11 +445,13 @@ def _tour(
     for entry in sorted(code - called, key=lambda symbol_id: (-size(symbol_id), symbol_id)):
         if entry not in seen:
             seen.add(entry)
-            steps.append(Step("entry", (entry,), None))
-            steps += walk(entry)
+            walked.append(Step("entry", (entry,), None))
+            walked += walk(entry)
 
-    steps += [Step("entry", (symbol_id,), None) for symbol_id in sorted(code - seen)]
-    steps += [Step("test", (symbol_id,), None) for symbol_id in sorted(changed.keys() - code)]
+    walked += [Step("entry", (symbol_id,), None) for symbol_id in sorted(code - seen)]
+    steps += walked[:MAX_SYMBOL_STEPS]
+    tests = tuple(sorted(changed.keys() - code))[:MAX_TESTS]
+    steps += [Step("test", tests, None)] if tests else []
     steps.append(Step("summary", (), None))
 
     return tuple(steps)

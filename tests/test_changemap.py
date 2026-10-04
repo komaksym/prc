@@ -408,3 +408,38 @@ def test_callees_are_capped_by_edge_status_before_file_and_line(tmp_path: Path) 
         ("h.py::t1", "kept"),
     }
     assert {s.id for s in change.symbols} == {"hub.py::hub"} | {e.target for e in change.edges}
+
+
+def test_tour_caps_risky_files_at_three_and_symbol_steps_at_ten(tmp_path: Path) -> None:
+    def module(bump: int) -> bytes:
+        return b"".join(
+            b"def f%02d():\n%s    return 1\n\n\n" % (n, b"    x = 1\n" * (n % 3 + bump))
+            for n in range(12)
+        )
+
+    workflows = [f".github/workflows/w{n}.yml" for n in range(4)]
+    change = custom_map(
+        tmp_path,
+        {"m.py": module(0), **{path: b"on: push\n" for path in workflows}},
+        {"m.py": module(1), **{path: b"on: pull_request\n" for path in workflows}},
+    )
+    sizes = sorted((-s.added - s.removed, s.id) for s in change.symbols)
+
+    assert len(sizes) == 12
+    assert [(s.kind, s.focus) for s in change.tour] == [
+        ("overview", ()),
+        *(("risky_file", (path,)) for path in workflows[:3]),
+        *(("entry", (symbol_id,)) for _, symbol_id in sizes[:10]),
+        ("summary", ()),
+    ]
+
+
+def test_tour_has_one_test_step_with_at_most_six_tests(tmp_path: Path) -> None:
+    tests = b"".join(b"def test_%d():\n    assert True\n\n\n" % n for n in range(8))
+    change = custom_map(tmp_path, {"tests/test_a.py": b"X = 1\n"}, {"tests/test_a.py": tests})
+
+    assert [(s.kind, s.focus) for s in change.tour] == [
+        ("overview", ()),
+        ("test", tuple(f"tests/test_a.py::test_{n}" for n in range(6))),
+        ("summary", ()),
+    ]
