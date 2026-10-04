@@ -13,7 +13,7 @@ from importlib.resources import files
 
 from prc.changemap import ChangeMap
 from prc.identity import to_jsonable
-from prc.presentation.map_layout import Box, Layout, layout_map
+from prc.presentation.map_layout import Box, Layout, layout_map, path_data
 
 BRAND = "PR map · computed from the code, no AI drew this"
 _ASSETS = files("prc.presentation") / "map_assets"
@@ -80,11 +80,17 @@ def layout_json(change_map: ChangeMap, layout: Layout) -> str:
     symbol_at = {s.id: i for i, s in reversed(list(enumerate(change_map.symbols)))}
     file_at = {f.path: i for i, f in reversed(list(enumerate(change_map.files)))}
 
+    groups: list[list[object]] = []
+
     for box in layout.boxes:
         if box.kind == "symbol":
             symbols[symbol_at[box.id]] = _box(box)
+        elif box.kind == "group":
+            groups.append([*_box(box), symbol_at[box.id]])
         else:
             chips[file_at[box.id]] = _box(box)
+
+    route = {(r.source, r.target): path_data(r.points) for r in layout.routes}
 
     return json.dumps(
         {
@@ -93,6 +99,9 @@ def layout_json(change_map: ChangeMap, layout: Layout) -> str:
             "bands": [[b.lane, b.x, b.y, b.w, b.h] for b in layout.bands],
             "symbols": symbols,
             "files": chips,
+            "groups": groups,
+            "dense": layout.dense,
+            "edges": [route.get((e.source, e.target)) for e in change_map.edges],
         },
         separators=(",", ":"),
     )

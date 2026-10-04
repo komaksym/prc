@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,7 +11,7 @@ from typing import Any
 import pytest
 
 from map_sample import CHECKOUT, CI, hostile_map, large_map, shop_map
-from prc.changemap import ChangeMap
+from prc.changemap import ChangeMap, Step
 from prc.presentation.map_layout import layout_map
 from prc.presentation.render_map import render_map
 
@@ -91,7 +92,9 @@ def test_page_draws_every_node_without_errors(
     change_map = make()
     opened = open_map(change_map)
 
-    assert opened.page.locator("[data-node]").count() == len(layout_map(change_map).boxes)
+    cards = [b for b in layout_map(change_map).boxes if b.kind != "group"]
+
+    assert opened.page.locator("[data-node]").count() == len(cards)
     assert opened.page.locator("[data-edge]").count() == len(change_map.edges)
     assert opened.page.locator("#title").text_content() == change_map.title
     assert "no AI drew this" in opened.page.locator("footer").text_content()
@@ -185,3 +188,62 @@ def test_hostile_map_renders_inert(open_map: Callable[[ChangeMap], Opened]) -> N
     assert injected == {"img": 0, "scripts": 2, "handlers": [], "links": []}
     assert page.locator("#title").text_content() == change_map.title
     assert opened.dialogs == [] and opened.problems == []
+
+
+def scale(page: Any) -> float:
+    transform = page.locator("#world").evaluate("w => w.style.transform")
+
+    return float(transform.split("scale(")[1].rstrip(")"))
+
+
+def test_long_title_never_hides_play_at_1280(open_map: Callable[[ChangeMap], Opened]) -> None:
+    long = "Refactor the session verification pipeline and " * 4
+    opened = open_map(dataclasses.replace(shop_map(), title=long))
+    opened.page.set_viewport_size({"width": 1280, "height": 800})
+    play = opened.page.locator("#play").bounding_box()
+    title = opened.page.locator("#title").bounding_box()
+
+    assert play is not None and title is not None
+    assert play["x"] + play["width"] <= 1280
+    assert title["x"] + title["width"] <= play["x"]
+
+
+def test_dense_map_draws_edges_only_for_the_hovered_symbol(
+    open_map: Callable[[ChangeMap], Opened],
+) -> None:
+    change_map = large_map(60)
+    opened = open_map(change_map)
+    opacity = "e => getComputedStyle(e).opacity"
+    edges = opened.page.locator("[data-edge]")
+
+    assert scale(opened.page) >= 0.55
+    assert {edges.nth(i).evaluate(opacity) for i in range(edges.count())} == {"0"}
+
+    on_screen = opened.page.evaluate(
+        """() => [...document.querySelectorAll("[data-node]")]
+          .filter((n) => { const r = n.getBoundingClientRect(); return r.top > 100 && r.bottom < 800 && r.left > 0 && r.right < 1400; })
+          .map((n) => n.dataset.node)"""
+    )
+    sid = next(e.source for e in change_map.edges if node(change_map, e.source)[12:-2] in on_screen)
+    opened.page.hover(node(change_map, sid))
+    opened.page.wait_for_timeout(300)
+    lit = opened.page.locator("[data-edge].lit")
+
+    assert lit.count() == sum(sid in (e.source, e.target) for e in change_map.edges)
+    assert all(lit.nth(i).evaluate(opacity) != "0" for i in range(lit.count()))
+    assert opened.problems == []
+
+
+def test_map_without_symbols_says_so(open_map: Callable[[ChangeMap], Opened]) -> None:
+    change_map = shop_map()
+    variant = dataclasses.replace(
+        change_map,
+        symbols=(),
+        edges=(),
+        files=tuple(dataclasses.replace(f, symbols=()) for f in change_map.files),
+        tour=(Step("overview", (), None), Step("summary", (), None)),
+    )
+    opened = open_map(variant)
+
+    assert "No function or class changed" in opened.page.locator(".empty").text_content()
+    assert opened.problems == []

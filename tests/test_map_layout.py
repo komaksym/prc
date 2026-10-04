@@ -3,6 +3,10 @@ from __future__ import annotations
 import dataclasses
 import random
 from collections import Counter
+from collections.abc import Callable
+from functools import partial
+
+import pytest
 
 from map_sample import (
     CART_CLASS,
@@ -23,7 +27,16 @@ from map_sample import (
     shop_map,
 )
 from prc.changemap import ChangeMap, Edge, Step
-from prc.presentation.map_layout import GAP_X, GRID, MAX_ROWS, Box, Layout, layout_map
+from prc.presentation.map_layout import (
+    DENSE_ROWS,
+    GAP_X,
+    GRID,
+    ROW_H,
+    Box,
+    Layout,
+    cubics,
+    layout_map,
+)
 
 
 def boxes(layout: Layout) -> dict[str, Box]:
@@ -178,9 +191,11 @@ def test_sixty_symbols_stay_compact() -> None:
 
     assert_well_formed(layout, change_map)
 
-    columns = Counter((box.lane, box.x) for box in layout.boxes if box.lane != "files")
+    columns = Counter(
+        (box.lane, box.x) for box in layout.boxes if box.kind == "symbol" and box.lane != "files"
+    )
 
-    assert max(n for (lane, _), n in columns.items() if lane != "tests") <= MAX_ROWS
+    assert max(n for (lane, _), n in columns.items() if lane != "tests") <= DENSE_ROWS
     assert 0.8 <= layout.width / layout.height <= 3.5, (layout.width, layout.height)
 
 
@@ -193,3 +208,104 @@ def test_bands_cover_their_boxes() -> None:
 
         assert band.x <= box.x and right(box) <= band.x + band.w
         assert band.y <= box.y and bottom(box) <= band.y + band.h
+
+
+def with_cycle() -> ChangeMap:
+    change_map = shop_map()
+
+    return dataclasses.replace(
+        change_map,
+        edges=change_map.edges
+        + (Edge(DISCOUNT, CHECKOUT, "added", "exact"), Edge(TAX, DISCOUNT, "added", "exact")),
+    )
+
+
+def point_at(c: tuple[float, ...], t: float) -> tuple[float, float]:
+    u = 1 - t
+    x = u**3 * c[0] + 3 * u * u * t * c[2] + 3 * u * t * t * c[4] + t**3 * c[6]
+    y = u**3 * c[1] + 3 * u * u * t * c[3] + 3 * u * t * t * c[5] + t**3 * c[7]
+
+    return x, y
+
+
+def on_border(box: Box, x: float, y: float) -> bool:
+    inside_x = box.x <= x <= right(box)
+    inside_y = box.y <= y <= bottom(box)
+
+    return (inside_x and y in (box.y, bottom(box))) or (inside_y and x in (box.x, right(box)))
+
+
+MAPS: dict[str, Callable[[], ChangeMap]] = {
+    "shop": shop_map,
+    "cycle": with_cycle,
+    "large20": partial(large_map, 20),
+    "large60": partial(large_map, 60),
+}
+
+
+@pytest.mark.parametrize("name", sorted(MAPS))
+def test_every_edge_has_one_route_between_its_cards(name: str) -> None:
+    change_map = MAPS[name]()
+    layout = layout_map(change_map)
+    by_id = boxes(layout)
+
+    assert sorted((r.source, r.target) for r in layout.routes) == sorted(
+        (e.source, e.target) for e in change_map.edges if e.source in by_id and e.target in by_id
+    )
+
+    for route in layout.routes:
+        first, last = route.points[0], route.points[-1]
+
+        assert on_border(by_id[route.source], first[0], first[1]), route
+        assert on_border(by_id[route.target], last[0], last[1]), route
+
+
+@pytest.mark.parametrize("name", sorted(MAPS))
+def test_no_edge_passes_through_a_card(name: str) -> None:
+    layout = layout_map(MAPS[name]())
+    solid = [b for b in layout.boxes if b.kind in ("symbol", "group")]
+
+    for route in layout.routes:
+        for curve in cubics(route.points):
+            for step in range(41):
+                x, y = point_at(curve, step / 40)
+
+                for box in solid:
+                    inside = box.x + 1 < x < right(box) - 1 and box.y + 1 < y < bottom(box) - 1
+
+                    assert not inside, (route.source, route.target, box.id, x, y)
+
+
+def test_maps_over_thirty_symbols_use_rows_grouped_by_file() -> None:
+    assert not layout_map(shop_map()).dense
+
+    change_map = large_map(60)
+    layout = layout_map(change_map)
+    path = {s.id: s.path for s in change_map.symbols}
+    main = [b for b in layout.boxes if b.lane in ("callers", "changed", "callees")]
+
+    assert layout.dense
+    assert {b.h for b in main if b.kind == "symbol"} == {ROW_H}
+
+    for x in {b.x for b in main}:
+        column = sorted((b for b in main if b.x == x), key=lambda b: b.y)
+        seen: list[str] = []
+
+        for box in column:
+            if box.kind == "group":
+                seen.append(path[box.id])
+            else:
+                assert seen and seen[-1] == path[box.id], box
+
+        assert len(seen) == len(set(seen)), seen
+
+
+def test_tests_fill_rows_left_to_right() -> None:
+    layout = layout_map(large_map(60))
+    tests = [b for b in layout.boxes if b.lane == "tests"]
+    rows = Counter(b.y for b in tests)
+    per_row = max(rows.values())
+
+    assert len(tests) == 8
+    assert len(rows) == -(-len(tests) // per_row)
+    assert per_row > 1

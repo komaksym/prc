@@ -77,6 +77,7 @@ button {
 .app {
   display: grid;
   grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
   height: 100vh;
 }
 
@@ -98,7 +99,7 @@ button {
   z-index: 5;
 }
 
-.headline { min-width: 0; flex: 1 1 auto; }
+.headline { min-width: 0; flex: 1 1 0; }
 
 .eyebrow {
   display: flex;
@@ -160,6 +161,7 @@ h1 {
   display: flex;
   gap: 8px;
   flex: 0 1 auto;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -204,6 +206,7 @@ h1 {
 }
 
 .play {
+  flex: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -468,6 +471,65 @@ h1 {
 
 .chip .name { flex: 0 1 auto; font-weight: 500; font-size: 12.5px; }
 .chip.st-deleted .name { color: var(--muted); }
+
+.dense .sym {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.dense .sym .bar { width: 3px; }
+.dense .sym .name { font-size: 12px; }
+.dense .sym .glyph { width: 16px; height: 16px; font-size: 9.5px; }
+.dense .sym .pill { padding: 0 5px; font-size: 9px; }
+
+.flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font: 700 10px/1 var(--sans);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+}
+
+.group {
+  position: absolute;
+  padding: 6px 4px 0;
+  font: 11px/1.3 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  pointer-events: none;
+}
+
+.group > span { direction: ltr; unicode-bidi: isolate; }
+
+body:not(.touring) .dense .e:not(.lit) { opacity: 0; }
+
+.empty {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
 
 .risk {
   flex: none;
@@ -929,6 +991,13 @@ h1 {
 
 .brand-line { font-weight: 550; color: var(--text); opacity: 0.8; }
 .hints { color: var(--faint); overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 1440px) {
+  .top { gap: 16px; }
+  .stat { min-width: 0; padding: 6px 10px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 10.5px; }
+}
 
 @media (max-width: 1100px) {
   .top { flex-wrap: wrap; }
