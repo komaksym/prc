@@ -1,0 +1,335 @@
+{
+ "note": "SYNTHETIC test input, not pilot results",
+ "pairs": [
+  {
+   "pair_id": 1,
+   "product": {
+    "snapshot_id": "p0",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b0",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 2,
+   "product": {
+    "snapshot_id": "p1",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b1",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 3,
+   "product": {
+    "snapshot_id": "p2",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b2",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 4,
+   "product": {
+    "snapshot_id": "p3",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b3",
+    "state": "unknown"
+   }
+  },
+  {
+   "pair_id": 5,
+   "product": {
+    "snapshot_id": "p4",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b4",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 6,
+   "product": {
+    "snapshot_id": "p5",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b5",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 7,
+   "product": {
+    "snapshot_id": "p6",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b6",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 8,
+   "product": {
+    "snapshot_id": "p7",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b7",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 9,
+   "product": {
+    "snapshot_id": "p8",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b8",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 10,
+   "product": {
+    "snapshot_id": "p9",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b9",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 11,
+   "product": {
+    "snapshot_id": "p10",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b10",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  },
+  {
+   "pair_id": 12,
+   "product": {
+    "snapshot_id": "p11",
+    "state": "scored",
+    "item_scores": [
+     1,
+     1,
+     0.5
+    ],
+    "elapsed_seconds": 600,
+    "confidences": [
+     80,
+     70,
+     60
+    ]
+   },
+   "baseline": {
+    "snapshot_id": "b11",
+    "state": "scored",
+    "item_scores": [
+     1,
+     0.5,
+     0
+    ],
+    "elapsed_seconds": 700
+   }
+  }
+ ]
+}
