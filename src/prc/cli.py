@@ -16,6 +16,7 @@ from prc.github_source import GitHubSource
 from prc.identity import to_jsonable
 from prc.model import PrRef
 from prc.pipeline import run_brief, run_decide, run_map, run_review, run_status
+from prc.presentation import map_video
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
 from prc.source import PullRequestSource
 from prc.store import StaleExpectation, Store
@@ -92,6 +93,9 @@ def build_parser() -> argparse.ArgumentParser:
 
         if name == "map":
             cmd.add_argument("--out", type=Path, default=Path("artifacts/maps"))
+            cmd.add_argument(
+                "--video", action="store_true", help="also write tour.mp4 and card.png"
+            )
 
         if name == "decide":
             cmd.add_argument("--expect-snapshot", required=True)
@@ -157,7 +161,19 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "map":
-        mapped = run_map(source, ref, _clock(args.source, args.clock_offset), policy, args.out)
+        video = None
+
+        try:
+            if args.video:
+                map_video.check_tools()
+
+            mapped = run_map(source, ref, _clock(args.source, args.clock_offset), policy, args.out)
+
+            if args.video:
+                video = map_video.make_video(mapped.html, mapped.html.parent)
+        except map_video.VideoError as error:
+            raise SystemExit(f"prc map --video: {error}") from error
+
         print(
             json.dumps(
                 {
@@ -169,6 +185,15 @@ def main(argv: list[str] | None = None) -> int:
                     "symbols": sum(s.status != "context" for s in mapped.map.symbols),
                     "edges": len(mapped.map.edges),
                     "steps": len(mapped.map.tour),
+                    **(
+                        {
+                            "mp4": str(video.mp4),
+                            "card": str(video.card),
+                            "video_seconds": video.seconds,
+                        }
+                        if video
+                        else {}
+                    ),
                 },
                 indent=2,
             )
