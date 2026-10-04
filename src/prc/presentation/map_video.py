@@ -137,7 +137,6 @@ def make_video(html: Path, out_dir: Path) -> VideoResult:
             encode(_frames(page, times), mp4)
 
             page = _open(browser, html, CARD_VIEWPORT, CARD_SCALE)
-            page.evaluate("window.prcTour.seek(0)")
             card.write_bytes(page.screenshot(type="png"))
         finally:
             browser.close()

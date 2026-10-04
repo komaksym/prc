@@ -325,7 +325,8 @@ class _Router:
         room = (hi - lo) / 2 - 2
 
         if hi - lo < 1e8:
-            y = (lo + hi) / 2 + min(room, 4 * ((n + 1) // 2)) * (1 if n % 2 else -1) * (n > 0)
+            shift = 4 * ((n + 1) // 2) * (1 if n % 2 else -1)
+            y = (lo + hi) / 2 + max(-room, min(room, shift))
 
         return y
 
@@ -403,7 +404,7 @@ def _port(box: Box, side: Side, index: int, count: int) -> tuple[float, float]:
 
 
 def _routes(router: _Router, edges: list[tuple[str, str]]) -> tuple[Route, ...]:
-    tested = {sid for sid in router.box if sid in router.tests}
+    tested = set(router.tests)
     plans: list[tuple[str, str, Side, Side, float, float]] = []
     gutter_users: dict[int, list[tuple[float, float, str, str]]] = defaultdict(list)
 
