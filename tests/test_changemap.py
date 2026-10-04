@@ -344,3 +344,20 @@ def test_tour_orders_entries_by_size_and_removed_calls_last_without_self_loops(
         ("entry", ("a.py::alpha",), None),
         ("summary", (), None),
     ]
+
+
+def test_missing_final_newline_never_glues_lines_or_counts_the_marker(tmp_path: Path) -> None:
+    change = custom_map(
+        tmp_path,
+        {"tail.py": b"def f():\n    return 1"},
+        {"tail.py": b"def f():\n    return 2\n"},
+    )
+    symbol = by_id(change)["tail.py::f"]
+
+    assert (change.files[0].added, change.files[0].removed) == (1, 1)
+    assert (symbol.added, symbol.removed) == (1, 1)
+    assert [(line.op, line.text) for hunk in symbol.hunks for line in hunk.lines] == [
+        (" ", "def f():"),
+        ("-", "    return 1"),
+        ("+", "    return 2"),
+    ]

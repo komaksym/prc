@@ -19,6 +19,7 @@ _ENV = {
     "GIT_NO_REPLACE_OBJECTS": "1",
     "LC_ALL": "C",
 }
+NO_NEWLINE = "\\ No newline at end of file"
 
 
 class GitError(RuntimeError):
@@ -115,14 +116,16 @@ def unified_diff(repo: Path, old_oid: str, new_oid: str) -> str:
     old_text = "" if old_oid == zero else read_blob(repo, old_oid).decode("utf-8", "replace")
     new_text = "" if new_oid == zero else read_blob(repo, new_oid).decode("utf-8", "replace")
 
+    lines = difflib.unified_diff(
+        old_text.splitlines(keepends=True),
+        new_text.splitlines(keepends=True),
+        fromfile="a",
+        tofile="b",
+        n=3,
+    )
+
     return "".join(
-        difflib.unified_diff(
-            old_text.splitlines(keepends=True),
-            new_text.splitlines(keepends=True),
-            fromfile="a",
-            tofile="b",
-            n=3,
-        )
+        line if line.splitlines() != [line] else f"{line}\n{NO_NEWLINE}\n" for line in lines
     )
 
 
