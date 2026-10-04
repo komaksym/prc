@@ -361,3 +361,50 @@ def test_missing_final_newline_never_glues_lines_or_counts_the_marker(tmp_path: 
         ("-", "    return 1"),
         ("+", "    return 2"),
     ]
+
+
+def test_kept_callee_is_context_only_when_its_call_line_changed(tmp_path: Path) -> None:
+    base = b"def helper():\n    return 1\n\n\ndef other(n):\n    return n\n\n\n"
+    change = custom_map(
+        tmp_path,
+        {"a.py": base + b"def f():\n    x = helper()\n    y = other(1)\n    return x + other(y)\n"},
+        {"a.py": base + b"def f():\n    x = helper()\n    y = other(1)\n    return x - other(y)\n"},
+    )
+
+    assert {sid: s.status for sid, s in by_id(change).items()} == {
+        "a.py::f": "modified",
+        "a.py::other": "context",
+    }
+    assert {(e.source, e.target, e.status) for e in change.edges} == {
+        ("a.py::f", "a.py::other", "kept")
+    }
+
+
+def test_callees_are_capped_by_edge_status_before_file_and_line(tmp_path: Path) -> None:
+    helpers = b"".join(
+        b"def %s(*args):\n    return 1\n\n\n" % name
+        for name in (b"t1", b"t2", b"r1", b"r2", b"a1", b"a2", b"a3", b"k1")
+    )
+    change = custom_map(
+        tmp_path,
+        {
+            "h.py": helpers,
+            "hub.py": b"from h import *\n\n\ndef hub():\n"
+            b"    t1(0)\n    t2(0)\n    k1()\n    r1()\n    r2()\n",
+        },
+        {
+            "h.py": helpers,
+            "hub.py": b"from h import *\n\n\ndef hub():\n"
+            b"    t1(1)\n    t2(1)\n    k1()\n    a1()\n    a2()\n    a3()\n",
+        },
+    )
+
+    assert {(e.target, e.status) for e in change.edges} == {
+        ("h.py::a1", "added"),
+        ("h.py::a2", "added"),
+        ("h.py::a3", "added"),
+        ("h.py::r1", "removed"),
+        ("h.py::r2", "removed"),
+        ("h.py::t1", "kept"),
+    }
+    assert {s.id for s in change.symbols} == {"hub.py::hub"} | {e.target for e in change.edges}

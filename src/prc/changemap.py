@@ -107,7 +107,9 @@ EDGE_STATUS: dict[tuple[bool, bool], EdgeStatus] = {
 _HUNK = re.compile(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 
 Pair = tuple[str, str]
-Pairs = dict[Pair, tuple[Resolution, int]]
+Pairs = dict[Pair, tuple[Resolution, tuple[int, ...]]]
+Weight = Literal["added", "removed", "touched", "kept"]
+WEIGHTS: tuple[Weight, ...] = ("added", "removed", "touched", "kept")
 
 
 def parse_hunks(body: str) -> tuple[Hunk, ...]:
@@ -194,7 +196,7 @@ class _Owners:
 
 
 def _pairs(calls: tuple[ResolvedCall, ...]) -> Pairs:
-    """Symbol-to-symbol calls keyed by (source, target), with the best resolution and first line."""
+    """Symbol-to-symbol calls keyed by (source, target), with the best resolution and every line."""
 
     pairs: Pairs = {}
 
@@ -206,7 +208,10 @@ def _pairs(calls: tuple[ResolvedCall, ...]) -> Pairs:
 
         seen = pairs.get((source, call.target))
         exact = call.resolution == "exact" or (seen is not None and seen[0] == "exact")
-        pairs[source, call.target] = ("exact" if exact else "name", seen[1] if seen else call.line)
+        pairs[source, call.target] = (
+            "exact" if exact else "name",
+            (*(seen[1] if seen else ()), call.line),
+        )
 
     return pairs
 
@@ -281,16 +286,36 @@ def build_change_map(acquisition: Acquisition, repo: Path, brief: Brief) -> Chan
     head_pairs, base_pairs = _pairs(head_calls), _pairs(base.resolve_all())
     linked = sorted(p for p in head_pairs.keys() | base_pairs.keys() if statuses.keys() & set(p))
 
-    def place(symbol_id: str) -> tuple[str, int, str]:
-        return _split(symbol_id)[0], trees.definition(symbol_id).span[0], symbol_id
+    plus = {
+        path: {line.new for hunk in hunks for line in hunk.lines if line.op == "+"}
+        for path, hunks in file_hunks.items()
+    }
+
+    def weight(pair: Pair) -> Weight:
+        status = EDGE_STATUS[pair in head_pairs, pair in base_pairs]
+        lines = head_pairs[pair][1] if status == "kept" else ()
+
+        return "touched" if plus.get(_split(pair[0])[0], set()) & set(lines) else status
+
+    def rank(near: tuple[Weight, str]) -> tuple[int, str, int, str]:
+        symbol_id = near[1]
+
+        return (
+            WEIGHTS.index(near[0]),
+            _split(symbol_id)[0],
+            trees.definition(symbol_id).span[0],
+            symbol_id,
+        )
 
     context: set[str] = set()
 
     for symbol_id in statuses:
-        callers = [s for s, t in linked if t == symbol_id and s not in statuses]
-        callees = [t for s, t in linked if s == symbol_id and t not in statuses]
-        context.update(sorted(callers, key=place)[:MAX_CONTEXT])
-        context.update(sorted(callees, key=place)[:MAX_CONTEXT])
+        callers = [(weight(p), p[0]) for p in linked if p[1] == symbol_id and p[0] not in statuses]
+        callees = [(weight(p), p[1]) for p in linked if p[0] == symbol_id and p[1] not in statuses]
+        drawn = [near for near in callees if near[0] != "kept"]
+
+        for near in (callers, drawn):
+            context.update(symbol for _, symbol in sorted(near, key=rank)[:MAX_CONTEXT])
 
     shown = statuses.keys() | context
     sites = Counter(call.target for call in head_calls)
@@ -384,7 +409,7 @@ def _tour(
     for edge in edges:
         if edge.source in code and edge.target in code:
             removed = edge.status == "removed"
-            line = (base_pairs if removed else head_pairs)[edge.source, edge.target][1]
+            line = (base_pairs if removed else head_pairs)[edge.source, edge.target][1][0]
             callees.setdefault(edge.source, []).append((int(removed), line, edge.target))
             called.add(edge.target)
 
