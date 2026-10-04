@@ -22,10 +22,12 @@ uv run prc fixture-mutate basic edit-title         # simulate a provider change 
 uv run prc eval-analyze results.json               # solo pilot analysis
 uv run prc review --source github:<owner>/<repo>#<n>   # live adapter, unverified
 uv run prc brief --source fixture:claims           # one PR comment from diff, description and CI; no model
-uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>   # interactive map of what the PR rewired; also fixture:shop
+uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>   # interactive map of what the PR rewired; also fixture:shop; add --video for tour.mp4 and card.png
 ```
 
 `review` prints the snapshot, semantic and published-view identities and writes `index.html`, `infographic.svg`, `flow.svg` (when relations exist), `entry.md`, `semantic.json`, `snapshot.json`, `manifest.json` and `view.json`. `decide` refuses (exit 2) when the expected snapshot/view is no longer the current local exposure.
+
+`map --video` also writes `tour.mp4` (1920x1080, 30 fps) and `card.png` (2400x1260) next to `index.html`. It needs the `video` extra (`uv sync --extra video`, then `playwright install chromium`) and ffmpeg on PATH.
 
 `brief` computes one GitHub comment from the diff, the PR description and CI results, with no model calls and no store writes. It writes `<out>/<snapshot id short>/brief.md` and `brief.json` (default `--out artifacts/briefs`) and prints the `brief.md` path, the mismatch count and the look-first files. Domain: `prc.brief`; renderer: `prc.presentation.render_brief`, which routes every PR-controlled string through one code-span helper.
 
