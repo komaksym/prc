@@ -2,6 +2,121 @@
 
 Run date: 2026-10-04. Authority: `CONTEXT.md`, `docs/design/architecture-checkpoint.md`, `docs/adr/0001-*`, `docs/design/evaluation-protocol.md` (copied with provenance in `docs/PROVENANCE.md`). Those contracts are not reopened here.
 
+## Phase 2 (current): PR brief, the free tier
+
+### Summary
+
+`prc brief` turns one pull request into one GitHub comment. Everything in it is computed from the diff, the PR description and the CI results, so it makes no model calls. It tells a reviewer of an agent-written PR four things in seconds:
+
+- how big the real change is once lockfiles and generated files are set aside;
+- whether CI passed on this exact commit;
+- where the description and the diff disagree;
+- the three places to look first, and why.
+
+It reuses capture, snapshot, inventory and verification as they are. The store, the model pipeline and the HTML view are not involved. Validation means running it on real public agent PRs, then on the user's own repos through a GitHub Action. The 12-pair lab pilot is not part of this phase.
+
+Why this comes first (evidence in `reports/AI code comprehension last three months.md`):
+
+- The AI-written PR description is itself the complaint. Kenton Varda put a moratorium on them. GitHub's own blog calls them "long-yet-shallow". Reddit calls them a slop vector.
+- Readers cannot tell a wrong AI assertion from a right one (Kaufman et al. 2026-07-09).
+- Maintainers triage in seconds.
+- Computed facts cannot hallucinate, cost nothing per PR, and never send code to a vendor.
+
+### Milestones
+
+- **B1.** `prc brief` on a fixture through the CLI, with the E2E test written first. Check: `artifacts/e2e/briefs/<id>/brief.md` is byte-identical on rerun, and verify passes.
+- **B2.** Run it read-only on at least 20 public agent PRs (Copilot coding agent, Devin, Claude Code, Codex). Hand-check every flagged item to get precision per check type. Tighten or delete any check below 80% precision. Check: `artifacts/corpus/` holds the briefs and the precision table.
+- **B3.** A GitHub Action runs `prc brief` on `pull_request` and creates or updates one comment, found by its marker. It is built and tested locally. Installing it on any repository needs the user's go-ahead.
+- **B4.** Install it on the user's own repos, then offer it to maintainers. The signals are installs that stay, and comments saying it caught something. Every external message needs authorization.
+
+Deferred until B4 shows people want it:
+
+- the computed import and call map for the visual view (Python `ast` first);
+- the model tier;
+- the pilot protocol v2 from the 2026-10-04 interrogate review.
+
+### B1 spec
+
+Data shape. The domain lives in `src/prc/brief.py`. It is pure and reads only `Acquisition`.
+
+- `Brief(pr, title, head_sha, files, checks, mismatches, look_first)`
+- `FileChange(path, kind, added, removed, named, sensitive)`
+- `Kind`: code, test, docs, config, generated or opaque
+- `Mismatch(kind, quote, fact, subjects)`, where kind is `changed_claim_not_in_diff`, `symbol_claim_not_found`, `test_claim_vs_ci` or `tests_claim_no_test_files`. `fact` is our fixed sentence. Anything taken from the PR goes in `subjects`.
+- `Pointer(path, reason, lines)`
+
+File kinds and sensitive surfaces are ordered rule tables, not if-chains. The renderer is `src/prc/presentation/render_brief.py`. It sends every untrusted string (path, quote, title, check name) through one code-span helper, so PR content can never produce a mention, link, image or HTML. Output starts with the marker `<!-- prc-brief -->`. `pipeline.run_brief` and `prc brief --source … --out artifacts/briefs` write `<out>/<snapshot short id>/brief.md` and `brief.json`, then print JSON.
+
+Rules:
+
+1. **Kinds.** The first match wins, in this order:
+   - opaque inventory item: opaque;
+   - lockfiles, snapshots, minified files, `dist/`, `vendor/` and generated code: generated;
+   - test paths: test;
+   - `.github/`, dependency manifests, Docker, CI files, `*.toml`, `*.ini`, `*.cfg`, YAML, non-lock JSON, `.env*`, `Makefile` and `*.tf`: config;
+   - Markdown, rst, txt, `docs/` and LICENSE: docs;
+   - anything else: code.
+2. **Sensitive surfaces** apply to any kind, and the reason text is ours. They are:
+   - secret-scanner allowlists and package registry configs;
+   - workflows and other `.github/` files;
+   - dependency manifests, shown with up to 3 added lines;
+   - Docker and infrastructure;
+   - migrations and SQL;
+   - paths whose names suggest auth or security;
+   - env and secret files;
+   - other CI configs.
+3. **Claim units.** These are the bullet lines, checkbox lines, table rows and sentences of the title and body, taken after removing fenced code, HTML comments, `<details>` blocks and blockquotes. Bold and underline markers outside code spans are dropped. An unchecked checkbox claims nothing.
+4. **`changed_claim_not_in_diff`.** A unit has a change verb (add, update, modify, change, fix, bump, remove, delete, rename, move, replace, create, edit, rewrite, refactor and their inflections) or an arrow (`→` or `->`) outside its code spans. It names a path-like token, meaning one with a slash or a file extension, that matches no changed path. The token must also exist in the base or head tree, so routes, package names and planned files never fire. A path matches by full path, by a suffix on a segment boundary, or by basename. A directory token matches any changed path under it. URLs, domains, package scopes and slash commands are not paths, and `:12` or `#L5` suffixes are stripped.
+5. **`symbol_claim_not_found`.** A unit has a create, remove or rename verb (add, create, introduce, new, remove, delete, rename and their inflections). At most 3 words from a fixed list of articles and code nouns sit between the verb and a backticked identifier. The identifier appears in no diff line and no head content of any changed file. `name(args)` is checked as `name`, and a qualified name by its last segment. The check is skipped when any changed file is opaque.
+6. **`test_claim_vs_ci`.** A checked checkbox or a sentence claims that tests, lint, typecheck, the build or CI passed. Either a check on this commit failed (failure, timed_out, cancelled, action_required or startup_failure), or no checks ran.
+7. **`tests_claim_no_test_files`.** A unit claims tests were added, written or updated, and no test-kind file changed.
+8. **Hedges.** Rules 4 and 5 skip a unit that says not, no, never, without, kept, unchanged, untouched, already, would, could or instead. Rules 6 and 7 skip a unit that negates, defers or reports a failure.
+9. **Named.** A changed file counts as named when any description token or prose word matches one of these:
+   - its path, a path suffix or its basename;
+   - its stem or name in any spelling (case, hyphens and underscores ignored, at least 3 characters);
+   - every part of its stem of 3 or more characters, as words, plural allowed;
+   - the parent directory instead, when the stem is generic (index, page, route, layout, main, mod, init, server, handler, utils, types);
+   - a symbol defined or changed in its diff.
+
+   Named only feeds look-first. The brief no longer lists unnamed files, because run 1 showed that list was mostly semantic misses.
+10. **Look first.** At most 3 pointers, in a fixed order:
+    1. sensitive files the description doesn't name;
+    2. other sensitive files;
+    3. the largest code change.
+11. **Generated files** are counted in a separate total. They never appear in look-first.
+12. **Uninspectable files.** The size line says how many changed files could not be inspected (binary, or over the 64 KB inventory limit).
+
+### B2 results (2026-10-04)
+
+Corpus: 28 recent public PRs from small repos, 7 each from the Copilot coding agent, Devin, Claude Code and Codex. The list and runner live outside the repo. Briefs and `runs.json` are under `artifacts/corpus/` (gitignored). All 28 ran in both rounds. Every flag was checked by hand against the PR.
+
+| Check | Run 1 flags, correct | Run 2 flags, correct |
+| --- | --- | --- |
+| `changed_claim_not_in_diff` | 13, 0 | 0 |
+| `symbol_claim_not_found` | 3, 0 | 0 |
+| `test_claim_vs_ci` | 3, 3 | 3, 3 |
+| `tests_claim_no_test_files` | 0 | 0 |
+| sensitive file not in the description (look-first) | not separated | 4, 4 |
+
+Run 1 false positives came from tokens that are not repository paths (routes, domains, package scopes, number fragments, `file.py::symbol`), table rows and bold markers merged into one unit, data names read as symbols, and negated sentences. Rules 3, 4, 5 and 8 above are the fixes. Run 2 found no real description-vs-diff disagreement, so the recall of rules 4, 5 and 7 is unmeasured.
+
+What held up:
+
+- **Unbacked test claims.** All 3 are Devin PRs that report local test runs as passing while no CI ran on the head commit.
+- **Unmentioned risky surfaces.** Three PRs change a CI workflow without mentioning it, and one changes the secret-scanner allowlist (`.gitleaksignore`).
+
+Corpus facts:
+
+- 12 of 28 PRs claim tests, lint or the build passed. CI on the same commit backs 9 of them, none is contradicted, and 3 have no CI.
+- 8 of 28 have no CI on the head commit.
+- 7 of 28 touch a sensitive surface, and 6 touch CI workflows.
+- 9 of 28 contain a file the brief cannot inspect.
+- None contain generated files.
+
+Premise finding: these agents did not misstate which files they changed. The brief's value is a quiet, precise card of claims against evidence and risky surfaces, not a lie detector.
+
+## Phase 1 (done): MVP
+
 ## TLDR
 
 1. Build the full MVP as a Python 3.12 package `prc` (stdlib + numpy for the protocol's PCG64) with one real entry point, the `prc` CLI, that turns a GitHub PR source into a published, hash-identified review view (overview, required infographic, evidence-adjacent claims, selected table/flow/prose artifacts) plus recorded reviewer decisions.
