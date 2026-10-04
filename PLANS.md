@@ -2,7 +2,102 @@
 
 Run date: 2026-10-04. Authority: `CONTEXT.md`, `docs/design/architecture-checkpoint.md`, `docs/adr/0001-*`, `docs/design/evaluation-protocol.md` (copied with provenance in `docs/PROVENANCE.md`). Those contracts are not reopened here.
 
-## Phase 2 (current): PR brief, the free tier
+## Phase 3 (current): PR map, the visual MVP
+
+### Summary
+
+`prc map <PR>` turns one pull request into an interactive page and a 30-second video that show what the change does to the code's wiring. It works on any public GitHub PR, with no API key and no model calls. Every box and arrow comes from parsing the base and head code, and every one links to the diff lines behind it. The pitch is one sentence: "Your agent wrote 800 lines. Here's what it actually rewired, in 30 seconds, and no AI drew a single arrow."
+
+Why this replaces the text brief as the product:
+
+- Text summaries are a commodity. Any agent writes one for free, and CodeRabbit already draws LLM mermaid diagrams.
+- Nobody offers a reliable, clean, interactive picture of a change, or a video of it. "Reliable" is the moat. Computed structure cannot hallucinate.
+- A video and a social card spread on Twitter. A paragraph does not.
+
+The brief survives as overlay facts on the map: CI on the head commit, risky surfaces, and description-vs-diff mismatches.
+
+### What one run produces
+
+`prc map --source <github:owner/repo#N | GitHub PR URL | fixture:name> --out artifacts/maps [--video]` writes `<out>/<snapshot short id>/` with these files:
+
+- `map.json`, the `ChangeMap` below;
+- `index.html`, one self-contained offline page with no CDN and no network;
+- with `--video`, `tour.mp4` (1280x720, H.264, about 30 s) and `card.png` (1200x675 social card).
+
+It prints JSON with the paths and the counts.
+
+### The page
+
+- **Header.** It shows the PR title, `repo#N` and the author. Stat chips show files, symbols changed, call sites affected, tests touched, CI on the head commit and risky surfaces.
+- **Canvas.** The flow runs left to right. Unchanged callers sit on the left, changed symbols in the middle (layered by call depth inside the change), and unchanged callees on the right. A top lane holds non-code files (CI, config, docs) as chips with risk badges. A bottom lane holds tests.
+- **Nodes.** Each node is a card with a status color bar. Added is green, modified amber, deleted red with a struck name, and context grey. A node also shows its name, its file, `+a −r`, its call-site count and an "untested" badge.
+- **Edges.** Edges are curves. An added call is green with a flowing dash. A removed call is red and dashed. A kept call is thin grey. A call matched only by name is dotted, and the legend says so.
+- **Interaction.** Click a node to open a drawer with that symbol's diff, its callers, its callees and the tests that reference it. Hover dims everything but the node's neighbors. Pan and zoom work.
+- **Tour.** "Play" walks the computed steps. The camera eases between nodes, everything else dims under a spotlight, and a caption sits in the lower third. Arrow keys and space step through it.
+- **Video hook.** `window.prcTour = {duration, seek(t)}` renders the exact frame at time `t`. Normal playback calls `seek` from `requestAnimationFrame`. Video export steps `seek` frame by frame, so no frame is dropped.
+- **Brand line.** The footer of every screenshot says "PR map · computed from the code, no AI drew this".
+
+### Data shape (`src/prc/changemap.py`)
+
+`ChangeMap(pr, url, title, author, base_sha, head_sha, brief, files, symbols, edges, tour)`:
+
+- `FileNode(path, kind, status, language, sensitive, added, removed, hunks, symbols)`. `language` is None when the file is not parsed (unsupported, opaque or over the size limit).
+- `Symbol(id, path, qualname, kind, status, span, base_span, added, removed, hunks, call_sites)`. The id is `path::qualname`, for example `src/shop/cart.py::Cart.subtotal`.
+- `Edge(source, target, status, resolution)`. `status` is `added`, `removed` or `kept`. `resolution` is `exact` (same file, an import, or `self`/`this`) or `name` (a unique name in the repo).
+- `Step(kind, focus, via)`. `kind` is `overview`, `risky_file`, `entry`, `callee`, `test` or `summary`. Captions are written by the renderer from the step kind and map data, so the domain holds no prose.
+- `Hunk(old_start, new_start, lines)` and `DiffLine(op, old, new, text)`.
+
+### Rules
+
+1. **Languages.** Python, JavaScript, TypeScript and TSX, parsed with tree-sitter (`tree-sitter` plus the official grammar wheels) through one registry table that maps an extension to a grammar and its queries. Adding Go or Rust adds a row. A source file over 512 KB, or any file in the generated kind, is not parsed.
+2. **Symbols.** These are functions, classes and methods, plus arrow functions and function expressions bound to a name at top level or in a class. A line belongs to the innermost symbol whose span holds it. Top-level lines outside every symbol (imports, constants) stay on the file, not on a symbol.
+3. **Status.** A symbol is matched by `path::qualname` between base and head. In head only means added. In base only means deleted. In both, with a changed line inside its head or base span, means modified. Unchanged symbols appear only as context.
+4. **Calls.** A call is a call expression whose callee is a bare name, `self.x`, `this.x`, or `obj.x`. Instantiating a class counts as a call to the class. Resolution goes in order:
+   1. a definition in the same file;
+   2. a name imported from a repo file (Python `from a.b import x`, `import a.b`; JS/TS relative imports with index and extension probing);
+   3. a method of the enclosing class for `self.x` or `this.x`;
+   4. otherwise, exactly one definition with that name in the repo (`resolution="name"`).
+
+   Anything else is dropped. A wrong arrow is worse than a missing one.
+5. **Edges shown.** Only edges with at least one changed symbol at an end. Base edges come from the base versions of changed files. A head edge missing from base is added, a base edge missing from head is removed, and the rest are kept.
+6. **Context.** These are unchanged callers and callees of changed symbols, at most 6 each per changed symbol, chosen by file then line. `call_sites` counts every resolved call site in the head tree, so the card can say "47 call sites" while drawing 6.
+7. **Tests.** A test symbol is any symbol in a test-kind file. A changed code symbol with no edge from a test symbol is "untested", meaning directly untested, and the drawer says so.
+8. **Tour.** The order is:
+   1. overview, with an empty `focus`;
+   2. one step per sensitive file, files the description does not name first, then by path;
+   3. entry points, which are changed non-test symbols with no changed non-test caller, largest first (`added + removed`), then by id;
+   4. after each entry, its changed callees depth-first, each with `via` set to its caller. Callees go in order of the call's head line, removed calls after the rest (by base line), then by id;
+   5. remaining changed non-test symbols, by id;
+   6. one step per changed test symbol, by id;
+   7. summary, with an empty `focus`.
+
+   Each symbol appears once. Removed edges count for traversal, so a deleted function is reached through its former caller.
+9. **Safety.**
+   - Data goes in one `<script type="application/json">` block, with `<`, `>`, `&`, U+2028 and U+2029 escaped.
+   - The page builds every PR-controlled string with `textContent` or `createElementNS`, never `innerHTML`.
+   - The CSP is `default-src 'none'`, with the one inline script allowed by its sha256 hash.
+   - There are no external URLs.
+   - The `hostile` fixture must render inert.
+10. **Determinism.** The same PR and code give byte-identical `map.json` and `index.html`. Layout is computed in Python from the map and is stable.
+
+### Milestones
+
+- **M0 (blocking, lead).** This plan, `changemap.py` types, the `shop` fixture (a Python and TSX shop with an added function, a modified caller, a deleted function, a removed call, a new test, and a CI workflow edit the body does not mention), and `tests/test_e2e_map.py`, written first. The E2E test fails until M1 and M2 land.
+- **M1 (domain, delegate A, `map-domain`).** Owns `src/prc/codegraph.py` (registry, parse, definitions, calls, imports, resolution), the `build_change_map` logic in `src/prc/changemap.py`, their unit tests, and the tree-sitter dependencies in `pyproject.toml`. Check: unit tests on the fixture repo and on hostile and edge inputs.
+- **M2 (presentation, delegate B, `map-view`).** Owns `src/prc/presentation/map_layout.py`, `src/prc/presentation/render_map.py` (page, inline CSS and JS, CSP hash, data block), `pipeline.run_map`, `prc map` in `cli.py` (including GitHub PR URLs), and their tests against a hand-built `ChangeMap`. Check: unit tests, plus screenshots of the sample page reviewed by the lead.
+- **M3 (lead).** Merge M1 and M2. The E2E passes. Run on real PRs from the corpus (Python and TS), check every drawn edge by hand on 5 PRs, and fix.
+- **M4 (video, delegate C).** `--video` through Playwright (an optional `video` extra) with frame-stepped `seek` capture and ffmpeg to `tour.mp4`, plus `card.png`. Check: an E2E that asserts duration, size and codec with ffprobe, run when the extra is installed.
+- **M5 (lead).** README "Try it in 10 seconds", a demo page and video from a real public agent PR, and draft tweet copy. Nothing is posted without the user.
+- **Later.** A GitHub Action that comments with the card and links the page; Go and Rust; an optional model narration tier.
+
+Throughput checkpoint:
+
+- **Blocking first steps.** M0, so both delegates build on the same frozen types and fixture.
+- **Independent workstreams.** M1 and M2 touch disjoint files. `changemap.py` types are frozen at M0, and any change goes through the lead. M1 alone edits `pyproject.toml`. M2 alone edits `pipeline.py` and `cli.py`.
+- **Shared mutable state.** None after M0. Each delegate has its own worktree and branch off `visual-map`.
+- **Smallest safe decomposition.** Two workers, because domain and presentation meet only at the frozen types. Video waits for the page's `seek` API.
+
+## Phase 2 (done): PR brief, the free tier
 
 ### Summary
 

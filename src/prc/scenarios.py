@@ -372,6 +372,198 @@ def claims(root: Path) -> tuple[FixtureSource, PrRef]:
     return build_source(root / "claims.git", base, head, meta, _claims_checks, {}, None)
 
 
+SHOP_CART_BASE = b"""from shop.tax import compute_tax
+
+
+class Cart:
+    def __init__(self, items):
+        self.items = items
+
+    def subtotal(self):
+        return sum(item.price * item.qty for item in self.items)
+
+
+def legacy_total(cart):
+    return cart.subtotal() * 1.0
+
+
+def checkout(cart, region):
+    total = legacy_total(cart)
+    return total + compute_tax(total, region)
+"""
+
+SHOP_CART_HEAD = b"""from shop.discounts import apply_discount
+from shop.tax import compute_tax
+
+
+class Cart:
+    def __init__(self, items):
+        self.items = items
+
+    def subtotal(self):
+        return sum(item.price * item.qty for item in self.items)
+
+
+def checkout(cart, region, code=None):
+    total = apply_discount(cart.subtotal(), code)
+    return total + compute_tax(total, region)
+"""
+
+SHOP_TAX_BASE = b"""RATES = {"eu": 0.2, "us": 0.07}
+
+
+def compute_tax(amount, region):
+    return amount * RATES.get(region, 0.0)
+"""
+
+SHOP_TAX_HEAD = b"""RATES = {"eu": 0.2, "us": 0.07}
+
+
+def compute_tax(amount, region):
+    rate = RATES.get(region, 0.0)
+    return round(amount * rate, 2)
+"""
+
+SHOP_DISCOUNTS = b"""def apply_discount(amount, code):
+    if code == "WELCOME10":
+        return amount * 0.9
+    return amount
+"""
+
+SHOP_API = b"""from shop.cart import Cart, checkout
+
+
+def post_checkout(request):
+    cart = Cart(request.items)
+    return {"total": checkout(cart, request.region)}
+
+
+def post_preview(request):
+    return {"total": checkout(Cart(request.items), request.region)}
+"""
+
+SHOP_TEST_BASE = b"""from shop.cart import Cart, checkout
+
+
+def test_checkout_adds_tax():
+    assert checkout(Cart([]), "eu") == 0
+"""
+
+SHOP_TEST_HEAD = (
+    SHOP_TEST_BASE
+    + b"""
+
+def test_checkout_without_code_keeps_total():
+    assert checkout(Cart([]), "us", None) == 0
+"""
+)
+
+WEB_CART_BASE = b"""export function total(prices: number[]): number {
+  return prices.reduce((sum, p) => sum + p, 0);
+}
+"""
+
+WEB_CART_HEAD = (
+    WEB_CART_BASE
+    + b"""
+export function formatPrice(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+"""
+)
+
+WEB_VIEW_BASE = b"""import { total } from "./cart";
+
+export function CartView({ prices }: { prices: number[] }) {
+  return <div className="cart">Total: {total(prices)}</div>;
+}
+"""
+
+WEB_VIEW_HEAD = b"""import { formatPrice, total } from "./cart";
+
+export function CartView({ prices }: { prices: number[] }) {
+  return <div className="cart">Total: {formatPrice(total(prices))}</div>;
+}
+"""
+
+SHOP_CI_BASE = b"""name: ci
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pytest
+"""
+
+SHOP_CI_HEAD = b"""name: ci
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pytest
+        continue-on-error: true
+"""
+
+
+def _map_checks(
+    head: str, base_tip: str, merged_tree: str, _merged: str | None
+) -> list[dict[str, object]]:
+    return [
+        {
+            "run_id": "501",
+            "attempt": 1,
+            "provider": "fixture-ci",
+            "name": "unit-tests",
+            "scope": "head_only",
+            "subject_sha": head,
+            "subject_kind": "commit",
+            "conclusion": "success",
+            "completed_at": FIXTURE_EPOCH - 120,
+            "expires_at": FIXTURE_EPOCH + 3600,
+            "required": True,
+        }
+    ]
+
+
+def shop(root: Path) -> tuple[FixtureSource, PrRef]:
+    """Discount codes at checkout: added, modified and deleted symbols across Python and TSX."""
+
+    base: dict[str, Entry] = {
+        ".github/workflows/ci.yml": (FILE, SHOP_CI_BASE),
+        "README.md": (FILE, b"# shop\n"),
+        "src/shop/__init__.py": (FILE, b""),
+        "src/shop/api.py": (FILE, SHOP_API),
+        "src/shop/cart.py": (FILE, SHOP_CART_BASE),
+        "src/shop/tax.py": (FILE, SHOP_TAX_BASE),
+        "tests/test_cart.py": (FILE, SHOP_TEST_BASE),
+        "web/src/CartView.tsx": (FILE, WEB_VIEW_BASE),
+        "web/src/cart.ts": (FILE, WEB_CART_BASE),
+    }
+    head: dict[str, Entry] = {
+        **base,
+        ".github/workflows/ci.yml": (FILE, SHOP_CI_HEAD),
+        "README.md": (FILE, b"# shop\n\nCheckout accepts a discount code.\n"),
+        "src/shop/cart.py": (FILE, SHOP_CART_HEAD),
+        "src/shop/discounts.py": (FILE, SHOP_DISCOUNTS),
+        "src/shop/tax.py": (FILE, SHOP_TAX_HEAD),
+        "tests/test_cart.py": (FILE, SHOP_TEST_HEAD),
+        "web/src/CartView.tsx": (FILE, WEB_VIEW_HEAD),
+        "web/src/cart.ts": (FILE, WEB_CART_HEAD),
+    }
+    meta = {
+        "title": "Add discount codes at checkout",
+        "body": "Adds discount codes to checkout and a price formatter for the cart view.\n\n"
+        "- [x] Tests pass\n",
+        "author": "coding-agent[bot]",
+        "labels": ["agent-authored"],
+        "draft": False,
+        "agent_authored": True,
+    }
+
+    return build_source(root / "shop.git", base, head, meta, _map_checks, {}, None)
+
+
 SCENARIOS = {
     "basic": basic,
     "hostile": hostile,
@@ -379,6 +571,7 @@ SCENARIOS = {
     "gaps": gaps,
     "advanced": advanced,
     "claims": claims,
+    "shop": shop,
 }
 
 
