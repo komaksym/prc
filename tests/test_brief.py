@@ -194,10 +194,10 @@ def test_look_first_order_and_cap() -> None:
         delta("pyproject.toml", added=1),
     )
 
-    assert [p.path for p in brief.look_first] == [
-        ".github/workflows/w.yml",
-        "pyproject.toml",
-        "src/big.py",
+    assert [(p.path, p.reason) for p in brief.look_first] == [
+        (".github/workflows/w.yml", "CI workflow; its path is not in the description"),
+        ("pyproject.toml", "dependency manifest; its path is not in the description"),
+        ("src/named.py", "largest code change (+99 −0)"),
     ]
 
 
@@ -431,3 +431,102 @@ def test_backticked_data_is_not_a_symbol_claim(quote: str) -> None:
 )
 def test_symbol_claim_needs_the_name_as_direct_object(quote: str) -> None:
     assert kinds(make(quote, delta("a.py", diff="+x = 1"))) == ["symbol_claim_not_found"]
+
+
+def named(body: str, *paths: str) -> dict[str, bool]:
+    return {f.path: f.named for f in make(body, *(delta(p) for p in paths)).files}
+
+
+def test_bare_backticked_word_names_a_file_by_basename() -> None:
+    got = named("Wires `claude-local` and `coder-local`.", "bin/claude-local", "bin/coder-local.sh")
+
+    assert got == {"bin/claude-local": True, "bin/coder-local.sh": True}
+
+
+def test_names_compare_without_case_dash_underscore_or_dot() -> None:
+    got = named(
+        "Adds `MemoryFact` and the check-commit-msg hook.",
+        "pkg/memory_fact.go",
+        "hooks/check_commit_msg.py",
+        "pkg/other_thing.go",
+    )
+
+    assert got == {
+        "pkg/memory_fact.go": True,
+        "hooks/check_commit_msg.py": True,
+        "pkg/other_thing.go": False,
+    }
+
+
+def test_every_long_stem_part_in_the_prose_names_the_file() -> None:
+    body = "Computes the effective review decisions for a PR."
+
+    assert named(body, "a/effective_review_decision.py") == {"a/effective_review_decision.py": True}
+    assert named(body, "a/effective_merge_decision.py") == {"a/effective_merge_decision.py": False}
+    assert named("The decision reviews are effective", "a/EffectiveReviewDecision.py") == {
+        "a/EffectiveReviewDecision.py": True
+    }
+    assert named("an effective review", "a/effective_review_decision.py") == {
+        "a/effective_review_decision.py": False
+    }
+
+
+def test_generic_stems_are_named_by_their_parent_directory() -> None:
+    page = "src/routes/(app)/dashboard/+page.server.ts"
+
+    assert named("Reworks the dashboard.", page, "src/routes/(app)/other/+page.server.ts") == {
+        page: True,
+        "src/routes/(app)/other/+page.server.ts": False,
+    }
+    assert named("Reworks the app shell.", "src/(app)/+layout.ts") == {"src/(app)/+layout.ts": True}
+    assert named("The page is new.", "src/billing/index.ts") == {"src/billing/index.ts": False}
+    assert named("Billing is new.", "src/billing/__init__.py") == {"src/billing/__init__.py": True}
+
+
+def test_secret_scanner_and_registry_configs_are_sensitive() -> None:
+    paths = (".gitleaksignore", ".npmrc", "sub/.yarnrc.yml", ".pypirc")
+    reasons = {f.path: f.sensitive for f in make("", *(delta(p) for p in paths)).files}
+
+    assert reasons == {
+        ".gitleaksignore": "secret-scanner allowlist",
+        ".npmrc": "package registry config",
+        "sub/.yarnrc.yml": "package registry config",
+        ".pypirc": "package registry config",
+    }
+
+    for name in (".gitleaks.toml", ".secrets.baseline", ".gitguardian.yml", ".trufflehogignore"):
+        assert make("", delta(name)).files[0].sensitive == "secret-scanner allowlist"
+
+
+def test_look_first_second_tier_is_named_sensitive_files() -> None:
+    brief = make(
+        "Edits `pyproject.toml` and `src/big.py`",
+        delta("pyproject.toml"),
+        delta("src/big.py", added=50),
+        delta("src/small.py", added=2),
+    )
+
+    assert [(p.path, p.reason) for p in brief.look_first] == [
+        ("pyproject.toml", "dependency manifest"),
+        ("src/big.py", "largest code change (+50 −0)"),
+        ("src/small.py", "largest code change (+2 −0)"),
+    ]
+
+
+def test_render_text_has_no_not_named_section_and_the_new_provenance_line() -> None:
+    text = render_brief(make("", delta("src/a.py")))
+
+    assert "Not named in the description" not in text
+    assert (
+        "Computed from the diff, the PR description and CI results. No model wrote any of this;"
+        " quoted lines come from the description.\n"
+    ) in text
+    assert "could not be inspected" not in text
+
+
+def test_size_line_counts_files_that_could_not_be_inspected() -> None:
+    one = render_brief(make("", delta("src/a.py"), Delta("big.bin", True, 0, 0)))
+    two = render_brief(make("", Delta("b.bin", True, 0, 0), Delta("c.bin", True, 0, 0)))
+
+    assert "(1 code, 1 opaque). 1 file could not be inspected." in one
+    assert "2 files could not be inspected." in two

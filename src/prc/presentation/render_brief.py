@@ -5,11 +5,10 @@ from __future__ import annotations
 import re
 import unicodedata
 
-from prc.brief import Brief, FileChange, Kind, unnamed
+from prc.brief import Brief, FileChange, Kind
 
 MARKER = "<!-- prc-brief -->"
 SPAN_LIMIT = 140
-NOT_NAMED_SHOWN = 5
 KIND_ORDER: tuple[Kind, ...] = ("code", "config", "test", "docs", "opaque")
 
 
@@ -46,6 +45,10 @@ def _size(files: tuple[FileChange, ...]) -> str:
         line += f" ({kinds})"
 
     line += "."
+    opaque = sum(1 for f in files if f.kind == "opaque")
+
+    if opaque:
+        line += f" {_count(opaque, 'file')} could not be inspected."
 
     if generated:
         line += (
@@ -81,7 +84,8 @@ def render_brief(brief: Brief) -> str:
         MARKER,
         "### PR brief",
         "",
-        "Computed from the diff, the description and CI results. No AI-written text.",
+        "Computed from the diff, the PR description and CI results. No model wrote any of this;"
+        " quoted lines come from the description.",
         "",
         _size(brief.files),
         "",
@@ -97,15 +101,6 @@ def render_brief(brief: Brief) -> str:
             lines.append(f"  - {m.fact} {subjects}".rstrip())
     else:
         lines.append("Everything the description names is in the diff.")
-
-    missing = unnamed(brief.files)
-
-    if missing:
-        lines += ["", "#### Not named in the description"]
-        lines += [f"- {span(f.path)} (+{f.added} −{f.removed})" for f in missing[:NOT_NAMED_SHOWN]]
-
-        if len(missing) > NOT_NAMED_SHOWN:
-            lines.append(f"- and {len(missing) - NOT_NAMED_SHOWN} more")
 
     lines += ["", "#### Look here first"]
 

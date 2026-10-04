@@ -65,7 +65,8 @@ def test_claims_fixture_brief_is_computed_safe_and_repeatable(tmp_path: Path) ->
     assert "uv.lock" not in json.dumps(data["look_first"])
     assert "uv.lock" not in text
     assert set(first["look_first"][:2]) == {".github/workflows/ci.yml", "pyproject.toml"}
-    assert first["look_first"][2] == "src/config.py"
+    assert first["look_first"][2] == "src/app.py"
+    assert "Not named in the description" not in text
 
     for line in text.splitlines():
         outside = re.sub(r"`[^`]*`", "", line)

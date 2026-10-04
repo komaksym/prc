@@ -145,6 +145,17 @@ SensitiveRule = tuple[re.Pattern[str], str, bool]
 SENSITIVE_RULES: tuple[SensitiveRule, ...] = tuple(
     (re.compile(pattern, re.IGNORECASE), reason, lines)
     for pattern, reason, lines in (
+        (
+            r"(^|/)(\.gitleaksignore|\.gitleaks\.toml|\.secrets\.baseline|\.gitguardian\.ya?ml"
+            r"|\.trufflehogignore)$",
+            "secret-scanner allowlist",
+            False,
+        ),
+        (
+            r"(^|/)(\.npmrc|\.pypirc|\.yarnrc(\.ya?ml)?)$",
+            "package registry config",
+            False,
+        ),
         (r"^\.github/workflows/", "CI workflow", False),
         (r"^\.github/", "repository automation config", False),
         (_MANIFEST, "dependency manifest", True),
@@ -489,20 +500,55 @@ def _mismatches(
     return tuple(found.values())
 
 
-def _is_named(delta: Delta, tokens: tuple[str, ...], words: set[str], idents: set[str]) -> bool:
-    stem = PurePosixPath(delta.path).stem
+GENERIC_STEMS = frozenset(
+    [
+        "index",
+        "page",
+        "route",
+        "layout",
+        "main",
+        "mod",
+        "init",
+        "__init__",
+        "server",
+        "handler",
+        "utils",
+        "types",
+    ]
+)
+_PARTS = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+|[0-9]+")
 
-    return (
-        any(hits(token, delta.path) for token in tokens)
-        or (len(stem) >= 3 and stem.lower() in words)
-        or any(symbol in idents for symbol in _DEFINED.findall(delta.diff))
+
+def _norm(name: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def _named_by(name: str, words: set[str], flat: set[str]) -> bool:
+    """The whole name in any spelling, or every part of 3+ characters as a word (plural ok)."""
+
+    if len(_norm(name)) >= 3 and _norm(name) in flat:
+        return True
+
+    parts = [part.lower() for part in _PARTS.findall(name) if len(part) >= 3]
+
+    return bool(parts) and all(
+        part in words or part + "s" in words or part.removesuffix("s") in words for part in parts
     )
 
 
-def unnamed(files: tuple[FileChange, ...]) -> tuple[FileChange, ...]:
-    """Code and config files the description never names, largest change first."""
+def _is_named(
+    delta: Delta, tokens: tuple[str, ...], words: set[str], flat: set[str], idents: set[str]
+) -> bool:
+    path = PurePosixPath(delta.path)
+    first = path.name.split(".")[0].lstrip("+").lower() or path.name.lower()
 
-    return _largest(f for f in files if f.kind in ("code", "config") and not f.named)
+    names = [path.parent.name.strip("()")] if first in GENERIC_STEMS else [path.stem, path.name]
+
+    return (
+        any(hits(token, delta.path) for token in tokens)
+        or any(name and _named_by(name, words, flat) for name in names)
+        or any(symbol in idents for symbol in _DEFINED.findall(delta.diff))
+    )
 
 
 def _largest(files: Iterable[FileChange]) -> tuple[FileChange, ...]:
@@ -520,19 +566,17 @@ def _pointers(files: tuple[FileChange, ...], deltas: dict[str, Delta]) -> tuple[
         return f"+{file.added} −{file.removed}"
 
     live = tuple(f for f in files if f.kind != "generated")
-    sensitive = tuple(f for f in live if f.sensitive)
-    code = tuple(f for f in live if f.kind == "code")
+    sensitive = _largest(f for f in live if f.sensitive)
     groups: tuple[tuple[tuple[FileChange, ...], Callable[[FileChange], str]], ...] = (
         (
-            _largest(f for f in sensitive if not f.named),
-            lambda f: f"{f.sensitive}, not named in the description",
+            tuple(f for f in sensitive if not f.named),
+            lambda f: f"{f.sensitive}; its path is not in the description",
         ),
+        (sensitive, lambda f: str(f.sensitive)),
         (
-            unnamed(live),
-            lambda f: f"largest code or config change not named in the description ({size(f)})",
+            _largest(f for f in live if f.kind == "code"),
+            lambda f: f"largest code change ({size(f)})",
         ),
-        (_largest(sensitive), lambda f: str(f.sensitive)),
-        (_largest(code)[:1], lambda f: f"largest code change ({size(f)})"),
     )
     out: list[Pointer] = []
 
@@ -565,7 +609,8 @@ def brief_of(
     units = units_of(title, body)
     text = " ".join(_URL.sub(" ", unit.text) for unit in units)
     tokens = path_tokens(text)
-    words = {word.lower() for word in re.findall(r"[A-Za-z0-9_]+", text)}
+    words = {word.lower() for word in re.findall(r"[A-Za-z0-9]+", text)}
+    flat = {_norm(word) for word in re.findall(r"[\w.+-]+", text)}
     idents = set(re.findall(r"[A-Za-z_$][\w$]*", text))
     files = tuple(
         FileChange(
@@ -573,7 +618,7 @@ def brief_of(
             kind_of(d),
             d.added,
             d.removed,
-            _is_named(d, tokens, words, idents),
+            _is_named(d, tokens, words, flat, idents),
             reason_of(d.path),
         )
         for d in sorted(deltas, key=lambda d: d.path)
