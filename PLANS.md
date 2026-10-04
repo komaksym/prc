@@ -22,7 +22,7 @@ The brief survives as overlay facts on the map: CI on the head commit, risky sur
 
 - `map.json`, the `ChangeMap` below;
 - `index.html`, one self-contained offline page with no CDN and no network;
-- with `--video`, `tour.mp4` (1280x720, H.264, about 30 s) and `card.png` (1200x675 social card).
+- with `--video`, `tour.mp4` (H.264, 30 fps, 1920x1080 frames of a 1280x720 viewport at 1.5x, as long as the tour) and `card.png` (a 1200x630 viewport at 2x, the overview as a social card).
 
 It prints JSON with the paths and the counts.
 
@@ -52,26 +52,30 @@ It prints JSON with the paths and the counts.
 1. **Languages.** Python, JavaScript, TypeScript and TSX, parsed with tree-sitter (`tree-sitter` plus the official grammar wheels) through one registry table that maps an extension to a grammar and its queries. Adding Go or Rust adds a row. A source file over 512 KB, or any file in the generated kind, is not parsed.
 2. **Symbols.** These are functions, classes and methods, plus arrow functions and function expressions bound to a name at top level or in a class. A line belongs to the innermost symbol whose span holds it. Top-level lines outside every symbol (imports, constants) stay on the file, not on a symbol.
 3. **Status.** A symbol is matched by `path::qualname` between base and head. In head only means added. In base only means deleted. In both, with a changed line inside its head or base span, means modified. Unchanged symbols appear only as context.
-4. **Calls.** A call is a call expression whose callee is a bare name, `self.x`, `this.x`, or `obj.x`. Instantiating a class counts as a call to the class. Resolution goes in order:
+4. **Calls.** A call is a call expression whose callee is a bare name, `self.x`, `this.x`, or `obj.x`. Instantiating a class counts as a call to the class. A JSX element whose name starts with a capital letter (`<CartView />`, `<Ui.Button>`) counts as a call to that component. Resolution goes in order:
    1. a definition in the same file;
-   2. a name imported from a repo file (Python `from a.b import x`, `import a.b`; JS/TS relative imports with index and extension probing);
+   2. a name imported from a repo file (Python `from a.b import x`, `import a.b`; JS/TS relative imports with index and extension probing; CommonJS `const x = require("./x")` and `const { a } = require("./x")`);
    3. a method of the enclosing class for `self.x` or `this.x`;
-   4. otherwise, exactly one definition with that name in the repo (`resolution="name"`).
+   4. by name (`resolution="name"`), only for `obj.x()` and inherited `self.x()`, and only when exactly one candidate survives these filters:
+      - the method name is not a dunder;
+      - the receiver is a plain name chain whose root is not bound by an import, so a literal, a call result or `fs` from `require("fs")` never matches;
+      - for `obj.x()`, the words of the receiver's last identifier are a subset of the words of the candidate's class name (a method) or of its module's file stem (a top-level function), so `cart.subtotal()` matches `Cart.subtotal` and `download.prepare()` matches `pushbutton_download.prepare`, while `db.execute()` matches nothing;
+      - for `self.x()`, the candidate is a method.
 
    Anything else is dropped. A wrong arrow is worse than a missing one.
 5. **Edges shown.** Only edges with at least one changed symbol at an end. Base edges come from the base versions of changed files. A head edge missing from base is added, a base edge missing from head is removed, and the rest are kept.
-6. **Context.** These are unchanged callers and callees of changed symbols, at most 6 each per changed symbol, chosen by file then line. `call_sites` counts every resolved call site in the head tree, so the card can say "47 call sites" while drawing 6.
-7. **Tests.** A test symbol is any symbol in a test-kind file. A changed code symbol with no edge from a test symbol is "untested", meaning directly untested, and the drawer says so.
+6. **Context.** Unchanged callers of changed symbols, and unchanged callees whose edge the PR added, removed or touched. A kept call is touched when one of its call lines is a `+` line. A kept call from changed code to an untouched helper is background and is not drawn. At most 6 callers and 6 callees per changed symbol, chosen by edge status (added, removed, touched, kept), then file, then line. `call_sites` counts every resolved call site in the head tree, so the card can say "47 call sites" while drawing 6.
+7. **Tests.** A test symbol is any symbol in a test-kind file. A changed code symbol with no live edge from a test symbol has "no direct test". The card and the drawer use exactly that wording, because a test may still reach it through a caller.
 8. **Tour.** The order is:
    1. overview, with an empty `focus`;
-   2. one step per sensitive file, files the description does not name first, then by path;
+   2. one step per sensitive file, files the description does not name first, then by path, at most 3;
    3. entry points, which are changed non-test symbols with no changed non-test caller, largest first (`added + removed`), then by id;
    4. after each entry, its changed callees depth-first, each with `via` set to its caller. Callees go in order of the call's head line, removed calls after the rest (by base line), then by id;
    5. remaining changed non-test symbols, by id;
-   6. one step per changed test symbol, by id;
+   6. one `test` step whose `focus` is every changed test symbol, by id, at most 6;
    7. summary, with an empty `focus`.
 
-   Each symbol appears once. Removed edges count for traversal, so a deleted function is reached through its former caller.
+   Each symbol appears once. Removed edges count for traversal, so a deleted function is reached through its former caller. Steps 3 to 5 stop after 10 symbol steps in total, so a tour never runs past about 14 steps and 50 seconds. The summary card counts the changed symbols the tour skipped.
 9. **Safety.**
    - Data goes in one `<script type="application/json">` block, with `<`, `>`, `&`, U+2028 and U+2029 escaped.
    - The page builds every PR-controlled string with `textContent` or `createElementNS`, never `innerHTML`.
@@ -79,6 +83,15 @@ It prints JSON with the paths and the counts.
    - There are no external URLs.
    - The `hostile` fixture must render inert.
 10. **Determinism.** The same PR and code give byte-identical `map.json` and `index.html`. Layout is computed in Python from the map and is stable.
+11. **Edge routing.** No edge passes through a card that is not one of its ends. The layout computes each edge's waypoints in Python:
+    - an edge between adjacent columns crosses the gutter between them;
+    - a longer edge crosses each column in between through the free gap nearest its straight line;
+    - a test edge rises through the strip above the tests lane, then up the gutter left of its target's column.
+
+    The page draws a smooth path through the waypoints.
+12. **Dense maps.** When a map has more than 30 symbols, cards shrink to one-line rows grouped under their file, and only the edges of the hovered, selected or toured symbol are drawn. A map with no symbols says that no function or class changed in a parsed file.
+13. **Viewport.** The page opens fitted to the canvas, or to the changed-code lane when fitting the whole canvas would shrink text below legibility. The header never overflows. The title truncates, and the Play button stays visible from 1280 px wide.
+14. **Diff text.** Every diff line ends with a newline, and a missing final newline is marked with git's `\ No newline at end of file` line, so the last line of a file never glues onto the next diff line.
 
 ### Milestones
 
@@ -96,6 +109,22 @@ Throughput checkpoint:
 - **Independent workstreams.** M1 and M2 touch disjoint files. `changemap.py` types are frozen at M0, and any change goes through the lead. M1 alone edits `pyproject.toml`. M2 alone edits `pipeline.py` and `cli.py`.
 - **Shared mutable state.** None after M0. Each delegate has its own worktree and branch off `visual-map`.
 - **Smallest safe decomposition.** Two workers, because domain and presentation meet only at the frozen types. Video waits for the page's `seek` API.
+
+### M3 results (2026-10-04)
+
+M1 and M2 merged into `visual-map` (42d0320, 439a68f). The E2E passes, and the 6 browser tests pass outside the sandbox. Then `prc map` ran on the 19 corpus PRs that change Python, JS or TS. All 19 finished in 3 to 9 s each, GitHub fetch included, and every page loads with no console error.
+
+- **Exact edges.** 820 drawn. 816 have a call of the target's name on a line of the source span. The other 4 are generic calls `f<T>(...)` (3) and one call through a re-export alias, all correct on inspection.
+- **Name edges.** 114 drawn, mostly false. Examples are `"".join(...)` to a repo method `join`, `db.execute(...)` to `_ScratchProof.execute`, `res.json()` to a top-level `json` in another file, and `fs.writeFile` (a CommonJS `require`) to a test helper. The true ones had a receiver named after its class or module (`cli_runner.invoke` to `EnvCliRunner.invoke`, `download.prepare` to `pushbutton_download.prepare`). Rule 4.4 now encodes that.
+- **Size.** 7 of the 19 PRs change 34 or more symbols. Those maps are unreadable at fit zoom, and their tours run 60 to 226 s. Rules 6, 8, 12 and 13 respond.
+- **Routing.** An edge that crosses a column is drawn over the cards in it, so `CartView -> total` reads as `legacy_total -> total`. Rule 11 responds.
+- **Header.** At 1280 to 1440 px a long title pushes the Play button off screen. Rule 13 responds.
+
+Next milestones, in parallel from `visual-map`:
+
+- **M3b domain (delegate D, `map-domain2`).** Rules 4, 6, 8 and 14 in `codegraph.py`, `changemap.py` and `gitutil.py`. The shop E2E keeps its counts, because `CartView -> total` is touched.
+- **M3c page (lead, `visual-map`).** Rules 7, 11, 12 and 13 in the layout, page script and styles, checked on screenshots of real PRs.
+- **M4 (delegate F, `map-video`).** As above. The video module injects its capture styles itself and reads only `window.prcTour` and stable element ids, so it does not edit the page assets.
 
 ## Phase 2 (done): PR brief, the free tier
 
