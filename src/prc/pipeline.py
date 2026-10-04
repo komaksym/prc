@@ -174,10 +174,8 @@ def run_brief(
     """Capture, snapshot, compute and write the brief. No model calls, no store."""
 
     bundle = capture_bundle(source, ref, clock)
-    acquisition = build_snapshot(
-        bundle, source.label, source.live_verified, source.repo_path(ref), policy
-    )
     repo = source.repo_path(ref)
+    acquisition = build_snapshot(bundle, source.label, source.live_verified, repo, policy)
     comparison = acquisition.snapshot.comparison
     known = frozenset(list_paths(repo, comparison.merge_base_sha)) | frozenset(
         list_paths(repo, comparison.head_sha)

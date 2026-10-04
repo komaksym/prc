@@ -87,8 +87,6 @@ class Unit:
     checked: bool | None
 
 
-# File kinds and sensitive surfaces: ordered tables, first match wins.
-
 Rule = tuple[Callable[[Delta], bool], Kind]
 
 
@@ -139,11 +137,16 @@ KIND_RULES: tuple[Rule, ...] = (
     (lambda delta: True, "code"),
 )
 
-# (pattern, our reason text, show up to MANIFEST_LINES added lines)
-SensitiveRule = tuple[re.Pattern[str], str, bool]
+
+@dataclass(frozen=True, slots=True)
+class SensitiveRule:
+    rx: re.Pattern[str]
+    reason: str
+    shows_added: bool
+
 
 SENSITIVE_RULES: tuple[SensitiveRule, ...] = tuple(
-    (re.compile(pattern, re.IGNORECASE), reason, lines)
+    SensitiveRule(re.compile(pattern, re.IGNORECASE), reason, lines)
     for pattern, reason, lines in (
         (
             r"(^|/)(\.gitleaksignore|\.gitleaks\.toml|\.secrets\.baseline|\.gitguardian\.ya?ml"
@@ -181,17 +184,15 @@ def kind_of(delta: Delta) -> Kind:
     return next(kind for matches, kind in KIND_RULES if matches(delta))
 
 
-def sensitive_rule(path: str) -> tuple[str, bool] | None:
-    return next(((reason, lines) for rx, reason, lines in SENSITIVE_RULES if rx.search(path)), None)
+def sensitive_rule(path: str) -> SensitiveRule | None:
+    return next((rule for rule in SENSITIVE_RULES if rule.rx.search(path)), None)
 
 
 def reason_of(path: str) -> str | None:
     rule = sensitive_rule(path)
 
-    return None if rule is None else rule[0]
+    return None if rule is None else rule.reason
 
-
-# Claim units.
 
 _FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 _COMMENT = re.compile(r"<!--.*?(?:-->|\Z)", re.DOTALL)
@@ -290,8 +291,6 @@ def units_of(title: str, body: str) -> tuple[Unit, ...]:
 
     return tuple(units)
 
-
-# Tokens named by a unit.
 
 _URL = re.compile(r"(?:[a-z][a-z0-9+.-]*://|www\.)\S+", re.IGNORECASE)
 _TICKS = re.compile(r"`([^`\n]+)`")
@@ -397,8 +396,6 @@ class Tree:
         return key in self.dirs or (not token.endswith("/") and key in self.files)
 
 
-# Claim detectors.
-
 _CHANGE_VERB = re.compile(
     r"(?<![\w-])(?:add(?:s|ed|ing)?|updat(?:e|es|ed|ing)|modif(?:y|ies|ied|ying)|chang(?:e|es|ed|ing)"
     r"|fix(?:es|ed|ing)?|bump(?:s|ed|ing)?|remov(?:e|es|ed|ing)|delet(?:e|es|ed|ing)"
@@ -425,7 +422,7 @@ _CI_NOUN = re.compile(
     re.IGNORECASE,
 )
 _PASSED = re.compile(
-    r"\b(?:pass(?:es|ed|ing)?|green|succe(?:ed|eds|eded|ssful(?:ly)?)|clean)\b", re.I
+    r"\b(?:pass(?:es|ed|ing)?|green|succe(?:ed|eds|eded|ssful(?:ly)?)|clean)\b", re.IGNORECASE
 )
 _TEST_NOUN = re.compile(r"\b(?:tests?|test (?:cases?|suite|coverage)|specs?)\b", re.IGNORECASE)
 _TEST_VERB = re.compile(
@@ -562,9 +559,6 @@ def _manifest_lines(delta: Delta) -> tuple[str, ...]:
 
 
 def _pointers(files: tuple[FileChange, ...], deltas: dict[str, Delta]) -> tuple[Pointer, ...]:
-    def size(file: FileChange) -> str:
-        return f"+{file.added} −{file.removed}"
-
     live = tuple(f for f in files if f.kind != "generated")
     sensitive = _largest(f for f in live if f.sensitive)
     groups: tuple[tuple[tuple[FileChange, ...], Callable[[FileChange], str]], ...] = (
@@ -575,7 +569,7 @@ def _pointers(files: tuple[FileChange, ...], deltas: dict[str, Delta]) -> tuple[
         (sensitive, lambda f: str(f.sensitive)),
         (
             _largest(f for f in live if f.kind == "code"),
-            lambda f: f"largest code change ({size(f)})",
+            lambda f: f"largest code change (+{f.added} −{f.removed})",
         ),
     )
     out: list[Pointer] = []
@@ -584,7 +578,7 @@ def _pointers(files: tuple[FileChange, ...], deltas: dict[str, Delta]) -> tuple[
         for file in members:
             if len(out) < MAX_POINTERS and all(file.path != p.path for p in out):
                 rule = sensitive_rule(file.path)
-                lines = _manifest_lines(deltas[file.path]) if rule and rule[1] else ()
+                lines = _manifest_lines(deltas[file.path]) if rule and rule.shows_added else ()
                 out.append(Pointer(file.path, reason(file), lines))
 
     return tuple(out)

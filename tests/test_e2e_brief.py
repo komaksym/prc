@@ -25,7 +25,9 @@ def brief_cli(*args: str, cwd: Path = ROOT) -> dict[str, Any]:
 
     assert completed.returncode == 0, completed.stderr
 
-    return json.loads(completed.stdout)  # type: ignore[no-any-return]
+    result: dict[str, Any] = json.loads(completed.stdout)
+
+    return result
 
 
 def test_claims_fixture_brief_is_computed_safe_and_repeatable(tmp_path: Path) -> None:
