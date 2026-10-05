@@ -1,3 +1,7 @@
+## Start here
+
+Current work is the end-to-end MVP. Read `START-HERE.md` first, then continue from the last entry in `docs/mvp/LOG.md`.
+
 ## Agent skills
 
 ### Issue tracker
