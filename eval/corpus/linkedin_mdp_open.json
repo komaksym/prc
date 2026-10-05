@@ -1,0 +1,135 @@
+{
+ "repo": "komaksym/linkedin-mdp",
+ "visibility": "public",
+ "listed": "2026-10-06 (gh pr list --state open)",
+ "note": "Maps were computed 2026-10-05 (PR 19 on 2026-10-06). PR heads may have moved since; the eval re-maps at the current head and records head_sha.",
+ "prs": [
+  {
+   "number": 19,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/19",
+   "additions": 8081,
+   "deletions": 10,
+   "files": 62,
+   "size": "large",
+   "old_map": "prototypes/mdp/maps/pr19/cf2927e42529d8ea/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 17,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/17",
+   "additions": 219,
+   "deletions": 39,
+   "files": 11,
+   "size": "small",
+   "old_map": "prototypes/mdp/maps/pr17/2e85e566fdcd1ec7/map.json",
+   "old_boards": [
+    "prototypes/explainer/boards/mdp17b.json",
+    "prototypes/explainer/boards/mdp17.json"
+   ]
+  },
+  {
+   "number": 16,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/16",
+   "additions": 1211,
+   "deletions": 11,
+   "files": 15,
+   "size": "medium",
+   "old_map": "prototypes/mdp/maps/pr16/3b17dec5dfb8e2fc/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 15,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/15",
+   "additions": 881,
+   "deletions": 2,
+   "files": 14,
+   "size": "medium",
+   "old_map": "prototypes/mdp/maps/pr15/de0ac5950de858bf/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 14,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/14",
+   "additions": 261,
+   "deletions": 20,
+   "files": 13,
+   "size": "small",
+   "old_map": "prototypes/mdp/maps/pr14/018f2ec8f4a82b41/map.json",
+   "old_boards": [
+    "prototypes/explainer/boards/mdp14.json"
+   ]
+  },
+  {
+   "number": 13,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/13",
+   "additions": 1403,
+   "deletions": 3,
+   "files": 15,
+   "size": "medium",
+   "old_map": "prototypes/mdp/maps/pr13/033e14c667cf0e97/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 12,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/12",
+   "additions": 204,
+   "deletions": 4,
+   "files": 12,
+   "size": "small",
+   "old_map": "prototypes/mdp/maps/pr12/26ed8fadac86c489/map.json",
+   "old_boards": [
+    "prototypes/explainer/boards/mdp12.json"
+   ]
+  },
+  {
+   "number": 11,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/11",
+   "additions": 259,
+   "deletions": 1,
+   "files": 12,
+   "size": "small",
+   "old_map": "prototypes/mdp/maps/pr11/a710429a52034015/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 10,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/10",
+   "additions": 2698,
+   "deletions": 16,
+   "files": 14,
+   "size": "large",
+   "old_map": "prototypes/mdp/maps/pr10/186be0024a507bad/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 8,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/8",
+   "additions": 1890,
+   "deletions": 5,
+   "files": 29,
+   "size": "medium",
+   "old_map": "prototypes/mdp/maps/pr8/ec4ce81cc582af5d/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 7,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/7",
+   "additions": 818,
+   "deletions": 9,
+   "files": 17,
+   "size": "medium",
+   "old_map": "prototypes/mdp/maps/pr7/7386ceac48fcc754/map.json",
+   "old_boards": []
+  },
+  {
+   "number": 5,
+   "url": "https://github.com/komaksym/linkedin-mdp/pull/5",
+   "additions": 999,
+   "deletions": 5,
+   "files": 10,
+   "size": "medium",
+   "old_map": "prototypes/mdp/maps/pr5/deb87ce664d1e827/map.json",
+   "old_boards": []
+  }
+ ]
+}

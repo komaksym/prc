@@ -1,3 +1,5 @@
+> **Current work (2026-10-06):** the end-to-end MVP. Start at `START-HERE.md`; the plan is `docs/mvp/PLAN.md`. The phases below are history.
+
 # PLANS — hardened GitHub PR comprehension MVP
 
 Run date: 2026-10-04. Authority: `CONTEXT.md`, `docs/design/architecture-checkpoint.md`, `docs/adr/0001-*`, `docs/design/evaluation-protocol.md` (copied with provenance in `docs/PROVENANCE.md`). Those contracts are not reopened here.
