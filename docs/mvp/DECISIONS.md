@@ -36,7 +36,7 @@ The narrated video, the walkthrough and the card headline come from one board. O
 
 **D9. Mermaid is the diagram in the PR comment.** GitHub draws a Mermaid block in a comment with no hosting and no upload. prc writes the diagram from `map.json` (computed calls only), with at most 12 nodes. Reason: the user asked to reuse what exists. Mermaid is the only diagram format that GitHub draws natively. CodeRabbit already writes model-drawn Mermaid diagrams, so the computed source is the difference (D3).
 
-**D10. The PR card is the infographic.** One 1200x630 image (rendered at 2x). It shows the board headline when a board exists, the map stats, the look-first list, the risky surfaces and the changed functions without a direct test. It extends the existing `card.png` from `map --video`. It must stay readable at 800 px wide (OCR check). The older `review` command's `infographic.svg` is not the MVP card.
+**D10. The PR card is the infographic.** One 1200x630 image (rendered at 2x). It shows the board headline when a board exists, the map stats, the look-first list, the risky surfaces and the changed functions without a direct test. It replaces the existing `card.png` from `map --video`, which is only a screenshot of the map page. It must stay readable at 800 px wide (OCR check). The older `review` command's `infographic.svg` is not the MVP card.
 
 **D11. prc never posts anything.** It writes files. The user pastes the comment and uploads the video. Reason: posting is outward-facing, and GitHub has no public API to upload a video into a PR description (inferred from GitHub's REST docs; the web UI upload is the known path). A `--post` flag is out of scope for the MVP.
 
@@ -52,7 +52,7 @@ The narrated video, the walkthrough and the card headline come from one board. O
 
 **D16. Long lines wrap, and the code font goes up to 40 px.** Across 14 PR maps, 15.6% of changed lines are over 80 characters (measured, 9,982 lines). Today one long line shrinks every line in the scene. Rows over 72 columns wrap at token boundaries with a hanging indent. The font cap goes from 32 to 40 px, limited by width and by the caption area.
 
-**D17. Voice backends, in order: Kokoro, macOS `say`, none.** Kokoro 0.9.4 (`af_heart`) is the default when the `voice` extra is installed. It pulls PyTorch and needs espeak-ng from Homebrew (measured in `.kvenv`). macOS `say` needs no install. `none` makes a silent video with captions, timed by an estimate, and the tests use it so they stay fast and repeatable. Kokoro output is not byte-identical between runs, but scene start times were identical (measured).
+**D17. Voice backends, in order: Kokoro, macOS `say`, none.** Kokoro 0.9.4 (`af_heart`) is the default when the `voice` extra is installed. It needs Python 3.12 or lower (its metadata says `<3.13`). It pulls PyTorch, spaCy and the `en_core_web_sm` model, downloads its weights from Hugging Face on first use, and needs espeak-ng from Homebrew (measured in `.kvenv`). So prc's dev venv moves to Python 3.12, and the first voice install in any venv is a download the user approves. macOS `say` needs no install. `none` makes a silent video with captions, timed by an estimate, and the tests use it so they stay fast and repeatable. Kokoro output is not byte-identical between runs, but scene start times were identical (measured).
 
 ## Scale
 

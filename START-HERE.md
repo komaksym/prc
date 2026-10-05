@@ -40,7 +40,7 @@ cd ~/dev/prc
 uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest && uv build   # verify, about 3 min
 uv run prc map --source fixture:shop                                                     # offline sample
 GITHUB_TOKEN="$(gh auth token)" uv run prc map --source https://github.com/komaksym/linkedin-mdp/pull/12
-cd prototypes/explainer && .kvenv/bin/python build.py boards/mdp12.json ../mdp/maps/pr12/26ed8fadac86c489/map.json out/mdp12-new
+cd /Users/koval/dev/prc/prototypes/explainer && .kvenv/bin/python build.py boards/mdp12.json ../mdp/maps/pr12/26ed8fadac86c489/map.json out/mdp12-new
 ```
 
 Chromium, ffmpeg, `say`, GitHub network calls and git commits need the sandbox off.
@@ -68,6 +68,8 @@ Chromium, ffmpeg, `say`, GitHub network calls and git commits need the sandbox o
 
 These are the user's calls. Prepare the options, then ask once:
 
+- the first install of the `voice` extra in any new venv (PyTorch, spaCy, `en_core_web_sm`, Kokoro weights), and any `playwright install` (Stage 3 and Stage 7);
+- installing the skill into the user's real `~/.claude/skills` (Stage 7);
 - the Mermaid download for the diagram syntax gate (Stage 5);
 - the license, the public repo name, and PyPI publishing (Stage 9);
 - posting the promo, and pushing the repo (Stage 9);

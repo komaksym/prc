@@ -44,9 +44,9 @@ Every gate is a script in `scripts/eval/`. Each one prints PASS or FAIL per PR a
 3. **DOM text.** In the rendered page, each diff row's text equals the row text.
 4. **Layout.** The engine's layout lint reports no warnings.
 5. **Diagram.** Every edge in the `comment.md` Mermaid block exists in `map.json` with the same status, and the diagram has no more than 12 nodes. The syntax check renders the block with a pinned Mermaid build in headless Chromium. Mermaid is a download, so ask the user before you add it. Until then, a grammar test checks the subset that prc writes.
-6. **Card facts.** Every number on the card equals the number in `map.json`. Check it from the card's HTML before the screenshot, and with OCR at 800 px after it.
+6. **Card facts.** Every number on the card equals the number computed by the stat definitions in `PLAN.md` Stage 5, from `map.json` and the brief. Check it from the card's HTML before the screenshot, and with OCR at 800 px after it.
 7. **Doc links.** Every receipt link in `doc.html` points at `https://github.com/<repo>/blob/<sha>/<path>#L<n>` with the head or base sha. The text of that line in the git cache contains the receipt's `match` text.
-8. **Video file.** Use ffprobe to check 1920x1080 at 30 fps, and ffmpeg `volumedetect` to check that audio exists (unless the voice is `none`). Length is 45 to 75 s, or up to 90 s for large PRs.
+8. **Video file.** Use ffprobe to check 1920x1080 at 30 fps, and ffmpeg `volumedetect` to check that audio exists (unless the voice is `none`). Length is 45 to 80 s, or up to 90 s for large PRs. The skill tells the writer to aim for 60 s. The prototype mdp17b render is 75.4 s (measured).
 9. **Arrow precision.** On the 28 public PRs, at least 99% of the drawn arrows have a call of the target on a line of the source. The 2026-10-04 run measured 879 of 882. Old scripts are in `prototypes/scratch-2026-10-05/edge_check.py` and `map_corpus.py`.
 
 ## B. Grounding audit (agents)

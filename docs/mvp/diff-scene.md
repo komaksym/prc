@@ -28,7 +28,7 @@ The user set the goal: the video must be useful to reviewers, and people should 
 - **Removed lines stay visible, and changed words are marked.** Reviewers mostly fail on code that is plausible but subtly wrong ("almost right" is the top AI-code complaint in our research, `prc/reports/AI code comprehension pain points.md`). The useful signal is what exactly changed inside a line. A still frame, a muted viewer and a paused video can all see a word-level mark. An animation cannot give that.
 - **No magic-move glide.** An earlier plan gave tokens keys so they could slide from the old line to the new one. Motion carries the same information as the word mark, but only while the viewer is looking at that moment. It also adds the most engine risk. The word mark replaces it. Do not build the glide.
 - **Soft wrap is required, not optional.** It is the only way long-line scenes reach a legible size. Wrapping is visual only. The text of every row is unchanged and still passes the join test.
-- **The font cap is 40 px, bounded by width and height.** For PR 12 the expected size is 38 px, about 15.8 px at 800 px wide, up from 13.3 px (inferred).
+- **The font cap is 40 px, bounded by width and height.** For PR 12 the formula gives 38 px before the line-number gutter (Step 5) and 36 px after it, about 15 px at 800 px wide, up from 13.3 px (computed from the formula, not yet rendered).
 - **Line numbers.** They are receipts, which check.py verifies, and they show how far apart the shown lines are. They cost about 3 to 4 columns of width.
 - **A usefulness test decides "done".** Section 5 defines frame QA: questions that a reviewer should be able to answer from the final frame at 800 px. The baseline is measured, and the work is done when the new frames answer more of them.
 
@@ -40,7 +40,7 @@ E means `/Users/koval/dev/prc/prototypes/explainer`. It is its own local git rep
 - `E/check.py`. It validates boards. `diff()` (line 101) builds each diff row as `{ref, op, num, text, step}`. `op` is `+`, `-` or a space. `step` is 0 for context lines.
 - `E/engine.js`. It draws the frames.
   - Lines 25 to 43 hold `SYNTAX` and `paint()`.
-  - `MAKERS.diff` starts at line 516.
+  - `MAKERS.diff` starts at line 517.
   - Line 529 sets the font size.
   - Line 532 is the row markup.
   - Line 535 sets the open time `tin` of each added row.
@@ -180,6 +180,7 @@ Failure modes, each one a test:
     - JavaScript `const f = () => 1`: `const`→k, `=>`→k.
     - TypeScript `type A = {a: number}`: `type`→k.
     - Rust through Pygments: `fn`→k, `// hi`→c.
+14. A blank row (text `""`) with a cut above 0 gives `tokens: []` and joins. The bakeoff's `cutTokens` throws "row shorter than cut" here. Do not copy that behaviour. `fill()` turns blank lines into `""` (build.py lines 189 to 191).
 
 Done when all the tests pass and `spike/run12.py` still prints 0 mismatches.
 
@@ -268,14 +269,14 @@ Done when:
 
 1. A wrapped row does not join. Test every row of every diff scene in `boards/`, plus a synthetic 150-character string row.
 2. A visual line is wider than `cols`, unless it is one split piece.
-3. A short row wraps. Rows of 72 columns or fewer stay one line.
+3. A short row wraps. Rows of `72 - gutter` columns or fewer stay one line.
 4. A whitespace token starts a continuation line. Whitespace stays at the end of the line before.
 5. A 12-row scene (10 code rows and 2 gaps) puts the code box below 862. Build a synthetic board from mdp12 with more refs from the same hunk, keep it out of `boards/`, and use `--keys-only`.
 6. A note runs off the right edge or covers wrapped text. Check the mdp17b frames.
 
 **Done when:**
 
-- mdp12 builds with FS 38 (expected, so check it in the DOM);
+- mdp12 builds with FS 38 before Step 5 and FS 36 after it (computed from the formula, so check it in the DOM);
 - mdp17b builds with line `1031` wrapped into two lines and FS at least 30;
 - no `layout:` line appears for any diff scene in mdp12, mdp17b, mdp4 or mdp14;
 - the final mdp17b frame at 800 px is readable to you.
@@ -327,7 +328,7 @@ This test says whether a reviewer can get the facts of the change from the video
 2. Give the PNGs and the questions, without the answers, to a fresh agent. It must not have seen the code, the boards or `questions.json`. Copy the PNGs to a neutral folder, and paste the questions into its prompt. Tell it to read only those images, to quote code exactly, and to answer `CANNOT TELL` when the image does not show the answer or it cannot read it confidently.
 3. Grade each answer against `questions.json`. It is correct only if it states the substance of the answer key. Record correct, wrong and `CANNOT TELL` per question.
 
-The baseline frames are in `eval/baseline/` (current engine). The baseline score is recorded in section 7. The redesign is done when the new frames score higher than the baseline on mdp17b and no lower on mdp12. Expected: mdp17b's "before" questions go from unanswerable to answerable (inferred from the design).
+The baseline frames are in `eval/baseline/` (current engine). The baseline score is recorded in section 7. The redesign is done when the new frames score mdp17b 4/4 and mdp12 5/5. Expected: mdp17b's "before" questions go from unanswerable to answerable (inferred from the design).
 
 ## 6. Report format
 
