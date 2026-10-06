@@ -15,6 +15,7 @@ from prc.changemap import ChangeMap, build_change_map
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
 from prc.explainer import render as explain_render
 from prc.explainer.check import verify_board
+from prc.explainer.doc import render_doc as render_explain_doc
 from prc.explainer.timing import estimate as estimate_seconds
 from prc.explainer.timing import predict as predict_seconds
 from prc.explainer.voice import Backend
@@ -335,6 +336,7 @@ class ExplainResult:
     map_html: Path
     board_json: Path | None
     video: Path | None
+    doc_html: Path | None
     run_json: Path
     duration: float
     estimate: float
@@ -397,8 +399,9 @@ def run_explain(
     (out_dir / "map.json").write_text(json.dumps(used, indent=2, sort_keys=True))
     (out_dir / "map.html").write_text(render_map(change_map))
 
-    check_passed, board_out, video, duration, estimate, predicted, warnings = (
+    check_passed, board_out, video, doc_out, duration, estimate, predicted, warnings = (
         False,
+        None,
         None,
         None,
         0.0,
@@ -435,6 +438,8 @@ def run_explain(
         duration, warnings = rendered.duration, rendered.layout_warnings
         video = out_dir / "video.mp4"
         predicted = predict_seconds(board, backend)
+        render_explain_doc(board, used, out_dir, duration, has_video=True)
+        doc_out = out_dir / "doc.html"
 
     run = {
         "source": source.label,
@@ -449,6 +454,7 @@ def run_explain(
         "predicted_seconds": round(predicted, 2),
         "duration_seconds": round(duration, 2),
         "fps": explain_render.FPS,
+        "doc": str(doc_out) if doc_out else None,
         "layout_warnings": warnings,
     }
     run_json = out_dir / "run.json"
@@ -460,6 +466,7 @@ def run_explain(
         out_dir / "map.html",
         board_out,
         video,
+        doc_out,
         run_json,
         duration,
         estimate,
