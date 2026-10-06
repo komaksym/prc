@@ -70,12 +70,23 @@ def test_explain_shop_none(chromium: None, tmp_path: Path) -> None:
     assert printed["check_passed"] is True
 
     out = Path(printed["out"])
-    for name in ("map.json", "map.html", "board.json", "video.mp4", "run.json"):
+    for name in (
+        "map.json",
+        "map.html",
+        "board.json",
+        "video.mp4",
+        "run.json",
+        "card.html",
+        "card.png",
+        "comment.md",
+    ):
         assert (out / name).exists(), name
 
     run = json.loads((out / "run.json").read_text())
     assert run["check"]["passed"] is True
     assert run["voice"] == "none"
+    assert Path(run["comment"]).exists()
+    assert Path(run["card"]).exists()
 
     info = probe(out / "video.mp4")
     stream = info["streams"][0]

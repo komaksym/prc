@@ -302,6 +302,8 @@ def main(argv: list[str] | None = None) -> int:
                     "board": str(explained.board_json) if explained.board_json else None,
                     "video": str(explained.video) if explained.video else None,
                     "doc": str(explained.doc_html) if explained.doc_html else None,
+                    "card": str(explained.card_png) if explained.card_png else None,
+                    "comment": str(explained.comment_md),
                     "duration": explained.duration,
                     "estimate": explained.estimate,
                     "check_passed": explained.check_passed,

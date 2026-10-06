@@ -8,6 +8,7 @@ import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 from prc.brief import Brief, build_brief
 from prc.capture import Clock, capture_bundle
@@ -25,12 +26,16 @@ from prc.gitutil import list_paths
 from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_hex, to_jsonable
 from prc.model import PrRef
 from prc.presentation.build import build_document
+from prc.presentation.card import CardError
+from prc.presentation.card import build_card_html as build_pr_card_html
+from prc.presentation.card import render_card_png as render_pr_card_png
 from prc.presentation.check import (
     check_document,
     check_entry,
     check_html,
     check_svg,
 )
+from prc.presentation.comment import render_comment as render_pr_comment
 from prc.presentation.render_brief import render_brief
 from prc.presentation.render_entry import render_entry
 from prc.presentation.render_html import render_html
@@ -337,6 +342,9 @@ class ExplainResult:
     board_json: Path | None
     video: Path | None
     doc_html: Path | None
+    card_html: Path
+    card_png: Path | None
+    comment_md: Path
     run_json: Path
     duration: float
     estimate: float
@@ -410,6 +418,7 @@ def run_explain(
         [],
     )
     check_detail: dict[str, object] = {"passed": False, "board": None}
+    board: dict[str, Any] | None = None
     if board_path is not None:
         board = json.loads(board_path.read_text())
         try:
@@ -441,6 +450,17 @@ def run_explain(
         render_explain_doc(board, used, out_dir, duration, has_video=True)
         doc_out = out_dir / "doc.html"
 
+    card_html = out_dir / "card.html"
+    card_html.write_text(build_pr_card_html(cast("dict[str, Any]", used), board))
+    card_png: Path | None = None
+    try:
+        render_pr_card_png(card_html, out_dir / "card.png")
+        card_png = out_dir / "card.png"
+    except CardError as error:
+        warnings = [*warnings, str(error)]
+    comment_md = out_dir / "comment.md"
+    comment_md.write_text(render_pr_comment(cast("dict[str, Any]", used), board))
+
     run = {
         "source": source.label,
         "pr": used["pr"],
@@ -455,6 +475,8 @@ def run_explain(
         "duration_seconds": round(duration, 2),
         "fps": explain_render.FPS,
         "doc": str(doc_out) if doc_out else None,
+        "card": str(card_png) if card_png else None,
+        "comment": str(comment_md),
         "layout_warnings": warnings,
     }
     run_json = out_dir / "run.json"
@@ -467,6 +489,9 @@ def run_explain(
         board_out,
         video,
         doc_out,
+        card_html,
+        card_png,
+        comment_md,
         run_json,
         duration,
         estimate,
