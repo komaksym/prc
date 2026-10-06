@@ -373,7 +373,11 @@
     if (expanded.has(folder.index)) expanded.delete(folder.index);
     else expanded.add(folder.index);
     applyConceal();
-    flyTo(fitTo(expanded.has(folder.index) ? bounds(folder.members) : folderBounds(), viewArea(), 1.25));
+    flyTo(fitTo(
+      expanded.has(folder.index) ? bounds([...folder.members, ...folderNodes]) : folderBounds(),
+      viewArea(),
+      1.25,
+    ));
   }
 
   function collapseAll() {
