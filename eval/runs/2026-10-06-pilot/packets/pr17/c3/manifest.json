@@ -1,0 +1,7 @@
+{
+  "condition": "c3",
+  "files": [
+    "frames.json",
+    "../../outputs/pr17/video.mp4"
+  ]
+}

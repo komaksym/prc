@@ -1,0 +1,5245 @@
+{
+  "author": "komaksym",
+  "base_sha": "0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7",
+  "brief": {
+    "checks": [
+      {
+        "name": "synthetic-e2e",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 17,
+        "kind": "docs",
+        "named": true,
+        "path": "PLANS.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 7,
+        "kind": "config",
+        "named": true,
+        "path": "artifacts/invitation-shortlist-e2e-evidence.json",
+        "removed": 2,
+        "sensitive": null
+      },
+      {
+        "added": 10,
+        "kind": "docs",
+        "named": true,
+        "path": "docs/invitation-shortlist.md",
+        "removed": 2,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/present-employer-sets/analysis.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "opaque",
+        "named": false,
+        "path": "infographic/present-employer-sets/infographic.png",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 10,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/present-employer-sets/prompts/01-infographic-present-employers.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 9,
+        "kind": "docs",
+        "named": true,
+        "path": "infographic/present-employer-sets/source.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 6,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/present-employer-sets/structured-content.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 56,
+        "kind": "code",
+        "named": true,
+        "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+        "removed": 35,
+        "sensitive": null
+      },
+      {
+        "added": 87,
+        "kind": "test",
+        "named": true,
+        "path": "tests/e2e_invitation_shortlist.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 16,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_invitation_shortlist_e2e.py",
+        "removed": 0,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "537a16de03f9fad8ffe0def188494037991b275a",
+    "look_first": [
+      {
+        "lines": [],
+        "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+        "reason": "largest code change (+56 \u221235)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "komaksym/linkedin-mdp#17",
+    "title": "feat(report): count every present employer"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "scripts/build_invitation_shortlist.py::main",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"
+    },
+    {
+      "resolution": "exact",
+      "source": "scripts/build_invitation_shortlist.py::main",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_array"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_list"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_object"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_array"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_json"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_object"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::employer_set",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::citation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::run",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::invitation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::invitation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::invitation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::citation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::invitation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::invitation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::employer_set"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::invitation"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::prospect_row"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    }
+  ],
+  "files": [
+    {
+      "added": 17,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 215,
+              "old": 215,
+              "op": " ",
+              "text": "PR10 Unicode repair verification before publication: 84 scenarios plus wrapper, 22 full-suite checks, strict scoped Ruff, 12-file mypy and builds passed before the usage pause. Pending diff inspected on resume; no source behavior changed since that validation. Separate synthetic CLI proof and independent review requested. Fixed fresh CodeRabbit wording finding by spacing adjacent counts in the matrix record."
+            },
+            {
+              "new": 216,
+              "old": 216,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 217,
+              "old": 217,
+              "op": " ",
+              "text": "PR12 review correction: two UTC conversion overflow boundaries and the Markdown prospect-ID provenance assertion failed before the fix (3 failed, 90 passed). The correction catches overflow as invalid_timestamp and prints the prospect ID beside the source pointer. All 93 E2E scenarios, the full 22-test suite, scoped Ruff, 9-file default source mypy and source/wheel builds pass. Independent read-only review found no actionable issue."
+            },
+            {
+              "new": 218,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 219,
+              "old": null,
+              "op": "+",
+              "text": "## Present employer sets"
+            },
+            {
+              "new": 220,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 221,
+              "old": null,
+              "op": "+",
+              "text": "Summary: preserve single-employer input while charging each exact historical profile once per explicitly present company, without inventing a primary employer."
+            },
+            {
+              "new": 222,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 223,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Ground/sketch: prior private design compares singular selection with conservative set accounting; owner selected cited assignments sets."
+            },
+            {
+              "new": 224,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Blocking first steps: isolate branch and integrate PR10 metadata-hash correction; no live state."
+            },
+            {
+              "new": 225,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Independent workstreams: n/a coupled parsing/counting/audit contract has one exclusive owner."
+            },
+            {
+              "new": 226,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Shared mutable state: new checkout; private bindings stay outside Git."
+            },
+            {
+              "new": 227,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Smallest safe decomposition: one module with source-boundary parsing and existing planner consumers."
+            },
+            {
+              "new": 228,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Red-first matrix: seven new cases failed on the singleton implementation; secondary-cap selection also failed before correction. Nine set cases plus inherited checks pass."
+            },
+            {
+              "new": 229,
+              "old": null,
+              "op": "+",
+              "text": "- [x] Implement and validate: 105 E2E cases, 22 full-suite tests, scoped Ruff, 10-file mypy, source/wheel builds and diffcheck. Synthetic private CLI and existing combined renderer accept flat multi-employer rows."
+            },
+            {
+              "new": 230,
+              "old": null,
+              "op": "+",
+              "text": "- [ ] Parent owns review, infographic/publication and commits; no deployment."
+            },
+            {
+              "new": 231,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 232,
+              "old": null,
+              "op": "+",
+              "text": "Contract clarification: incomplete sets retain a research reason but are omitted from resolved assignment audits; original qualification retains their positive evidence. This keeps the established unresolved-alias exclusion contract and narrows the preliminary private design's partial-positive audit proposal."
+            },
+            {
+              "new": 233,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 234,
+              "old": null,
+              "op": "+",
+              "text": "Parent inspected present-set parser, aliases/conflicts, all-history per-company counts and all-employer selection capacity.105E2E/22fulltests/scopedlint/10-filetypes/sourcewheelpassed. Existing combinedrenderer compatibility and private synthetic CLI verified by writer. Inspected native raster copied; private realpeoplebindings excluded. No liveproposaleligibility/publication/storagewrite."
+            }
+          ],
+          "new_start": 215,
+          "old_start": 215
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "PLANS.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 7,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "{"
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "op": " ",
+              "text": "  \"schema_version\": 1,"
+            },
+            {
+              "new": null,
+              "old": 3,
+              "op": "-",
+              "text": "  \"scenario_count\": 97,"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "  \"scenario_count\": 107,"
+            },
+            {
+              "new": 4,
+              "old": 4,
+              "op": " ",
+              "text": "  \"all_scenarios_passed\": true,"
+            },
+            {
+              "new": 5,
+              "old": 5,
+              "op": " ",
+              "text": "  \"red_first_failures_reproduced\": ["
+            },
+            {
+              "new": 6,
+              "old": 6,
+              "op": " ",
+              "text": "    \"provider-local invitation dates lost to ISO-only parsing\","
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        },
+        {
+          "lines": [
+            {
+              "new": 30,
+              "old": 30,
+              "op": " ",
+              "text": "    \"UTC conversion overflow aborted timestamp enrichment\","
+            },
+            {
+              "new": 31,
+              "old": 31,
+              "op": " ",
+              "text": "    \"private Markdown omitted the creation-time prospect ID\","
+            },
+            {
+              "new": 32,
+              "old": 32,
+              "op": " ",
+              "text": "    \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "    \"explicit concurrent employers could not charge each historical company once\","
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "    \"complete employer sets could not admit qualified-company membership\","
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "    \"conflicting canonical sets lacked an explicit conflict reason\","
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "    \"secondary employer at capacity admitted an invitation\","
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "    \"legacy employer rows ignored incomplete coverage metadata\","
+            },
+            {
+              "new": 38,
+              "old": 33,
+              "op": " ",
+              "text": "    \"candidate qualification citation attested a different profile\""
+            },
+            {
+              "new": 39,
+              "old": 34,
+              "op": " ",
+              "text": "  ],"
+            },
+            {
+              "new": null,
+              "old": 35,
+              "op": "-",
+              "text": "  \"artifact_digest\": \"2c976cad44b739cc1f27e0a616a51099bbd0dbd5725d64b2bb2c71a1792650d2\""
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "  \"artifact_digest\": \"a05d63363632e731cc6046e235d9f2fb850cd18321cfa4671f0eb201c0bdf197\""
+            },
+            {
+              "new": 41,
+              "old": 36,
+              "op": " ",
+              "text": "}"
+            }
+          ],
+          "new_start": 30,
+          "old_start": 30
+        }
+      ],
+      "kind": "config",
+      "language": null,
+      "path": "artifacts/invitation-shortlist-e2e-evidence.json",
+      "removed": 2,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 10,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 12,
+              "old": 12,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 13,
+              "old": 13,
+              "op": " ",
+              "text": "Qualification facts bind to exact canonical LinkedIn profile URLs. Current name, role, US country, and PVF employer require an HTTP citation with timezone-aware `retrieved_at` no older than 90 days plus a `profile_url` attestation that normalizes to the candidate's exact profile. The caller attests that the cited fact was researched. The builder validates citation shape, retrieval freshness, and this exact-profile binding, but does not fetch webpage contents."
+            },
+            {
+              "new": 14,
+              "old": 14,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 15,
+              "op": "-",
+              "text": "The `current_employers` object maps raw profile URL keys to a registered company ID and citations. URLs normalize with the same Unicode-preserving identity normalizer used for inbox participants. Multiple keys that normalize to one profile may repeat the same company assignment. Conflicting assignments, unregistered companies, invalid citations, or unsupported identities enter the private queue and withhold all capacity claims. The owner's explicit assumption is that each person's latest known employer is present. Citation retrieval time must be recent; source publication or indexing date does not determine historical employer eligibility."
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "The `current_employers` object maps raw profile URL keys to cited registered present employers (legacy single company or explicit set). URLs normalize with the same Unicode-preserving identity normalizer used for inbox participants. Multiple keys that normalize to one profile may repeat the same company assignment. Conflicting assignments, unregistered companies, invalid citations, or unsupported identities enter the private queue and withhold all capacity claims. The owner's explicit assumption is that each explicitly cited current job is present. Citation retrieval time must be recent; source publication or indexing date does not determine historical employer eligibility."
+            },
+            {
+              "new": 16,
+              "old": 16,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 17,
+              "old": 17,
+              "op": " ",
+              "text": "Each unresolved employer key retains a stable opaque evidence ID and input key index pointer. An invalid assignment for any canonical alias removes that person from resolved employer and capacity audit entries."
+            },
+            {
+              "new": 18,
+              "old": 18,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 12,
+          "old_start": 12
+        },
+        {
+          "lines": [
+            {
+              "new": 49,
+              "old": 49,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 50,
+              "old": 50,
+              "op": " ",
+              "text": "## All-history capacity"
+            },
+            {
+              "new": 51,
+              "old": 51,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 52,
+              "op": "-",
+              "text": "The CLI and pure function require `--cap-scope all_history`. Every outgoing invitation source is grouped by normalized exact profile identity. The report counts each person once against their mapped latest-known employer across provider invitations, explicit CRM sent facts, and actual Supabase invitation events. Historical invitation dates and previous employer claims remain audit data. They do not gate capacity or change the mapped employer."
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "The CLI and pure function require `--cap-scope all_history`. Every outgoing invitation source is grouped by normalized exact profile identity. Each historical person consumes one invitation slot at each company in their complete present-employer set, regardless of whether the evidence comes from provider invitations, explicit CRM sent facts, or actual Supabase invitation events. Historical invitation dates and previous employer claims remain audit data. They do not gate capacity or change the present-employer set."
+            },
+            {
+              "new": 53,
+              "old": 53,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 54,
+              "old": 54,
+              "op": " ",
+              "text": "The JSON audit retains each source evidence ID, source row pointer, observed event date when available, profile URL, and the current-employer citations. Unknown or unsupported invitation identities and profiles without a valid current-employer mapping enter `research_queue`. Any unresolved queue row withholds the entire shortlist and all remaining-slot claims. The `Company` field in CRM is never employer proof. Accepted dates and connections do not consume invitation slots. They still exclude people from recommendations under the existing eligibility rules."
+            },
+            {
+              "new": 55,
+              "old": 55,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 49,
+          "old_start": 49
+        },
+        {
+          "lines": [
+            {
+              "new": 76,
+              "old": 76,
+              "op": " ",
+              "text": "Input files must be regular files with no group or world permissions. The CLI creates the new output directory with mode `0700` and both reports with mode `0600`. It refuses existing output directories. Standard output contains only a fixed completion status. Validation errors never include row content, names, URLs, or message text. `tests/e2e_invitation_shortlist.py` covers synthetic source boundaries. `tests/test_invitation_shortlist_e2e.py` runs the matrix and writes a sanitized artifact with fixed verdicts and a digest."
+            },
+            {
+              "new": 77,
+              "old": 77,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 78,
+              "old": 78,
+              "op": " ",
+              "text": "A successfully fetched empty provider page may have zero snapshot elements when its status and exported rows prove completeness. CRM opt-out fields treat explicit negative values (`false`, `no`, `0`, empty, or absent) as negative. Affirmative or uninterpretable nonempty values suppress a prospect."
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "### Concurrent present employers"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "Legacy `{ \"company_id\": \"co-a\", \"citations\": [...] }` assignments remain valid singleton claims. For explicit concurrent jobs, use `{ \"assignments\": [{ \"company_id\": \"co-a\", \"citations\": [...] }, { \"company_id\": \"co-b\", \"citations\": [...] }], \"coverage\": \"complete\", \"unknown_reasons\": [] }`. Each company needs its own dated citations. Duplicate same-company roles and citations collapse without consuming extra capacity. No primary employer or corporate alias is inferred. Do not mix singleton fields with `assignments`."
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": "Under the owner's all-jobs-present assumption, every historical outgoing profile counts once per assigned company across all history. A candidate's qualified company must belong to its present set. Selection requires room in every present company and consumes one slot in each. A person still appears once in the invitation list. Distinct canonical URL keys may repeat an identical complete company set; different sets remain conflicting instead of being silently unioned. Empty, unregistered, partial or unnamed assignments retain explicit research reasons and withhold global capacity claims. Incomplete sets are omitted from resolved assignment and capacity audits; their cited positives remain in the original qualification input, not asserted as complete report assignments."
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "`current_employer_assignments` keeps its existing flat profile/company/citations rows, with multiple rows for concurrent employers. The additive `current_employer_sets` audit lists each resolved profile's company IDs and complete coverage. `company_usage.remaining_slots` retains its historical-capacity meaning; `remaining_slots_after_selection` additionally shows remaining capacity after all proposed invitations. Neither a proposal nor an assignment records an actual send. Existing combined report rendering accepts the flat rows without a schema change."
+            }
+          ],
+          "new_start": 76,
+          "old_start": 76
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "docs/invitation-shortlist.md",
+      "removed": 2,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Technical system PR infographic; explain profile-to-many-companies accounting and invitation capacity. Defaults structural-breakdown / technical-schematic / 16:9 / English / native imagegen. Saved backend auto. No private names, dates, test counts or deployed-state claims."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/present-employer-sets/analysis.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "opaque",
+      "language": null,
+      "path": "infographic/present-employer-sets/infographic.png",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 10,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Use case: infographic-diagram"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Asset type: GitHub PR raster infographic."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Create an English landscape16:9 structural-breakdown technical-schematic infographic. Opaque neutral light-gray background, clearly visible dark-gray outer border, high-contrast dark sans-serif text, restrained blue/teal accents, generous whitespace. Three coherent horizontal sections, large readable text. No private person/company names, numeric test counts, timestamps, logos or deployments."
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Title exact: \"One person, every present employer\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Left card exact text: \"EXACT PROFILE\", \"Explicit present employer set\", \"Legacy singleton supported\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Left profile branches into two clearly separate simple company cards labeled \"Company A\" and \"Company B\". Both feed the middle capacity card."
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Middle exact text: \"LIFETIME HISTORY\", \"Count once per person per company\", \"Duplicate rows add zero\", \"Three per company across all history\""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Right exact text: \"NEW RECOMMENDATION\", \"All employers need capacity\", \"Use one slot at each employer\", \"One recommendation per person\""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "Bottom boundary exact text: \"Unknown employers withhold\", \"Report remains read-only\", \"Owner sends invitations\""
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "All arrows and labels inside canvas, no clutter. Render text verbatim. This is a system-level explanation, not an active send or deployed workflow."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/present-employer-sets/prompts/01-infographic-present-employers.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 9,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Present employer sets"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "One exact LinkedIn profile may have multiple explicitly present employers."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Legacy single-employer input remains supported."
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "One historical recipient counts once against each named present company."
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Repeated invitation rows and repeated roles do not add duplicate counts."
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "A new recommendation requires capacity at every present employer and consumes one slot at each."
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "The lifetime invitation limit stays three per company across all outgoing history."
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Unknown employers withhold capacity claims."
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "No historical employer date is invented. No report data is written to Supabase and no invitation is sent."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/present-employer-sets/source.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# One person, every present employer"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Learning objective: a second current job also consumes company invitation capacity."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Input: one exact profile, explicit present employer set, legacy singleton supported."
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "History: once per person per company, duplicate rows add zero."
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Selection: all companies need capacity, each recommendation uses one slot at each."
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Boundaries: three per company across all history, unknown employers withhold, report remains read-only."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/present-employer-sets/structured-content.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 56,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 67,
+              "old": 67,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 68,
+              "old": 68,
+              "op": " ",
+              "text": "@dataclass(frozen=True)"
+            },
+            {
+              "new": 69,
+              "old": 69,
+              "op": " ",
+              "text": "class CurrentEmployer:"
+            },
+            {
+              "new": null,
+              "old": 70,
+              "op": "-",
+              "text": "    \"\"\"Represent one exact profile's owner-approved latest-known employer.\"\"\""
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Represent the cited companies simultaneously present for one exact profile.\"\"\""
+            },
+            {
+              "new": 71,
+              "old": 71,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 72,
+              "old": 72,
+              "op": " ",
+              "text": "    profile_url: str"
+            },
+            {
+              "new": null,
+              "old": 73,
+              "op": "-",
+              "text": "    company_id: str"
+            },
+            {
+              "new": null,
+              "old": 74,
+              "op": "-",
+              "text": "    citations: tuple[Citation, ...]"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "    assignments: Mapping[str, tuple[Citation, ...]]"
+            },
+            {
+              "new": 74,
+              "old": 75,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 75,
+              "old": 76,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 76,
+              "old": 77,
+              "op": " ",
+              "text": "@dataclass(frozen=True)"
+            }
+          ],
+          "new_start": 67,
+          "old_start": 67
+        },
+        {
+          "lines": [
+            {
+              "new": 257,
+              "old": 258,
+              "op": " ",
+              "text": "            queue.append({**pointer, \"reason\": \"current_employer_assignment_invalid\"})"
+            },
+            {
+              "new": 258,
+              "old": 259,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 259,
+              "old": 260,
+              "op": " ",
+              "text": "        assignment = raw_assignment"
+            },
+            {
+              "new": null,
+              "old": 261,
+              "op": "-",
+              "text": "        company_id = assignment.get(\"company_id\")"
+            },
+            {
+              "new": null,
+              "old": 262,
+              "op": "-",
+              "text": "        if not isinstance(company_id, str) or company_id not in registry:"
+            },
+            {
+              "new": null,
+              "old": 263,
+              "op": "-",
+              "text": "            queue.append({**pointer, \"reason\": \"current_employer_unregistered\"})"
+            },
+            {
+              "new": null,
+              "old": 264,
+              "op": "-",
+              "text": "            continue"
+            },
+            {
+              "new": 260,
+              "old": 265,
+              "op": " ",
+              "text": "        try:"
+            },
+            {
+              "new": null,
+              "old": 266,
+              "op": "-",
+              "text": "            citations = _citation_list("
+            },
+            {
+              "new": null,
+              "old": 267,
+              "op": "-",
+              "text": "                assignment.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False"
+            },
+            {
+              "new": null,
+              "old": 268,
+              "op": "-",
+              "text": "            )"
+            },
+            {
+              "new": 261,
+              "old": null,
+              "op": "+",
+              "text": "            if \"assignments\" in assignment:"
+            },
+            {
+              "new": 262,
+              "old": null,
+              "op": "+",
+              "text": "                if \"company_id\" in assignment or \"citations\" in assignment:"
+            },
+            {
+              "new": 263,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 264,
+              "old": null,
+              "op": "+",
+              "text": "                reasons = assignment.get(\"unknown_reasons\")"
+            },
+            {
+              "new": 265,
+              "old": null,
+              "op": "+",
+              "text": "                if assignment.get(\"coverage\") != \"complete\" or reasons != []:"
+            },
+            {
+              "new": 266,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_coverage_incomplete\")"
+            },
+            {
+              "new": 267,
+              "old": null,
+              "op": "+",
+              "text": "                rows = _array(assignment[\"assignments\"], \"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 268,
+              "old": null,
+              "op": "+",
+              "text": "                if not rows:"
+            },
+            {
+              "new": 269,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 270,
+              "old": null,
+              "op": "+",
+              "text": "            else:"
+            },
+            {
+              "new": 271,
+              "old": null,
+              "op": "+",
+              "text": "                if \"coverage\" in assignment or \"unknown_reasons\" in assignment:"
+            },
+            {
+              "new": 272,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 273,
+              "old": null,
+              "op": "+",
+              "text": "                rows = [assignment]"
+            },
+            {
+              "new": 274,
+              "old": null,
+              "op": "+",
+              "text": "            companies: dict[str, tuple[Citation, ...]] = {}"
+            },
+            {
+              "new": 275,
+              "old": null,
+              "op": "+",
+              "text": "            for raw in rows:"
+            },
+            {
+              "new": 276,
+              "old": null,
+              "op": "+",
+              "text": "                row = _object(raw, \"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 277,
+              "old": null,
+              "op": "+",
+              "text": "                company_id = row.get(\"company_id\")"
+            },
+            {
+              "new": 278,
+              "old": null,
+              "op": "+",
+              "text": "                if not isinstance(company_id, str) or company_id not in registry:"
+            },
+            {
+              "new": 279,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_unregistered\")"
+            },
+            {
+              "new": 280,
+              "old": null,
+              "op": "+",
+              "text": "                citations = _citation_list(row.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False)"
+            },
+            {
+              "new": 281,
+              "old": null,
+              "op": "+",
+              "text": "                companies[company_id] = tuple(dict.fromkeys((*companies.get(company_id, ()), *citations)))"
+            },
+            {
+              "new": 282,
+              "old": 269,
+              "op": " ",
+              "text": "        except ShortlistInputError as exc:"
+            },
+            {
+              "new": 283,
+              "old": 270,
+              "op": " ",
+              "text": "            queue.append({**pointer, \"reason\": exc.code})"
+            },
+            {
+              "new": 284,
+              "old": 271,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 285,
+              "old": 272,
+              "op": " ",
+              "text": "        existing = assignments.get(profile_url)"
+            },
+            {
+              "new": null,
+              "old": 273,
+              "op": "-",
+              "text": "        if existing and existing.company_id != company_id:"
+            },
+            {
+              "new": 286,
+              "old": null,
+              "op": "+",
+              "text": "        if existing and existing.assignments.keys() != companies.keys():"
+            },
+            {
+              "new": 287,
+              "old": 274,
+              "op": " ",
+              "text": "            queue.append({**pointer, \"reason\": \"conflicting_current_employer_assignments\"})"
+            },
+            {
+              "new": 288,
+              "old": 275,
+              "op": " ",
+              "text": "            assignments.pop(profile_url, None)"
+            },
+            {
+              "new": 289,
+              "old": 276,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 277,
+              "op": "-",
+              "text": "        if existing is None:"
+            },
+            {
+              "new": null,
+              "old": 278,
+              "op": "-",
+              "text": "            assignments[profile_url] = CurrentEmployer(profile_url, company_id, citations)"
+            },
+            {
+              "new": null,
+              "old": 279,
+              "op": "-",
+              "text": "        else:"
+            },
+            {
+              "new": null,
+              "old": 280,
+              "op": "-",
+              "text": "            assignments[profile_url] = CurrentEmployer(profile_url, company_id, (*existing.citations, *citations))"
+            },
+            {
+              "new": 290,
+              "old": null,
+              "op": "+",
+              "text": "        if existing:"
+            },
+            {
+              "new": 291,
+              "old": null,
+              "op": "+",
+              "text": "            companies = {key: tuple(dict.fromkeys((*existing.assignments[key], *citations))) for key, citations in companies.items()}"
+            },
+            {
+              "new": 292,
+              "old": null,
+              "op": "+",
+              "text": "        assignments[profile_url] = CurrentEmployer(profile_url, companies)"
+            },
+            {
+              "new": 293,
+              "old": 281,
+              "op": " ",
+              "text": "    unresolved = {item[\"profile_url\"] for item in queue if item[\"profile_url\"] is not None}"
+            },
+            {
+              "new": 294,
+              "old": 282,
+              "op": " ",
+              "text": "    for profile_url in unresolved:"
+            },
+            {
+              "new": 295,
+              "old": 283,
+              "op": " ",
+              "text": "        assignments.pop(profile_url, None)"
+            }
+          ],
+          "new_start": 257,
+          "old_start": 258
+        },
+        {
+          "lines": [
+            {
+              "new": 791,
+              "old": 779,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 792,
+              "old": 780,
+              "op": " ",
+              "text": "                f\"Reason: {item['reason']}.\","
+            },
+            {
+              "new": 793,
+              "old": 781,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": null,
+              "old": 782,
+              "op": "-",
+              "text": "                f\"Date added: {item['date_added'] or 'unknown'} \""
+            },
+            {
+              "new": 794,
+              "old": null,
+              "op": "+",
+              "text": "                (f\"Date added: {item['date_added'] or 'unknown'} \""
+            },
+            {
+              "new": 795,
+              "old": 783,
+              "op": " ",
+              "text": "                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""
+            },
+            {
+              "new": 796,
+              "old": 784,
+              "op": " ",
+              "text": "                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""
+            },
+            {
+              "new": null,
+              "old": 785,
+              "op": "-",
+              "text": "                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","
+            },
+            {
+              "new": 797,
+              "old": null,
+              "op": "+",
+              "text": "                f\"reason: {item['date_added_source']['reason'] or 'none'}).\"),"
+            },
+            {
+              "new": 798,
+              "old": 786,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 799,
+              "old": 787,
+              "op": " ",
+              "text": "                f\"Action: {item['action']}.\","
+            },
+            {
+              "new": 800,
+              "old": 788,
+              "op": " ",
+              "text": "                \"\","
+            }
+          ],
+          "new_start": 791,
+          "old_start": 779
+        },
+        {
+          "lines": [
+            {
+              "new": 830,
+              "old": 818,
+              "op": " ",
+              "text": "            )"
+            },
+            {
+              "new": 831,
+              "old": 819,
+              "op": " ",
+              "text": "            lines.append(f\"- {pointer}: {row['reason']}.\")"
+            },
+            {
+              "new": 832,
+              "old": 820,
+              "op": " ",
+              "text": "        lines.append(\"\")"
+            },
+            {
+              "new": null,
+              "old": 821,
+              "op": "-",
+              "text": "    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved latest-known-present assumption. No invitation was sent.\", \"\"])"
+            },
+            {
+              "new": 833,
+              "old": null,
+              "op": "+",
+              "text": "    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved all-jobs-present assumption. No invitation was sent.\", \"\"])"
+            },
+            {
+              "new": 834,
+              "old": 822,
+              "op": " ",
+              "text": "    return \"\\n\".join(lines)"
+            },
+            {
+              "new": 835,
+              "old": 823,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 836,
+              "old": 824,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 830,
+          "old_start": 818
+        },
+        {
+          "lines": [
+            {
+              "new": 931,
+              "old": 919,
+              "op": " ",
+              "text": "            withheld_counts[\"identity_conflict\"] += 1"
+            },
+            {
+              "new": 932,
+              "old": 920,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 933,
+              "old": 921,
+              "op": " ",
+              "text": "        employer = employers.get(url)"
+            },
+            {
+              "new": null,
+              "old": 922,
+              "op": "-",
+              "text": "        if employer is None or employer.company_id != candidate_row.company_id:"
+            },
+            {
+              "new": 934,
+              "old": null,
+              "op": "+",
+              "text": "        if employer is None or candidate_row.company_id not in employer.assignments:"
+            },
+            {
+              "new": 935,
+              "old": 923,
+              "op": " ",
+              "text": "            withheld_counts[\"current_employer_conflict\"] += 1"
+            },
+            {
+              "new": 936,
+              "old": 924,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 937,
+              "old": 925,
+              "op": " ",
+              "text": "        prospect_ids = {"
+            }
+          ],
+          "new_start": 931,
+          "old_start": 919
+        },
+        {
+          "lines": [
+            {
+              "new": 997,
+              "old": 985,
+              "op": " ",
+              "text": "                \"reason\": \"current_employer_missing\","
+            },
+            {
+              "new": 998,
+              "old": 986,
+              "op": " ",
+              "text": "            } for evidence in evidence_rows)"
+            },
+            {
+              "new": 999,
+              "old": 987,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 988,
+              "op": "-",
+              "text": "        company_counts[employer.company_id] += 1"
+            },
+            {
+              "new": null,
+              "old": 989,
+              "op": "-",
+              "text": "        cap_evidence_by_company[employer.company_id].extend({"
+            },
+            {
+              "new": null,
+              "old": 990,
+              "op": "-",
+              "text": "            \"evidence_id\": evidence.evidence_id,"
+            },
+            {
+              "new": null,
+              "old": 991,
+              "op": "-",
+              "text": "            \"profile_url\": profile_url,"
+            },
+            {
+              "new": null,
+              "old": 992,
+              "op": "-",
+              "text": "            \"source_ref\": evidence.source_ref,"
+            },
+            {
+              "new": null,
+              "old": 993,
+              "op": "-",
+              "text": "            \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"
+            },
+            {
+              "new": null,
+              "old": 994,
+              "op": "-",
+              "text": "            \"source_time\": evidence.source_time,"
+            },
+            {
+              "new": null,
+              "old": 995,
+              "op": "-",
+              "text": "            \"time_precision\": evidence.time_precision,"
+            },
+            {
+              "new": null,
+              "old": 996,
+              "op": "-",
+              "text": "            \"timezone\": evidence.timezone,"
+            },
+            {
+              "new": null,
+              "old": 997,
+              "op": "-",
+              "text": "        } for evidence in evidence_rows)"
+            },
+            {
+              "new": 1000,
+              "old": null,
+              "op": "+",
+              "text": "        for company_id in employer.assignments:"
+            },
+            {
+              "new": 1001,
+              "old": null,
+              "op": "+",
+              "text": "            company_counts[company_id] += 1"
+            },
+            {
+              "new": 1002,
+              "old": null,
+              "op": "+",
+              "text": "            cap_evidence_by_company[company_id].extend({"
+            },
+            {
+              "new": 1003,
+              "old": null,
+              "op": "+",
+              "text": "                \"evidence_id\": evidence.evidence_id,"
+            },
+            {
+              "new": 1004,
+              "old": null,
+              "op": "+",
+              "text": "                \"profile_url\": profile_url,"
+            },
+            {
+              "new": 1005,
+              "old": null,
+              "op": "+",
+              "text": "                \"source_ref\": evidence.source_ref,"
+            },
+            {
+              "new": 1006,
+              "old": null,
+              "op": "+",
+              "text": "                \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"
+            },
+            {
+              "new": 1007,
+              "old": null,
+              "op": "+",
+              "text": "                \"source_time\": evidence.source_time,"
+            },
+            {
+              "new": 1008,
+              "old": null,
+              "op": "+",
+              "text": "                \"time_precision\": evidence.time_precision,"
+            },
+            {
+              "new": 1009,
+              "old": null,
+              "op": "+",
+              "text": "                \"timezone\": evidence.timezone,"
+            },
+            {
+              "new": 1010,
+              "old": null,
+              "op": "+",
+              "text": "            } for evidence in evidence_rows)"
+            },
+            {
+              "new": 1011,
+              "old": 998,
+              "op": " ",
+              "text": "    history_queue.extend(employer_queue)"
+            },
+            {
+              "new": 1012,
+              "old": 999,
+              "op": " ",
+              "text": "    research_queue = history_queue"
+            },
+            {
+              "new": 1013,
+              "old": 1000,
+              "op": " ",
+              "text": "    unique_queue: list[dict[str, Any]] = []"
+            }
+          ],
+          "new_start": 997,
+          "old_start": 985
+        },
+        {
+          "lines": [
+            {
+              "new": 1028,
+              "old": 1015,
+              "op": " ",
+              "text": "        eligible.sort(key=lambda item: (-(sum(_factor_score(item.factors[name], name) for name in item.factors) if item.factors else -math.inf), item.profile_url))"
+            },
+            {
+              "new": 1029,
+              "old": 1016,
+              "op": " ",
+              "text": "        selected = []"
+            },
+            {
+              "new": 1030,
+              "old": 1017,
+              "op": " ",
+              "text": "        for candidate_row in eligible:"
+            },
+            {
+              "new": null,
+              "old": 1018,
+              "op": "-",
+              "text": "            if slots[candidate_row.company_id] <= 0:"
+            },
+            {
+              "new": 1031,
+              "old": null,
+              "op": "+",
+              "text": "            if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):"
+            },
+            {
+              "new": 1032,
+              "old": 1019,
+              "op": " ",
+              "text": "                continue"
+            },
+            {
+              "new": 1033,
+              "old": 1020,
+              "op": " ",
+              "text": "            selected.append(candidate_row)"
+            },
+            {
+              "new": null,
+              "old": 1021,
+              "op": "-",
+              "text": "            slots[candidate_row.company_id] -= 1"
+            },
+            {
+              "new": 1034,
+              "old": null,
+              "op": "+",
+              "text": "            for company_id in employers[candidate_row.profile_url].assignments:"
+            },
+            {
+              "new": 1035,
+              "old": null,
+              "op": "+",
+              "text": "                slots[company_id] -= 1"
+            },
+            {
+              "new": 1036,
+              "old": 1022,
+              "op": " ",
+              "text": "            if len(selected) == 25:"
+            },
+            {
+              "new": 1037,
+              "old": 1023,
+              "op": " ",
+              "text": "                break"
+            },
+            {
+              "new": 1038,
+              "old": 1024,
+              "op": " ",
+              "text": "        remaining_slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+            },
+            {
+              "new": 1039,
+              "old": 1025,
+              "op": " ",
+              "text": "        for candidate_row in selected:"
+            },
+            {
+              "new": null,
+              "old": 1026,
+              "op": "-",
+              "text": "            remaining_slots[candidate_row.company_id] -= 1"
+            },
+            {
+              "new": 1040,
+              "old": null,
+              "op": "+",
+              "text": "            for company_id in employers[candidate_row.profile_url].assignments:"
+            },
+            {
+              "new": 1041,
+              "old": null,
+              "op": "+",
+              "text": "                remaining_slots[company_id] -= 1"
+            },
+            {
+              "new": 1042,
+              "old": 1027,
+              "op": " ",
+              "text": "        slots = remaining_slots"
+            },
+            {
+              "new": 1043,
+              "old": 1028,
+              "op": " ",
+              "text": "    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"
+            },
+            {
+              "new": 1044,
+              "old": 1029,
+              "op": " ",
+              "text": "    rows_out = [_candidate_json(item) for item in selected]"
+            }
+          ],
+          "new_start": 1028,
+          "old_start": 1015
+        },
+        {
+          "lines": [
+            {
+              "new": 1049,
+              "old": 1034,
+              "op": " ",
+              "text": "        usage: dict[str, Any] = {"
+            },
+            {
+              "new": 1050,
+              "old": 1035,
+              "op": " ",
+              "text": "            \"recorded\": company_counts[company_id] if status == \"ready\" else None,"
+            },
+            {
+              "new": 1051,
+              "old": 1036,
+              "op": " ",
+              "text": "            \"remaining_slots\": max(0, 3 - company_counts[company_id]) if status == \"ready\" else None,"
+            },
+            {
+              "new": 1052,
+              "old": null,
+              "op": "+",
+              "text": "            \"remaining_slots_after_selection\": slots[company_id] if status == \"ready\" else None,"
+            },
+            {
+              "new": 1053,
+              "old": 1037,
+              "op": " ",
+              "text": "            \"evidence\": cap_evidence_by_company[company_id],"
+            },
+            {
+              "new": 1054,
+              "old": 1038,
+              "op": " ",
+              "text": "        }"
+            },
+            {
+              "new": 1055,
+              "old": 1039,
+              "op": " ",
+              "text": "        company_usage[company_id] = usage"
+            }
+          ],
+          "new_start": 1049,
+          "old_start": 1034
+        },
+        {
+          "lines": [
+            {
+              "new": 1058,
+              "old": 1042,
+              "op": " ",
+              "text": "        \"status\": status,"
+            },
+            {
+              "new": 1059,
+              "old": 1043,
+              "op": " ",
+              "text": "        \"cap_scope\": cap_scope,"
+            },
+            {
+              "new": 1060,
+              "old": 1044,
+              "op": " ",
+              "text": "        \"score_version\": _SCORE_VERSION,"
+            },
+            {
+              "new": null,
+              "old": 1045,
+              "op": "-",
+              "text": "        \"evidence_validation\": \"current employer is an owner-approved latest-known-present assumption; citations are retained but external page contents are not fetched\","
+            },
+            {
+              "new": 1061,
+              "old": null,
+              "op": "+",
+              "text": "        \"evidence_validation\": \"current employers use the owner-approved all-jobs-present assumption; citations are retained but external page contents are not fetched\","
+            },
+            {
+              "new": 1062,
+              "old": 1046,
+              "op": " ",
+              "text": "        \"source_freshness\": {"
+            },
+            {
+              "new": 1063,
+              "old": 1047,
+              "op": " ",
+              "text": "            \"acquisition\": \"fresh\","
+            },
+            {
+              "new": 1064,
+              "old": 1048,
+              "op": " ",
+              "text": "            \"collected_at\": collected_at.isoformat(),"
+            }
+          ],
+          "new_start": 1058,
+          "old_start": 1042
+        },
+        {
+          "lines": [
+            {
+              "new": 1078,
+              "old": 1062,
+              "op": " ",
+              "text": "        \"current_employer_assignments\": ["
+            },
+            {
+              "new": 1079,
+              "old": 1063,
+              "op": " ",
+              "text": "            {"
+            },
+            {
+              "new": 1080,
+              "old": 1064,
+              "op": " ",
+              "text": "                \"profile_url\": item.profile_url,"
+            },
+            {
+              "new": null,
+              "old": 1065,
+              "op": "-",
+              "text": "                \"company_id\": item.company_id,"
+            },
+            {
+              "new": null,
+              "old": 1066,
+              "op": "-",
+              "text": "                \"citations\": [_citation_json(citation) for citation in item.citations],"
+            },
+            {
+              "new": 1081,
+              "old": null,
+              "op": "+",
+              "text": "                \"company_id\": company_id,"
+            },
+            {
+              "new": 1082,
+              "old": null,
+              "op": "+",
+              "text": "                \"citations\": [_citation_json(citation) for citation in citations],"
+            },
+            {
+              "new": 1083,
+              "old": 1067,
+              "op": " ",
+              "text": "            }"
+            },
+            {
+              "new": 1084,
+              "old": null,
+              "op": "+",
+              "text": "            for item in sorted(employers.values(), key=lambda item: item.profile_url)"
+            },
+            {
+              "new": 1085,
+              "old": null,
+              "op": "+",
+              "text": "            for company_id, citations in sorted(item.assignments.items())"
+            },
+            {
+              "new": 1086,
+              "old": null,
+              "op": "+",
+              "text": "        ],"
+            },
+            {
+              "new": 1087,
+              "old": null,
+              "op": "+",
+              "text": "        \"current_employer_sets\": ["
+            },
+            {
+              "new": 1088,
+              "old": null,
+              "op": "+",
+              "text": "            {\"profile_url\": item.profile_url, \"company_ids\": sorted(item.assignments), \"coverage\": \"complete\"}"
+            },
+            {
+              "new": 1089,
+              "old": 1068,
+              "op": " ",
+              "text": "            for item in sorted(employers.values(), key=lambda item: item.profile_url)"
+            },
+            {
+              "new": 1090,
+              "old": 1069,
+              "op": " ",
+              "text": "        ],"
+            },
+            {
+              "new": 1091,
+              "old": 1070,
+              "op": " ",
+              "text": "        \"company_usage\": company_usage,"
+            }
+          ],
+          "new_start": 1078,
+          "old_start": 1062
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "removed": 35,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_array",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_json",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_list",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_object",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+      ]
+    },
+    {
+      "added": 87,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 978,
+              "old": 978,
+              "op": " ",
+              "text": "    assert queued[0][\"evidence_id\"].startswith(\"current-employer-key-sha256:\")"
+            },
+            {
+              "new": 979,
+              "old": 979,
+              "op": " ",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 980,
+              "old": 980,
+              "op": " ",
+              "text": "    json.dumps(result, ensure_ascii=False).encode(\"utf-8\")"
+            },
+            {
+              "new": 981,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 982,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 983,
+              "old": null,
+              "op": "+",
+              "text": "def employer_set(*company_ids: str, coverage: str = \"complete\") -> dict[str, Any]:"
+            },
+            {
+              "new": 984,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Create explicit cited concurrent-company claims without a primary employer.\"\"\""
+            },
+            {
+              "new": 985,
+              "old": null,
+              "op": "+",
+              "text": "    return {\"assignments\": [{\"company_id\": key, \"citations\": [citation(\"employer-\" + key)]} for key in company_ids], \"coverage\": coverage, \"unknown_reasons\": [] if coverage == \"complete\" else [\"unnamed_current_role\"]}"
+            },
+            {
+              "new": 986,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 987,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 988,
+              "old": null,
+              "op": "+",
+              "text": "def test_present_set_charges_each_company_once_and_keeps_flat_audit() -> None:"
+            },
+            {
+              "new": 989,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Replayed invitation facts charge one profile once to every present employer.\"\"\""
+            },
+            {
+              "new": 990,
+              "old": null,
+              "op": "+",
+              "text": "    data = qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\"), PROFILE_B: employer_set(\"co-a\", \"co-b\")})"
+            },
+            {
+              "new": 991,
+              "old": null,
+              "op": "+",
+              "text": "    data[\"current_employers\"][PROFILE_B][\"assignments\"].append(deepcopy(data[\"current_employers\"][PROFILE_B][\"assignments\"][0]))"
+            },
+            {
+              "new": 992,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B), {**invitation(PROFILE_B), \"Sent At\": \"9/01/26, 12:00 PM\"}]), data)"
+            },
+            {
+              "new": 993,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"ready\""
+            },
+            {
+              "new": 994,
+              "old": null,
+              "op": "+",
+              "text": "    assert [row[\"profile_url\"] for row in result[\"invitations\"]] == [PROFILE_A]"
+            },
+            {
+              "new": 995,
+              "old": null,
+              "op": "+",
+              "text": "    assert {key: row[\"recorded\"] for key, row in result[\"company_usage\"].items()} == {\"co-a\": 1, \"co-b\": 1}"
+            },
+            {
+              "new": 996,
+              "old": null,
+              "op": "+",
+              "text": "    assert len(result[\"current_employer_assignments\"]) == 4"
+            },
+            {
+              "new": 997,
+              "old": null,
+              "op": "+",
+              "text": "    assert all(len(row[\"citations\"]) == 1 for row in result[\"current_employer_assignments\"])"
+            },
+            {
+              "new": 998,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"current_employer_sets\"][0][\"company_ids\"] == [\"co-a\", \"co-b\"]"
+            },
+            {
+              "new": 999,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1000,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1001,
+              "old": null,
+              "op": "+",
+              "text": "def test_present_set_membership_does_not_invent_primary_employer() -> None:"
+            },
+            {
+              "new": 1002,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"A qualified employer anywhere in the set is valid, and outside the set is withheld.\"\"\""
+            },
+            {
+              "new": 1003,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\", \"co-a\")}))"
+            },
+            {
+              "new": 1004,
+              "old": null,
+              "op": "+",
+              "text": "    assert len(result[\"invitations\"]) == 1"
+            },
+            {
+              "new": 1005,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\")}))"
+            },
+            {
+              "new": 1006,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"withheld_counts\"][\"current_employer_conflict\"] == 1"
+            },
+            {
+              "new": 1007,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1008,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1009,
+              "old": null,
+              "op": "+",
+              "text": "@pytest.mark.parametrize(\"value,reason\", ["
+            },
+            {
+              "new": 1010,
+              "old": null,
+              "op": "+",
+              "text": "    (employer_set(), \"current_employer_assignment_invalid\"),"
+            },
+            {
+              "new": 1011,
+              "old": null,
+              "op": "+",
+              "text": "    (employer_set(\"unknown\"), \"current_employer_unregistered\"),"
+            },
+            {
+              "new": 1012,
+              "old": null,
+              "op": "+",
+              "text": "    (employer_set(\"co-a\", coverage=\"partial\"), \"current_employer_coverage_incomplete\"),"
+            },
+            {
+              "new": 1013,
+              "old": null,
+              "op": "+",
+              "text": "    ({**employer_set(\"co-a\"), \"company_id\": \"co-b\"}, \"current_employer_assignment_invalid\"),"
+            },
+            {
+              "new": 1014,
+              "old": null,
+              "op": "+",
+              "text": "])"
+            },
+            {
+              "new": 1015,
+              "old": null,
+              "op": "+",
+              "text": "def test_invalid_present_sets_keep_global_withholding(value: dict[str, Any], reason: str) -> None:"
+            },
+            {
+              "new": 1016,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Unbounded or contradictory claims cannot create company capacity.\"\"\""
+            },
+            {
+              "new": 1017,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers={PROFILE_A: employer_set(\"co-a\"), PROFILE_B: value}))"
+            },
+            {
+              "new": 1018,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 1019,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"] == []"
+            },
+            {
+              "new": 1020,
+              "old": null,
+              "op": "+",
+              "text": "    assert any(row[\"reason\"] == reason for row in result[\"research_queue\"])"
+            },
+            {
+              "new": 1021,
+              "old": null,
+              "op": "+",
+              "text": "    assert all(row[\"recorded\"] is None for row in result[\"company_usage\"].values())"
+            },
+            {
+              "new": 1022,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1023,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1024,
+              "old": null,
+              "op": "+",
+              "text": "def test_legacy_employer_rows_reject_completeness_metadata() -> None:"
+            },
+            {
+              "new": 1025,
+              "old": null,
+              "op": "+",
+              "text": "    legacy = {"
+            },
+            {
+              "new": 1026,
+              "old": null,
+              "op": "+",
+              "text": "        \"company_id\": \"co-a\","
+            },
+            {
+              "new": 1027,
+              "old": null,
+              "op": "+",
+              "text": "        \"citations\": [citation(\"employer-a\")],"
+            },
+            {
+              "new": 1028,
+              "old": null,
+              "op": "+",
+              "text": "        \"coverage\": \"partial\","
+            },
+            {
+              "new": 1029,
+              "old": null,
+              "op": "+",
+              "text": "        \"unknown_reasons\": [\"unnamed_current_role\"],"
+            },
+            {
+              "new": 1030,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 1031,
+              "old": null,
+              "op": "+",
+              "text": "    result = run("
+            },
+            {
+              "new": 1032,
+              "old": null,
+              "op": "+",
+              "text": "        source_export(invitations=[invitation(PROFILE_B)]),"
+            },
+            {
+              "new": 1033,
+              "old": null,
+              "op": "+",
+              "text": "        qualification(current_employers={PROFILE_A: legacy, PROFILE_B: employer_set(\"co-b\")}),"
+            },
+            {
+              "new": 1034,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 1035,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 1036,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"] == []"
+            },
+            {
+              "new": 1037,
+              "old": null,
+              "op": "+",
+              "text": "    assert any(row[\"reason\"] == \"current_employer_assignment_invalid\" for row in result[\"research_queue\"])"
+            },
+            {
+              "new": 1038,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1039,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1040,
+              "old": null,
+              "op": "+",
+              "text": "def test_conflicting_canonical_present_sets_are_not_unioned() -> None:"
+            },
+            {
+              "new": 1041,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Distinct normalized-key records claiming different complete sets remain unresolved.\"\"\""
+            },
+            {
+              "new": 1042,
+              "old": null,
+              "op": "+",
+              "text": "    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-a\")}"
+            },
+            {
+              "new": 1043,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"
+            },
+            {
+              "new": 1044,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 1045,
+              "old": null,
+              "op": "+",
+              "text": "    assert any(row[\"reason\"] == \"conflicting_current_employer_assignments\" for row in result[\"research_queue\"])"
+            },
+            {
+              "new": 1046,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1047,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1048,
+              "old": null,
+              "op": "+",
+              "text": "def test_identical_canonical_present_sets_merge_citations_only() -> None:"
+            },
+            {
+              "new": 1049,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Equivalent complete inputs collapse aliases, order and duplicate citation facts.\"\"\""
+            },
+            {
+              "new": 1050,
+              "old": null,
+              "op": "+",
+              "text": "    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-b\", \"co-a\")}"
+            },
+            {
+              "new": 1051,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"
+            },
+            {
+              "new": 1052,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"ready\""
+            },
+            {
+              "new": 1053,
+              "old": null,
+              "op": "+",
+              "text": "    rows = [row for row in result[\"current_employer_assignments\"] if row[\"profile_url\"] == PROFILE_B]"
+            },
+            {
+              "new": 1054,
+              "old": null,
+              "op": "+",
+              "text": "    assert len(rows) == 2 and all(len(row[\"citations\"]) == 1 for row in rows)"
+            },
+            {
+              "new": 1055,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1056,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 1057,
+              "old": null,
+              "op": "+",
+              "text": "def test_present_set_selection_requires_and_consumes_every_company_slot() -> None:"
+            },
+            {
+              "new": 1058,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"A second employer at capacity blocks the person, and selected people charge every job.\"\"\""
+            },
+            {
+              "new": 1059,
+              "old": null,
+              "op": "+",
+              "text": "    profiles = [PROFILE_B, PROFILE_C, \"https://www.linkedin.com/in/person-d\"]"
+            },
+            {
+              "new": 1060,
+              "old": null,
+              "op": "+",
+              "text": "    prospects = [prospect_row(PROFILE_A, \"p-a\"), *[prospect_row(url, f\"p-{i}\") for i, url in enumerate(profiles)]]"
+            },
+            {
+              "new": 1061,
+              "old": null,
+              "op": "+",
+              "text": "    claims = {PROFILE_A: employer_set(\"co-a\", \"co-b\"), **{url: employer_set(\"co-b\") for url in profiles}}"
+            },
+            {
+              "new": 1062,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(prospects=prospects, invitations=[invitation(url) for url in profiles]), qualification(current_employers=claims))"
+            },
+            {
+              "new": 1063,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3"
+            },
+            {
+              "new": 1064,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"] == []"
+            },
+            {
+              "new": 1065,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\")}))"
+            },
+            {
+              "new": 1066,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"company_usage\"][\"co-a\"][\"remaining_slots_after_selection\"] == 2"
+            },
+            {
+              "new": 1067,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"company_usage\"][\"co-b\"][\"remaining_slots_after_selection\"] == 2"
+            }
+          ],
+          "new_start": 978,
+          "old_start": 978
+        }
+      ],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/e2e_invitation_shortlist.py::citation",
+        "tests/e2e_invitation_shortlist.py::employer_set",
+        "tests/e2e_invitation_shortlist.py::invitation",
+        "tests/e2e_invitation_shortlist.py::prospect_row",
+        "tests/e2e_invitation_shortlist.py::qualification",
+        "tests/e2e_invitation_shortlist.py::run",
+        "tests/e2e_invitation_shortlist.py::source_export",
+        "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+        "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+        "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+        "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+        "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+        "tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer",
+        "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+        "tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm"
+      ]
+    },
+    {
+      "added": 16,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 38,
+              "old": 38,
+              "op": " ",
+              "text": "        check=False,"
+            },
+            {
+              "new": 39,
+              "old": 39,
+              "op": " ",
+              "text": "    )"
+            },
+            {
+              "new": 40,
+              "old": 40,
+              "op": " ",
+              "text": "    assert collection.returncode == 0, collection.stdout + collection.stderr"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    required_present_employer_regressions = {"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_present_set_charges_each_company_once_and_keeps_flat_audit\","
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_present_set_membership_does_not_invent_primary_employer\","
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_conflicting_canonical_present_sets_are_not_unioned\","
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_present_set_selection_requires_and_consumes_every_company_slot\","
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_legacy_employer_rows_reject_completeness_metadata\","
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "    missing_regressions = sorted("
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "        test_name for test_name in required_present_employer_regressions if test_name not in collection.stdout"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "    assert not missing_regressions, f\"missing red-first regression coverage: {missing_regressions}\""
+            },
+            {
+              "new": 52,
+              "old": 41,
+              "op": " ",
+              "text": "    assert \"test_candidate_citations_must_attest_exact_profile\" in collection.stdout"
+            },
+            {
+              "new": 53,
+              "old": 42,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 54,
+              "old": 43,
+              "op": " ",
+              "text": "    body = {"
+            }
+          ],
+          "new_start": 38,
+          "old_start": 38
+        },
+        {
+          "lines": [
+            {
+              "new": 83,
+              "old": 72,
+              "op": " ",
+              "text": "            \"UTC conversion overflow aborted timestamp enrichment\","
+            },
+            {
+              "new": 84,
+              "old": 73,
+              "op": " ",
+              "text": "            \"private Markdown omitted the creation-time prospect ID\","
+            },
+            {
+              "new": 85,
+              "old": 74,
+              "op": " ",
+              "text": "            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "            \"explicit concurrent employers could not charge each historical company once\","
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "            \"complete employer sets could not admit qualified-company membership\","
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "            \"conflicting canonical sets lacked an explicit conflict reason\","
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "            \"secondary employer at capacity admitted an invitation\","
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "            \"legacy employer rows ignored incomplete coverage metadata\","
+            },
+            {
+              "new": 91,
+              "old": 75,
+              "op": " ",
+              "text": "            \"candidate qualification citation attested a different profile\","
+            },
+            {
+              "new": 92,
+              "old": 76,
+              "op": " ",
+              "text": "        ],"
+            },
+            {
+              "new": 93,
+              "old": 77,
+              "op": " ",
+              "text": "    }"
+            }
+          ],
+          "new_start": 83,
+          "old_start": 72
+        }
+      ],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_invitation_shortlist_e2e.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e"
+      ]
+    }
+  ],
+  "head_sha": "537a16de03f9fad8ffe0def188494037991b275a",
+  "pr": "komaksym/linkedin-mdp#17",
+  "symbols": [
+    {
+      "added": 0,
+      "base_span": [
+        61,
+        85
+      ],
+      "call_sites": 1,
+      "hunks": [],
+      "id": "scripts/build_invitation_shortlist.py::main",
+      "kind": "function",
+      "path": "scripts/build_invitation_shortlist.py",
+      "qualname": "main",
+      "removed": 0,
+      "span": [
+        61,
+        85
+      ],
+      "status": "context"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        68,
+        74
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 68,
+              "old": 68,
+              "op": " ",
+              "text": "@dataclass(frozen=True)"
+            },
+            {
+              "new": 69,
+              "old": 69,
+              "op": " ",
+              "text": "class CurrentEmployer:"
+            },
+            {
+              "new": null,
+              "old": 70,
+              "op": "-",
+              "text": "    \"\"\"Represent one exact profile's owner-approved latest-known employer.\"\"\""
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Represent the cited companies simultaneously present for one exact profile.\"\"\""
+            },
+            {
+              "new": 71,
+              "old": 71,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 72,
+              "old": 72,
+              "op": " ",
+              "text": "    profile_url: str"
+            },
+            {
+              "new": null,
+              "old": 73,
+              "op": "-",
+              "text": "    company_id: str"
+            },
+            {
+              "new": null,
+              "old": 74,
+              "op": "-",
+              "text": "    citations: tuple[Citation, ...]"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "    assignments: Mapping[str, tuple[Citation, ...]]"
+            }
+          ],
+          "new_start": 68,
+          "old_start": 68
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer",
+      "kind": "class",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "CurrentEmployer",
+      "removed": 3,
+      "span": [
+        68,
+        73
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        19,
+        25
+      ],
+      "call_sites": 51,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError",
+      "kind": "class",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "ShortlistInputError",
+      "removed": 0,
+      "span": [
+        19,
+        25
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        129,
+        133
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_array",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_array",
+      "removed": 0,
+      "span": [
+        128,
+        132
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        725,
+        731
+      ],
+      "call_sites": 3,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_json",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_citation_json",
+      "removed": 0,
+      "span": [
+        737,
+        743
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        162,
+        205
+      ],
+      "call_sites": 3,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_list",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_citation_list",
+      "removed": 0,
+      "span": [
+        161,
+        204
+      ],
+      "status": "context"
+    },
+    {
+      "added": 25,
+      "base_span": [
+        238,
+        284
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 257,
+              "old": 258,
+              "op": " ",
+              "text": "            queue.append({**pointer, \"reason\": \"current_employer_assignment_invalid\"})"
+            },
+            {
+              "new": 258,
+              "old": 259,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 259,
+              "old": 260,
+              "op": " ",
+              "text": "        assignment = raw_assignment"
+            },
+            {
+              "new": null,
+              "old": 261,
+              "op": "-",
+              "text": "        company_id = assignment.get(\"company_id\")"
+            },
+            {
+              "new": null,
+              "old": 262,
+              "op": "-",
+              "text": "        if not isinstance(company_id, str) or company_id not in registry:"
+            },
+            {
+              "new": null,
+              "old": 263,
+              "op": "-",
+              "text": "            queue.append({**pointer, \"reason\": \"current_employer_unregistered\"})"
+            },
+            {
+              "new": null,
+              "old": 264,
+              "op": "-",
+              "text": "            continue"
+            },
+            {
+              "new": 260,
+              "old": 265,
+              "op": " ",
+              "text": "        try:"
+            },
+            {
+              "new": null,
+              "old": 266,
+              "op": "-",
+              "text": "            citations = _citation_list("
+            },
+            {
+              "new": null,
+              "old": 267,
+              "op": "-",
+              "text": "                assignment.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False"
+            },
+            {
+              "new": null,
+              "old": 268,
+              "op": "-",
+              "text": "            )"
+            },
+            {
+              "new": 261,
+              "old": null,
+              "op": "+",
+              "text": "            if \"assignments\" in assignment:"
+            },
+            {
+              "new": 262,
+              "old": null,
+              "op": "+",
+              "text": "                if \"company_id\" in assignment or \"citations\" in assignment:"
+            },
+            {
+              "new": 263,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 264,
+              "old": null,
+              "op": "+",
+              "text": "                reasons = assignment.get(\"unknown_reasons\")"
+            },
+            {
+              "new": 265,
+              "old": null,
+              "op": "+",
+              "text": "                if assignment.get(\"coverage\") != \"complete\" or reasons != []:"
+            },
+            {
+              "new": 266,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_coverage_incomplete\")"
+            },
+            {
+              "new": 267,
+              "old": null,
+              "op": "+",
+              "text": "                rows = _array(assignment[\"assignments\"], \"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 268,
+              "old": null,
+              "op": "+",
+              "text": "                if not rows:"
+            },
+            {
+              "new": 269,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 270,
+              "old": null,
+              "op": "+",
+              "text": "            else:"
+            },
+            {
+              "new": 271,
+              "old": null,
+              "op": "+",
+              "text": "                if \"coverage\" in assignment or \"unknown_reasons\" in assignment:"
+            },
+            {
+              "new": 272,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 273,
+              "old": null,
+              "op": "+",
+              "text": "                rows = [assignment]"
+            },
+            {
+              "new": 274,
+              "old": null,
+              "op": "+",
+              "text": "            companies: dict[str, tuple[Citation, ...]] = {}"
+            },
+            {
+              "new": 275,
+              "old": null,
+              "op": "+",
+              "text": "            for raw in rows:"
+            },
+            {
+              "new": 276,
+              "old": null,
+              "op": "+",
+              "text": "                row = _object(raw, \"current_employer_assignment_invalid\")"
+            },
+            {
+              "new": 277,
+              "old": null,
+              "op": "+",
+              "text": "                company_id = row.get(\"company_id\")"
+            },
+            {
+              "new": 278,
+              "old": null,
+              "op": "+",
+              "text": "                if not isinstance(company_id, str) or company_id not in registry:"
+            },
+            {
+              "new": 279,
+              "old": null,
+              "op": "+",
+              "text": "                    raise ShortlistInputError(\"current_employer_unregistered\")"
+            },
+            {
+              "new": 280,
+              "old": null,
+              "op": "+",
+              "text": "                citations = _citation_list(row.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False)"
+            },
+            {
+              "new": 281,
+              "old": null,
+              "op": "+",
+              "text": "                companies[company_id] = tuple(dict.fromkeys((*companies.get(company_id, ()), *citations)))"
+            },
+            {
+              "new": 282,
+              "old": 269,
+              "op": " ",
+              "text": "        except ShortlistInputError as exc:"
+            },
+            {
+              "new": 283,
+              "old": 270,
+              "op": " ",
+              "text": "            queue.append({**pointer, \"reason\": exc.code})"
+            },
+            {
+              "new": 284,
+              "old": 271,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 285,
+              "old": 272,
+              "op": " ",
+              "text": "        existing = assignments.get(profile_url)"
+            },
+            {
+              "new": null,
+              "old": 273,
+              "op": "-",
+              "text": "        if existing and existing.company_id != company_id:"
+            },
+            {
+              "new": 286,
+              "old": null,
+              "op": "+",
+              "text": "        if existing and existing.assignments.keys() != companies.keys():"
+            },
+            {
+              "new": 287,
+              "old": 274,
+              "op": " ",
+              "text": "            queue.append({**pointer, \"reason\": \"conflicting_current_employer_assignments\"})"
+            },
+            {
+              "new": 288,
+              "old": 275,
+              "op": " ",
+              "text": "            assignments.pop(profile_url, None)"
+            },
+            {
+              "new": 289,
+              "old": 276,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 277,
+              "op": "-",
+              "text": "        if existing is None:"
+            },
+            {
+              "new": null,
+              "old": 278,
+              "op": "-",
+              "text": "            assignments[profile_url] = CurrentEmployer(profile_url, company_id, citations)"
+            },
+            {
+              "new": null,
+              "old": 279,
+              "op": "-",
+              "text": "        else:"
+            },
+            {
+              "new": null,
+              "old": 280,
+              "op": "-",
+              "text": "            assignments[profile_url] = CurrentEmployer(profile_url, company_id, (*existing.citations, *citations))"
+            },
+            {
+              "new": 290,
+              "old": null,
+              "op": "+",
+              "text": "        if existing:"
+            },
+            {
+              "new": 291,
+              "old": null,
+              "op": "+",
+              "text": "            companies = {key: tuple(dict.fromkeys((*existing.assignments[key], *citations))) for key, citations in companies.items()}"
+            },
+            {
+              "new": 292,
+              "old": null,
+              "op": "+",
+              "text": "        assignments[profile_url] = CurrentEmployer(profile_url, companies)"
+            },
+            {
+              "new": 293,
+              "old": 281,
+              "op": " ",
+              "text": "    unresolved = {item[\"profile_url\"] for item in queue if item[\"profile_url\"] is not None}"
+            },
+            {
+              "new": 294,
+              "old": 282,
+              "op": " ",
+              "text": "    for profile_url in unresolved:"
+            },
+            {
+              "new": 295,
+              "old": 283,
+              "op": " ",
+              "text": "        assignments.pop(profile_url, None)"
+            }
+          ],
+          "new_start": 257,
+          "old_start": 258
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_current_employers",
+      "removed": 12,
+      "span": [
+        237,
+        296
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 3,
+      "base_span": [
+        767,
+        822
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 791,
+              "old": 779,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 792,
+              "old": 780,
+              "op": " ",
+              "text": "                f\"Reason: {item['reason']}.\","
+            },
+            {
+              "new": 793,
+              "old": 781,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": null,
+              "old": 782,
+              "op": "-",
+              "text": "                f\"Date added: {item['date_added'] or 'unknown'} \""
+            },
+            {
+              "new": 794,
+              "old": null,
+              "op": "+",
+              "text": "                (f\"Date added: {item['date_added'] or 'unknown'} \""
+            },
+            {
+              "new": 795,
+              "old": 783,
+              "op": " ",
+              "text": "                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""
+            },
+            {
+              "new": 796,
+              "old": 784,
+              "op": " ",
+              "text": "                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""
+            },
+            {
+              "new": null,
+              "old": 785,
+              "op": "-",
+              "text": "                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","
+            },
+            {
+              "new": 797,
+              "old": null,
+              "op": "+",
+              "text": "                f\"reason: {item['date_added_source']['reason'] or 'none'}).\"),"
+            },
+            {
+              "new": 798,
+              "old": 786,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 799,
+              "old": 787,
+              "op": " ",
+              "text": "                f\"Action: {item['action']}.\","
+            },
+            {
+              "new": 800,
+              "old": 788,
+              "op": " ",
+              "text": "                \"\","
+            }
+          ],
+          "new_start": 791,
+          "old_start": 779
+        },
+        {
+          "lines": [
+            {
+              "new": 830,
+              "old": 818,
+              "op": " ",
+              "text": "            )"
+            },
+            {
+              "new": 831,
+              "old": 819,
+              "op": " ",
+              "text": "            lines.append(f\"- {pointer}: {row['reason']}.\")"
+            },
+            {
+              "new": 832,
+              "old": 820,
+              "op": " ",
+              "text": "        lines.append(\"\")"
+            },
+            {
+              "new": null,
+              "old": 821,
+              "op": "-",
+              "text": "    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved latest-known-present assumption. No invitation was sent.\", \"\"])"
+            },
+            {
+              "new": 833,
+              "old": null,
+              "op": "+",
+              "text": "    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved all-jobs-present assumption. No invitation was sent.\", \"\"])"
+            },
+            {
+              "new": 834,
+              "old": 822,
+              "op": " ",
+              "text": "    return \"\\n\".join(lines)"
+            }
+          ],
+          "new_start": 830,
+          "old_start": 818
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_make_markdown",
+      "removed": 3,
+      "span": [
+        779,
+        834
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        122,
+        126
+      ],
+      "call_sites": 11,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_object",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_object",
+      "removed": 0,
+      "span": [
+        121,
+        125
+      ],
+      "status": "context"
+    },
+    {
+      "added": 26,
+      "base_span": [
+        861,
+        1075
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 931,
+              "old": 919,
+              "op": " ",
+              "text": "            withheld_counts[\"identity_conflict\"] += 1"
+            },
+            {
+              "new": 932,
+              "old": 920,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 933,
+              "old": 921,
+              "op": " ",
+              "text": "        employer = employers.get(url)"
+            },
+            {
+              "new": null,
+              "old": 922,
+              "op": "-",
+              "text": "        if employer is None or employer.company_id != candidate_row.company_id:"
+            },
+            {
+              "new": 934,
+              "old": null,
+              "op": "+",
+              "text": "        if employer is None or candidate_row.company_id not in employer.assignments:"
+            },
+            {
+              "new": 935,
+              "old": 923,
+              "op": " ",
+              "text": "            withheld_counts[\"current_employer_conflict\"] += 1"
+            },
+            {
+              "new": 936,
+              "old": 924,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": 937,
+              "old": 925,
+              "op": " ",
+              "text": "        prospect_ids = {"
+            }
+          ],
+          "new_start": 931,
+          "old_start": 919
+        },
+        {
+          "lines": [
+            {
+              "new": 997,
+              "old": 985,
+              "op": " ",
+              "text": "                \"reason\": \"current_employer_missing\","
+            },
+            {
+              "new": 998,
+              "old": 986,
+              "op": " ",
+              "text": "            } for evidence in evidence_rows)"
+            },
+            {
+              "new": 999,
+              "old": 987,
+              "op": " ",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 988,
+              "op": "-",
+              "text": "        company_counts[employer.company_id] += 1"
+            },
+            {
+              "new": null,
+              "old": 989,
+              "op": "-",
+              "text": "        cap_evidence_by_company[employer.company_id].extend({"
+            },
+            {
+              "new": null,
+              "old": 990,
+              "op": "-",
+              "text": "            \"evidence_id\": evidence.evidence_id,"
+            },
+            {
+              "new": null,
+              "old": 991,
+              "op": "-",
+              "text": "            \"profile_url\": profile_url,"
+            },
+            {
+              "new": null,
+              "old": 992,
+              "op": "-",
+              "text": "            \"source_ref\": evidence.source_ref,"
+            },
+            {
+              "new": null,
+              "old": 993,
+              "op": "-",
+              "text": "            \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"
+            },
+            {
+              "new": null,
+              "old": 994,
+              "op": "-",
+              "text": "            \"source_time\": evidence.source_time,"
+            },
+            {
+              "new": null,
+              "old": 995,
+              "op": "-",
+              "text": "            \"time_precision\": evidence.time_precision,"
+            },
+            {
+              "new": null,
+              "old": 996,
+              "op": "-",
+              "text": "            \"timezone\": evidence.timezone,"
+            },
+            {
+              "new": null,
+              "old": 997,
+              "op": "-",
+              "text": "        } for evidence in evidence_rows)"
+            },
+            {
+              "new": 1000,
+              "old": null,
+              "op": "+",
+              "text": "        for company_id in employer.assignments:"
+            },
+            {
+              "new": 1001,
+              "old": null,
+              "op": "+",
+              "text": "            company_counts[company_id] += 1"
+            },
+            {
+              "new": 1002,
+              "old": null,
+              "op": "+",
+              "text": "            cap_evidence_by_company[company_id].extend({"
+            },
+            {
+              "new": 1003,
+              "old": null,
+              "op": "+",
+              "text": "                \"evidence_id\": evidence.evidence_id,"
+            },
+            {
+              "new": 1004,
+              "old": null,
+              "op": "+",
+              "text": "                \"profile_url\": profile_url,"
+            },
+            {
+              "new": 1005,
+              "old": null,
+              "op": "+",
+              "text": "                \"source_ref\": evidence.source_ref,"
+            },
+            {
+              "new": 1006,
+              "old": null,
+              "op": "+",
+              "text": "                \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"
+            },
+            {
+              "new": 1007,
+              "old": null,
+              "op": "+",
+              "text": "                \"source_time\": evidence.source_time,"
+            },
+            {
+              "new": 1008,
+              "old": null,
+              "op": "+",
+              "text": "                \"time_precision\": evidence.time_precision,"
+            },
+            {
+              "new": 1009,
+              "old": null,
+              "op": "+",
+              "text": "                \"timezone\": evidence.timezone,"
+            },
+            {
+              "new": 1010,
+              "old": null,
+              "op": "+",
+              "text": "            } for evidence in evidence_rows)"
+            },
+            {
+              "new": 1011,
+              "old": 998,
+              "op": " ",
+              "text": "    history_queue.extend(employer_queue)"
+            },
+            {
+              "new": 1012,
+              "old": 999,
+              "op": " ",
+              "text": "    research_queue = history_queue"
+            },
+            {
+              "new": 1013,
+              "old": 1000,
+              "op": " ",
+              "text": "    unique_queue: list[dict[str, Any]] = []"
+            }
+          ],
+          "new_start": 997,
+          "old_start": 985
+        },
+        {
+          "lines": [
+            {
+              "new": 1028,
+              "old": 1015,
+              "op": " ",
+              "text": "        eligible.sort(key=lambda item: (-(sum(_factor_score(item.factors[name], name) for name in item.factors) if item.factors else -math.inf), item.profile_url))"
+            },
+            {
+              "new": 1029,
+              "old": 1016,
+              "op": " ",
+              "text": "        selected = []"
+            },
+            {
+              "new": 1030,
+              "old": 1017,
+              "op": " ",
+              "text": "        for candidate_row in eligible:"
+            },
+            {
+              "new": null,
+              "old": 1018,
+              "op": "-",
+              "text": "            if slots[candidate_row.company_id] <= 0:"
+            },
+            {
+              "new": 1031,
+              "old": null,
+              "op": "+",
+              "text": "            if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):"
+            },
+            {
+              "new": 1032,
+              "old": 1019,
+              "op": " ",
+              "text": "                continue"
+            },
+            {
+              "new": 1033,
+              "old": 1020,
+              "op": " ",
+              "text": "            selected.append(candidate_row)"
+            },
+            {
+              "new": null,
+              "old": 1021,
+              "op": "-",
+              "text": "            slots[candidate_row.company_id] -= 1"
+            },
+            {
+              "new": 1034,
+              "old": null,
+              "op": "+",
+              "text": "            for company_id in employers[candidate_row.profile_url].assignments:"
+            },
+            {
+              "new": 1035,
+              "old": null,
+              "op": "+",
+              "text": "                slots[company_id] -= 1"
+            },
+            {
+              "new": 1036,
+              "old": 1022,
+              "op": " ",
+              "text": "            if len(selected) == 25:"
+            },
+            {
+              "new": 1037,
+              "old": 1023,
+              "op": " ",
+              "text": "                break"
+            },
+            {
+              "new": 1038,
+              "old": 1024,
+              "op": " ",
+              "text": "        remaining_slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+            },
+            {
+              "new": 1039,
+              "old": 1025,
+              "op": " ",
+              "text": "        for candidate_row in selected:"
+            },
+            {
+              "new": null,
+              "old": 1026,
+              "op": "-",
+              "text": "            remaining_slots[candidate_row.company_id] -= 1"
+            },
+            {
+              "new": 1040,
+              "old": null,
+              "op": "+",
+              "text": "            for company_id in employers[candidate_row.profile_url].assignments:"
+            },
+            {
+              "new": 1041,
+              "old": null,
+              "op": "+",
+              "text": "                remaining_slots[company_id] -= 1"
+            },
+            {
+              "new": 1042,
+              "old": 1027,
+              "op": " ",
+              "text": "        slots = remaining_slots"
+            },
+            {
+              "new": 1043,
+              "old": 1028,
+              "op": " ",
+              "text": "    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"
+            },
+            {
+              "new": 1044,
+              "old": 1029,
+              "op": " ",
+              "text": "    rows_out = [_candidate_json(item) for item in selected]"
+            }
+          ],
+          "new_start": 1028,
+          "old_start": 1015
+        },
+        {
+          "lines": [
+            {
+              "new": 1049,
+              "old": 1034,
+              "op": " ",
+              "text": "        usage: dict[str, Any] = {"
+            },
+            {
+              "new": 1050,
+              "old": 1035,
+              "op": " ",
+              "text": "            \"recorded\": company_counts[company_id] if status == \"ready\" else None,"
+            },
+            {
+              "new": 1051,
+              "old": 1036,
+              "op": " ",
+              "text": "            \"remaining_slots\": max(0, 3 - company_counts[company_id]) if status == \"ready\" else None,"
+            },
+            {
+              "new": 1052,
+              "old": null,
+              "op": "+",
+              "text": "            \"remaining_slots_after_selection\": slots[company_id] if status == \"ready\" else None,"
+            },
+            {
+              "new": 1053,
+              "old": 1037,
+              "op": " ",
+              "text": "            \"evidence\": cap_evidence_by_company[company_id],"
+            },
+            {
+              "new": 1054,
+              "old": 1038,
+              "op": " ",
+              "text": "        }"
+            },
+            {
+              "new": 1055,
+              "old": 1039,
+              "op": " ",
+              "text": "        company_usage[company_id] = usage"
+            }
+          ],
+          "new_start": 1049,
+          "old_start": 1034
+        },
+        {
+          "lines": [
+            {
+              "new": 1058,
+              "old": 1042,
+              "op": " ",
+              "text": "        \"status\": status,"
+            },
+            {
+              "new": 1059,
+              "old": 1043,
+              "op": " ",
+              "text": "        \"cap_scope\": cap_scope,"
+            },
+            {
+              "new": 1060,
+              "old": 1044,
+              "op": " ",
+              "text": "        \"score_version\": _SCORE_VERSION,"
+            },
+            {
+              "new": null,
+              "old": 1045,
+              "op": "-",
+              "text": "        \"evidence_validation\": \"current employer is an owner-approved latest-known-present assumption; citations are retained but external page contents are not fetched\","
+            },
+            {
+              "new": 1061,
+              "old": null,
+              "op": "+",
+              "text": "        \"evidence_validation\": \"current employers use the owner-approved all-jobs-present assumption; citations are retained but external page contents are not fetched\","
+            },
+            {
+              "new": 1062,
+              "old": 1046,
+              "op": " ",
+              "text": "        \"source_freshness\": {"
+            },
+            {
+              "new": 1063,
+              "old": 1047,
+              "op": " ",
+              "text": "            \"acquisition\": \"fresh\","
+            },
+            {
+              "new": 1064,
+              "old": 1048,
+              "op": " ",
+              "text": "            \"collected_at\": collected_at.isoformat(),"
+            }
+          ],
+          "new_start": 1058,
+          "old_start": 1042
+        },
+        {
+          "lines": [
+            {
+              "new": 1078,
+              "old": 1062,
+              "op": " ",
+              "text": "        \"current_employer_assignments\": ["
+            },
+            {
+              "new": 1079,
+              "old": 1063,
+              "op": " ",
+              "text": "            {"
+            },
+            {
+              "new": 1080,
+              "old": 1064,
+              "op": " ",
+              "text": "                \"profile_url\": item.profile_url,"
+            },
+            {
+              "new": null,
+              "old": 1065,
+              "op": "-",
+              "text": "                \"company_id\": item.company_id,"
+            },
+            {
+              "new": null,
+              "old": 1066,
+              "op": "-",
+              "text": "                \"citations\": [_citation_json(citation) for citation in item.citations],"
+            },
+            {
+              "new": 1081,
+              "old": null,
+              "op": "+",
+              "text": "                \"company_id\": company_id,"
+            },
+            {
+              "new": 1082,
+              "old": null,
+              "op": "+",
+              "text": "                \"citations\": [_citation_json(citation) for citation in citations],"
+            },
+            {
+              "new": 1083,
+              "old": 1067,
+              "op": " ",
+              "text": "            }"
+            },
+            {
+              "new": 1084,
+              "old": null,
+              "op": "+",
+              "text": "            for item in sorted(employers.values(), key=lambda item: item.profile_url)"
+            },
+            {
+              "new": 1085,
+              "old": null,
+              "op": "+",
+              "text": "            for company_id, citations in sorted(item.assignments.items())"
+            },
+            {
+              "new": 1086,
+              "old": null,
+              "op": "+",
+              "text": "        ],"
+            },
+            {
+              "new": 1087,
+              "old": null,
+              "op": "+",
+              "text": "        \"current_employer_sets\": ["
+            },
+            {
+              "new": 1088,
+              "old": null,
+              "op": "+",
+              "text": "            {\"profile_url\": item.profile_url, \"company_ids\": sorted(item.assignments), \"coverage\": \"complete\"}"
+            },
+            {
+              "new": 1089,
+              "old": 1068,
+              "op": " ",
+              "text": "            for item in sorted(employers.values(), key=lambda item: item.profile_url)"
+            },
+            {
+              "new": 1090,
+              "old": 1069,
+              "op": " ",
+              "text": "        ],"
+            },
+            {
+              "new": 1091,
+              "old": 1070,
+              "op": " ",
+              "text": "        \"company_usage\": company_usage,"
+            }
+          ],
+          "new_start": 1078,
+          "old_start": 1062
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "build_invitation_shortlist",
+      "removed": 17,
+      "span": [
+        873,
+        1096
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        31,
+        40
+      ],
+      "call_sites": 26,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::citation",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "citation",
+      "removed": 0,
+      "span": [
+        31,
+        40
+      ],
+      "status": "context"
+    },
+    {
+      "added": 3,
+      "base_span": null,
+      "call_sites": 19,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 983,
+              "old": null,
+              "op": "+",
+              "text": "def employer_set(*company_ids: str, coverage: str = \"complete\") -> dict[str, Any]:"
+            },
+            {
+              "new": 984,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Create explicit cited concurrent-company claims without a primary employer.\"\"\""
+            },
+            {
+              "new": 985,
+              "old": null,
+              "op": "+",
+              "text": "    return {\"assignments\": [{\"company_id\": key, \"citations\": [citation(\"employer-\" + key)]} for key in company_ids], \"coverage\": coverage, \"unknown_reasons\": [] if coverage == \"complete\" else [\"unnamed_current_role\"]}"
+            }
+          ],
+          "new_start": 983,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::employer_set",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "employer_set",
+      "removed": 0,
+      "span": [
+        983,
+        985
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        153,
+        155
+      ],
+      "call_sites": 16,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::invitation",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "invitation",
+      "removed": 0,
+      "span": [
+        153,
+        155
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        43,
+        45
+      ],
+      "call_sites": 21,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::prospect_row",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "prospect_row",
+      "removed": 0,
+      "span": [
+        43,
+        45
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        95,
+        118
+      ],
+      "call_sites": 66,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::qualification",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "qualification",
+      "removed": 0,
+      "span": [
+        95,
+        118
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        158,
+        160
+      ],
+      "call_sites": 63,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::run",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "run",
+      "removed": 0,
+      "span": [
+        158,
+        160
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        48,
+        92
+      ],
+      "call_sites": 65,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::source_export",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "source_export",
+      "removed": 0,
+      "span": [
+        48,
+        92
+      ],
+      "status": "context"
+    },
+    {
+      "added": 6,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1040,
+              "old": null,
+              "op": "+",
+              "text": "def test_conflicting_canonical_present_sets_are_not_unioned() -> None:"
+            },
+            {
+              "new": 1041,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Distinct normalized-key records claiming different complete sets remain unresolved.\"\"\""
+            },
+            {
+              "new": 1042,
+              "old": null,
+              "op": "+",
+              "text": "    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-a\")}"
+            },
+            {
+              "new": 1043,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"
+            },
+            {
+              "new": 1044,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 1045,
+              "old": null,
+              "op": "+",
+              "text": "    assert any(row[\"reason\"] == \"conflicting_current_employer_assignments\" for row in result[\"research_queue\"])"
+            }
+          ],
+          "new_start": 1040,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_conflicting_canonical_present_sets_are_not_unioned",
+      "removed": 0,
+      "span": [
+        1040,
+        1045
+      ],
+      "status": "added"
+    },
+    {
+      "added": 7,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1048,
+              "old": null,
+              "op": "+",
+              "text": "def test_identical_canonical_present_sets_merge_citations_only() -> None:"
+            },
+            {
+              "new": 1049,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Equivalent complete inputs collapse aliases, order and duplicate citation facts.\"\"\""
+            },
+            {
+              "new": 1050,
+              "old": null,
+              "op": "+",
+              "text": "    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-b\", \"co-a\")}"
+            },
+            {
+              "new": 1051,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"
+            },
+            {
+              "new": 1052,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"ready\""
+            },
+            {
+              "new": 1053,
+              "old": null,
+              "op": "+",
+              "text": "    rows = [row for row in result[\"current_employer_assignments\"] if row[\"profile_url\"] == PROFILE_B]"
+            },
+            {
+              "new": 1054,
+              "old": null,
+              "op": "+",
+              "text": "    assert len(rows) == 2 and all(len(row[\"citations\"]) == 1 for row in rows)"
+            }
+          ],
+          "new_start": 1048,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_identical_canonical_present_sets_merge_citations_only",
+      "removed": 0,
+      "span": [
+        1048,
+        1054
+      ],
+      "status": "added"
+    },
+    {
+      "added": 13,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1009,
+              "old": null,
+              "op": "+",
+              "text": "@pytest.mark.parametrize(\"value,reason\", ["
+            },
+            {
+              "new": 1010,
+              "old": null,
+              "op": "+",
+              "text": "    (employer_set(), \"current_employer_assignment_invalid\"),"
+            },
+            {
+              "new": 1011,
+              "old": null,
+              "op": "+",
+              "text": "    (employer_set(\"unknown\"), \"current_employer_unregistered\"),"
+            },
+            {
+              "new": 1012,
+              "old": null,
+              "op": "+",
+              "text": "    (employer_set(\"co-a\", coverage=\"partial\"), \"current_employer_coverage_incomplete\"),"
+            },
+            {
+              "new": 1013,
+              "old": null,
+              "op": "+",
+              "text": "    ({**employer_set(\"co-a\"), \"company_id\": \"co-b\"}, \"current_employer_assignment_invalid\"),"
+            },
+            {
+              "new": 1014,
+              "old": null,
+              "op": "+",
+              "text": "])"
+            },
+            {
+              "new": 1015,
+              "old": null,
+              "op": "+",
+              "text": "def test_invalid_present_sets_keep_global_withholding(value: dict[str, Any], reason: str) -> None:"
+            },
+            {
+              "new": 1016,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Unbounded or contradictory claims cannot create company capacity.\"\"\""
+            },
+            {
+              "new": 1017,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers={PROFILE_A: employer_set(\"co-a\"), PROFILE_B: value}))"
+            },
+            {
+              "new": 1018,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 1019,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"] == []"
+            },
+            {
+              "new": 1020,
+              "old": null,
+              "op": "+",
+              "text": "    assert any(row[\"reason\"] == reason for row in result[\"research_queue\"])"
+            },
+            {
+              "new": 1021,
+              "old": null,
+              "op": "+",
+              "text": "    assert all(row[\"recorded\"] is None for row in result[\"company_usage\"].values())"
+            }
+          ],
+          "new_start": 1009,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_invalid_present_sets_keep_global_withholding",
+      "removed": 0,
+      "span": [
+        1009,
+        1021
+      ],
+      "status": "added"
+    },
+    {
+      "added": 14,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1024,
+              "old": null,
+              "op": "+",
+              "text": "def test_legacy_employer_rows_reject_completeness_metadata() -> None:"
+            },
+            {
+              "new": 1025,
+              "old": null,
+              "op": "+",
+              "text": "    legacy = {"
+            },
+            {
+              "new": 1026,
+              "old": null,
+              "op": "+",
+              "text": "        \"company_id\": \"co-a\","
+            },
+            {
+              "new": 1027,
+              "old": null,
+              "op": "+",
+              "text": "        \"citations\": [citation(\"employer-a\")],"
+            },
+            {
+              "new": 1028,
+              "old": null,
+              "op": "+",
+              "text": "        \"coverage\": \"partial\","
+            },
+            {
+              "new": 1029,
+              "old": null,
+              "op": "+",
+              "text": "        \"unknown_reasons\": [\"unnamed_current_role\"],"
+            },
+            {
+              "new": 1030,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 1031,
+              "old": null,
+              "op": "+",
+              "text": "    result = run("
+            },
+            {
+              "new": 1032,
+              "old": null,
+              "op": "+",
+              "text": "        source_export(invitations=[invitation(PROFILE_B)]),"
+            },
+            {
+              "new": 1033,
+              "old": null,
+              "op": "+",
+              "text": "        qualification(current_employers={PROFILE_A: legacy, PROFILE_B: employer_set(\"co-b\")}),"
+            },
+            {
+              "new": 1034,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 1035,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"withheld_current_employer_assignments\""
+            },
+            {
+              "new": 1036,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"] == []"
+            },
+            {
+              "new": 1037,
+              "old": null,
+              "op": "+",
+              "text": "    assert any(row[\"reason\"] == \"current_employer_assignment_invalid\" for row in result[\"research_queue\"])"
+            }
+          ],
+          "new_start": 1024,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_legacy_employer_rows_reject_completeness_metadata",
+      "removed": 0,
+      "span": [
+        1024,
+        1037
+      ],
+      "status": "added"
+    },
+    {
+      "added": 11,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 988,
+              "old": null,
+              "op": "+",
+              "text": "def test_present_set_charges_each_company_once_and_keeps_flat_audit() -> None:"
+            },
+            {
+              "new": 989,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Replayed invitation facts charge one profile once to every present employer.\"\"\""
+            },
+            {
+              "new": 990,
+              "old": null,
+              "op": "+",
+              "text": "    data = qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\"), PROFILE_B: employer_set(\"co-a\", \"co-b\")})"
+            },
+            {
+              "new": 991,
+              "old": null,
+              "op": "+",
+              "text": "    data[\"current_employers\"][PROFILE_B][\"assignments\"].append(deepcopy(data[\"current_employers\"][PROFILE_B][\"assignments\"][0]))"
+            },
+            {
+              "new": 992,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(invitations=[invitation(PROFILE_B), {**invitation(PROFILE_B), \"Sent At\": \"9/01/26, 12:00 PM\"}]), data)"
+            },
+            {
+              "new": 993,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"status\"] == \"ready\""
+            },
+            {
+              "new": 994,
+              "old": null,
+              "op": "+",
+              "text": "    assert [row[\"profile_url\"] for row in result[\"invitations\"]] == [PROFILE_A]"
+            },
+            {
+              "new": 995,
+              "old": null,
+              "op": "+",
+              "text": "    assert {key: row[\"recorded\"] for key, row in result[\"company_usage\"].items()} == {\"co-a\": 1, \"co-b\": 1}"
+            },
+            {
+              "new": 996,
+              "old": null,
+              "op": "+",
+              "text": "    assert len(result[\"current_employer_assignments\"]) == 4"
+            },
+            {
+              "new": 997,
+              "old": null,
+              "op": "+",
+              "text": "    assert all(len(row[\"citations\"]) == 1 for row in result[\"current_employer_assignments\"])"
+            },
+            {
+              "new": 998,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"current_employer_sets\"][0][\"company_ids\"] == [\"co-a\", \"co-b\"]"
+            }
+          ],
+          "new_start": 988,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_present_set_charges_each_company_once_and_keeps_flat_audit",
+      "removed": 0,
+      "span": [
+        988,
+        998
+      ],
+      "status": "added"
+    },
+    {
+      "added": 6,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1001,
+              "old": null,
+              "op": "+",
+              "text": "def test_present_set_membership_does_not_invent_primary_employer() -> None:"
+            },
+            {
+              "new": 1002,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"A qualified employer anywhere in the set is valid, and outside the set is withheld.\"\"\""
+            },
+            {
+              "new": 1003,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\", \"co-a\")}))"
+            },
+            {
+              "new": 1004,
+              "old": null,
+              "op": "+",
+              "text": "    assert len(result[\"invitations\"]) == 1"
+            },
+            {
+              "new": 1005,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\")}))"
+            },
+            {
+              "new": 1006,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"withheld_counts\"][\"current_employer_conflict\"] == 1"
+            }
+          ],
+          "new_start": 1001,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_present_set_membership_does_not_invent_primary_employer",
+      "removed": 0,
+      "span": [
+        1001,
+        1006
+      ],
+      "status": "added"
+    },
+    {
+      "added": 11,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1057,
+              "old": null,
+              "op": "+",
+              "text": "def test_present_set_selection_requires_and_consumes_every_company_slot() -> None:"
+            },
+            {
+              "new": 1058,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"A second employer at capacity blocks the person, and selected people charge every job.\"\"\""
+            },
+            {
+              "new": 1059,
+              "old": null,
+              "op": "+",
+              "text": "    profiles = [PROFILE_B, PROFILE_C, \"https://www.linkedin.com/in/person-d\"]"
+            },
+            {
+              "new": 1060,
+              "old": null,
+              "op": "+",
+              "text": "    prospects = [prospect_row(PROFILE_A, \"p-a\"), *[prospect_row(url, f\"p-{i}\") for i, url in enumerate(profiles)]]"
+            },
+            {
+              "new": 1061,
+              "old": null,
+              "op": "+",
+              "text": "    claims = {PROFILE_A: employer_set(\"co-a\", \"co-b\"), **{url: employer_set(\"co-b\") for url in profiles}}"
+            },
+            {
+              "new": 1062,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(prospects=prospects, invitations=[invitation(url) for url in profiles]), qualification(current_employers=claims))"
+            },
+            {
+              "new": 1063,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3"
+            },
+            {
+              "new": 1064,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"] == []"
+            },
+            {
+              "new": 1065,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\")}))"
+            },
+            {
+              "new": 1066,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"company_usage\"][\"co-a\"][\"remaining_slots_after_selection\"] == 2"
+            },
+            {
+              "new": 1067,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"company_usage\"][\"co-b\"][\"remaining_slots_after_selection\"] == 2"
+            }
+          ],
+          "new_start": 1057,
+          "old_start": 981
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_present_set_selection_requires_and_consumes_every_company_slot",
+      "removed": 0,
+      "span": [
+        1057,
+        1067
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        579,
+        582
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_real_cap_policy_is_explicit_and_never_defaults_to_crm",
+      "removed": 0,
+      "span": [
+        579,
+        582
+      ],
+      "status": "context"
+    },
+    {
+      "added": 16,
+      "base_span": [
+        14,
+        82
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 38,
+              "old": 38,
+              "op": " ",
+              "text": "        check=False,"
+            },
+            {
+              "new": 39,
+              "old": 39,
+              "op": " ",
+              "text": "    )"
+            },
+            {
+              "new": 40,
+              "old": 40,
+              "op": " ",
+              "text": "    assert collection.returncode == 0, collection.stdout + collection.stderr"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    required_present_employer_regressions = {"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_present_set_charges_each_company_once_and_keeps_flat_audit\","
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_present_set_membership_does_not_invent_primary_employer\","
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_conflicting_canonical_present_sets_are_not_unioned\","
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_present_set_selection_requires_and_consumes_every_company_slot\","
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "        \"test_legacy_employer_rows_reject_completeness_metadata\","
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "    missing_regressions = sorted("
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "        test_name for test_name in required_present_employer_regressions if test_name not in collection.stdout"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "    assert not missing_regressions, f\"missing red-first regression coverage: {missing_regressions}\""
+            },
+            {
+              "new": 52,
+              "old": 41,
+              "op": " ",
+              "text": "    assert \"test_candidate_citations_must_attest_exact_profile\" in collection.stdout"
+            },
+            {
+              "new": 53,
+              "old": 42,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 54,
+              "old": 43,
+              "op": " ",
+              "text": "    body = {"
+            }
+          ],
+          "new_start": 38,
+          "old_start": 38
+        },
+        {
+          "lines": [
+            {
+              "new": 83,
+              "old": 72,
+              "op": " ",
+              "text": "            \"UTC conversion overflow aborted timestamp enrichment\","
+            },
+            {
+              "new": 84,
+              "old": 73,
+              "op": " ",
+              "text": "            \"private Markdown omitted the creation-time prospect ID\","
+            },
+            {
+              "new": 85,
+              "old": 74,
+              "op": " ",
+              "text": "            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "            \"explicit concurrent employers could not charge each historical company once\","
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "            \"complete employer sets could not admit qualified-company membership\","
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "            \"conflicting canonical sets lacked an explicit conflict reason\","
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "            \"secondary employer at capacity admitted an invitation\","
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "            \"legacy employer rows ignored incomplete coverage metadata\","
+            },
+            {
+              "new": 91,
+              "old": 75,
+              "op": " ",
+              "text": "            \"candidate qualification citation attested a different profile\","
+            },
+            {
+              "new": 92,
+              "old": 76,
+              "op": " ",
+              "text": "        ],"
+            },
+            {
+              "new": 93,
+              "old": 77,
+              "op": " ",
+              "text": "    }"
+            }
+          ],
+          "new_start": 83,
+          "old_start": 72
+        }
+      ],
+      "id": "tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e",
+      "kind": "function",
+      "path": "tests/test_invitation_shortlist_e2e.py",
+      "qualname": "test_invitation_shortlist_e2e",
+      "removed": 0,
+      "span": [
+        14,
+        98
+      ],
+      "status": "modified"
+    }
+  ],
+  "title": "feat(report): count every present employer",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers"
+      ],
+      "kind": "callee",
+      "via": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer"
+      ],
+      "kind": "callee",
+      "via": "src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers"
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "tests/e2e_invitation_shortlist.py::employer_set",
+        "tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned",
+        "tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only",
+        "tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding",
+        "tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata",
+        "tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit"
+      ],
+      "kind": "test",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/komaksym/linkedin-mdp/pull/17"
+}

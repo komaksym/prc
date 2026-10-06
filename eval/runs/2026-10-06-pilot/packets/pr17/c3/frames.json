@@ -1,0 +1,152 @@
+[
+  {
+    "label": "scene00_end",
+    "t": 7.69,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 8.79,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 16.72,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 17.41,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 17.92,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 24.95,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 25.59,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 27.06,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 28.79,
+    "width": 800
+  },
+  {
+    "label": "scene01_cue",
+    "t": 30.28,
+    "width": 800
+  },
+  {
+    "label": "scene01_end",
+    "t": 30.53,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 31.63,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 32.0,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 34.11,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 35.58,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 37.1,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 39.49,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 39.49,
+    "width": 800
+  },
+  {
+    "label": "scene02_end",
+    "t": 40.07,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 41.17,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 43.88,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 43.88,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 48.3,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 50.5,
+    "width": 800
+  },
+  {
+    "label": "scene03_end",
+    "t": 51.04,
+    "width": 800
+  },
+  {
+    "label": "scene04_cue",
+    "t": 53.25,
+    "width": 800
+  },
+  {
+    "label": "scene04_cue",
+    "t": 58.78,
+    "width": 800
+  },
+  {
+    "label": "scene04_cue",
+    "t": 64.91,
+    "width": 800
+  },
+  {
+    "label": "scene04_cue",
+    "t": 66.45,
+    "width": 800
+  },
+  {
+    "label": "scene04_end",
+    "t": 66.47,
+    "width": 800
+  }
+]

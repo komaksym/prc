@@ -1,0 +1,2241 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-7COEaxrtifY+QWbil7QbTAmw+OTJGGpH786KKsHcngw='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="referrer" content="no-referrer"><link rel="icon" href="data:,"><title>PR map</title><style>:root {
+  color-scheme: dark;
+  --bg: #08090c;
+  --dot: rgba(255, 255, 255, 0.07);
+  --panel: rgba(14, 16, 21, 0.88);
+  --panel-solid: #0e1015;
+  --raise: #12151b;
+  --card: #13161d;
+  --card-ctx: #0e1015;
+  --border: #22262f;
+  --border-strong: #2f3440;
+  --band: rgba(255, 255, 255, 0.018);
+  --text: #eceef3;
+  --muted: #959cab;
+  --faint: #5d6473;
+  --green: #3fd68a;
+  --amber: #f2b33d;
+  --red: #f4676f;
+  --grey: #5f6676;
+  --accent: #8d9bff;
+  --edge: #4a505e;
+  --add-bg: rgba(63, 214, 138, 0.11);
+  --del-bg: rgba(244, 103, 111, 0.11);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --dot: rgba(15, 23, 42, 0.09);
+    --panel: rgba(255, 255, 255, 0.9);
+    --panel-solid: #ffffff;
+    --raise: #ffffff;
+    --card: #ffffff;
+    --card-ctx: #f9fafb;
+    --border: #e1e4ea;
+    --border-strong: #cfd4dc;
+    --band: rgba(15, 23, 42, 0.022);
+    --text: #0f1420;
+    --muted: #5b6372;
+    --faint: #8b93a1;
+    --green: #129b5a;
+    --amber: #c27c0e;
+    --red: #d6363f;
+    --grey: #9aa1ad;
+    --accent: #4f5bd5;
+    --edge: #a3a9b5;
+    --add-bg: rgba(18, 155, 90, 0.1);
+    --del-bg: rgba(214, 54, 63, 0.09);
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 6px 20px rgba(15, 23, 42, 0.07);
+    --shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.18);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh;
+}
+
+.st-added { --st: var(--green); }
+.st-modified { --st: var(--amber); }
+.st-deleted { --st: var(--red); }
+.st-context { --st: var(--grey); }
+
+/* Header */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-solid);
+  position: relative;
+  z-index: 5;
+}
+
+.headline { min-width: 0; flex: 1 1 0; }
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.logo {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 2px;
+  align-items: center;
+}
+
+.logo i {
+  display: block;
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--green);
+}
+
+.logo i:nth-child(2) { height: 8px; background: var(--amber); }
+.logo i:nth-child(3) { height: 5px; background: var(--red); }
+
+.brand-name {
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.meta { overflow: hidden; text-overflow: ellipsis; }
+.meta .sep { color: var(--faint); margin: 0 6px; }
+.meta .mono { font-family: var(--mono); font-size: 11.5px; }
+
+.meta a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.meta a:hover { text-decoration: underline; }
+
+h1 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 72px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--raise);
+  white-space: nowrap;
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat.good .stat-value { color: var(--green); }
+.stat.bad .stat-value { color: var(--red); }
+.stat.warn .stat-value { color: var(--amber); }
+.stat.none .stat-value { color: var(--muted); }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.play {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.play:hover { opacity: 0.9; }
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-left: 9px solid currentColor;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.playing .play-icon {
+  width: 10px;
+  height: 12px;
+  border: 0;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+/* Canvas */
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.viewport.dragging { cursor: grabbing; }
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.band {
+  position: absolute;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: var(--band);
+}
+
+.band-label {
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.edges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.e {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.5;
+  transition: opacity 160ms ease;
+}
+
+.e-added {
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 8 6;
+  animation: flow 1s linear infinite;
+}
+
+.e-removed {
+  stroke: var(--red);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 5;
+  opacity: 0.85;
+}
+
+.e-name {
+  stroke-dasharray: 1 6;
+  stroke-linecap: round;
+  stroke-width: 2.25;
+}
+
+.e-added.e-name { stroke-width: 2.5; }
+
+.arrow-added { fill: var(--green); }
+.arrow-removed { fill: var(--red); }
+.arrow-kept { fill: var(--edge); }
+
+@keyframes flow {
+  to { stroke-dashoffset: -28; }
+}
+
+/* Nodes */
+
+.node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 160ms ease, border-color 120ms ease, box-shadow 160ms ease;
+}
+
+.node:hover { border-color: var(--border-strong); }
+.node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.node .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--st);
+}
+
+.node.st-context {
+  background: var(--card-ctx);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.node.st-context .bar { opacity: 0.6; }
+
+.n-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.glyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font: 600 10.5px/1 var(--mono);
+}
+
+.name {
+  min-width: 0;
+  flex: 1 1 auto;
+  font: 600 13px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-context .name { color: var(--muted); font-weight: 500; }
+
+.st-deleted .name {
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  color: var(--muted);
+}
+
+.pill {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--st);
+  background: color-mix(in srgb, var(--st) 14%, transparent);
+}
+
+.path {
+  font: 11px/1.35 var(--mono);
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+}
+
+.path > span { direction: ltr; unicode-bidi: isolate; }
+
+.n-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.n-row > .path { flex: 1 1 auto; min-width: 0; }
+
+.n-row > .sites {
+  flex: none;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.delta { font: 600 11.5px/1 var(--mono); }
+.plus { color: var(--green); }
+.minus { color: var(--red); }
+
+.badge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}
+
+.chip {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 12px 0 16px;
+  border-radius: 999px;
+}
+
+.chip .bar { width: 3px; }
+
+.chip .name { flex: 0 1 auto; font-weight: 500; font-size: 12.5px; }
+.chip.st-deleted .name { color: var(--muted); }
+
+/* Grouped overview */
+
+.fedges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ge {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 2;
+}
+
+.ge-added { stroke: var(--green); }
+.ge-removed { stroke: var(--red); }
+
+.fcard {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 14px 10px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+}
+
+.fcard:hover { border-color: var(--border-strong); }
+.fcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.f-name {
+  font: 600 13px/1.3 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.f-counts {
+  font: 11px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.flist {
+  display: none;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+  gap: 2px;
+  overflow: auto;
+}
+
+.fcard.open {
+  justify-content: flex-start;
+  height: auto !important;
+  max-height: 360px;
+  z-index: 5;
+}
+
+.fcard.open .flist { display: grid; }
+
+.fmem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+
+.fmem:hover { background: var(--band); }
+
+.fmem-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 12px/1.35 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fmem-tag {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.world.grouped .node.concealed { opacity: 0; }
+
+.dense .sym {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.dense .sym .bar { width: 3px; }
+.dense .sym .name { font-size: 12px; }
+.dense .sym .glyph { width: 16px; height: 16px; font-size: 9.5px; }
+.dense .sym .pill { padding: 0 5px; font-size: 9px; }
+
+.flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font: 700 10px/1 var(--sans);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+}
+
+.group {
+  position: absolute;
+  padding: 6px 4px 0;
+  font: 11px/1.3 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  pointer-events: none;
+}
+
+.group > span { direction: ltr; unicode-bidi: isolate; }
+
+body:not(.touring) .dense .e:not(.lit) { opacity: 0; }
+
+.empty {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.risk {
+  flex: none;
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 35%, transparent);
+  white-space: nowrap;
+}
+
+.world.far .path,
+.world.far .sites { display: none; }
+.world.far .name { font-size: 16px; }
+.world.far .pill { font-size: 12px; }
+
+.hovering .node:not(.lit),
+.hovering .e:not(.lit) { opacity: 0.14; }
+
+.hovering .e.lit { stroke-width: 2.5; }
+
+.node.lit { border-color: var(--border-strong); }
+
+.node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent), var(--shadow);
+}
+
+.node.focus {
+  border-color: var(--st);
+  box-shadow: 0 0 0 1px var(--st), 0 0 40px color-mix(in srgb, var(--st) 40%, transparent), var(--shadow);
+}
+
+/* Tour */
+
+.touring .node,
+.touring .e { transition: none; }
+
+.touring .e-added { animation: none; }
+
+.spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 40%, transparent 35%, color-mix(in srgb, var(--bg) 82%, transparent) 100%);
+}
+
+.touring .spot { opacity: 1; }
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  display: none;
+}
+
+.touring .progress { display: block; }
+
+#progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: min(760px, calc(100% - 48px));
+  transform: translateX(-50%);
+  padding: 16px 24px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .caption { display: block; }
+
+.cap-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cap-count { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+.cap-main {
+  margin-top: 6px;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.cap-main .code { font-family: var(--mono); font-size: 20px; }
+
+.cap-sub {
+  margin-top: 6px;
+  font: 12.5px/1.4 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(720px, calc(100% - 48px));
+  transform: translate(-50%, -50%);
+  padding: 32px 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .summary { display: block; }
+
+.sum-kicker {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sum-title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.sum-cell {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--raise);
+}
+
+.sum-num {
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sum-label { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.sum-cell.good .sum-num { color: var(--green); }
+.sum-cell.bad .sum-num { color: var(--red); }
+.sum-cell.warn .sum-num { color: var(--amber); }
+
+.sum-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sum-brand {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* Floating controls */
+
+.legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 11.5px;
+  color: var(--muted);
+  box-shadow: var(--shadow);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.sw {
+  width: 10px;
+  height: 10px;
+  margin-left: 6px;
+  border-radius: 3px;
+  background: var(--st);
+}
+
+.sw:first-child, .ls:first-child { margin-left: 0; }
+.ls { width: 32px; height: 8px; margin-left: 8px; overflow: visible; }
+
+.zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.zoom button {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.zoom button:last-child { border-right: 0; }
+.zoom button:hover { color: var(--text); background: var(--band); }
+
+.touring .legend,
+.touring .zoom { opacity: 0; pointer-events: none; }
+
+/* Drawer */
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 92vw);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--panel-solid);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(104%);
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 4;
+  cursor: auto;
+  user-select: text;
+}
+
+.drawer[aria-hidden="false"] { transform: none; }
+
+.d-head {
+  position: relative;
+  padding: 20px 56px 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.d-head .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--st);
+}
+
+.d-tags { display: flex; align-items: center; gap: 8px; }
+
+.d-kind {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.d-name {
+  margin: 8px 0 4px;
+  font: 650 18px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+
+.st-deleted .d-name { text-decoration: line-through; text-decoration-color: var(--red); }
+
+.d-path { font: 12px/1.4 var(--mono); color: var(--muted); word-break: break-all; }
+
+.d-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.d-close:hover { color: var(--text); border-color: var(--border-strong); }
+
+.d-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fact {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.fact.warn { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, transparent); }
+.fact.bad { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+.d-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px 0 24px;
+}
+
+.d-section { padding: 16px 24px 0; }
+
+.d-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.d-empty { font-size: 12.5px; color: var(--faint); }
+
+.diff {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+  background: var(--bg);
+  font: 12px/20px var(--mono);
+}
+
+.diff-rows { width: max-content; min-width: 100%; }
+
+.hunk-head {
+  padding: 2px 12px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+.diff-rows .hunk-head:first-child { border-top: 0; }
+
+.dl {
+  display: grid;
+  grid-template-columns: 40px 40px 20px auto;
+  white-space: pre;
+}
+
+.dl .ln {
+  padding-right: 8px;
+  text-align: right;
+  color: var(--faint);
+  user-select: none;
+}
+
+.dl .sg { text-align: center; user-select: none; }
+.dl .code { padding-right: 16px; }
+.dl.add { background: var(--add-bg); }
+.dl.add .sg { color: var(--green); }
+.dl.del { background: var(--del-bg); }
+.dl.del .sg { color: var(--red); }
+
+.links { display: grid; gap: 4px; }
+
+.link {
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--raise);
+  text-align: left;
+  overflow: hidden;
+}
+
+.link:hover { border-color: var(--border-strong); }
+.link .bar { height: 100%; min-height: 32px; background: var(--st); border-radius: 0 2px 2px 0; }
+.link-text { min-width: 0; }
+.link-name { display: block; font: 600 12.5px/1.35 var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-path { display: block; font: 11px/1.35 var(--mono); color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.etag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.etag.added { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); }
+.etag.removed { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+/* Footer */
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-solid);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.brand-line { font-weight: 550; color: var(--text); opacity: 0.8; }
+.hints { color: var(--faint); overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 1440px) {
+  .top { gap: 16px; }
+  .stat { min-width: 0; padding: 6px 10px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 10.5px; }
+}
+
+@media (max-width: 1100px) {
+  .top { flex-wrap: wrap; }
+  .stats { order: 3; flex-basis: 100%; overflow-x: auto; }
+  .hints { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .e-added { animation: none; }
+  .drawer { transition: none; }
+}
+</style></head><body><div class="app"><header class="top"><div class="headline"><div class="eyebrow"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">PR map</span><span id="meta" class="meta"></span></div><h1 id="title"></h1></div><div id="stats" class="stats"></div><button id="play" class="play" type="button"><span class="play-icon" aria-hidden="true"></span><span id="play-label">Play tour</span></button></header><main id="viewport" class="viewport"><div id="world" class="world"></div><div class="spot" aria-hidden="true"></div><div id="progress" class="progress" aria-hidden="true"><div id="progress-bar"></div></div><div id="caption" class="caption" aria-live="polite"></div><div id="summary" class="summary"></div><div class="legend" aria-label="Legend"><div class="legend-row"><span class="sw st-added"></span>added<span class="sw st-modified"></span>modified<span class="sw st-deleted"></span>deleted<span class="sw st-context"></span>unchanged</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-added" d="M2 4H38"/></svg>new call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-removed" d="M2 4H38"/></svg>removed call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept" d="M2 4H38"/></svg>call</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept e-name" d="M2 4H38"/></svg>dotted: matched by name only, no import proves it</div></div><div class="zoom"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-fit" type="button">Fit</button></div><aside id="drawer" class="drawer" aria-hidden="true"></aside></main><footer class="foot"><span class="brand-line">PR map · computed from the code, no AI drew this</span><span class="hints">Click a node for its diff · Drag to pan, pinch or Ctrl+scroll to zoom · Space steps the tour · F fits</span></footer></div><script type="application/json" id="map-data">{"author":"komaksym","base_sha":"306ff5a26ca6502173b40eeb723826e9e3eca6cd","brief":{"checks":[{"name":"synthetic-e2e","state":"passed"}],"files":[{"added":16,"kind":"docs","named":false,"path":"PLANS.md","removed":0,"sensitive":null},{"added":3,"kind":"docs","named":false,"path":"diagnostics/action-report-private-source-20261002/README.md","removed":3,"sensitive":null},{"added":39,"kind":"code","named":true,"path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","removed":4,"sensitive":null},{"added":23,"kind":"config","named":true,"path":"diagnostics/action-report-private-source-20261002/e2e-evidence.json","removed":0,"sensitive":null},{"added":85,"kind":"code","named":true,"path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","removed":2,"sensitive":null},{"added":3,"kind":"docs","named":false,"path":"diagnostics/source-refresh-proposal-20261002/README.md","removed":0,"sensitive":null},{"added":54,"kind":"config","named":true,"path":"diagnostics/source-refresh-proposal-20261002/private-action-source.yml","removed":0,"sensitive":null},{"added":1,"kind":"docs","named":false,"path":"infographic/source-changelog/analysis.md","removed":0,"sensitive":null},{"added":0,"kind":"opaque","named":false,"path":"infographic/source-changelog/infographic.png","removed":0,"sensitive":null},{"added":1,"kind":"docs","named":false,"path":"infographic/source-changelog/prompts/01-infographic-source-changelog.md","removed":0,"sensitive":null},{"added":11,"kind":"docs","named":true,"path":"infographic/source-changelog/source.md","removed":0,"sensitive":null},{"added":6,"kind":"docs","named":false,"path":"infographic/source-changelog/structured-content.md","removed":0,"sensitive":null},{"added":19,"kind":"code","named":true,"path":"src/linkedin_mdp_mcp/client.py","removed":11,"sensitive":null}],"head_sha":"66e8fe47d8cf70fcde7f87ebd3b43c1ccf22eaf7","look_first":[{"lines":[],"path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","reason":"largest code change (+85 −2)"},{"lines":[],"path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","reason":"largest code change (+39 −4)"},{"lines":[],"path":"src/linkedin_mdp_mcp/client.py","reason":"largest code change (+19 −11)"}],"mismatches":[],"pr":"komaksym/linkedin-mdp#14","title":"fix(collector): collect changelog"},"edges":[{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources","status":"kept","target":"diagnostics/action-report-private-source-20261002/collect_private_source.py::require"},{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/collect_private_source.py::export","status":"kept","target":"diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources"},{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","status":"kept","target":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"},{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","status":"added","target":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged","status":"kept","target":"src/linkedin_mdp_mcp/client.py::LinkedInAPIError"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged","status":"kept","target":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link","status":"kept","target":"src/linkedin_mdp_mcp/client.py::LinkedInAPIError"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog","status":"kept","target":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.snapshot","status":"kept","target":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"}],"files":[{"added":16,"hunks":[{"lines":[{"new":1,"old":1,"op":" ","text":"# Implementation plans"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"## PR14 changelog pagination scope repair"},{"new":4,"old":null,"op":"+","text":""},{"new":5,"old":null,"op":"+","text":"Summary: reject a changelog next link that adds `startTime` when the caller did not set one, before a second HTTP request or encryption. Keep valid pagination cursors and an unchanged caller-supplied `startTime`."},{"new":6,"old":null,"op":"+","text":""},{"new":7,"old":null,"op":"+","text":"Milestones: (1) extend the existing synthetic HTTP/CMS E2E and observe the missing rejection, (2) add the narrow client scope check, (3) verify the E2E and repository lint, types, tests, and build. The E2E failed before the fix with `unexpected synthetic collection failure`; after the fix, all 45 synthetic verdicts pass, including the seeded unchanged-start-time path. Full mypy (8 source files), 21 pytest tests, and sdist/wheel build pass. Parent reran the 45-verdict HTTP/CMS E2E, default scoped Ruff without exclusions, and diff check successfully. Independent correctness and comment review found no issues. The existing source-acquisition infographic remains accurate; this review fix does not change the PR purpose or high-level design."},{"new":8,"old":null,"op":"+","text":""},{"new":9,"old":null,"op":"+","text":"## Private source changelog acquisition"},{"new":10,"old":null,"op":"+","text":""},{"new":11,"old":null,"op":"+","text":"Summary: include the existing read-only LinkedIn member changelog response in the encrypted private source bundle, with actual collector observation timestamps and an explicitly unknown provider freshness. Preserve each raw provider event exactly and accept a null watermark only for a complete empty response."},{"new":12,"old":null,"op":"+","text":""},{"new":13,"old":null,"op":"+","text":"Failure cases to prove before implementation: (1) successful nonempty events are omitted or modified, (2) collector timestamps are absent or derived from provider event timestamps, (3) a complete empty response with a null watermark is rejected, (4) a nonempty response with a null watermark, zero/negative/boolean watermark is accepted, (5) malformed/missing envelope fields, malformed event entries, wrong-endpoint or wrong-query next links, malformed next links, or page-limit truncation are accepted, (6) valid pagination loses its original request scope, and (7) any failure creates an encrypted artifact. The collector must use only GETs and preserve the existing `created_at` projection and encrypted-only handling."},{"new":14,"old":null,"op":"+","text":""},{"new":15,"old":null,"op":"+","text":"Milestones: (1) extend the synthetic HTTP/CMS E2E and run it red against the current collector, (2) add strict changelog acquisition to the collector, (3) rerun the E2E and narrow lint/typecheck/tests/build, and (4) prepare an inactive workflow refresh proposal outside `.github/workflows` for review."},{"new":16,"old":null,"op":"+","text":""},{"new":17,"old":null,"op":"+","text":"Validation: the expanded E2E first failed on omitted changelog events/timestamps, empty watermark metadata, malformed events, missing and invalid watermarks, wrong endpoint/query pagination links, malformed next links, truncation, and lost query scope on valid pagination. It now passes all cases, including no artifact on collection failure and unchanged `created_at` checks. Mypy, the full 21-test suite, and package build pass in the declared `uv` environment. Ruff passes on touched source with pre-existing `UP037` in unchanged `client.py:62` excluded. System Python lacked the declared MCP client export and `build` module, so validation used `uv`."},{"new":18,"old":2,"op":" ","text":""},{"new":19,"old":3,"op":" ","text":"## Private prospect creation timestamp"},{"new":20,"old":4,"op":" ","text":""}],"new_start":1,"old_start":1}],"kind":"docs","language":null,"path":"PLANS.md","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":3,"hunks":[{"lines":[{"new":null,"old":1,"op":"-","text":"# Private source collector timestamp check"},{"new":1,"old":null,"op":"+","text":"# Private source collector evidence"},{"new":2,"old":2,"op":" ","text":""},{"new":null,"old":3,"op":"-","text":"The collector reads the existing `prospects.created_at` column and keeps its exact value in the encrypted prospect rows. A missing value stays missing. This slice changes no schema, workflow, schedule, or outreach behavior."},{"new":3,"old":null,"op":"+","text":"The collector reads the existing `prospects.created_at` column and keeps its exact value in the encrypted prospect rows. It also retains the exact raw events and watermark from the existing read-only LinkedIn member changelog endpoint. Changelog attempted, completed, and collected times record this collector run; they do not represent provider event time. Provider-generated time is null and upstream freshness is unknown. A null watermark is accepted only for a complete empty changelog response. A missing prospect timestamp stays missing."},{"new":4,"old":4,"op":" ","text":""},{"new":null,"old":5,"op":"-","text":"Run `PYTHONPATH=src python diagnostics/action-report-private-source-20261002/e2e_private_source.py` from the repository root. The test uses synthetic HTTP responses with the actual clients and OpenSSL CMS roundtrip. Its database mock applies the requested `select` columns, so omitting `created_at` from the collector projection fails the timestamp check. Negative cases check their expected error type and message, and injected unrelated collection and encryption faults must fail independently. The evidence file begins each run with `run_status: failed` and changes to `passed` only after all verdicts pass, so an early certificate failure cannot leave stale success evidence. It writes only fixed synthetic verdicts to `e2e-evidence.json`; the temporary certificate, key, and ciphertext are removed when the test ends. The test does not contact live services."},{"new":5,"old":null,"op":"+","text":"Run `PYTHONPATH=src python diagnostics/action-report-private-source-20261002/e2e_private_source.py` from the repository root. The test uses synthetic HTTP responses with the actual clients and OpenSSL CMS roundtrip. Its database mock applies the requested `select` columns, so omitting `created_at` from the collector projection fails the timestamp check. Authorization cases reject missing, duplicate, malformed, wrong-prefix, or malformed member URNs. Changelog cases cover exact event retention, acquisition timestamps, complete empty results, malformed envelopes/events, missing or invalid watermarks, valid scoped pagination, wrong endpoint/query links, a next link that adds `startTime` to an unbounded request, malformed next links, and truncation. The injected `startTime` is rejected before a second HTTP request; a caller-supplied, unchanged `startTime` still pages successfully. Each rejected collection must fail before producing ciphertext. Negative cases check their expected error type and message, and injected unrelated collection and encryption faults must fail independently. The evidence file begins each run with `run_status: failed` and changes to `passed` only after all verdicts pass, so an early certificate failure cannot leave stale success evidence. It writes only fixed synthetic verdicts to `e2e-evidence.json`; the temporary certificate, key, and ciphertext are removed when the test ends. The test does not contact live services."}],"new_start":1,"old_start":1}],"kind":"docs","language":null,"path":"diagnostics/action-report-private-source-20261002/README.md","removed":3,"sensitive":null,"status":"modified","symbols":[]},{"added":39,"hunks":[{"lines":[{"new":62,"old":62,"op":" ","text":"    raise RuntimeError(\"private source collection failed\")"},{"new":63,"old":63,"op":" ","text":""},{"new":64,"old":64,"op":" ","text":""},{"new":null,"old":65,"op":"-","text":"async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50) -\u003e dict[str, Any]:"},{"new":null,"old":66,"op":"-","text":"    \"\"\"Collect all three strict snapshots and both existing tables with no writes.\"\"\""},{"new":null,"old":67,"op":"-","text":"    require(1 \u003c= page_size \u003c= 1000 and 1 \u003c= max_db_pages \u003c= 200 and 1 \u003c= snapshot_pages \u003c= 50)"},{"new":65,"old":null,"op":"+","text":"async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50, changelog_pages: int = 50) -\u003e dict[str, Any]:"},{"new":66,"old":null,"op":"+","text":"    \"\"\"Collect strict snapshots, changelog, and existing tables with no writes.\"\"\""},{"new":67,"old":null,"op":"+","text":"    require(1 \u003c= page_size \u003c= 1000 and 1 \u003c= max_db_pages \u003c= 200 and 1 \u003c= snapshot_pages \u003c= 50 and 1 \u003c= changelog_pages \u003c= 50)"},{"new":68,"old":null,"op":"+","text":"    authorizations = await linkedin.authorization_status()"},{"new":69,"old":null,"op":"+","text":"    elements = authorizations.get(\"elements\") if isinstance(authorizations, dict) else None"},{"new":70,"old":null,"op":"+","text":"    if not isinstance(elements, list) or len(elements) != 1:"},{"new":71,"old":null,"op":"+","text":"        raise RuntimeError(\"private source collection failed\")"},{"new":72,"old":null,"op":"+","text":"    authorization = elements[0]"},{"new":73,"old":null,"op":"+","text":"    identity = authorization.get(\"memberComplianceAuthorizationKey\") if isinstance(authorization, dict) else None"},{"new":74,"old":null,"op":"+","text":"    account_member_urn = identity.get(\"member\") if isinstance(identity, dict) else None"},{"new":75,"old":null,"op":"+","text":"    require("},{"new":76,"old":null,"op":"+","text":"        isinstance(account_member_urn, str)"},{"new":77,"old":null,"op":"+","text":"        and re.fullmatch(r\"urn:li:person:[A-Za-z0-9_-]+\", account_member_urn) is not None"},{"new":78,"old":null,"op":"+","text":"    )"},{"new":79,"old":68,"op":" ","text":"    snapshots: dict[str, Any] = {}"},{"new":80,"old":69,"op":" ","text":"    for domain in DOMAINS:"},{"new":81,"old":70,"op":" ","text":"        started = datetime.now(UTC).isoformat()"}],"new_start":62,"old_start":62},{"lines":[{"new":88,"old":77,"op":" ","text":"        rows = snapshot.get(\"rows\")"},{"new":89,"old":78,"op":" ","text":"        require(isinstance(rows, list) and all(isinstance(row, dict) for row in rows))"},{"new":90,"old":79,"op":" ","text":"        snapshots[domain] = {\"attempted_at\": started, \"completed_at\": datetime.now(UTC).isoformat(), \"source_result\": \"success\", \"provider_generated_at\": None, \"upstream_freshness\": \"unknown unless established by retained provider metadata\", **snapshot}"},{"new":91,"old":null,"op":"+","text":"    attempted_at = datetime.now(UTC).isoformat()"},{"new":92,"old":null,"op":"+","text":"    change_result = await linkedin.changelog(count=50, max_pages=changelog_pages)"},{"new":93,"old":null,"op":"+","text":"    completed_at = datetime.now(UTC).isoformat()"},{"new":94,"old":null,"op":"+","text":"    require(isinstance(change_result, dict))"},{"new":95,"old":null,"op":"+","text":"    change_events = change_result.get(\"events\")"},{"new":96,"old":null,"op":"+","text":"    watermark = change_result.get(\"next_start_time\")"},{"new":97,"old":null,"op":"+","text":"    pages = change_result.get(\"page_count\")"},{"new":98,"old":null,"op":"+","text":"    require(isinstance(change_result.get(\"api_version\"), str) and bool(change_result[\"api_version\"]))"},{"new":99,"old":null,"op":"+","text":"    require(isinstance(change_events, list) and all(isinstance(event, dict) for event in change_events))"},{"new":100,"old":null,"op":"+","text":"    require(type(pages) is int and 0 \u003c pages \u003c= changelog_pages and change_result.get(\"truncated\") is False)"},{"new":101,"old":null,"op":"+","text":"    require((not change_events and watermark is None) or (bool(change_events) and type(watermark) is int and watermark \u003e 0))"},{"new":102,"old":null,"op":"+","text":"    changelog = {"},{"new":103,"old":null,"op":"+","text":"        \"attempted_at\": attempted_at,"},{"new":104,"old":null,"op":"+","text":"        \"completed_at\": completed_at,"},{"new":105,"old":null,"op":"+","text":"        \"collected_at\": datetime.now(UTC).isoformat(),"},{"new":106,"old":null,"op":"+","text":"        \"source_result\": \"success\","},{"new":107,"old":null,"op":"+","text":"        \"provider_generated_at\": None,"},{"new":108,"old":null,"op":"+","text":"        \"upstream_freshness\": \"unknown\","},{"new":109,"old":null,"op":"+","text":"        \"api_version\": change_result[\"api_version\"],"},{"new":110,"old":null,"op":"+","text":"        \"events\": change_events,"},{"new":111,"old":null,"op":"+","text":"        \"next_start_time\": watermark,"},{"new":112,"old":null,"op":"+","text":"        \"page_count\": pages,"},{"new":113,"old":null,"op":"+","text":"        \"truncated\": False,"},{"new":114,"old":null,"op":"+","text":"    }"},{"new":115,"old":80,"op":" ","text":"    tables = {}"},{"new":116,"old":81,"op":" ","text":"    for table in TABLE_COLUMNS:"},{"new":117,"old":82,"op":" ","text":"        tables[table] = await read_table(store, table, page_size=page_size, max_pages=max_db_pages)"},{"new":null,"old":83,"op":"-","text":"    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"snapshots\": snapshots, **tables}"},{"new":118,"old":null,"op":"+","text":"    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"account_member_urn\": account_member_urn, \"snapshots\": snapshots, \"changelog\": changelog, **tables}"},{"new":119,"old":84,"op":" ","text":""},{"new":120,"old":85,"op":" ","text":""},{"new":121,"old":86,"op":" ","text":"def encrypt_bundle(bundle: dict[str, Any], certificate: Path, output: Path) -\u003e None:"}],"new_start":88,"old_start":77}],"kind":"code","language":"python","path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","removed":4,"sensitive":null,"status":"modified","symbols":["diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources","diagnostics/action-report-private-source-20261002/collect_private_source.py::export","diagnostics/action-report-private-source-20261002/collect_private_source.py::require"]},{"added":23,"hunks":[{"lines":[{"new":3,"old":3,"op":" ","text":"  \"run_status\": \"passed\","},{"new":4,"old":4,"op":" ","text":"  \"scenarios\": {"},{"new":5,"old":5,"op":" ","text":"    \"complete_sources_roundtrip\": true,"},{"new":6,"old":null,"op":"+","text":"    \"account_member_urn_roundtrip\": true,"},{"new":7,"old":null,"op":"+","text":"    \"changelog_raw_events_and_acquisition_timestamps\": true,"},{"new":8,"old":null,"op":"+","text":"    \"changelog_complete_watermark\": true,"},{"new":9,"old":null,"op":"+","text":"    \"changelog_valid_pagination_preserves_scope_and_events\": true,"},{"new":10,"old":null,"op":"+","text":"    \"changelog_original_start_time_survives_pagination\": true,"},{"new":11,"old":6,"op":" ","text":"    \"prospect_created_at_exact_across_pages\": true,"},{"new":12,"old":7,"op":" ","text":"    \"missing_created_at_not_fabricated\": true,"},{"new":13,"old":8,"op":" ","text":"    \"private_plaintext_absent_encrypted_artifact\": true,"}],"new_start":3,"old_start":3},{"lines":[{"new":18,"old":13,"op":" ","text":"    \"domain_rejected_without_artifact\": true,"},{"new":19,"old":14,"op":" ","text":"    \"truncated_rejected_without_artifact\": true,"},{"new":20,"old":15,"op":" ","text":"    \"escaped_domain_rejected_without_artifact\": true,"},{"new":21,"old":null,"op":"+","text":"    \"change_bad_envelope_rejected_without_artifact\": true,"},{"new":22,"old":null,"op":"+","text":"    \"change_wrong_endpoint_rejected_without_artifact\": true,"},{"new":23,"old":null,"op":"+","text":"    \"change_wrong_q_rejected_without_artifact\": true,"},{"new":24,"old":null,"op":"+","text":"    \"change_added_start_time_rejected_without_artifact\": true,"},{"new":25,"old":null,"op":"+","text":"    \"change_bad_next_rejected_without_artifact\": true,"},{"new":26,"old":16,"op":" ","text":"    \"db_cap_rejected_without_artifact\": true,"},{"new":27,"old":17,"op":" ","text":"    \"db_malformed_rejected_without_artifact\": true,"},{"new":28,"old":18,"op":" ","text":"    \"db_missing_count_rejected_without_artifact\": true,"},{"new":29,"old":19,"op":" ","text":"    \"db_changed_count_rejected_without_artifact\": true,"},{"new":30,"old":20,"op":" ","text":"    \"db_duplicate_rejected_without_artifact\": true,"},{"new":31,"old":null,"op":"+","text":"    \"change_bad_event_rejected_without_artifact\": true,"},{"new":32,"old":null,"op":"+","text":"    \"change_no_watermark_rejected_without_artifact\": true,"},{"new":33,"old":null,"op":"+","text":"    \"change_zero_watermark_rejected_without_artifact\": true,"},{"new":34,"old":null,"op":"+","text":"    \"change_negative_watermark_rejected_without_artifact\": true,"},{"new":35,"old":null,"op":"+","text":"    \"change_boolean_watermark_rejected_without_artifact\": true,"},{"new":36,"old":null,"op":"+","text":"    \"change_truncated_rejected_without_artifact\": true,"},{"new":37,"old":null,"op":"+","text":"    \"auth_missing_rejected_without_artifact\": true,"},{"new":38,"old":null,"op":"+","text":"    \"auth_multiple_rejected_without_artifact\": true,"},{"new":39,"old":null,"op":"+","text":"    \"auth_malformed_rejected_without_artifact\": true,"},{"new":40,"old":null,"op":"+","text":"    \"auth_wrong_prefix_rejected_without_artifact\": true,"},{"new":41,"old":null,"op":"+","text":"    \"auth_suffix_whitespace_rejected_without_artifact\": true,"},{"new":42,"old":null,"op":"+","text":"    \"auth_suffix_internal_space_rejected_without_artifact\": true,"},{"new":43,"old":null,"op":"+","text":"    \"auth_suffix_bad_chars_rejected_without_artifact\": true,"},{"new":44,"old":21,"op":" ","text":"    \"unexpected_failure_not_counted_as_rejection\": true,"},{"new":45,"old":22,"op":" ","text":"    \"encryption_failure_not_counted_as_rejection\": true,"},{"new":46,"old":23,"op":" ","text":"    \"cli_fixed_success_log_without_plaintext\": true,"}],"new_start":18,"old_start":13}],"kind":"config","language":null,"path":"diagnostics/action-report-private-source-20261002/e2e-evidence.json","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":85,"hunks":[{"lines":[{"new":8,"old":8,"op":" ","text":"import sys"},{"new":9,"old":9,"op":" ","text":"import tempfile"},{"new":10,"old":10,"op":" ","text":"from contextlib import redirect_stdout"},{"new":11,"old":null,"op":"+","text":"from datetime import UTC, datetime"},{"new":12,"old":11,"op":" ","text":"from io import StringIO"},{"new":13,"old":12,"op":" ","text":"from pathlib import Path"},{"new":14,"old":13,"op":" ","text":"from typing import Any"}],"new_start":8,"old_start":8},{"lines":[{"new":33,"old":32,"op":" ","text":"    \"domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot element domain does not match request\"),"},{"new":34,"old":33,"op":" ","text":"    \"truncated\": (RuntimeError, \"private source collection failed\"),"},{"new":35,"old":34,"op":" ","text":"    \"escaped_domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot next link changed request scope\"),"},{"new":null,"old":35,"op":"-","text":"    **{case: (RuntimeError, \"private source collection failed\") for case in (\"db_cap\", \"db_malformed\", \"db_missing_count\", \"db_changed_count\", \"db_duplicate\")},"},{"new":36,"old":null,"op":"+","text":"    \"change_bad_envelope\": (LinkedInAPIError, \"LinkedIn API error 0: malformed changelog elements list\"),"},{"new":37,"old":null,"op":"+","text":"    \"change_wrong_endpoint\": (LinkedInAPIError, \"LinkedIn API error 0: changelog next link changed endpoint\"),"},{"new":38,"old":null,"op":"+","text":"    \"change_wrong_q\": (LinkedInAPIError, \"LinkedIn API error 0: changelog next link changed request scope\"),"},{"new":39,"old":null,"op":"+","text":"    \"change_added_start_time\": (LinkedInAPIError, \"LinkedIn API error 0: changelog next link changed request scope\"),"},{"new":40,"old":null,"op":"+","text":"    \"change_bad_next\": (LinkedInAPIError, \"LinkedIn API error 0: malformed changelog paging link\"),"},{"new":41,"old":null,"op":"+","text":"    **{case: (RuntimeError, \"private source collection failed\") for case in (\"db_cap\", \"db_malformed\", \"db_missing_count\", \"db_changed_count\", \"db_duplicate\", \"change_bad_event\", \"change_no_watermark\", \"change_zero_watermark\", \"change_negative_watermark\", \"change_boolean_watermark\", \"change_truncated\", \"auth_missing\", \"auth_multiple\", \"auth_malformed\", \"auth_wrong_prefix\", \"auth_suffix_whitespace\", \"auth_suffix_internal_space\", \"auth_suffix_bad_chars\")},"},{"new":42,"old":36,"op":" ","text":"}"},{"new":43,"old":37,"op":" ","text":""},{"new":44,"old":38,"op":" ","text":"async def exercise(case: str, cert: Path, target: Path) -\u003e tuple[bytes | None, list[str]]:"}],"new_start":33,"old_start":32},{"lines":[{"new":47,"old":41,"op":" ","text":"    def provider(request: httpx.Request) -\u003e httpx.Response:"},{"new":48,"old":42,"op":" ","text":"        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""},{"new":49,"old":43,"op":" ","text":"        methods.append(request.method)"},{"new":50,"old":null,"op":"+","text":"        if request.url.path == \"/rest/memberAuthorizations\":"},{"new":51,"old":null,"op":"+","text":"            member = \"urn:li:person:synthetic-member-493829\""},{"new":52,"old":null,"op":"+","text":"            elements: list[Any] = [{\"memberComplianceAuthorizationKey\": {\"member\": member}}]"},{"new":53,"old":null,"op":"+","text":"            if case == \"auth_missing\":"},{"new":54,"old":null,"op":"+","text":"                elements = []"},{"new":55,"old":null,"op":"+","text":"            if case == \"auth_multiple\":"},{"new":56,"old":null,"op":"+","text":"                elements.append({\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:second-synthetic\"}})"},{"new":57,"old":null,"op":"+","text":"            if case == \"auth_malformed\":"},{"new":58,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": 42}}]"},{"new":59,"old":null,"op":"+","text":"            if case == \"auth_wrong_prefix\":"},{"new":60,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:organization:synthetic\"}}]"},{"new":61,"old":null,"op":"+","text":"            if case == \"auth_suffix_whitespace\":"},{"new":62,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person: synthetic-member\"}}]"},{"new":63,"old":null,"op":"+","text":"            if case == \"auth_suffix_internal_space\":"},{"new":64,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic member\"}}]"},{"new":65,"old":null,"op":"+","text":"            if case == \"auth_suffix_bad_chars\":"},{"new":66,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic/member\"}}]"},{"new":67,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": elements})"},{"new":68,"old":null,"op":"+","text":"        if request.url.path == \"/rest/memberChangeLogs\":"},{"new":69,"old":null,"op":"+","text":"            if case == \"change_added_start_time\":"},{"new":70,"old":null,"op":"+","text":"                if request.url.params.get(\"start\") == \"1\":"},{"new":71,"old":null,"op":"+","text":"                    raise RuntimeError(\"second changelog request reached\")"},{"new":72,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\u0026startTime=1710000000\"}]}})"},{"new":73,"old":null,"op":"+","text":"            if case == \"change_bad_envelope\":"},{"new":74,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"paging\": {\"links\": []}})"},{"new":75,"old":null,"op":"+","text":"            if case == \"change_wrong_endpoint\":"},{"new":76,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberAuthorizations?start=1\"}]}})"},{"new":77,"old":null,"op":"+","text":"            if case == \"change_wrong_q\":"},{"new":78,"old":null,"op":"+","text":"                if request.url.params.get(\"start\") == \"1\":"},{"new":79,"old":null,"op":"+","text":"                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"},{"new":80,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?q=other\u0026start=1\"}]}})"},{"new":81,"old":null,"op":"+","text":"            if case == \"change_bad_next\":"},{"new":82,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [None]}})"},{"new":83,"old":null,"op":"+","text":"            if case == \"change_paged\":"},{"new":84,"old":null,"op":"+","text":"                if request.url.params.get(\"start\") == \"1\":"},{"new":85,"old":null,"op":"+","text":"                    kind = \"SECOND\" if request.url.params.get(\"q\") == \"memberAndApplication\" and request.url.params.get(\"count\") == \"50\" else \"SECOND_BAD_SCOPE\""},{"new":86,"old":null,"op":"+","text":"                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001, \"changeType\": kind}], \"paging\": {\"links\": []}})"},{"new":87,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"},{"new":88,"old":null,"op":"+","text":"            if case == \"change_truncated\":"},{"new":89,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"},{"new":90,"old":null,"op":"+","text":"            events: list[Any] = [] if case == \"empty\" else [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}]"},{"new":91,"old":null,"op":"+","text":"            if case == \"change_bad_event\":"},{"new":92,"old":null,"op":"+","text":"                events = [None]"},{"new":93,"old":null,"op":"+","text":"            if case == \"change_no_watermark\":"},{"new":94,"old":null,"op":"+","text":"                events = [{\"changeType\": \"SYNTHETIC\"}]"},{"new":95,"old":null,"op":"+","text":"            if case == \"change_zero_watermark\":"},{"new":96,"old":null,"op":"+","text":"                events[0][\"processedAt\"] = 0"},{"new":97,"old":null,"op":"+","text":"            if case == \"change_negative_watermark\":"},{"new":98,"old":null,"op":"+","text":"                events[0][\"processedAt\"] = -1"},{"new":99,"old":null,"op":"+","text":"            if case == \"change_boolean_watermark\":"},{"new":100,"old":null,"op":"+","text":"                events[0][\"processedAt\"] = True"},{"new":101,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": events, \"paging\": {\"links\": []}})"},{"new":102,"old":null,"op":"+","text":"        if case == \"change_wrong_endpoint\" and request.url.path == \"/rest/memberAuthorizations\":"},{"new":103,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"},{"new":104,"old":44,"op":" ","text":"        domain = request.url.params.get(\"domain\")"},{"new":105,"old":45,"op":" ","text":"        if case == \"unavailable\":"},{"new":106,"old":46,"op":" ","text":"            return httpx.Response(404, json={\"message\": \"unavailable\"})"}],"new_start":47,"old_start":41},{"lines":[{"new":168,"old":108,"op":" ","text":"        if generated.returncode:"},{"new":169,"old":109,"op":" ","text":"            raise RuntimeError(\"synthetic certificate generation failed\")"},{"new":170,"old":110,"op":" ","text":"        output = tmp / \"source.cms\""},{"new":171,"old":null,"op":"+","text":"        run_started = datetime.now(UTC)"},{"new":172,"old":111,"op":" ","text":"        encrypted, methods = await exercise(\"complete\", cert, output)"},{"new":173,"old":null,"op":"+","text":"        run_completed = datetime.now(UTC)"},{"new":174,"old":112,"op":" ","text":"        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":175,"old":113,"op":" ","text":"        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"},{"new":176,"old":114,"op":" ","text":"        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"},{"new":177,"old":null,"op":"+","text":"        changelog = bundle.get(\"changelog\", {})"},{"new":178,"old":null,"op":"+","text":"        change_events = changelog.get(\"events\")"},{"new":179,"old":115,"op":" ","text":"        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"},{"new":180,"old":null,"op":"+","text":"        verdicts[\"account_member_urn_roundtrip\"] = bundle.get(\"account_member_urn\") == \"urn:li:person:synthetic-member-493829\""},{"new":181,"old":null,"op":"+","text":"        times = [datetime.fromisoformat(changelog[key]) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")] if all(isinstance(changelog.get(key), str) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")) else []"},{"new":182,"old":null,"op":"+","text":"        verdicts[\"changelog_raw_events_and_acquisition_timestamps\"] = change_events == [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}] and len(times) == 3 and run_started \u003c= times[0] \u003c= times[1] \u003c= times[2] \u003c= run_completed and changelog.get(\"provider_generated_at\") is None and changelog.get(\"upstream_freshness\") == \"unknown\""},{"new":183,"old":null,"op":"+","text":"        verdicts[\"changelog_complete_watermark\"] = changelog.get(\"next_start_time\") == 1710000000 and changelog.get(\"source_result\") == \"success\" and changelog.get(\"truncated\") is False and type(changelog.get(\"page_count\")) is int and changelog[\"page_count\"] \u003e 0"},{"new":184,"old":null,"op":"+","text":"        paged, _ = await exercise(\"change_paged\", cert, tmp / \"paged.cms\")"},{"new":185,"old":null,"op":"+","text":"        paged_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"paged.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":186,"old":null,"op":"+","text":"        paged_changelog = json.loads(paged_result.stdout).get(\"changelog\", {}) if paged_result.returncode == 0 else {}"},{"new":187,"old":null,"op":"+","text":"        verdicts[\"changelog_valid_pagination_preserves_scope_and_events\"] = paged is not None and paged_changelog.get(\"events\") == [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}, {\"processedAt\": 1710000001, \"changeType\": \"SECOND\"}] and paged_changelog.get(\"page_count\") == 2 and paged_changelog.get(\"next_start_time\") == 1710000001"},{"new":188,"old":null,"op":"+","text":"        seeded_requests: list[httpx.Request] = []"},{"new":189,"old":null,"op":"+","text":"        def seeded_provider(request: httpx.Request) -\u003e httpx.Response:"},{"new":190,"old":null,"op":"+","text":"            \"\"\"Return two pages with the caller's unchanged start time.\"\"\""},{"new":191,"old":null,"op":"+","text":"            seeded_requests.append(request)"},{"new":192,"old":null,"op":"+","text":"            if request.url.params.get(\"start\") == \"1\":"},{"new":193,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1002}], \"paging\": {\"links\": []}})"},{"new":194,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1001}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\u0026startTime=1000\"}]}})"},{"new":195,"old":null,"op":"+","text":"        async with httpx.AsyncClient(transport=httpx.MockTransport(seeded_provider)) as http:"},{"new":196,"old":null,"op":"+","text":"            seeded = await LinkedInMDPClient(\"synthetic\", http=http).changelog(start_time=1000)"},{"new":197,"old":null,"op":"+","text":"        verdicts[\"changelog_original_start_time_survives_pagination\"] = seeded[\"page_count\"] == 2 and seeded[\"next_start_time\"] == 1002 and len(seeded_requests) == 2 and all(request.url.params.get(\"startTime\") == \"1000\" for request in seeded_requests)"},{"new":198,"old":116,"op":" ","text":"        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"},{"new":199,"old":117,"op":" ","text":"        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"},{"new":200,"old":118,"op":" ","text":"        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"}],"new_start":168,"old_start":108},{"lines":[{"new":205,"old":123,"op":" ","text":"        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"},{"new":206,"old":124,"op":" ","text":"        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":207,"old":125,"op":" ","text":"        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"},{"new":null,"old":126,"op":"-","text":"        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"},{"new":208,"old":null,"op":"+","text":"        empty_changelog = zero_bundle.get(\"changelog\", {})"},{"new":209,"old":null,"op":"+","text":"        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values()) and empty_changelog.get(\"events\") == [] and empty_changelog.get(\"next_start_time\") is None and empty_changelog.get(\"source_result\") == \"success\""},{"new":210,"old":127,"op":" ","text":"        for case in EXPECTED_FAILURES:"},{"new":211,"old":128,"op":" ","text":"            target = tmp / f\"{case}.cms\""},{"new":212,"old":129,"op":" ","text":"            encrypted, methods = await exercise(case, cert, target)"}],"new_start":205,"old_start":123}],"kind":"code","language":"python","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","removed":2,"sensitive":null,"status":"modified","symbols":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise","diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider","diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.seeded_provider"]},{"added":3,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# Inactive collector workflow refresh proposal"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"This copied workflow is a review aid only. It is outside `.github/workflows`, uses an impossible placeholder branch, and cannot run from its current location. Before any separate operator-approved refresh, replace `PINNED_NEW_COLLECTOR_COMMIT_REQUIRED` with the reviewed immutable collector commit and review the branch/path trigger against the then-current validation process. The committed workflow remains unchanged by this proposal."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"diagnostics/source-refresh-proposal-20261002/README.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":54,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"name: PROPOSAL ONLY - Refresh Encrypted Action Report Source Runtime"},{"new":2,"old":null,"op":"+","text":"on:"},{"new":3,"old":null,"op":"+","text":"  push:"},{"new":4,"old":null,"op":"+","text":"    branches: [PROPOSAL_BRANCH_REQUIRES_EXPLICIT_OPERATOR_REVIEW]"},{"new":5,"old":null,"op":"+","text":"    paths: [diagnostics/source-refresh-proposal-20261002/private-action-source.yml]"},{"new":6,"old":null,"op":"+","text":"permissions:"},{"new":7,"old":null,"op":"+","text":"  contents: read"},{"new":8,"old":null,"op":"+","text":"jobs:"},{"new":9,"old":null,"op":"+","text":"  collect:"},{"new":10,"old":null,"op":"+","text":"    if: github.ref == 'refs/heads/PROPOSAL_BRANCH_REQUIRES_EXPLICIT_OPERATOR_REVIEW'"},{"new":11,"old":null,"op":"+","text":"    runs-on: ubuntu-latest"},{"new":12,"old":null,"op":"+","text":"    timeout-minutes: 20"},{"new":13,"old":null,"op":"+","text":"    concurrency:"},{"new":14,"old":null,"op":"+","text":"      group: connections-reconciliation"},{"new":15,"old":null,"op":"+","text":"      cancel-in-progress: false"},{"new":16,"old":null,"op":"+","text":"    steps:"},{"new":17,"old":null,"op":"+","text":"      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262"},{"new":18,"old":null,"op":"+","text":"        with:"},{"new":19,"old":null,"op":"+","text":"          ref: ${{ github.sha }}"},{"new":20,"old":null,"op":"+","text":"          persist-credentials: false"},{"new":21,"old":null,"op":"+","text":"          path: proposal"},{"new":22,"old":null,"op":"+","text":"      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262"},{"new":23,"old":null,"op":"+","text":"        with:"},{"new":24,"old":null,"op":"+","text":"          # Replace only with the reviewed, immutable collector commit."},{"new":25,"old":null,"op":"+","text":"          ref: PINNED_NEW_COLLECTOR_COMMIT_REQUIRED"},{"new":26,"old":null,"op":"+","text":"          persist-credentials: false"},{"new":27,"old":null,"op":"+","text":"          path: runtime"},{"new":28,"old":null,"op":"+","text":"      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e"},{"new":29,"old":null,"op":"+","text":"        with:"},{"new":30,"old":null,"op":"+","text":"          version: '0.12.18'"},{"new":31,"old":null,"op":"+","text":"          python-version: '3.12'"},{"new":32,"old":null,"op":"+","text":"          enable-cache: false"},{"new":33,"old":null,"op":"+","text":"      - name: Install pinned read-only runtime"},{"new":34,"old":null,"op":"+","text":"        working-directory: runtime"},{"new":35,"old":null,"op":"+","text":"        run: uv sync --no-dev"},{"new":36,"old":null,"op":"+","text":"      - name: Collect and encrypt private source"},{"new":37,"old":null,"op":"+","text":"        env:"},{"new":38,"old":null,"op":"+","text":"          LINKEDIN_ACCESS_TOKEN: ${{ secrets.ORION_TOKEN }}"},{"new":39,"old":null,"op":"+","text":"          LINKEDIN_API_VERSION: ${{ vars.LINKEDIN_API_VERSION || '202312' }}"},{"new":40,"old":null,"op":"+","text":"          SUPABASE_URL: https://mvgzdcqhdruhjoexbdqp.supabase.co"},{"new":41,"old":null,"op":"+","text":"          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"},{"new":42,"old":null,"op":"+","text":"          PYTHONPATH: runtime/src"},{"new":43,"old":null,"op":"+","text":"        run: \u003e-"},{"new":44,"old":null,"op":"+","text":"          runtime/.venv/bin/python"},{"new":45,"old":null,"op":"+","text":"          proposal/diagnostics/action-report-private-source-20261002/collect_private_source.py"},{"new":46,"old":null,"op":"+","text":"          --certificate proposal/diagnostics/action-report-private-source-20261002/recipient-cert.pem"},{"new":47,"old":null,"op":"+","text":"          --output encrypted-source/source.cms"},{"new":48,"old":null,"op":"+","text":"      - name: Retain encrypted source only"},{"new":49,"old":null,"op":"+","text":"        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"},{"new":50,"old":null,"op":"+","text":"        with:"},{"new":51,"old":null,"op":"+","text":"          name: encrypted-action-report-source"},{"new":52,"old":null,"op":"+","text":"          path: encrypted-source/source.cms"},{"new":53,"old":null,"op":"+","text":"          retention-days: 1"},{"new":54,"old":null,"op":"+","text":"          if-no-files-found: error"}],"new_start":1,"old_start":0}],"kind":"config","language":null,"path":"diagnostics/source-refresh-proposal-20261002/private-action-source.yml","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":1,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Technical/system infographic. Audience owner and reviewer. Learning objective: acquisition metadata describes when source data was collected, not when the provider updated it. Technical default structural-breakdown, technical-schematic, landscape16:9 English, native imagegen. Neutral opaque canvas. No person data or deployment claim."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/source-changelog/analysis.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":0,"hunks":[],"kind":"opaque","language":null,"path":"infographic/source-changelog/infographic.png","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":1,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Create a polished small technical system infographic on an opaque pale-gray neutral canvas with dark navy text, blue and teal accents, clear dark outer boundary, landscape16:9. Structural-breakdown + technical-schematic. Clean engineering illustration, no logos, no gradients behind text, all labels crisp and spacious. Title exact: Fresh private report inputs. Three large panels left to right: INPUTS with two separate feed cards labelled LinkedIn snapshots and changelog and Supabase prospects with created_at; VALIDATE labelled Strict complete-source validation, Observed acquisition timestamps, Provider freshness stays unknown; ENCRYPT labelled AES-256 CMS encryption and Private encrypted artifact. Connect with restrained simple arrows. Bottom boundary strip three exact short labels: No database writes; No messages sent; Workflow activation pending. Make acquisition versus freshness distinction visible with a small clock icon beside acquisition and questionmark beside freshness. Do not add statistics, test counts, person names, secret values or deployment claims. Everything inside opaque canvas with high contrast. Use only exact supplied labels, English."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/source-changelog/prompts/01-infographic-source-changelog.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":11,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Fresh private report inputs"},{"new":2,"old":null,"op":"+","text":"LinkedIn snapshots and changelog"},{"new":3,"old":null,"op":"+","text":"Supabase prospects with created_at"},{"new":4,"old":null,"op":"+","text":"Strict complete-source validation"},{"new":5,"old":null,"op":"+","text":"Observed acquisition timestamps"},{"new":6,"old":null,"op":"+","text":"Provider freshness stays unknown"},{"new":7,"old":null,"op":"+","text":"AES-256 CMS encryption"},{"new":8,"old":null,"op":"+","text":"Private encrypted artifact"},{"new":9,"old":null,"op":"+","text":"No database writes"},{"new":10,"old":null,"op":"+","text":"No messages sent"},{"new":11,"old":null,"op":"+","text":"Workflow activation pending"}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/source-changelog/source.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":6,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# Fresh private report inputs"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"Inputs: LinkedIn snapshots and changelog; Supabase prospects with created_at."},{"new":4,"old":null,"op":"+","text":"Validation: strict complete-source validation; observed acquisition timestamps; provider freshness stays unknown."},{"new":5,"old":null,"op":"+","text":"Output: AES-256 CMS encryption; private encrypted artifact."},{"new":6,"old":null,"op":"+","text":"Boundaries: no database writes; no messages sent; workflow activation pending."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/source-changelog/structured-content.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":19,"hunks":[{"lines":[{"new":143,"old":143,"op":" ","text":"            params,"},{"new":144,"old":144,"op":" ","text":"            max_pages=max_pages,"},{"new":145,"old":145,"op":" ","text":"            empty_on_404=False,"},{"new":146,"old":null,"op":"+","text":"            strict_envelope=True,"},{"new":147,"old":146,"op":" ","text":"        )"},{"new":148,"old":147,"op":" ","text":"        processed = ["},{"new":149,"old":148,"op":" ","text":"            value"}],"new_start":143,"old_start":143},{"lines":[{"new":166,"old":165,"op":" ","text":"        max_pages: int,"},{"new":167,"old":166,"op":" ","text":"        empty_on_404: bool,"},{"new":168,"old":167,"op":" ","text":"        strict_elements: bool = False,"},{"new":169,"old":null,"op":"+","text":"        strict_envelope: bool = False,"},{"new":170,"old":168,"op":" ","text":"    ) -\u003e PageResult:"},{"new":null,"old":169,"op":"-","text":"        \"\"\"Fetch every page and optionally reject malformed snapshot envelopes.\"\"\""},{"new":171,"old":null,"op":"+","text":"        \"\"\"Fetch every page and validate requested snapshot or source envelopes.\"\"\""},{"new":172,"old":170,"op":" ","text":"        if not 1 \u003c= max_pages \u003c= 50:"},{"new":173,"old":171,"op":" ","text":"            raise ValueError(\"max_pages must be between 1 and 50\")"},{"new":174,"old":172,"op":" ","text":""}],"new_start":166,"old_start":165},{"lines":[{"new":193,"old":191,"op":" ","text":"                raise"},{"new":194,"old":192,"op":" ","text":""},{"new":195,"old":193,"op":" ","text":"            current = payload.get(\"elements\", [])"},{"new":196,"old":null,"op":"+","text":"            if strict_envelope and (\"elements\" not in payload or not isinstance(current, list)):"},{"new":197,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, \"malformed changelog elements list\")"},{"new":198,"old":194,"op":" ","text":"            if strict_elements and not isinstance(current, list):"},{"new":199,"old":195,"op":" ","text":"                raise LinkedInAPIError(0, \"expected a snapshot elements list\")"},{"new":200,"old":196,"op":" ","text":"            if isinstance(current, list):"}],"new_start":193,"old_start":191},{"lines":[{"new":205,"old":201,"op":" ","text":"                self._validate_snapshot_paging(payload)"},{"new":206,"old":202,"op":" ","text":"            pages += 1"},{"new":207,"old":203,"op":" ","text":""},{"new":null,"old":204,"op":"-","text":"            next_url = self._next_link(payload, strict=strict_elements)"},{"new":208,"old":null,"op":"+","text":"            strict_pages = strict_elements or strict_envelope"},{"new":209,"old":null,"op":"+","text":"            page_context = \"changelog\" if strict_envelope else \"snapshot\""},{"new":210,"old":null,"op":"+","text":"            next_url = self._next_link(payload, strict=strict_pages, context=page_context)"},{"new":211,"old":205,"op":" ","text":"            if next_url is None:"},{"new":212,"old":206,"op":" ","text":"                return PageResult(elements=elements, page_count=pages, truncated=False)"},{"new":null,"old":207,"op":"-","text":"            if strict_elements:"},{"new":213,"old":null,"op":"+","text":"            if strict_pages:"},{"new":214,"old":208,"op":" ","text":"                parsed = urlparse(next_url)"},{"new":215,"old":209,"op":" ","text":"                if parsed.path != path:"},{"new":null,"old":210,"op":"-","text":"                    raise LinkedInAPIError(0, \"snapshot next link changed endpoint\")"},{"new":216,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, f\"{page_context} next link changed endpoint\")"},{"new":217,"old":211,"op":" ","text":"                next_params = parse_qs(parsed.query, keep_blank_values=True)"},{"new":218,"old":null,"op":"+","text":"                if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:"},{"new":219,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, \"changelog next link changed request scope\")"},{"new":220,"old":212,"op":" ","text":"                for key, value in params.items():"},{"new":221,"old":213,"op":" ","text":"                    expected = [str(value)]"},{"new":222,"old":214,"op":" ","text":"                    if key in next_params and next_params[key] != expected:"},{"new":null,"old":215,"op":"-","text":"                        raise LinkedInAPIError(0, \"snapshot next link changed request scope\")"},{"new":223,"old":null,"op":"+","text":"                        raise LinkedInAPIError(0, f\"{page_context} next link changed request scope\")"},{"new":224,"old":216,"op":" ","text":"                    next_params[key] = expected"},{"new":225,"old":217,"op":" ","text":"                next_url = parsed._replace(query=urlencode(next_params, doseq=True)).geturl()"},{"new":226,"old":218,"op":" ","text":"            url = next_url"}],"new_start":205,"old_start":201},{"lines":[{"new":285,"old":277,"op":" ","text":"        if parsed.scheme != \"https\" or parsed.netloc != self._allowed_host:"},{"new":286,"old":278,"op":" ","text":"            raise LinkedInAPIError(0, \"refusing to send LinkedIn credentials to an unexpected host\")"},{"new":287,"old":279,"op":" ","text":""},{"new":null,"old":280,"op":"-","text":"    def _next_link(self, payload: dict[str, Any], *, strict: bool = False) -\u003e str | None:"},{"new":288,"old":null,"op":"+","text":"    def _next_link(self, payload: dict[str, Any], *, strict: bool = False, context: str = \"snapshot\") -\u003e str | None:"},{"new":289,"old":281,"op":" ","text":"        \"\"\"Return the single validated next link, or no link at the end.\"\"\""},{"new":290,"old":282,"op":" ","text":"        paging = payload.get(\"paging\")"},{"new":291,"old":283,"op":" ","text":"        if not isinstance(paging, dict):"},{"new":292,"old":284,"op":" ","text":"            if strict and \"paging\" in payload:"},{"new":null,"old":285,"op":"-","text":"                raise LinkedInAPIError(0, \"malformed snapshot paging object\")"},{"new":293,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, f\"malformed {context} paging object\")"},{"new":294,"old":286,"op":" ","text":"            return None"},{"new":295,"old":287,"op":" ","text":"        links = paging.get(\"links\")"},{"new":296,"old":288,"op":" ","text":"        if not isinstance(links, list):"},{"new":297,"old":289,"op":" ","text":"            if strict and \"links\" in paging:"},{"new":null,"old":290,"op":"-","text":"                raise LinkedInAPIError(0, \"malformed snapshot paging links\")"},{"new":298,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, f\"malformed {context} paging links\")"},{"new":299,"old":291,"op":" ","text":"            return None"},{"new":300,"old":292,"op":" ","text":""},{"new":301,"old":293,"op":" ","text":"        if strict:"},{"new":302,"old":294,"op":" ","text":"            next_links: list[str] = []"},{"new":303,"old":295,"op":" ","text":"            for link in links:"},{"new":304,"old":296,"op":" ","text":"                if not isinstance(link, dict):"},{"new":null,"old":297,"op":"-","text":"                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"},{"new":305,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"},{"new":306,"old":298,"op":" ","text":"                rel = link.get(\"rel\")"},{"new":307,"old":299,"op":" ","text":"                href = link.get(\"href\")"},{"new":308,"old":300,"op":" ","text":"                if not isinstance(rel, str) or not isinstance(href, str) or not href:"},{"new":null,"old":301,"op":"-","text":"                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"},{"new":309,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"},{"new":310,"old":302,"op":" ","text":"                if rel.lower() == \"next\":"},{"new":311,"old":303,"op":" ","text":"                    next_links.append(href)"},{"new":312,"old":304,"op":" ","text":"            if len(next_links) \u003e 1:"},{"new":null,"old":305,"op":"-","text":"                raise LinkedInAPIError(0, \"ambiguous snapshot next links\")"},{"new":313,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, f\"ambiguous {context} next links\")"},{"new":314,"old":306,"op":" ","text":"            if next_links:"},{"new":315,"old":307,"op":" ","text":"                candidate = urljoin(LINKEDIN_BASE_URL, next_links[0])"},{"new":316,"old":308,"op":" ","text":"                self._assert_linkedin_url(candidate)"}],"new_start":285,"old_start":277}],"kind":"code","language":"python","path":"src/linkedin_mdp_mcp/client.py","removed":11,"sensitive":null,"status":"modified","symbols":["src/linkedin_mdp_mcp/client.py::LinkedInAPIError","src/linkedin_mdp_mcp/client.py::LinkedInMDPClient","src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged","src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link","src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog","src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.snapshot"]}],"head_sha":"66e8fe47d8cf70fcde7f87ebd3b43c1ccf22eaf7","pr":"komaksym/linkedin-mdp#14","symbols":[{"added":39,"base_span":[65,83],"call_sites":1,"hunks":[{"lines":[{"new":null,"old":65,"op":"-","text":"async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50) -\u003e dict[str, Any]:"},{"new":null,"old":66,"op":"-","text":"    \"\"\"Collect all three strict snapshots and both existing tables with no writes.\"\"\""},{"new":null,"old":67,"op":"-","text":"    require(1 \u003c= page_size \u003c= 1000 and 1 \u003c= max_db_pages \u003c= 200 and 1 \u003c= snapshot_pages \u003c= 50)"},{"new":65,"old":null,"op":"+","text":"async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50, changelog_pages: int = 50) -\u003e dict[str, Any]:"},{"new":66,"old":null,"op":"+","text":"    \"\"\"Collect strict snapshots, changelog, and existing tables with no writes.\"\"\""},{"new":67,"old":null,"op":"+","text":"    require(1 \u003c= page_size \u003c= 1000 and 1 \u003c= max_db_pages \u003c= 200 and 1 \u003c= snapshot_pages \u003c= 50 and 1 \u003c= changelog_pages \u003c= 50)"},{"new":68,"old":null,"op":"+","text":"    authorizations = await linkedin.authorization_status()"},{"new":69,"old":null,"op":"+","text":"    elements = authorizations.get(\"elements\") if isinstance(authorizations, dict) else None"},{"new":70,"old":null,"op":"+","text":"    if not isinstance(elements, list) or len(elements) != 1:"},{"new":71,"old":null,"op":"+","text":"        raise RuntimeError(\"private source collection failed\")"},{"new":72,"old":null,"op":"+","text":"    authorization = elements[0]"},{"new":73,"old":null,"op":"+","text":"    identity = authorization.get(\"memberComplianceAuthorizationKey\") if isinstance(authorization, dict) else None"},{"new":74,"old":null,"op":"+","text":"    account_member_urn = identity.get(\"member\") if isinstance(identity, dict) else None"},{"new":75,"old":null,"op":"+","text":"    require("},{"new":76,"old":null,"op":"+","text":"        isinstance(account_member_urn, str)"},{"new":77,"old":null,"op":"+","text":"        and re.fullmatch(r\"urn:li:person:[A-Za-z0-9_-]+\", account_member_urn) is not None"},{"new":78,"old":null,"op":"+","text":"    )"},{"new":79,"old":68,"op":" ","text":"    snapshots: dict[str, Any] = {}"},{"new":80,"old":69,"op":" ","text":"    for domain in DOMAINS:"},{"new":81,"old":70,"op":" ","text":"        started = datetime.now(UTC).isoformat()"}],"new_start":65,"old_start":65},{"lines":[{"new":88,"old":77,"op":" ","text":"        rows = snapshot.get(\"rows\")"},{"new":89,"old":78,"op":" ","text":"        require(isinstance(rows, list) and all(isinstance(row, dict) for row in rows))"},{"new":90,"old":79,"op":" ","text":"        snapshots[domain] = {\"attempted_at\": started, \"completed_at\": datetime.now(UTC).isoformat(), \"source_result\": \"success\", \"provider_generated_at\": None, \"upstream_freshness\": \"unknown unless established by retained provider metadata\", **snapshot}"},{"new":91,"old":null,"op":"+","text":"    attempted_at = datetime.now(UTC).isoformat()"},{"new":92,"old":null,"op":"+","text":"    change_result = await linkedin.changelog(count=50, max_pages=changelog_pages)"},{"new":93,"old":null,"op":"+","text":"    completed_at = datetime.now(UTC).isoformat()"},{"new":94,"old":null,"op":"+","text":"    require(isinstance(change_result, dict))"},{"new":95,"old":null,"op":"+","text":"    change_events = change_result.get(\"events\")"},{"new":96,"old":null,"op":"+","text":"    watermark = change_result.get(\"next_start_time\")"},{"new":97,"old":null,"op":"+","text":"    pages = change_result.get(\"page_count\")"},{"new":98,"old":null,"op":"+","text":"    require(isinstance(change_result.get(\"api_version\"), str) and bool(change_result[\"api_version\"]))"},{"new":99,"old":null,"op":"+","text":"    require(isinstance(change_events, list) and all(isinstance(event, dict) for event in change_events))"},{"new":100,"old":null,"op":"+","text":"    require(type(pages) is int and 0 \u003c pages \u003c= changelog_pages and change_result.get(\"truncated\") is False)"},{"new":101,"old":null,"op":"+","text":"    require((not change_events and watermark is None) or (bool(change_events) and type(watermark) is int and watermark \u003e 0))"},{"new":102,"old":null,"op":"+","text":"    changelog = {"},{"new":103,"old":null,"op":"+","text":"        \"attempted_at\": attempted_at,"},{"new":104,"old":null,"op":"+","text":"        \"completed_at\": completed_at,"},{"new":105,"old":null,"op":"+","text":"        \"collected_at\": datetime.now(UTC).isoformat(),"},{"new":106,"old":null,"op":"+","text":"        \"source_result\": \"success\","},{"new":107,"old":null,"op":"+","text":"        \"provider_generated_at\": None,"},{"new":108,"old":null,"op":"+","text":"        \"upstream_freshness\": \"unknown\","},{"new":109,"old":null,"op":"+","text":"        \"api_version\": change_result[\"api_version\"],"},{"new":110,"old":null,"op":"+","text":"        \"events\": change_events,"},{"new":111,"old":null,"op":"+","text":"        \"next_start_time\": watermark,"},{"new":112,"old":null,"op":"+","text":"        \"page_count\": pages,"},{"new":113,"old":null,"op":"+","text":"        \"truncated\": False,"},{"new":114,"old":null,"op":"+","text":"    }"},{"new":115,"old":80,"op":" ","text":"    tables = {}"},{"new":116,"old":81,"op":" ","text":"    for table in TABLE_COLUMNS:"},{"new":117,"old":82,"op":" ","text":"        tables[table] = await read_table(store, table, page_size=page_size, max_pages=max_db_pages)"},{"new":null,"old":83,"op":"-","text":"    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"snapshots\": snapshots, **tables}"},{"new":118,"old":null,"op":"+","text":"    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"account_member_urn\": account_member_urn, \"snapshots\": snapshots, \"changelog\": changelog, **tables}"}],"new_start":88,"old_start":77}],"id":"diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources","kind":"function","path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","qualname":"collect_sources","removed":4,"span":[65,118],"status":"modified"},{"added":0,"base_span":[98,108],"call_sites":1,"hunks":[],"id":"diagnostics/action-report-private-source-20261002/collect_private_source.py::export","kind":"function","path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","qualname":"export","removed":0,"span":[133,143],"status":"context"},{"added":0,"base_span":[24,27],"call_sites":21,"hunks":[],"id":"diagnostics/action-report-private-source-20261002/collect_private_source.py::require","kind":"function","path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","qualname":"require","removed":0,"span":[24,27],"status":"context"},{"added":0,"base_span":[38,97],"call_sites":8,"hunks":[],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"exercise","removed":0,"span":[44,157],"status":"context"},{"added":54,"base_span":[41,55],"call_sites":0,"hunks":[{"lines":[{"new":47,"old":41,"op":" ","text":"    def provider(request: httpx.Request) -\u003e httpx.Response:"},{"new":48,"old":42,"op":" ","text":"        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""},{"new":49,"old":43,"op":" ","text":"        methods.append(request.method)"},{"new":50,"old":null,"op":"+","text":"        if request.url.path == \"/rest/memberAuthorizations\":"},{"new":51,"old":null,"op":"+","text":"            member = \"urn:li:person:synthetic-member-493829\""},{"new":52,"old":null,"op":"+","text":"            elements: list[Any] = [{\"memberComplianceAuthorizationKey\": {\"member\": member}}]"},{"new":53,"old":null,"op":"+","text":"            if case == \"auth_missing\":"},{"new":54,"old":null,"op":"+","text":"                elements = []"},{"new":55,"old":null,"op":"+","text":"            if case == \"auth_multiple\":"},{"new":56,"old":null,"op":"+","text":"                elements.append({\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:second-synthetic\"}})"},{"new":57,"old":null,"op":"+","text":"            if case == \"auth_malformed\":"},{"new":58,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": 42}}]"},{"new":59,"old":null,"op":"+","text":"            if case == \"auth_wrong_prefix\":"},{"new":60,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:organization:synthetic\"}}]"},{"new":61,"old":null,"op":"+","text":"            if case == \"auth_suffix_whitespace\":"},{"new":62,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person: synthetic-member\"}}]"},{"new":63,"old":null,"op":"+","text":"            if case == \"auth_suffix_internal_space\":"},{"new":64,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic member\"}}]"},{"new":65,"old":null,"op":"+","text":"            if case == \"auth_suffix_bad_chars\":"},{"new":66,"old":null,"op":"+","text":"                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic/member\"}}]"},{"new":67,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": elements})"},{"new":68,"old":null,"op":"+","text":"        if request.url.path == \"/rest/memberChangeLogs\":"},{"new":69,"old":null,"op":"+","text":"            if case == \"change_added_start_time\":"},{"new":70,"old":null,"op":"+","text":"                if request.url.params.get(\"start\") == \"1\":"},{"new":71,"old":null,"op":"+","text":"                    raise RuntimeError(\"second changelog request reached\")"},{"new":72,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\u0026startTime=1710000000\"}]}})"},{"new":73,"old":null,"op":"+","text":"            if case == \"change_bad_envelope\":"},{"new":74,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"paging\": {\"links\": []}})"},{"new":75,"old":null,"op":"+","text":"            if case == \"change_wrong_endpoint\":"},{"new":76,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberAuthorizations?start=1\"}]}})"},{"new":77,"old":null,"op":"+","text":"            if case == \"change_wrong_q\":"},{"new":78,"old":null,"op":"+","text":"                if request.url.params.get(\"start\") == \"1\":"},{"new":79,"old":null,"op":"+","text":"                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"},{"new":80,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?q=other\u0026start=1\"}]}})"},{"new":81,"old":null,"op":"+","text":"            if case == \"change_bad_next\":"},{"new":82,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [None]}})"},{"new":83,"old":null,"op":"+","text":"            if case == \"change_paged\":"},{"new":84,"old":null,"op":"+","text":"                if request.url.params.get(\"start\") == \"1\":"},{"new":85,"old":null,"op":"+","text":"                    kind = \"SECOND\" if request.url.params.get(\"q\") == \"memberAndApplication\" and request.url.params.get(\"count\") == \"50\" else \"SECOND_BAD_SCOPE\""},{"new":86,"old":null,"op":"+","text":"                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001, \"changeType\": kind}], \"paging\": {\"links\": []}})"},{"new":87,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"},{"new":88,"old":null,"op":"+","text":"            if case == \"change_truncated\":"},{"new":89,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"},{"new":90,"old":null,"op":"+","text":"            events: list[Any] = [] if case == \"empty\" else [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}]"},{"new":91,"old":null,"op":"+","text":"            if case == \"change_bad_event\":"},{"new":92,"old":null,"op":"+","text":"                events = [None]"},{"new":93,"old":null,"op":"+","text":"            if case == \"change_no_watermark\":"},{"new":94,"old":null,"op":"+","text":"                events = [{\"changeType\": \"SYNTHETIC\"}]"},{"new":95,"old":null,"op":"+","text":"            if case == \"change_zero_watermark\":"},{"new":96,"old":null,"op":"+","text":"                events[0][\"processedAt\"] = 0"},{"new":97,"old":null,"op":"+","text":"            if case == \"change_negative_watermark\":"},{"new":98,"old":null,"op":"+","text":"                events[0][\"processedAt\"] = -1"},{"new":99,"old":null,"op":"+","text":"            if case == \"change_boolean_watermark\":"},{"new":100,"old":null,"op":"+","text":"                events[0][\"processedAt\"] = True"},{"new":101,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": events, \"paging\": {\"links\": []}})"},{"new":102,"old":null,"op":"+","text":"        if case == \"change_wrong_endpoint\" and request.url.path == \"/rest/memberAuthorizations\":"},{"new":103,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"},{"new":104,"old":44,"op":" ","text":"        domain = request.url.params.get(\"domain\")"},{"new":105,"old":45,"op":" ","text":"        if case == \"unavailable\":"},{"new":106,"old":46,"op":" ","text":"            return httpx.Response(404, json={\"message\": \"unavailable\"})"}],"new_start":47,"old_start":41}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"exercise.provider","removed":0,"span":[47,115],"status":"modified"},{"added":18,"base_span":[99,174],"call_sites":2,"hunks":[{"lines":[{"new":168,"old":108,"op":" ","text":"        if generated.returncode:"},{"new":169,"old":109,"op":" ","text":"            raise RuntimeError(\"synthetic certificate generation failed\")"},{"new":170,"old":110,"op":" ","text":"        output = tmp / \"source.cms\""},{"new":171,"old":null,"op":"+","text":"        run_started = datetime.now(UTC)"},{"new":172,"old":111,"op":" ","text":"        encrypted, methods = await exercise(\"complete\", cert, output)"},{"new":173,"old":null,"op":"+","text":"        run_completed = datetime.now(UTC)"},{"new":174,"old":112,"op":" ","text":"        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":175,"old":113,"op":" ","text":"        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"},{"new":176,"old":114,"op":" ","text":"        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"},{"new":177,"old":null,"op":"+","text":"        changelog = bundle.get(\"changelog\", {})"},{"new":178,"old":null,"op":"+","text":"        change_events = changelog.get(\"events\")"},{"new":179,"old":115,"op":" ","text":"        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"},{"new":180,"old":null,"op":"+","text":"        verdicts[\"account_member_urn_roundtrip\"] = bundle.get(\"account_member_urn\") == \"urn:li:person:synthetic-member-493829\""},{"new":181,"old":null,"op":"+","text":"        times = [datetime.fromisoformat(changelog[key]) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")] if all(isinstance(changelog.get(key), str) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")) else []"},{"new":182,"old":null,"op":"+","text":"        verdicts[\"changelog_raw_events_and_acquisition_timestamps\"] = change_events == [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}] and len(times) == 3 and run_started \u003c= times[0] \u003c= times[1] \u003c= times[2] \u003c= run_completed and changelog.get(\"provider_generated_at\") is None and changelog.get(\"upstream_freshness\") == \"unknown\""},{"new":183,"old":null,"op":"+","text":"        verdicts[\"changelog_complete_watermark\"] = changelog.get(\"next_start_time\") == 1710000000 and changelog.get(\"source_result\") == \"success\" and changelog.get(\"truncated\") is False and type(changelog.get(\"page_count\")) is int and changelog[\"page_count\"] \u003e 0"},{"new":184,"old":null,"op":"+","text":"        paged, _ = await exercise(\"change_paged\", cert, tmp / \"paged.cms\")"},{"new":185,"old":null,"op":"+","text":"        paged_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"paged.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":186,"old":null,"op":"+","text":"        paged_changelog = json.loads(paged_result.stdout).get(\"changelog\", {}) if paged_result.returncode == 0 else {}"},{"new":187,"old":null,"op":"+","text":"        verdicts[\"changelog_valid_pagination_preserves_scope_and_events\"] = paged is not None and paged_changelog.get(\"events\") == [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}, {\"processedAt\": 1710000001, \"changeType\": \"SECOND\"}] and paged_changelog.get(\"page_count\") == 2 and paged_changelog.get(\"next_start_time\") == 1710000001"},{"new":188,"old":null,"op":"+","text":"        seeded_requests: list[httpx.Request] = []"}],"new_start":168,"old_start":108},{"lines":[{"new":195,"old":null,"op":"+","text":"        async with httpx.AsyncClient(transport=httpx.MockTransport(seeded_provider)) as http:"},{"new":196,"old":null,"op":"+","text":"            seeded = await LinkedInMDPClient(\"synthetic\", http=http).changelog(start_time=1000)"},{"new":197,"old":null,"op":"+","text":"        verdicts[\"changelog_original_start_time_survives_pagination\"] = seeded[\"page_count\"] == 2 and seeded[\"next_start_time\"] == 1002 and len(seeded_requests) == 2 and all(request.url.params.get(\"startTime\") == \"1000\" for request in seeded_requests)"},{"new":198,"old":116,"op":" ","text":"        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"},{"new":199,"old":117,"op":" ","text":"        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"},{"new":200,"old":118,"op":" ","text":"        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"}],"new_start":195,"old_start":116},{"lines":[{"new":205,"old":123,"op":" ","text":"        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"},{"new":206,"old":124,"op":" ","text":"        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":207,"old":125,"op":" ","text":"        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"},{"new":null,"old":126,"op":"-","text":"        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"},{"new":208,"old":null,"op":"+","text":"        empty_changelog = zero_bundle.get(\"changelog\", {})"},{"new":209,"old":null,"op":"+","text":"        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values()) and empty_changelog.get(\"events\") == [] and empty_changelog.get(\"next_start_time\") is None and empty_changelog.get(\"source_result\") == \"success\""},{"new":210,"old":127,"op":" ","text":"        for case in EXPECTED_FAILURES:"},{"new":211,"old":128,"op":" ","text":"            target = tmp / f\"{case}.cms\""},{"new":212,"old":129,"op":" ","text":"            encrypted, methods = await exercise(case, cert, target)"}],"new_start":205,"old_start":123}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"main","removed":1,"span":[159,257],"status":"modified"},{"added":6,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":189,"old":null,"op":"+","text":"        def seeded_provider(request: httpx.Request) -\u003e httpx.Response:"},{"new":190,"old":null,"op":"+","text":"            \"\"\"Return two pages with the caller's unchanged start time.\"\"\""},{"new":191,"old":null,"op":"+","text":"            seeded_requests.append(request)"},{"new":192,"old":null,"op":"+","text":"            if request.url.params.get(\"start\") == \"1\":"},{"new":193,"old":null,"op":"+","text":"                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1002}], \"paging\": {\"links\": []}})"},{"new":194,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1001}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\u0026startTime=1000\"}]}})"}],"new_start":189,"old_start":116}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.seeded_provider","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"main.seeded_provider","removed":0,"span":[189,194],"status":"added"},{"added":0,"base_span":[20,26],"call_sites":21,"hunks":[],"id":"src/linkedin_mdp_mcp/client.py::LinkedInAPIError","kind":"class","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInAPIError","removed":0,"span":[20,26],"status":"context"},{"added":0,"base_span":[36,333],"call_sites":12,"hunks":[],"id":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient","kind":"class","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInMDPClient","removed":0,"span":[36,341],"status":"context"},{"added":12,"base_span":[160,221],"call_sites":2,"hunks":[{"lines":[{"new":166,"old":165,"op":" ","text":"        max_pages: int,"},{"new":167,"old":166,"op":" ","text":"        empty_on_404: bool,"},{"new":168,"old":167,"op":" ","text":"        strict_elements: bool = False,"},{"new":169,"old":null,"op":"+","text":"        strict_envelope: bool = False,"},{"new":170,"old":168,"op":" ","text":"    ) -\u003e PageResult:"},{"new":null,"old":169,"op":"-","text":"        \"\"\"Fetch every page and optionally reject malformed snapshot envelopes.\"\"\""},{"new":171,"old":null,"op":"+","text":"        \"\"\"Fetch every page and validate requested snapshot or source envelopes.\"\"\""},{"new":172,"old":170,"op":" ","text":"        if not 1 \u003c= max_pages \u003c= 50:"},{"new":173,"old":171,"op":" ","text":"            raise ValueError(\"max_pages must be between 1 and 50\")"},{"new":174,"old":172,"op":" ","text":""}],"new_start":166,"old_start":165},{"lines":[{"new":193,"old":191,"op":" ","text":"                raise"},{"new":194,"old":192,"op":" ","text":""},{"new":195,"old":193,"op":" ","text":"            current = payload.get(\"elements\", [])"},{"new":196,"old":null,"op":"+","text":"            if strict_envelope and (\"elements\" not in payload or not isinstance(current, list)):"},{"new":197,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, \"malformed changelog elements list\")"},{"new":198,"old":194,"op":" ","text":"            if strict_elements and not isinstance(current, list):"},{"new":199,"old":195,"op":" ","text":"                raise LinkedInAPIError(0, \"expected a snapshot elements list\")"},{"new":200,"old":196,"op":" ","text":"            if isinstance(current, list):"}],"new_start":193,"old_start":191},{"lines":[{"new":205,"old":201,"op":" ","text":"                self._validate_snapshot_paging(payload)"},{"new":206,"old":202,"op":" ","text":"            pages += 1"},{"new":207,"old":203,"op":" ","text":""},{"new":null,"old":204,"op":"-","text":"            next_url = self._next_link(payload, strict=strict_elements)"},{"new":208,"old":null,"op":"+","text":"            strict_pages = strict_elements or strict_envelope"},{"new":209,"old":null,"op":"+","text":"            page_context = \"changelog\" if strict_envelope else \"snapshot\""},{"new":210,"old":null,"op":"+","text":"            next_url = self._next_link(payload, strict=strict_pages, context=page_context)"},{"new":211,"old":205,"op":" ","text":"            if next_url is None:"},{"new":212,"old":206,"op":" ","text":"                return PageResult(elements=elements, page_count=pages, truncated=False)"},{"new":null,"old":207,"op":"-","text":"            if strict_elements:"},{"new":213,"old":null,"op":"+","text":"            if strict_pages:"},{"new":214,"old":208,"op":" ","text":"                parsed = urlparse(next_url)"},{"new":215,"old":209,"op":" ","text":"                if parsed.path != path:"},{"new":null,"old":210,"op":"-","text":"                    raise LinkedInAPIError(0, \"snapshot next link changed endpoint\")"},{"new":216,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, f\"{page_context} next link changed endpoint\")"},{"new":217,"old":211,"op":" ","text":"                next_params = parse_qs(parsed.query, keep_blank_values=True)"},{"new":218,"old":null,"op":"+","text":"                if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:"},{"new":219,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, \"changelog next link changed request scope\")"},{"new":220,"old":212,"op":" ","text":"                for key, value in params.items():"},{"new":221,"old":213,"op":" ","text":"                    expected = [str(value)]"},{"new":222,"old":214,"op":" ","text":"                    if key in next_params and next_params[key] != expected:"},{"new":null,"old":215,"op":"-","text":"                        raise LinkedInAPIError(0, \"snapshot next link changed request scope\")"},{"new":223,"old":null,"op":"+","text":"                        raise LinkedInAPIError(0, f\"{page_context} next link changed request scope\")"},{"new":224,"old":216,"op":" ","text":"                    next_params[key] = expected"},{"new":225,"old":217,"op":" ","text":"                next_url = parsed._replace(query=urlencode(next_params, doseq=True)).geturl()"},{"new":226,"old":218,"op":" ","text":"            url = next_url"}],"new_start":205,"old_start":201}],"id":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged","kind":"method","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInMDPClient._get_paged","removed":5,"span":[161,229],"status":"modified"},{"added":6,"base_span":[280,323],"call_sites":1,"hunks":[{"lines":[{"new":null,"old":280,"op":"-","text":"    def _next_link(self, payload: dict[str, Any], *, strict: bool = False) -\u003e str | None:"},{"new":288,"old":null,"op":"+","text":"    def _next_link(self, payload: dict[str, Any], *, strict: bool = False, context: str = \"snapshot\") -\u003e str | None:"},{"new":289,"old":281,"op":" ","text":"        \"\"\"Return the single validated next link, or no link at the end.\"\"\""},{"new":290,"old":282,"op":" ","text":"        paging = payload.get(\"paging\")"},{"new":291,"old":283,"op":" ","text":"        if not isinstance(paging, dict):"},{"new":292,"old":284,"op":" ","text":"            if strict and \"paging\" in payload:"},{"new":null,"old":285,"op":"-","text":"                raise LinkedInAPIError(0, \"malformed snapshot paging object\")"},{"new":293,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, f\"malformed {context} paging object\")"},{"new":294,"old":286,"op":" ","text":"            return None"},{"new":295,"old":287,"op":" ","text":"        links = paging.get(\"links\")"},{"new":296,"old":288,"op":" ","text":"        if not isinstance(links, list):"},{"new":297,"old":289,"op":" ","text":"            if strict and \"links\" in paging:"},{"new":null,"old":290,"op":"-","text":"                raise LinkedInAPIError(0, \"malformed snapshot paging links\")"},{"new":298,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, f\"malformed {context} paging links\")"},{"new":299,"old":291,"op":" ","text":"            return None"},{"new":300,"old":292,"op":" ","text":""},{"new":301,"old":293,"op":" ","text":"        if strict:"},{"new":302,"old":294,"op":" ","text":"            next_links: list[str] = []"},{"new":303,"old":295,"op":" ","text":"            for link in links:"},{"new":304,"old":296,"op":" ","text":"                if not isinstance(link, dict):"},{"new":null,"old":297,"op":"-","text":"                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"},{"new":305,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"},{"new":306,"old":298,"op":" ","text":"                rel = link.get(\"rel\")"},{"new":307,"old":299,"op":" ","text":"                href = link.get(\"href\")"},{"new":308,"old":300,"op":" ","text":"                if not isinstance(rel, str) or not isinstance(href, str) or not href:"},{"new":null,"old":301,"op":"-","text":"                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"},{"new":309,"old":null,"op":"+","text":"                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"},{"new":310,"old":302,"op":" ","text":"                if rel.lower() == \"next\":"},{"new":311,"old":303,"op":" ","text":"                    next_links.append(href)"},{"new":312,"old":304,"op":" ","text":"            if len(next_links) \u003e 1:"},{"new":null,"old":305,"op":"-","text":"                raise LinkedInAPIError(0, \"ambiguous snapshot next links\")"},{"new":313,"old":null,"op":"+","text":"                raise LinkedInAPIError(0, f\"ambiguous {context} next links\")"},{"new":314,"old":306,"op":" ","text":"            if next_links:"},{"new":315,"old":307,"op":" ","text":"                candidate = urljoin(LINKEDIN_BASE_URL, next_links[0])"},{"new":316,"old":308,"op":" ","text":"                self._assert_linkedin_url(candidate)"}],"new_start":288,"old_start":280}],"id":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link","kind":"method","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInMDPClient._next_link","removed":6,"span":[288,331],"status":"modified"},{"added":1,"base_span":[128,158],"call_sites":0,"hunks":[{"lines":[{"new":143,"old":143,"op":" ","text":"            params,"},{"new":144,"old":144,"op":" ","text":"            max_pages=max_pages,"},{"new":145,"old":145,"op":" ","text":"            empty_on_404=False,"},{"new":146,"old":null,"op":"+","text":"            strict_envelope=True,"},{"new":147,"old":146,"op":" ","text":"        )"},{"new":148,"old":147,"op":" ","text":"        processed = ["},{"new":149,"old":148,"op":" ","text":"            value"}],"new_start":143,"old_start":143}],"id":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog","kind":"method","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInMDPClient.changelog","removed":0,"span":[128,159],"status":"modified"},{"added":0,"base_span":[80,126],"call_sites":0,"hunks":[],"id":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.snapshot","kind":"method","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInMDPClient.snapshot","removed":0,"span":[80,126],"status":"context"}],"title":"fix(collector): collect changelog","tour":[{"focus":[],"kind":"overview","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::main"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.seeded_provider"],"kind":"entry","via":null},{"focus":["src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog"],"kind":"entry","via":null},{"focus":["src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"],"kind":"callee","via":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog"},{"focus":["src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link"],"kind":"callee","via":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"},{"focus":[],"kind":"summary","via":null}],"url":"https://github.com/komaksym/linkedin-mdp/pull/14"}</script><script>const LAYOUT = {"w":1728,"h":736,"bands":[["files",24,24,1680,152],["callers",24,192,272,520],["changed",376,192,976,520],["callees",1432,192,272,520]],"symbols":[["changed",392,232,240,80],["callers",40,400,240,56],["callees",1448,328,240,56],["callees",1448,472,240,56],["changed",392,328,240,80],["changed",392,520,240,80],["changed",392,616,240,80],["callees",1448,400,240,56],["callees",1448,544,240,56],["changed",744,424,240,80],["changed",1096,424,240,80],["changed",392,424,240,80],["callers",40,472,240,56]],"files":[["files",40,64,128,40],["files",184,64,128,40],null,["files",328,64,184,40],null,["files",528,64,128,40],["files",672,64,248,40],["files",936,64,144,40],["files",1096,64,168,40],["files",1280,64,312,40],["files",40,120,128,40],["files",184,120,216,40],null],"groups":[],"dense":false,"edges":["M632 272C682 272 682 295.9 732 295.9C864 295.9 864 295.9 996 295.9C1040 295.9 1040 325.1 1084 325.1C1216 325.1 1216 325.1 1348 325.1C1398 325.1 1398 356 1448 356","M280 428C336 428 336 272 392 272","M632 552C682 552 682 537.2 732 537.2C864 537.2 864 537.2 996 537.2C1040 537.2 1040 519.1 1084 519.1C1216 519.1 1216 519.1 1348 519.1C1398 519.1 1398 500 1448 500","M632 568C682 568 682 569.1 732 569.1C864 569.1 864 569.1 996 569.1C1040 569.1 1040 570.5 1084 570.5C1216 570.5 1216 570.5 1348 570.5C1398 570.5 1398 572 1448 572","M984 456C1034 456 1034 412 1084 412C1216 412 1216 412 1348 412C1398 412 1398 422.4 1448 422.4","M984 472C1040 472 1040 464 1096 464","M1336 464C1392 464 1392 433.6 1448 433.6","M632 464C688 464 688 456 744 456","M280 500C330 500 330 512 380 512C512 512 512 512 644 512C694 512 694 472 744 472"],"folders":[],"folderInfo":[],"folderEdges":[]};
+(() => {
+  "use strict";
+
+  const MAP = JSON.parse(document.getElementById("map-data").textContent);
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const STATUSES = new Set(["added", "modified", "deleted", "context"]);
+  const EDGE_STATUSES = new Set(["added", "removed", "kept"]);
+  const GLYPH = { function: "f", method: "m", class: "C" };
+  const PILL = { added: "new", modified: "modified", deleted: "deleted" };
+  const LANE_LABEL = {
+    files: "Other changed files",
+    folders: "Folders",
+    callers: "Callers",
+    changed: "Changed code",
+    callees: "Callees",
+    tests: "Tests",
+  };
+  const MINUS = "\u2212";
+  const DOT = " \u00b7 ";
+  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6, folder: 3.2 };
+  const MAX_TOUR = 60;
+  const MIN_STEP = 1.6;
+  const MOVE = 1.0;
+  const DIM_NODE = 0.13;
+  const DIM_EDGE = 0.05;
+  const BEHIND_SUMMARY = 0.35;
+  const LEGIBLE = 0.55;
+  const NO_TEST = "no direct test";
+  const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const status = (s) => (STATUSES.has(s) ? s : "context");
+  const edgeStatus = (s) => (EDGE_STATUSES.has(s) ? s : "kept");
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const basename = (path) => path.slice(path.lastIndexOf("/") + 1) || path;
+
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function add(parent, ...children) {
+    for (const child of children) if (child) parent.appendChild(child);
+    return parent;
+  }
+
+  function svg(tag, cls) {
+    const node = document.createElementNS(SVGNS, tag);
+    if (cls) node.setAttribute("class", cls);
+    return node;
+  }
+
+  /* Model */
+
+  const nodes = [];
+  const symbolNode = new Map();
+  const fileNode = new Map();
+  const fileByPath = new Map(MAP.files.map((f) => [f.path, f]));
+  const briefFile = new Map(MAP.brief.files.map((f) => [f.path, f]));
+
+  MAP.symbols.forEach((sym, i) => {
+    const box = LAYOUT.symbols[i];
+    if (!box || symbolNode.has(sym.id)) return;
+    const node = {
+      key: `s${i}`, kind: "symbol", sym, status: status(sym.status), name: sym.qualname,
+      path: sym.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    symbolNode.set(sym.id, node);
+  });
+
+  MAP.files.forEach((file, i) => {
+    const box = LAYOUT.files[i];
+    if (!box || fileNode.has(file.path)) return;
+    const node = {
+      key: `f${i}`, kind: "file", file, status: file.status === "modified" ? "modified" : status(file.status),
+      name: basename(file.path), path: file.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    fileNode.set(file.path, node);
+  });
+
+  const edges = [];
+
+  const folderNodes = [];
+  const folderByIndex = new Map();
+
+  for (let i = 0; i < (LAYOUT.folders || []).length; i++) {
+    const box = LAYOUT.folders[i];
+    const info = (LAYOUT.folderInfo || [])[i];
+    if (!box || !info) continue;
+    const members = (info.members || [])
+      .map((si) => symbolNode.get((MAP.symbols[si] || {}).id))
+      .filter(Boolean);
+    const folder = {
+      key: `g${i}`, index: i, info, members,
+      x: box[1], y: box[2], w: box[3], h: box[4],
+    };
+    folderNodes.push(folder);
+    folderByIndex.set(i, folder);
+  }
+
+  const grouped = folderNodes.length > 0;
+
+  MAP.edges.forEach((edge, i) => {
+    const src = symbolNode.get(edge.source);
+    const dst = symbolNode.get(edge.target);
+    const route = LAYOUT.edges[i];
+    if (!src || !dst || typeof route !== "string") return;
+    const item = { key: `e${i}`, src, dst, route, status: edgeStatus(edge.status), byName: edge.resolution === "name" };
+    edges.push(item);
+    src.out.push(item);
+    dst.in.push(item);
+    src.near.add(dst);
+    dst.near.add(src);
+  });
+
+  const isTest = (node) => node.lane === "tests";
+  const live = (edge) => edge.status !== "removed";
+
+  for (const node of nodes) {
+    node.untested =
+      node.lane === "changed" && node.status !== "deleted" && !node.in.some((e) => isTest(e.src) && live(e));
+  }
+
+  const changed = nodes.filter((n) => n.kind === "symbol" && n.status !== "context");
+  const changedCode = changed.filter((n) => n.lane === "changed");
+  const testsTouched = changed.filter(isTest);
+  const untested = changedCode.filter((n) => n.untested);
+  const callSites = changedCode.reduce((sum, n) => sum + (n.sym.call_sites || 0), 0);
+  const added = edges.filter((e) => e.status === "added").length;
+  const removed = edges.filter((e) => e.status === "removed").length;
+  const risky = MAP.brief.files.filter((f) => f.sensitive);
+
+  function ciState() {
+    const checks = MAP.brief.checks;
+    const failed = checks.filter((c) => c.state === "failed");
+    if (!checks.length) return { cls: "none", label: "no CI", word: "none" };
+    if (failed.length) return { cls: "bad", label: "CI failed", word: "failed", failed };
+    if (checks.some((c) => c.state === "pending")) return { cls: "warn", label: "CI pending", word: "pending" };
+    return { cls: "good", label: "CI passed", word: "passed" };
+  }
+
+  const ci = ciState();
+
+  /* Header */
+
+  document.title = `${MAP.title} \u00b7 PR map`;
+  $("title").textContent = MAP.title;
+
+  (() => {
+    const meta = $("meta");
+    const sep = () => el("span", "sep", "\u00b7");
+    add(meta, sep(), el("span", "", MAP.pr), sep(), el("span", "", `by ${MAP.author}`), sep(),
+      el("span", "mono", `${MAP.base_sha.slice(0, 7)} \u2192 ${MAP.head_sha.slice(0, 7)}`));
+    if (typeof MAP.url === "string" && GITHUB_PR.test(MAP.url)) {
+      const link = el("a", "", "Open on GitHub");
+      link.setAttribute("href", MAP.url);
+      link.setAttribute("rel", "noopener noreferrer");
+      link.setAttribute("target", "_blank");
+      add(meta, sep(), link);
+    }
+
+    const stats = $("stats");
+    const stat = (value, label, cls, dot) => {
+      const box = el("div", `stat ${cls || ""}`);
+      const val = el("div", "stat-value");
+      if (dot) val.appendChild(el("span", "dot"));
+      val.appendChild(el("span", "", value));
+      return add(box, val, el("div", "stat-label", label));
+    };
+    add(stats,
+      stat(MAP.files.length, MAP.files.length === 1 ? "file" : "files"),
+      stat(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      stat(callSites, "call sites affected"),
+      stat(testsTouched.length, testsTouched.length === 1 ? "test touched" : "tests touched",
+        testsTouched.length ? "" : "warn"),
+      stat(ci.word, "CI on head", ci.cls, true),
+      stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
+  })();
+
+  /* Canvas */
+
+  const viewport = $("viewport");
+  const world = $("world");
+  world.style.width = `${LAYOUT.w}px`;
+  world.style.height = `${LAYOUT.h}px`;
+
+  if (LAYOUT.dense) world.classList.add("dense");
+  if (grouped) world.classList.add("grouped");
+
+  for (const band of LAYOUT.bands) {
+    const box = el("div", "band");
+    box.style.left = `${band[1]}px`;
+    box.style.top = `${band[2]}px`;
+    box.style.width = `${band[3]}px`;
+    box.style.height = `${band[4]}px`;
+    box.appendChild(el("div", "band-label", LANE_LABEL[band[0]] || ""));
+    world.appendChild(box);
+  }
+
+  for (const group of LAYOUT.groups) {
+    const sym = MAP.symbols[group[5]];
+    if (!sym) continue;
+    const label = add(el("div", "group"), el("span", "", sym.path));
+    label.style.left = `${group[1]}px`;
+    label.style.top = `${group[2]}px`;
+    label.style.width = `${group[3]}px`;
+    label.style.height = `${group[4]}px`;
+    label.setAttribute("title", sym.path);
+    world.appendChild(label);
+  }
+
+  if (!MAP.symbols.length) {
+    viewport.appendChild(el("div", "empty", "No function or class changed in a parsed file."));
+  }
+
+  const edgeLayer = svg("svg", "edges");
+  edgeLayer.setAttribute("width", String(LAYOUT.w));
+  edgeLayer.setAttribute("height", String(LAYOUT.h));
+  edgeLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+  const defs = svg("defs");
+
+  for (const kind of EDGE_STATUSES) {
+    const marker = svg("marker");
+    marker.setAttribute("id", `arrow-${kind}`);
+    marker.setAttribute("viewBox", "0 0 10 10");
+    marker.setAttribute("refX", "9");
+    marker.setAttribute("refY", "5");
+    marker.setAttribute("markerWidth", "8");
+    marker.setAttribute("markerHeight", "8");
+    marker.setAttribute("markerUnits", "userSpaceOnUse");
+    marker.setAttribute("orient", "auto");
+    const tip = svg("path", `arrow-${kind}`);
+    tip.setAttribute("d", "M1 1L9 5L1 9z");
+    marker.appendChild(tip);
+    defs.appendChild(marker);
+  }
+
+  edgeLayer.appendChild(defs);
+  world.appendChild(edgeLayer);
+
+  function folderPath(p, q, across) {
+    const bend = across ? Math.max(24, Math.abs(q[0] - p[0]) / 2) : 0;
+    const drop = across ? 0 : Math.max(24, Math.abs(q[1] - p[1]) / 2);
+    const r = (v) => Math.round(v * 10) / 10;
+    return `M${r(p[0])} ${r(p[1])}C${r(p[0] + bend)} ${r(p[1] + drop)} ` +
+      `${r(q[0] - bend)} ${r(q[1] - drop)} ${r(q[0])} ${r(q[1])}`;
+  }
+
+  function folderPorts(a, b) {
+    if (a.x + a.w <= b.x) return [[a.x + a.w, a.y + a.h / 2], [b.x, b.y + b.h / 2], true];
+    if (b.x + b.w <= a.x) return [[a.x, a.y + a.h / 2], [b.x + b.w, b.y + b.h / 2], true];
+    if (a.y + a.h <= b.y) return [[a.x + a.w / 2, a.y + a.h], [b.x + b.w / 2, b.y], false];
+    if (b.y + b.h <= a.y) return [[a.x + a.w / 2, a.y], [b.x + b.w / 2, b.y + b.h], false];
+    return [[a.x + a.w / 2, a.y + a.h / 2], [b.x + b.w / 2, b.y + b.h / 2], true];
+  }
+
+  if (grouped) {
+    const folderLayer = svg("svg", "fedges");
+    folderLayer.setAttribute("width", String(LAYOUT.w));
+    folderLayer.setAttribute("height", String(LAYOUT.h));
+    folderLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+    world.appendChild(folderLayer);
+
+    for (const [a, b, count, raw] of (LAYOUT.folderEdges || [])) {
+      const from = folderByIndex.get(a);
+      const to = folderByIndex.get(b);
+      if (!from || !to) continue;
+      const st = edgeStatus(raw);
+      const [p, q, across] = folderPorts(from, to);
+      const line = svg("path", `ge ge-${st}`);
+      line.setAttribute("d", folderPath(p, q, across));
+      line.setAttribute("marker-end", `url(#arrow-${st})`);
+      line.setAttribute("data-folder-edge", `${from.key}-${to.key}`);
+      line.setAttribute("data-count", String(count));
+      line.setAttribute("stroke-width", String(Math.min(10, Math.round((1.5 + 2 * Math.sqrt(count)) * 10) / 10)));
+      folderLayer.appendChild(line);
+    }
+  }
+
+  const round = (v) => Math.round(v * 10) / 10;
+
+  const drawOrder = { kept: 0, removed: 1, added: 2 };
+
+  for (const edge of [...edges].sort((p, q) => drawOrder[p.status] - drawOrder[q.status])) {
+    const path = svg("path", `e e-${edge.status}${edge.byName ? " e-name" : ""}`);
+    path.setAttribute("d", edge.route);
+    path.setAttribute("marker-end", `url(#arrow-${edge.status})`);
+    path.setAttribute("data-edge", edge.key);
+    edge.el = path;
+    edgeLayer.appendChild(path);
+  }
+
+  function pathLine(path) {
+    const box = el("div", "path");
+    box.appendChild(el("span", "", path));
+    return box;
+  }
+
+  function rowCard(node) {
+    add(node.el, el("div", "bar"), el("span", "glyph", GLYPH[node.sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) node.el.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.untested) node.el.appendChild(el("span", "flag", "!"));
+    node.el.setAttribute("title", node.untested ? `${node.name} · ${NO_TEST}` : node.name);
+  }
+
+  function symbolCard(node) {
+    if (LAYOUT.dense) return rowCard(node);
+    const sym = node.sym;
+    const card = node.el;
+    const head = el("div", "n-row");
+    add(head, el("span", "glyph", GLYPH[sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) head.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.status === "context") {
+      const sub = add(el("div", "n-row"), pathLine(node.path));
+      if (sym.call_sites) sub.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+      add(card, el("div", "bar"), head, sub);
+      return;
+    }
+    add(card, el("div", "bar"), head, pathLine(node.path));
+    const foot = el("div", "n-foot");
+    const delta = el("span", "delta");
+    add(delta, el("span", "plus", `+${sym.added}`), document.createTextNode(" "), el("span", "minus", `${MINUS}${sym.removed}`));
+    add(foot, delta);
+    if (node.status !== "deleted" && !isTest(node)) foot.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+    if (node.untested) foot.appendChild(el("span", "badge", NO_TEST));
+    card.appendChild(foot);
+  }
+
+  function fileCard(node) {
+    const card = node.el;
+    add(card, el("div", "bar"), el("span", "name", node.name));
+    if (node.file.sensitive) card.appendChild(el("span", "risk", node.file.sensitive));
+    card.setAttribute("title", node.path);
+  }
+
+  const expanded = new Set();
+  const memberFolder = new Map();
+
+  for (const folder of folderNodes) {
+    for (const member of folder.members) memberFolder.set(member, folder.index);
+  }
+
+  function countsLine(info) {
+    return `${info.added} added${DOT}${info.modified} modified${DOT}` +
+      `${info.deleted} deleted${DOT}${info.tests} tests`;
+  }
+
+  function folderBounds() {
+    return bounds(folderNodes);
+  }
+
+  function applyConceal() {
+    for (const [member, fi] of memberFolder) {
+      member.el.classList.toggle("concealed", !expanded.has(fi));
+    }
+    for (const folder of folderNodes) {
+      const open = expanded.has(folder.index);
+      folder.el.classList.toggle("open", open);
+      folder.el.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+  }
+
+  function toggleFolder(folder) {
+    if (touring) exitTour();
+    if (expanded.has(folder.index)) expanded.delete(folder.index);
+    else expanded.add(folder.index);
+    applyConceal();
+    flyTo(fitTo(
+      expanded.has(folder.index) ? bounds([...folder.members, ...folderNodes]) : folderBounds(),
+      viewArea(),
+      1.25,
+    ));
+  }
+
+  function collapseAll() {
+    expanded.clear();
+    applyConceal();
+    userMoved = false;
+    flyTo(fitTo(folderBounds(), viewArea(), 1.1));
+  }
+
+  for (const folder of folderNodes) {
+    const card = el("button", "fcard");
+    card.setAttribute("data-folder", folder.key);
+    card.setAttribute("type", "button");
+    card.setAttribute("aria-expanded", "false");
+    card.setAttribute("title", folder.info.label);
+    card.style.left = `${folder.x}px`;
+    card.style.top = `${folder.y}px`;
+    card.style.width = `${folder.w}px`;
+    card.style.height = `${folder.h}px`;
+    add(card, el("div", "f-name", folder.info.label), el("div", "f-counts", countsLine(folder.info)));
+    const list = el("div", "flist");
+    for (const member of folder.members) {
+      const row = el("button", `fmem st-${member.status}`);
+      row.setAttribute("type", "button");
+      add(row, el("span", "fmem-name", member.name), el("span", "fmem-tag", member.status));
+      row.addEventListener("click", (event) => {
+        event.stopPropagation();
+        select(member, true);
+      });
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    card.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (!dragged) toggleFolder(folder);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      toggleFolder(folder);
+    });
+    folder.el = card;
+    world.appendChild(card);
+  }
+
+  for (const node of nodes) {
+    const card = el("div", `node ${node.kind === "file" ? "chip" : "sym"} st-${node.status}`);
+    card.setAttribute("data-node", node.key);
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.style.left = `${node.x}px`;
+    card.style.top = `${node.y}px`;
+    card.style.width = `${node.w}px`;
+    card.style.height = `${node.h}px`;
+    node.el = card;
+    if (node.kind === "symbol") symbolCard(node);
+    else fileCard(node);
+    world.appendChild(card);
+  }
+
+  if (grouped) applyConceal();
+
+  /* Camera */
+
+  const cam = { x: 0, y: 0, k: 1 };
+  const all = { x: 0, y: 0, w: LAYOUT.w, h: LAYOUT.h };
+  let userMoved = false;
+
+  function applyCamera() {
+    world.style.transform = `translate(${round(cam.x)}px, ${round(cam.y)}px) scale(${cam.k.toFixed(4)})`;
+    viewport.style.backgroundPosition = `${round(cam.x)}px ${round(cam.y)}px`;
+    viewport.style.backgroundSize = `${round(24 * cam.k)}px ${round(24 * cam.k)}px`;
+    world.classList.toggle("far", cam.k < 0.55);
+  }
+
+  function bounds(list) {
+    if (!list.length) return all;
+    const x = Math.min(...list.map((n) => n.x));
+    const y = Math.min(...list.map((n) => n.y));
+    return { x, y, w: Math.max(...list.map((n) => n.x + n.w)) - x, h: Math.max(...list.map((n) => n.y + n.h)) - y };
+  }
+
+  function fitTo(box, area, maxK) {
+    const pad = 32;
+    const k = clamp(Math.min(area.w / (box.w + 2 * pad), area.h / (box.h + 2 * pad)), 0.12, maxK);
+    return {
+      k,
+      x: area.x + area.w / 2 - (box.x + box.w / 2) * k,
+      y: area.y + area.h / 2 - (box.y + box.h / 2) * k,
+    };
+  }
+
+  function viewArea() {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const drawer = drawerOpen() ? Math.min(520, w * 0.92) : 0;
+    return { x: 16, y: 16, w: Math.max(200, w - 32 - drawer), h: Math.max(200, h - 88) };
+  }
+
+  function fit() {
+    Object.assign(cam, fitTo(all, viewArea(), 1.1));
+    applyCamera();
+  }
+
+  function open() {
+    if (grouped) {
+      Object.assign(cam, fitTo(folderBounds(), viewArea(), 1.1));
+      applyCamera();
+      return;
+    }
+    const area = viewArea();
+    const whole = fitTo(all, area, 1.1);
+    const band = LAYOUT.bands.find((b) => b[0] === "changed");
+    if (whole.k >= LEGIBLE || !band) {
+      Object.assign(cam, whole);
+    } else {
+      const box = { x: band[1], y: band[2], w: band[3], h: band[4] };
+      const lane = fitTo(box, area, 1.1);
+      if (lane.k >= LEGIBLE) Object.assign(cam, lane);
+      else Object.assign(cam, {
+        k: LEGIBLE,
+        x: box.w * LEGIBLE <= area.w ? area.x + area.w / 2 - (box.x + box.w / 2) * LEGIBLE : area.x - box.x * LEGIBLE,
+        y: area.y - box.y * LEGIBLE,
+      });
+    }
+    applyCamera();
+  }
+
+  let flight = 0;
+
+  function flyTo(target) {
+    const from = { ...cam };
+    const start = performance.now();
+    const id = ++flight;
+    const step = (now) => {
+      if (id !== flight) return;
+      const p = ease(clamp((now - start) / 420, 0, 1));
+      const k = from.k * Math.pow(target.k / from.k, p);
+      const cx = lerp(centreX(from), centreX(target), p);
+      const cy = lerp(centreY(from), centreY(target), p);
+      Object.assign(cam, { k, x: viewport.clientWidth / 2 - cx * k, y: viewport.clientHeight / 2 - cy * k });
+      applyCamera();
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const centreX = (c) => (viewport.clientWidth / 2 - c.x) / c.k;
+  const centreY = (c) => (viewport.clientHeight / 2 - c.y) / c.k;
+
+  function zoomAt(factor, sx, sy) {
+    const k = clamp(cam.k * factor, 0.12, 2.5);
+    cam.x = sx - ((sx - cam.x) * k) / cam.k;
+    cam.y = sy - ((sy - cam.y) * k) / cam.k;
+    cam.k = k;
+    userMoved = true;
+    applyCamera();
+  }
+
+  let drag = null;
+  let dragged = false;
+
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || $("drawer").contains(event.target) || event.target.closest(".zoom")) return;
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, cx: cam.x, cy: cam.y, captured: false };
+    dragged = false;
+  });
+
+  viewport.addEventListener("pointermove", (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.captured && Math.hypot(dx, dy) < 4) return;
+    if (!drag.captured) {
+      drag.captured = true;
+      dragged = true;
+      viewport.setPointerCapture(event.pointerId);
+      viewport.classList.add("dragging");
+      pause();
+    }
+    flight++;
+    cam.x = drag.cx + dx;
+    cam.y = drag.cy + dy;
+    userMoved = true;
+    applyCamera();
+  });
+
+  const endDrag = () => {
+    drag = null;
+    viewport.classList.remove("dragging");
+  };
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
+
+  viewport.addEventListener("wheel", (event) => {
+    if ($("drawer").contains(event.target)) return;
+    event.preventDefault();
+    flight++;
+    pause();
+    const rect = viewport.getBoundingClientRect();
+    if (event.ctrlKey || event.metaKey) {
+      zoomAt(Math.exp(-event.deltaY * 0.01), event.clientX - rect.left, event.clientY - rect.top);
+    } else {
+      cam.x -= event.deltaX;
+      cam.y -= event.deltaY;
+      userMoved = true;
+      applyCamera();
+    }
+  }, { passive: false });
+
+  viewport.addEventListener("click", (event) => {
+    if (dragged || touring) return;
+    if (event.target === viewport || event.target === world || event.target.classList.contains("band")) {
+      select(null);
+    }
+  });
+
+  $("zoom-in").addEventListener("click", () => zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-out").addEventListener("click", () => zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-fit").addEventListener("click", () => {
+    userMoved = false;
+    fit();
+  });
+
+  /* Hover and selection */
+
+  let selected = null;
+
+  function light(node) {
+    world.classList.toggle("hovering", Boolean(node));
+    for (const n of nodes) n.el.classList.toggle("lit", Boolean(node) && (n === node || node.near.has(n)));
+    for (const e of edges) e.el.classList.toggle("lit", Boolean(node) && (e.src === node || e.dst === node));
+  }
+
+  for (const node of nodes) {
+    node.el.addEventListener("pointerenter", () => {
+      if (!touring && !drag) light(node);
+    });
+    node.el.addEventListener("pointerleave", () => {
+      if (!touring) light(selected);
+    });
+    node.el.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      select(node);
+    });
+    node.el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (dragged) return;
+      select(node);
+    });
+  }
+
+  const drawer = $("drawer");
+  const drawerOpen = () => drawer.getAttribute("aria-hidden") === "false";
+
+  function select(node, centre) {
+    if (touring) exitTour();
+    if (selected) selected.el.classList.remove("selected");
+    selected = node;
+    light(node);
+    if (!node) {
+      drawer.setAttribute("aria-hidden", "true");
+      return;
+    }
+    node.el.classList.add("selected");
+    fillDrawer(node);
+    drawer.setAttribute("aria-hidden", "false");
+    if (centre) {
+      const area = viewArea();
+      const k = Math.max(cam.k, 0.8);
+      flyTo({ k, x: area.x + area.w / 2 - (node.x + node.w / 2) * k, y: area.y + area.h / 2 - (node.y + node.h / 2) * k });
+    }
+  }
+
+  function section(title, body) {
+    return add(el("section", "d-section"), el("h3", "d-title", title), body);
+  }
+
+  function diffView(hunks) {
+    if (!hunks.length) return el("div", "d-empty", "No line changes recorded for this item.");
+    const box = el("div", "diff");
+    const rows = el("div", "diff-rows");
+    for (const hunk of hunks) {
+      rows.appendChild(el("div", "hunk-head", `@@ ${MINUS}${hunk.old_start} +${hunk.new_start} @@`));
+      for (const line of hunk.lines) {
+        const kind = line.op === "+" ? "add" : line.op === "-" ? "del" : "ctx";
+        add(rows, add(el("div", `dl ${kind}`),
+          el("span", "ln", line.old === null ? "" : line.old),
+          el("span", "ln", line.new === null ? "" : line.new),
+          el("span", "sg", kind === "add" ? "+" : kind === "del" ? MINUS : ""),
+          el("span", "code", line.text)));
+      }
+    }
+    return add(box, rows);
+  }
+
+  const EDGE_TAG = { added: "new call", removed: "removed call", kept: "call" };
+
+  function linkList(items, empty) {
+    if (!items.length) return el("div", "d-empty", empty);
+    const list = el("div", "links");
+    for (const { node, tag, tagClass } of items) {
+      const row = el("button", `link st-${node.status}`);
+      row.setAttribute("type", "button");
+      const text = el("span", "link-text");
+      add(text, el("span", "link-name", node.name), el("span", "link-path", node.path));
+      add(row, el("span", "bar"), text, tag ? el("span", `etag ${tagClass || ""}`, tag) : null);
+      row.addEventListener("click", () => select(node, true));
+      list.appendChild(row);
+    }
+    return list;
+  }
+
+  const edgeItem = (edge, other) => ({
+    node: other,
+    tag: `${EDGE_TAG[edge.status]}${edge.byName ? " \u00b7 by name" : ""}`,
+    tagClass: edge.status,
+  });
+
+  function fillDrawer(node) {
+    drawer.replaceChildren();
+    drawer.className = `drawer st-${node.status}`;
+    const head = el("div", "d-head");
+    const tags = el("div", "d-tags");
+    if (PILL[node.status]) tags.appendChild(el("span", "pill", PILL[node.status]));
+    tags.appendChild(el("span", "d-kind", node.kind === "file" ? `${node.file.kind} file` : node.sym.kind));
+    const close = el("button", "d-close", "\u00d7");
+    close.setAttribute("type", "button");
+    close.setAttribute("aria-label", "Close");
+    close.addEventListener("click", () => select(null));
+    add(head, el("div", "bar"), tags, el("div", "d-name", node.kind === "file" ? node.path : node.name),
+      node.kind === "file" ? null : el("div", "d-path", node.path), close);
+
+    const facts = el("div", "d-facts");
+    const body = el("div", "d-body");
+
+    if (node.kind === "file") {
+      const file = node.file;
+      add(facts, el("span", "fact", `+${file.added} ${MINUS}${file.removed}`));
+      if (file.sensitive) facts.appendChild(el("span", "fact bad", file.sensitive));
+      const brief = briefFile.get(file.path);
+      if (file.sensitive && brief && !brief.named) facts.appendChild(el("span", "fact warn", "not mentioned in the description"));
+      if (file.language === null && file.kind === "code") facts.appendChild(el("span", "fact", "not parsed"));
+      add(body, section("Diff", diffView(file.hunks)));
+      const inside = file.symbols.map((id) => symbolNode.get(id)).filter(Boolean);
+      if (inside.length) body.appendChild(section("Symbols", linkList(inside.map((n) => ({ node: n })), "")));
+    } else {
+      const sym = node.sym;
+      if (node.status !== "context") add(facts, el("span", "fact", `+${sym.added} ${MINUS}${sym.removed}`));
+      facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
+      if (sym.span) facts.appendChild(el("span", "fact", `lines ${sym.span[0]}\u2013${sym.span[1]}`));
+      else if (sym.base_span) facts.appendChild(el("span", "fact", `was lines ${sym.base_span[0]}\u2013${sym.base_span[1]}`));
+      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no test in this map calls it`));
+      const callers = node.in.filter((e) => !isTest(e.src));
+      const tests = node.in.filter((e) => isTest(e.src));
+      add(body,
+        section("Diff", node.status === "context" ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.") : diffView(sym.hunks)),
+        section("Callers", linkList(callers.map((e) => edgeItem(e, e.src)), "No caller in the map.")),
+        section("Callees", linkList(node.out.map((e) => edgeItem(e, e.dst)), "Calls nothing in the map.")),
+        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test calls this directly.")));
+    }
+
+    head.appendChild(facts);
+    add(drawer, head, body);
+  }
+
+  /* Tour */
+
+  const names = (list) => {
+    const shown = list.slice(0, 2).map((n) => n.name);
+    return list.length > 2 ? `${shown.join(", ")} +${list.length - 2} more` : shown.join(" and ");
+  };
+
+  function focusNodes(ids) {
+    const found = [];
+    for (const id of ids) {
+      const node = symbolNode.get(id) || fileNode.get(id);
+      if (node) found.push(node);
+      else if (fileByPath.has(id)) {
+        for (const sid of fileByPath.get(id).symbols) if (symbolNode.has(sid)) found.push(symbolNode.get(sid));
+      }
+    }
+    return found;
+  }
+
+  function symbolFacts(node) {
+    const sym = node.sym;
+    const parts = [node.path, `+${sym.added} ${MINUS}${sym.removed}`];
+    if (node.status !== "deleted" && !isTest(node)) parts.push(plural(sym.call_sites, "call site", "call sites"));
+    if (node.untested) parts.push(NO_TEST);
+    return parts.join(DOT);
+  }
+
+  function describe(step, index, total) {
+    const count = `${index + 1} / ${total}`;
+    const focus = focusNodes(step.focus);
+    const node = focus[0];
+    const via = step.via ? symbolNode.get(step.via) : null;
+
+    if (step.kind === "overview") {
+      return {
+        kicker: "Overview", count, main: MAP.title,
+        sub: [plural(MAP.files.length, "file", "files"), plural(changed.length, "symbol changed", "symbols changed"),
+          plural(added, "call added", "calls added"), `${removed} removed`].join(DOT),
+      };
+    }
+
+    if (step.kind === "risky_file") {
+      const path = step.focus[0] || "";
+      const file = fileByPath.get(path);
+      const brief = briefFile.get(path);
+      const reason = (file && file.sensitive) || (brief && brief.sensitive) || "Sensitive file";
+      const unnamed = brief && !brief.named ? `${DOT}not mentioned in the description` : "";
+      return { kicker: "Risky surface", count, main: `${reason} changed${unnamed}`, sub: path };
+    }
+
+    if (step.kind === "summary") return { kicker: "Summary", count, main: "", sub: "" };
+
+    if (step.kind === "folder") {
+      const folder = folderByIndex.get(step.folder);
+      const info = folder ? folder.info : { added: 0, modified: 0, deleted: 0, tests: 0 };
+      return {
+        kicker: "Group", count, main: folder ? folder.info.label : "",
+        sub: [plural(focus.length, "symbol", "symbols"),
+          `${info.added} added`, `${info.modified} modified`,
+          `${info.deleted} deleted`, `${info.tests} tests`].join(DOT),
+      };
+    }
+
+    if (!node || node.kind !== "symbol") return { kicker: step.kind, count, main: step.focus.join(", "), sub: "" };
+
+    const word = node.sym.kind;
+    const name = node.name;
+
+    if (step.kind === "test") {
+      const targets = node.out.filter(live).map((e) => e.dst);
+      const covers = targets.length ? `${DOT}covers ${names(targets)}` : "";
+      const main = node.status === "added" ? `New test ${name}${covers}`
+        : node.status === "deleted" ? `Deleted test ${name}` : `Test ${name} changed${covers}`;
+      return { kicker: "Test", count, main, sub: symbolFacts(node) };
+    }
+
+    if (step.kind === "callee" && via) {
+      const link = node.in.find((e) => e.src === via);
+      let main;
+      if (node.status === "deleted") main = `Deleted ${name}${DOT}${via.name} no longer calls it`;
+      else if (node.status === "added") main = `New ${word} ${name}${DOT}called by ${via.name}`;
+      else if (link && link.status === "added") main = `${via.name} now calls ${name}`;
+      else if (link && link.status === "removed") main = `${via.name} no longer calls ${name}`;
+      else main = `${name} changed${DOT}called by ${via.name}`;
+      return { kicker: `Called from ${via.name}`, count, main, sub: symbolFacts(node) };
+    }
+
+    const callers = node.in.filter((e) => live(e) && !isTest(e.src)).map((e) => e.src);
+    let main;
+    if (node.status === "deleted") {
+      const former = node.in.filter((e) => !isTest(e.src)).map((e) => e.src);
+      main = `Deleted ${name}${former.length ? `${DOT}${names(former)} no longer ${former.length === 1 ? "calls" : "call"} it` : ""}`;
+    } else if (node.status === "added") {
+      main = `New ${word} ${name}${callers.length ? `${DOT}called by ${names(callers)}` : `${DOT}nothing calls it yet`}`;
+    } else {
+      main = `${name} changed${callers.length ? `${DOT}called by ${names(callers)}` : ""}`;
+    }
+    return { kicker: step.kind === "entry" ? "Entry point" : "Changed", count, main, sub: symbolFacts(node) };
+  }
+
+  const timeline = (() => {
+    const plan = grouped && MAP.tour.length >= 2 ? [
+      MAP.tour[0],
+      ...folderNodes.map((folder) => ({
+        kind: "folder",
+        folder: folder.index,
+        focus: folder.members.map((member) => member.sym.id),
+        via: null,
+      })),
+      ...MAP.tour.slice(1),
+    ] : MAP.tour;
+    const base = plan.map((s) => STEP_SECONDS[s.kind] || 3);
+    const fixed = plan.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
+    const middle = base.reduce((sum, v) => sum + v, 0) - fixed;
+    const scale = middle > 0 && fixed + middle > MAX_TOUR ? Math.max((MAX_TOUR - fixed) / middle, 0) : 1;
+    let start = 0;
+    return plan.map((step, i) => {
+      const plain = step.kind === "overview" || step.kind === "summary";
+      const duration = Math.round((plain ? base[i] : Math.max(base[i] * scale, MIN_STEP)) * 1000) / 1000;
+      const focus = focusNodes(step.focus);
+      const via = step.via ? symbolNode.get(step.via) : null;
+      const lit = new Set(focus);
+      if (via) lit.add(via);
+      if (step.kind !== "risky_file" && step.kind !== "folder") for (const n of focus) for (const m of n.near) lit.add(m);
+      const item = {
+        kind: step.kind, focus: step.focus, via: step.via, folder: step.folder ?? null,
+        start: Math.round(start * 1000) / 1000, duration,
+        caption: describe(step, i, plan.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
+      };
+      start += duration;
+      return item;
+    });
+  })();
+
+  const duration = Math.round(timeline.reduce((sum, s) => sum + s.duration, 0) * 1000) / 1000;
+
+  function tourCamera(step) {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const area = { x: 48, y: 32, w: Math.max(200, w - 96), h: Math.max(160, h - 32 - 176) };
+    if (step.folder !== undefined && step.folder !== null) {
+      const folder = folderByIndex.get(step.folder);
+      const box = folder
+        ? { x: folder.x - 16, y: folder.y - 16, w: folder.w + 32, h: folder.h + 32 }
+        : all;
+      return fitTo(box, area, 1.25);
+    }
+    if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
+    const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
+    const wide = fitTo(bounds([...step.lit]), area, 1.25);
+    return wide.k >= 0.62 ? wide : fitTo(bounds(core), area, 1.25);
+  }
+
+  let cameras = null;
+
+  function camerasFor() {
+    const size = `${viewport.clientWidth}x${viewport.clientHeight}`;
+    if (!cameras || cameras.size !== size) cameras = { size, list: timeline.map(tourCamera) };
+    return cameras.list;
+  }
+
+  const plainLevel = (step) => (step.kind === "summary" ? BEHIND_SUMMARY : 1);
+  const nodeLevel = (step, node) => (step.plain ? plainLevel(step) : step.lit.has(node) ? 1 : DIM_NODE);
+  const hidden = LAYOUT.dense ? 0 : DIM_EDGE;
+  const edgeLevel = (step, edge) => {
+    if (step.plain) return LAYOUT.dense ? 0 : plainLevel(step);
+    return step.nodes.includes(edge.src) || step.nodes.includes(edge.dst) ? 1 : hidden;
+  };
+
+  const caption = $("caption");
+  const summary = $("summary");
+  let captionFor = -1;
+
+  function fillCaption(index) {
+    if (captionFor === index) return;
+    captionFor = index;
+    const text = timeline[index].caption;
+    const kicker = add(el("div", "cap-kicker"), el("span", "", text.kicker), el("span", "cap-count", text.count));
+    caption.replaceChildren(kicker, el("div", "cap-main", text.main), el("div", "cap-sub", text.sub));
+  }
+
+  function fillSummary() {
+    summary.replaceChildren();
+    const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
+    const grid = add(el("div", "sum-grid"),
+      cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
+      cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
+      cell(callSites, "call sites affected"),
+      cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
+      cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
+    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
+    const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
+    const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+    add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
+      el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
+  }
+
+  fillSummary();
+
+  let touring = false;
+
+  function enterTour() {
+    if (touring) return;
+    select(null);
+    light(null);
+    touring = true;
+    document.body.classList.add("touring");
+  }
+
+  function exitTour() {
+    pause();
+    if (!touring) return;
+    touring = false;
+    document.body.classList.remove("touring");
+    for (const n of nodes) {
+      n.el.style.opacity = "";
+      n.el.classList.remove("focus");
+    }
+    for (const e of edges) {
+      e.el.style.opacity = "";
+      e.el.style.strokeDashoffset = "";
+    }
+    captionFor = -1;
+  }
+
+  function stepAt(t) {
+    let index = 0;
+    while (index + 1 < timeline.length && timeline[index + 1].start <= t) index++;
+    return index;
+  }
+
+  function seek(time) {
+    if (!timeline.length) return;
+    const t = clamp(Number(time) || 0, 0, duration);
+    enterTour();
+    const index = stepAt(t);
+    const step = timeline[index];
+    const prev = timeline[Math.max(index - 1, 0)];
+    const u = t - step.start;
+    const p = index === 0 ? 1 : ease(clamp(u / MOVE, 0, 1));
+    const cams = camerasFor();
+    const from = cams[Math.max(index - 1, 0)];
+    const to = cams[index];
+    const k = from.k * Math.pow(to.k / from.k, p);
+    const vw = viewport.clientWidth / 2;
+    const vh = viewport.clientHeight / 2;
+    const cx = lerp((vw - from.x) / from.k, (vw - to.x) / to.k, p);
+    const cy = lerp((vh - from.y) / from.k, (vh - to.y) / to.k, p);
+    Object.assign(cam, { k, x: vw - cx * k, y: vh - cy * k });
+    applyCamera();
+
+    for (const n of nodes) {
+      n.el.style.opacity = String(round(lerp(nodeLevel(prev, n), nodeLevel(step, n), p) * 100) / 100);
+      n.el.classList.toggle("focus", !step.plain && step.nodes.includes(n));
+    }
+    const offset = String(-round((t * 28) % 28));
+    for (const e of edges) {
+      e.el.style.opacity = String(round(lerp(edgeLevel(prev, e), edgeLevel(step, e), p) * 100) / 100);
+      if (e.status === "added") e.el.style.strokeDashoffset = offset;
+    }
+
+    const last = index === timeline.length - 1;
+    const fadeIn = clamp((u - 0.25) / 0.45, 0, 1);
+    const fadeOut = last ? 1 : clamp((step.duration - u) / 0.35, 0, 1);
+    fillCaption(index);
+    caption.style.opacity = step.kind === "summary" ? "0" : String(round(Math.min(fadeIn, fadeOut) * 100) / 100);
+    summary.style.opacity = step.kind === "summary" ? String(round(clamp((u - 0.3) / 0.6, 0, 1) * 100) / 100) : "0";
+    $("progress-bar").style.width = `${round((t / duration) * 1000) / 10}%`;
+  }
+
+  /* Playback */
+
+  const player = { t: 0, playing: false, until: null, last: 0 };
+
+  function setPlaying(on) {
+    player.playing = on;
+    document.body.classList.toggle("playing", on);
+    $("play-label").textContent = on ? "Pause" : player.t >= duration && touring ? "Replay" : "Play tour";
+  }
+
+  function frame(now) {
+    if (!player.playing) return;
+    player.t = Math.min(duration, player.t + (now - player.last) / 1000);
+    player.last = now;
+    if (player.until !== null && player.t >= player.until) player.t = player.until;
+    seek(player.t);
+    if (player.t >= duration || (player.until !== null && player.t >= player.until)) setPlaying(false);
+    else requestAnimationFrame(frame);
+  }
+
+  function run(from, until) {
+    flight++;
+    player.t = from;
+    player.until = until;
+    player.last = performance.now();
+    seek(from);
+    setPlaying(true);
+    requestAnimationFrame(frame);
+  }
+
+  function pause() {
+    if (player.playing) setPlaying(false);
+  }
+
+  function goto(index) {
+    const i = clamp(index, 0, timeline.length - 1);
+    const step = timeline[i];
+    run(step.start, step.start + Math.min(step.duration - 0.4, MOVE + 0.6));
+  }
+
+  function next() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) + 1);
+  }
+
+  function prev() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) - 1);
+  }
+
+  $("play").addEventListener("click", () => {
+    if (player.playing) return pause();
+    const from = touring && player.t < duration ? player.t : 0;
+    run(from, null);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const key = event.key;
+    if (key === "Escape") {
+      if (drawerOpen()) select(null);
+      else if (grouped && expanded.size) collapseAll();
+      else if (touring) exitTour();
+    } else if (key === "ArrowRight" || key === " " || key === "PageDown") {
+      next();
+    } else if (key === "ArrowLeft" || key === "PageUp") {
+      prev();
+    } else if (key === "f" || key === "F") {
+      if (touring) exitTour();
+      userMoved = false;
+      fit();
+    } else if (key === "+" || key === "=") {
+      zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else if (key === "-" || key === "_") {
+      zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else {
+      return;
+    }
+    event.preventDefault();
+  });
+
+  window.addEventListener("resize", () => {
+    if (touring) seek(player.t);
+    else if (!userMoved) open();
+  });
+
+  open();
+
+  window.prcTour = Object.freeze({
+    duration,
+    steps: timeline.map((s) => Object.freeze({
+      kind: s.kind, focus: [...s.focus], via: s.via, start: s.start, duration: s.duration,
+      caption: Object.freeze({ ...s.caption }),
+    })),
+    seek: (t) => {
+      pause();
+      player.t = clamp(Number(t) || 0, 0, duration);
+      seek(player.t);
+    },
+  });
+})();
+</script></body></html>

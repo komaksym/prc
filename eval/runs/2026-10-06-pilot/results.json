@@ -1,0 +1,140 @@
+{
+  "gates": {
+    "pr11": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "6 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "9 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "16 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "59.1s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr12": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "11 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "24 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "8 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "30 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "63.4s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr14": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "9 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "13 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "20 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "65.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr17": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "33 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "8 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "64 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "89.7s 1920x1080 30fps",
+        "pass": true
+      }
+    }
+  }
+}

@@ -1,0 +1,3060 @@
+{
+  "author": "komaksym",
+  "base_sha": "ea23445f4ce3771d233443e9a31bd79596e0f4f9",
+  "brief": {
+    "checks": [
+      {
+        "name": "Greptile Review",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 14,
+        "kind": "docs",
+        "named": false,
+        "path": "PLANS.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 5,
+        "kind": "docs",
+        "named": false,
+        "path": "diagnostics/action-report-private-source-20261002/README.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "code",
+        "named": true,
+        "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+        "removed": 1,
+        "sensitive": null
+      },
+      {
+        "added": 28,
+        "kind": "config",
+        "named": true,
+        "path": "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 177,
+        "kind": "code",
+        "named": true,
+        "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-created-at/analysis.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "opaque",
+        "named": false,
+        "path": "infographic/prospect-created-at/infographic.png",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 9,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 11,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 7,
+        "kind": "docs",
+        "named": true,
+        "path": "infographic/prospect-created-at/source.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 5,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-created-at/structured-content.md",
+        "removed": 0,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "306ff5a26ca6502173b40eeb723826e9e3eca6cd",
+    "look_first": [
+      {
+        "lines": [],
+        "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "reason": "largest code change (+177 \u22120)"
+      },
+      {
+        "lines": [],
+        "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+        "reason": "largest code change (+1 \u22121)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "komaksym/linkedin-mdp#11",
+    "title": "fix(collector): fetch prospect timestamps"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient"
+    },
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/supabase_client.py::SupabaseClient"
+    },
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+      "status": "added",
+      "target": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"
+    },
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export",
+      "status": "added",
+      "target": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"
+    }
+  ],
+  "files": [
+    {
+      "added": 14,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "# Implementation plans"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "## Private prospect creation timestamp"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Summary: export the existing `prospects.created_at` field in the encrypted private source bundle, preserving its provider value without deriving or backfilling dates."
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Failure cases: omission from the Supabase projection drops exact timestamps on each counted page; a missing source value must not be fabricated; source or paging failure must not create an artifact; plaintext must not appear in the ciphertext or fixed CLI logs."
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "Milestones: (1) make the synthetic HTTP and CMS roundtrip fail on timestamp omission, (2) add the field to the prospect projection, (3) rerun the E2E and repository checks. No schema, workflow, live source call, or outreach change belongs to this slice."
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "Throughput checkpoint: one owner holds this isolated checkout and its coupled collector/E2E files. The fixed `TABLE_COLUMNS` map owns the row shape; the database mock honors `select`, so the E2E detects projection loss. Review and PR publication remain with the coordinating task."
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "Validation: the timestamp scenario failed before the projection edit and all 19 synthetic verdicts passed afterward. Scoped Ruff and mypy passed, the full 21-test repository suite passed in an isolated runtime using the declared dependencies, and source/wheel builds passed. The initially installed local MCP package lacked `Client`; using the declared project runtime resolved that collection failure. Independent read-only review found no actionable issues."
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "PR review correction: two synthetic failure injections first showed that an unrelated encryption fault could count as an expected negative rejection and an early certificate failure preserved prior all-true evidence. The E2E now attributes each negative case to its expected collection error, lets encryption failures propagate, and records failed run status before certificate generation. All 22 synthetic verdicts, 21 isolated repository tests, scoped Ruff, 10-file mypy, and wheel build pass after the correction."
+            },
+            {
+              "new": 16,
+              "old": 2,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 17,
+              "old": 3,
+              "op": " ",
+              "text": "## Inbox evidence and actionable report"
+            },
+            {
+              "new": 18,
+              "old": 4,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "PLANS.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Private source collector timestamp check"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "The collector reads the existing `prospects.created_at` column and keeps its exact value in the encrypted prospect rows. A missing value stays missing. This slice changes no schema, workflow, schedule, or outreach behavior."
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Run `PYTHONPATH=src python diagnostics/action-report-private-source-20261002/e2e_private_source.py` from the repository root. The test uses synthetic HTTP responses with the actual clients and OpenSSL CMS roundtrip. Its database mock applies the requested `select` columns, so omitting `created_at` from the collector projection fails the timestamp check. Negative cases check their expected error type and message, and injected unrelated collection and encryption faults must fail independently. The evidence file begins each run with `run_status: failed` and changes to `passed` only after all verdicts pass, so an early certificate failure cannot leave stale success evidence. It writes only fixed synthetic verdicts to `e2e-evidence.json`; the temporary certificate, key, and ciphertext are removed when the test ends. The test does not contact live services."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "diagnostics/action-report-private-source-20261002/README.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 16,
+              "old": 16,
+              "op": " ",
+              "text": "BASE_REVISION = \"817fe2da7d433e6b00ac4bf98851bd4b0eef31f4\""
+            },
+            {
+              "new": 17,
+              "old": 17,
+              "op": " ",
+              "text": "DOMAINS = (\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\")"
+            },
+            {
+              "new": 18,
+              "old": 18,
+              "op": " ",
+              "text": "TABLE_COLUMNS = {"
+            },
+            {
+              "new": null,
+              "old": 19,
+              "op": "-",
+              "text": "    \"prospects\": \"id,lead_id,linkedin_url,attributes\","
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "    \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\","
+            },
+            {
+              "new": 20,
+              "old": 20,
+              "op": " ",
+              "text": "    \"events\": \"id,prospect_id,source,event_type,external_key,occurred_at,payload,created_at\","
+            },
+            {
+              "new": 21,
+              "old": 21,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 22,
+              "old": 22,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 16,
+          "old_start": 16
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+      "removed": 1,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 28,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "{"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "  \"synthetic_only\": true,"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "  \"run_status\": \"passed\","
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "  \"scenarios\": {"
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "    \"complete_sources_roundtrip\": true,"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "    \"prospect_created_at_exact_across_pages\": true,"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "    \"missing_created_at_not_fabricated\": true,"
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "    \"private_plaintext_absent_encrypted_artifact\": true,"
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "    \"read_only_http\": true,"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "    \"successful_empty_sources_encrypt\": true,"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "    \"unavailable_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "    \"malformed_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "    \"domain_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": "    \"truncated_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "    \"escaped_domain_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": "    \"db_cap_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "    \"db_malformed_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": "    \"db_missing_count_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "    \"db_changed_count_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 20,
+              "old": null,
+              "op": "+",
+              "text": "    \"db_duplicate_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "    \"unexpected_failure_not_counted_as_rejection\": true,"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "    \"encryption_failure_not_counted_as_rejection\": true,"
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "    \"cli_fixed_success_log_without_plaintext\": true,"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "    \"cli_fixed_failure_log_without_plaintext\": true,"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "    \"no_plaintext_source_file\": true,"
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": "    \"early_failure_invalidates_stale_evidence\": true"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "  }"
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "config",
+      "language": null,
+      "path": "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 177,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "\"\"\"Verify synthetic source collection through real clients and CMS encryption.\"\"\""
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "from __future__ import annotations"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "import asyncio"
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "import importlib.util"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "import json"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "import subprocess"
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "import sys"
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "import tempfile"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "from contextlib import redirect_stdout"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "from io import StringIO"
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "from pathlib import Path"
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "from typing import Any"
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": "from unittest.mock import patch"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": "import httpx"
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": "from linkedin_mdp_mcp.client import LinkedInAPIError, LinkedInMDPClient"
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "from linkedin_mdp_mcp.supabase_client import SupabaseClient"
+            },
+            {
+              "new": 20,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "HERE = Path(__file__).resolve().parent"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "spec = importlib.util.spec_from_file_location(\"private_source\", HERE / \"collect_private_source.py\")"
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "if spec is None or spec.loader is None:"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "    raise RuntimeError(\"collector unavailable\")"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "collector = importlib.util.module_from_spec(spec)"
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": "spec.loader.exec_module(collector)"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "MARKER = \"PRIVATE_SYNTHETIC_MEMBER_ONLY_493829\""
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "EXPECTED_FAILURES: dict[str, tuple[type[Exception], str]] = {"
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": "    \"unavailable\": (RuntimeError, \"private source collection failed\"),"
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "    \"malformed\": (LinkedInAPIError, \"LinkedIn API error 0: malformed snapshot element\"),"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "    \"domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot element domain does not match request\"),"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "    \"truncated\": (RuntimeError, \"private source collection failed\"),"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "    \"escaped_domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot next link changed request scope\"),"
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "    **{case: (RuntimeError, \"private source collection failed\") for case in (\"db_cap\", \"db_malformed\", \"db_missing_count\", \"db_changed_count\", \"db_duplicate\")},"
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "async def exercise(case: str, cert: Path, target: Path) -> tuple[bytes | None, list[str]]:"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Run production HTTP clients with complete or deliberately defective pages.\"\"\""
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "    methods: list[str] = []"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    def provider(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "        methods.append(request.method)"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "        domain = request.url.params.get(\"domain\")"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"unavailable\":"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(404, json={\"message\": \"unavailable\"})"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"malformed\":"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": [None]})"
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "        payload: dict[str, Any] = {\"elements\": [{\"snapshotDomain\": \"WRONG\" if case == \"domain\" else domain, \"snapshotData\": [] if case == \"empty\" else [{\"synthetic\": MARKER}]}]}"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "        if case in (\"truncated\", \"escaped_domain\"):"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "            scope = \"&domain=INBOX\" if case == \"escaped_domain\" else \"\""
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "            payload[\"paging\"] = {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberSnapshotData?start=1\" + scope}]}"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"empty\":"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "            payload[\"elements\"] = []"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "        return httpx.Response(200, json=payload)"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "    def database(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "        \"\"\"Serve counted pages and optional database completeness defects.\"\"\""
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "        methods.append(request.method)"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "        offset = int(request.url.params[\"offset\"])"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "        table = request.url.path.rsplit(\"/\", 1)[-1]"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "        data = [{\"id\": f\"{table}-1\", \"attributes\": {\"synthetic\": MARKER}}, {\"id\": f\"{table}-2\", \"attributes\": {}}]"
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "        if table == \"prospects\":"
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": "            data[0][\"created_at\"] = \"2025-01-02T03:04:05.123456+00:00\""
+            },
+            {
+              "new": 64,
+              "old": null,
+              "op": "+",
+              "text": "            if case != \"missing_created_at\":"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "                data[1][\"created_at\"] = \"2025-06-07T08:09:10Z\""
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "        selected = request.url.params[\"select\"].split(\",\")"
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "        data = [{key: value for key, value in row.items() if key in selected} for row in data]"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_cap\":"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "            data.append({\"id\": f\"{table}-3\", \"attributes\": {}})"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "        page = [] if case == \"empty\" else data[offset:offset + 1]"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_malformed\":"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={})"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_duplicate\" and offset == 1:"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "            page = [data[0]]"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "        headers = {} if case == \"db_missing_count\" else {\"Content-Range\": f\"{offset}-{offset}/2\"}"
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"empty\":"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "            headers = {\"Content-Range\": \"*/0\"}"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_cap\":"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": "            headers = {\"Content-Range\": f\"{offset}-{offset}/3\"}"
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "        elif case == \"db_changed_count\" and offset == 1:"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "            headers = {\"Content-Range\": \"1-1/3\"}"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "        return httpx.Response(200, json=page, headers=headers)"
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "    linkedin = LinkedInMDPClient(\"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(provider)))"
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": "    store = SupabaseClient(\"https://db.example.test\", \"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(database)))"
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": "    try:"
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "        try:"
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "            bundle = await collector.collect_sources(linkedin, store, page_size=1, max_db_pages=2, snapshot_pages=1)"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "        except Exception as error:  # noqa: BLE001"
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "            expected = EXPECTED_FAILURES.get(case)"
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "            if expected is None or type(error) is not expected[0] or str(error) != expected[1]:"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "                raise RuntimeError(\"unexpected synthetic collection failure\") from None"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "            return None, methods"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "        collector.encrypt_bundle(bundle, cert, target)"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "        return target.read_bytes(), methods"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "    finally:"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "        await linkedin._http.aclose()"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "        await store._http.aclose()"
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "async def main(evidence: Path | None = None) -> None:"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Require real encryption roundtrip, safe failures and an artifact-only result.\"\"\""
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "    evidence = HERE / \"e2e-evidence.json\" if evidence is None else evidence"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}, indent=2) + \"\\n\")"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "    verdicts: dict[str, bool] = {}"
+            },
+            {
+              "new": 104,
+              "old": null,
+              "op": "+",
+              "text": "    with tempfile.TemporaryDirectory() as folder:"
+            },
+            {
+              "new": 105,
+              "old": null,
+              "op": "+",
+              "text": "        tmp = Path(folder)"
+            },
+            {
+              "new": 106,
+              "old": null,
+              "op": "+",
+              "text": "        key, cert = tmp / \"test-key.pem\", tmp / \"test-cert.pem\""
+            },
+            {
+              "new": 107,
+              "old": null,
+              "op": "+",
+              "text": "        generated = await asyncio.to_thread(subprocess.run, [\"openssl\", \"req\", \"-x509\", \"-newkey\", \"rsa:2048\", \"-nodes\", \"-keyout\", str(key), \"-out\", str(cert), \"-days\", \"1\", \"-subj\", \"/CN=synthetic-test\"], capture_output=True, check=False)"
+            },
+            {
+              "new": 108,
+              "old": null,
+              "op": "+",
+              "text": "        if generated.returncode:"
+            },
+            {
+              "new": 109,
+              "old": null,
+              "op": "+",
+              "text": "            raise RuntimeError(\"synthetic certificate generation failed\")"
+            },
+            {
+              "new": 110,
+              "old": null,
+              "op": "+",
+              "text": "        output = tmp / \"source.cms\""
+            },
+            {
+              "new": 111,
+              "old": null,
+              "op": "+",
+              "text": "        encrypted, methods = await exercise(\"complete\", cert, output)"
+            },
+            {
+              "new": 112,
+              "old": null,
+              "op": "+",
+              "text": "        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 113,
+              "old": null,
+              "op": "+",
+              "text": "        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"
+            },
+            {
+              "new": 114,
+              "old": null,
+              "op": "+",
+              "text": "        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"
+            },
+            {
+              "new": 115,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"
+            },
+            {
+              "new": 116,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"
+            },
+            {
+              "new": 117,
+              "old": null,
+              "op": "+",
+              "text": "        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"
+            },
+            {
+              "new": 118,
+              "old": null,
+              "op": "+",
+              "text": "        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 119,
+              "old": null,
+              "op": "+",
+              "text": "        missing_rows = json.loads(missing_result.stdout).get(\"prospects\", {}).get(\"rows\", []) if missing_result.returncode == 0 else []"
+            },
+            {
+              "new": 120,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"missing_created_at_not_fabricated\"] = bool(missing) and len(missing_rows) == 2 and \"created_at\" not in missing_rows[1]"
+            },
+            {
+              "new": 121,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"private_plaintext_absent_encrypted_artifact\"] = encrypted is not None and MARKER.encode() not in encrypted"
+            },
+            {
+              "new": 122,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"read_only_http\"] = set(methods) == {\"GET\"}"
+            },
+            {
+              "new": 123,
+              "old": null,
+              "op": "+",
+              "text": "        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"
+            },
+            {
+              "new": 124,
+              "old": null,
+              "op": "+",
+              "text": "        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 125,
+              "old": null,
+              "op": "+",
+              "text": "        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"
+            },
+            {
+              "new": 126,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"
+            },
+            {
+              "new": 127,
+              "old": null,
+              "op": "+",
+              "text": "        for case in EXPECTED_FAILURES:"
+            },
+            {
+              "new": 128,
+              "old": null,
+              "op": "+",
+              "text": "            target = tmp / f\"{case}.cms\""
+            },
+            {
+              "new": 129,
+              "old": null,
+              "op": "+",
+              "text": "            encrypted, methods = await exercise(case, cert, target)"
+            },
+            {
+              "new": 130,
+              "old": null,
+              "op": "+",
+              "text": "            verdicts[f\"{case}_rejected_without_artifact\"] = encrypted is None and not target.exists() and set(methods) == {\"GET\"}"
+            },
+            {
+              "new": 131,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"collect_sources\", side_effect=RuntimeError(\"unrelated synthetic fault\")):"
+            },
+            {
+              "new": 132,
+              "old": null,
+              "op": "+",
+              "text": "            try:"
+            },
+            {
+              "new": 133,
+              "old": null,
+              "op": "+",
+              "text": "                await exercise(\"db_missing_count\", cert, tmp / \"unrelated.cms\")"
+            },
+            {
+              "new": 134,
+              "old": null,
+              "op": "+",
+              "text": "            except RuntimeError as error:"
+            },
+            {
+              "new": 135,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = str(error) == \"unexpected synthetic collection failure\""
+            },
+            {
+              "new": 136,
+              "old": null,
+              "op": "+",
+              "text": "            else:"
+            },
+            {
+              "new": 137,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = False"
+            },
+            {
+              "new": 138,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"collect_sources\", return_value={}), patch.object(collector, \"encrypt_bundle\", side_effect=RuntimeError(\"private source collection failed\")):"
+            },
+            {
+              "new": 139,
+              "old": null,
+              "op": "+",
+              "text": "            try:"
+            },
+            {
+              "new": 140,
+              "old": null,
+              "op": "+",
+              "text": "                await exercise(\"db_missing_count\", cert, tmp / \"encrypt-fault.cms\")"
+            },
+            {
+              "new": 141,
+              "old": null,
+              "op": "+",
+              "text": "            except RuntimeError as error:"
+            },
+            {
+              "new": 142,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"encryption_failure_not_counted_as_rejection\"] = str(error) == \"private source collection failed\""
+            },
+            {
+              "new": 143,
+              "old": null,
+              "op": "+",
+              "text": "            else:"
+            },
+            {
+              "new": 144,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"encryption_failure_not_counted_as_rejection\"] = False"
+            },
+            {
+              "new": 145,
+              "old": null,
+              "op": "+",
+              "text": "        async def synthetic_export(certificate: Path, target: Path) -> None:"
+            },
+            {
+              "new": 146,
+              "old": null,
+              "op": "+",
+              "text": "            \"\"\"Exercise the actual collector/encryptor under the CLI verdict boundary.\"\"\""
+            },
+            {
+              "new": 147,
+              "old": null,
+              "op": "+",
+              "text": "            value, _ = await exercise(\"complete\", certificate, target)"
+            },
+            {
+              "new": 148,
+              "old": null,
+              "op": "+",
+              "text": "            if value is None:"
+            },
+            {
+              "new": 149,
+              "old": null,
+              "op": "+",
+              "text": "                raise RuntimeError(MARKER)"
+            },
+            {
+              "new": 150,
+              "old": null,
+              "op": "+",
+              "text": "        logged = StringIO()"
+            },
+            {
+              "new": 151,
+              "old": null,
+              "op": "+",
+              "text": "        cli_target = tmp / \"cli.cms\""
+            },
+            {
+              "new": 152,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"export\", synthetic_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(cli_target)]), redirect_stdout(logged):"
+            },
+            {
+              "new": 153,
+              "old": null,
+              "op": "+",
+              "text": "            code = await asyncio.to_thread(collector.main)"
+            },
+            {
+              "new": 154,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"cli_fixed_success_log_without_plaintext\"] = code == 0 and logged.getvalue() == \"private source export: encrypted\\n\" and MARKER not in logged.getvalue()"
+            },
+            {
+              "new": 155,
+              "old": null,
+              "op": "+",
+              "text": "        async def failing_export(certificate: Path, target: Path) -> None:"
+            },
+            {
+              "new": 156,
+              "old": null,
+              "op": "+",
+              "text": "            \"\"\"Raise a deliberately private error to verify CLI sanitization.\"\"\""
+            },
+            {
+              "new": 157,
+              "old": null,
+              "op": "+",
+              "text": "            raise RuntimeError(MARKER)"
+            },
+            {
+              "new": 158,
+              "old": null,
+              "op": "+",
+              "text": "        logged = StringIO()"
+            },
+            {
+              "new": 159,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"export\", failing_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(tmp / \"failed.cms\")]), redirect_stdout(logged):"
+            },
+            {
+              "new": 160,
+              "old": null,
+              "op": "+",
+              "text": "            code = await asyncio.to_thread(collector.main)"
+            },
+            {
+              "new": 161,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"cli_fixed_failure_log_without_plaintext\"] = code == 1 and logged.getvalue() == \"private source export: failed\\n\" and not (tmp / \"failed.cms\").exists()"
+            },
+            {
+              "new": 162,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"no_plaintext_source_file\"] = all(path.suffix != \".json\" for path in tmp.iterdir())"
+            },
+            {
+              "new": 163,
+              "old": null,
+              "op": "+",
+              "text": "        stale = tmp / \"stale-evidence.json\""
+            },
+            {
+              "new": 164,
+              "old": null,
+              "op": "+",
+              "text": "        stale.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\", \"scenarios\": {\"stale\": True}}))"
+            },
+            {
+              "new": 165,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(subprocess, \"run\", return_value=subprocess.CompletedProcess([], 1, b\"\", b\"\")):"
+            },
+            {
+              "new": 166,
+              "old": null,
+              "op": "+",
+              "text": "            try:"
+            },
+            {
+              "new": 167,
+              "old": null,
+              "op": "+",
+              "text": "                await main(stale)"
+            },
+            {
+              "new": 168,
+              "old": null,
+              "op": "+",
+              "text": "            except RuntimeError:"
+            },
+            {
+              "new": 169,
+              "old": null,
+              "op": "+",
+              "text": "                pass"
+            },
+            {
+              "new": 170,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"early_failure_invalidates_stale_evidence\"] = json.loads(stale.read_text()) == {\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}"
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\" if all(verdicts.values()) else \"failed\", \"scenarios\": verdicts}, indent=2) + \"\\n\")"
+            },
+            {
+              "new": 172,
+              "old": null,
+              "op": "+",
+              "text": "    if not all(verdicts.values()):"
+            },
+            {
+              "new": 173,
+              "old": null,
+              "op": "+",
+              "text": "        raise RuntimeError(\"private source E2E failed\")"
+            },
+            {
+              "new": 174,
+              "old": null,
+              "op": "+",
+              "text": "    print(\"private source synthetic E2E: verified\")"
+            },
+            {
+              "new": 175,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 176,
+              "old": null,
+              "op": "+",
+              "text": "if __name__ == \"__main__\":"
+            },
+            {
+              "new": 177,
+              "old": null,
+              "op": "+",
+              "text": "    asyncio.run(main())"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.database",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.failing_export",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export"
+      ]
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Technical system scope: existing database field through collector to encrypted export. Audience: PR reviewer. Small correction; English, structural-breakdown, technical-schematic, 16:9, native imagegen selected from technical defaults and saved auto backend. No private data."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-created-at/analysis.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "opaque",
+      "language": null,
+      "path": "infographic/prospect-created-at/infographic.png",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 9,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Use case: infographic-diagram"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Create a small high-level professional technical system infographic, 16:9 English. Structural-breakdown layout, technical-schematic style. An exploded three-layer cutaway of a data export system, with separated flat layers and short callouts: database layer, collector layer, encrypted bundle layer. Show existing timestamp data retained through each layer. Opaque neutral light-gray canvas, visible dark outer boundary, large high-contrast charcoal labels, restrained teal and blue accents, ample whitespace. Crisp readable sans-serif. No generic node graph or DAG; use an exploded system component visual."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Title verbatim: \"Prospect timestamp collection\""
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Layer 1 labels verbatim: \"Supabase\", \"Existing prospects.created_at\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Layer 2 labels verbatim: \"Collector\", \"Request existing column\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Layer 3 labels verbatim: \"Encrypted export\", \"Exact timestamp retained\""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Bottom verification band verbatim: \"Synthetic E2E: 19 checks passed\""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Scope footer verbatim: \"Live values not inspected\", \"No schema or schedule change\""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "No additional labels, person data, credentials, URLs or logos. Do not imply live database validation or report publication."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 11,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Use case: infographic-diagram"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Create a small high-level professional technical system infographic, 16:9 English. Structural-breakdown layout, technical-schematic style. An exploded three-layer cutaway of a data export system, with separated flat layers and short callouts: database layer, collector layer, encrypted bundle layer. Show existing timestamp data retained through each layer. Opaque neutral light-gray canvas, visible dark outer boundary, large high-contrast charcoal labels, restrained teal and blue accents, ample whitespace. Crisp readable sans-serif. No generic node graph or DAG; use an exploded system component visual."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Title verbatim: \"Prospect timestamp collection\""
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Layer 1 labels verbatim: \"Supabase\", \"Existing prospects.created_at\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Layer 2 labels verbatim: \"Collector\", \"Request existing column\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Layer 3 labels verbatim: \"Encrypted export\", \"Exact timestamp retained\""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Bottom verification band verbatim: \"Synthetic E2E: 19 checks passed\""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Scope footer verbatim: \"Live values not inspected\", \"No schema or schedule change\""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "No additional labels, person data, credentials, URLs or logos. Do not imply live database validation or report publication."
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "Do not print any example dates, numeric timestamps, extra tables, row data or invented data. On each layer use a simple blank document icon with teal lines and NO text. Only the exact labels listed above may appear."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Edit the provided infographic. Preserve the complete composition, all colors and every other label. Change only the bottom verification label from \"Synthetic E2E: 19 checks passed\" to \"Synthetic E2E: 22 checks passed\". No other text changes. Keep opaque neutral canvas and high contrast. Do not add dates, row data, examples or extra labels."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 7,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Prospect timestamp collection"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Supabase: existing prospects.created_at"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Collector: request existing column"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Encrypted export: exact timestamp retained"
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Synthetic E2E: 22 checks passed"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Live values not inspected"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "No schema or schedule change"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-created-at/source.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Prospect timestamp collection"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Learning objective: understand where the existing timestamp was dropped and how it now survives collection."
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Three separated layers: Supabase existing prospects.created_at; collector request existing column; encrypted export exact timestamp retained. Verification band: synthetic E2E 22 checks passed. Scope: live values not inspected; no schema or schedule change."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-created-at/structured-content.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    }
+  ],
+  "head_sha": "306ff5a26ca6502173b40eeb723826e9e3eca6cd",
+  "pr": "komaksym/linkedin-mdp#11",
+  "symbols": [
+    {
+      "added": 18,
+      "base_span": null,
+      "call_sites": 7,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "async def exercise(case: str, cert: Path, target: Path) -> tuple[bytes | None, list[str]]:"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Run production HTTP clients with complete or deliberately defective pages.\"\"\""
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "    methods: list[str] = []"
+            }
+          ],
+          "new_start": 38,
+          "old_start": 0
+        },
+        {
+          "lines": [
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "    linkedin = LinkedInMDPClient(\"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(provider)))"
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": "    store = SupabaseClient(\"https://db.example.test\", \"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(database)))"
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": "    try:"
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "        try:"
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "            bundle = await collector.collect_sources(linkedin, store, page_size=1, max_db_pages=2, snapshot_pages=1)"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "        except Exception as error:  # noqa: BLE001"
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "            expected = EXPECTED_FAILURES.get(case)"
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "            if expected is None or type(error) is not expected[0] or str(error) != expected[1]:"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "                raise RuntimeError(\"unexpected synthetic collection failure\") from None"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "            return None, methods"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "        collector.encrypt_bundle(bundle, cert, target)"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "        return target.read_bytes(), methods"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "    finally:"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "        await linkedin._http.aclose()"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "        await store._http.aclose()"
+            }
+          ],
+          "new_start": 83,
+          "old_start": 0
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "exercise",
+      "removed": 0,
+      "span": [
+        38,
+        97
+      ],
+      "status": "added"
+    },
+    {
+      "added": 27,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "    def database(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "        \"\"\"Serve counted pages and optional database completeness defects.\"\"\""
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "        methods.append(request.method)"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "        offset = int(request.url.params[\"offset\"])"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "        table = request.url.path.rsplit(\"/\", 1)[-1]"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "        data = [{\"id\": f\"{table}-1\", \"attributes\": {\"synthetic\": MARKER}}, {\"id\": f\"{table}-2\", \"attributes\": {}}]"
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "        if table == \"prospects\":"
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": "            data[0][\"created_at\"] = \"2025-01-02T03:04:05.123456+00:00\""
+            },
+            {
+              "new": 64,
+              "old": null,
+              "op": "+",
+              "text": "            if case != \"missing_created_at\":"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "                data[1][\"created_at\"] = \"2025-06-07T08:09:10Z\""
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "        selected = request.url.params[\"select\"].split(\",\")"
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "        data = [{key: value for key, value in row.items() if key in selected} for row in data]"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_cap\":"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "            data.append({\"id\": f\"{table}-3\", \"attributes\": {}})"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "        page = [] if case == \"empty\" else data[offset:offset + 1]"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_malformed\":"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={})"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_duplicate\" and offset == 1:"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "            page = [data[0]]"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "        headers = {} if case == \"db_missing_count\" else {\"Content-Range\": f\"{offset}-{offset}/2\"}"
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"empty\":"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "            headers = {\"Content-Range\": \"*/0\"}"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"db_cap\":"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": "            headers = {\"Content-Range\": f\"{offset}-{offset}/3\"}"
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "        elif case == \"db_changed_count\" and offset == 1:"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "            headers = {\"Content-Range\": \"1-1/3\"}"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "        return httpx.Response(200, json=page, headers=headers)"
+            }
+          ],
+          "new_start": 56,
+          "old_start": 0
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.database",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "exercise.database",
+      "removed": 0,
+      "span": [
+        56,
+        82
+      ],
+      "status": "added"
+    },
+    {
+      "added": 15,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    def provider(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "        methods.append(request.method)"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "        domain = request.url.params.get(\"domain\")"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"unavailable\":"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(404, json={\"message\": \"unavailable\"})"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"malformed\":"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": [None]})"
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "        payload: dict[str, Any] = {\"elements\": [{\"snapshotDomain\": \"WRONG\" if case == \"domain\" else domain, \"snapshotData\": [] if case == \"empty\" else [{\"synthetic\": MARKER}]}]}"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "        if case in (\"truncated\", \"escaped_domain\"):"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "            scope = \"&domain=INBOX\" if case == \"escaped_domain\" else \"\""
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "            payload[\"paging\"] = {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberSnapshotData?start=1\" + scope}]}"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"empty\":"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "            payload[\"elements\"] = []"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "        return httpx.Response(200, json=payload)"
+            }
+          ],
+          "new_start": 41,
+          "old_start": 0
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "exercise.provider",
+      "removed": 0,
+      "span": [
+        41,
+        55
+      ],
+      "status": "added"
+    },
+    {
+      "added": 68,
+      "base_span": null,
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "async def main(evidence: Path | None = None) -> None:"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Require real encryption roundtrip, safe failures and an artifact-only result.\"\"\""
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "    evidence = HERE / \"e2e-evidence.json\" if evidence is None else evidence"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}, indent=2) + \"\\n\")"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "    verdicts: dict[str, bool] = {}"
+            },
+            {
+              "new": 104,
+              "old": null,
+              "op": "+",
+              "text": "    with tempfile.TemporaryDirectory() as folder:"
+            },
+            {
+              "new": 105,
+              "old": null,
+              "op": "+",
+              "text": "        tmp = Path(folder)"
+            },
+            {
+              "new": 106,
+              "old": null,
+              "op": "+",
+              "text": "        key, cert = tmp / \"test-key.pem\", tmp / \"test-cert.pem\""
+            },
+            {
+              "new": 107,
+              "old": null,
+              "op": "+",
+              "text": "        generated = await asyncio.to_thread(subprocess.run, [\"openssl\", \"req\", \"-x509\", \"-newkey\", \"rsa:2048\", \"-nodes\", \"-keyout\", str(key), \"-out\", str(cert), \"-days\", \"1\", \"-subj\", \"/CN=synthetic-test\"], capture_output=True, check=False)"
+            },
+            {
+              "new": 108,
+              "old": null,
+              "op": "+",
+              "text": "        if generated.returncode:"
+            },
+            {
+              "new": 109,
+              "old": null,
+              "op": "+",
+              "text": "            raise RuntimeError(\"synthetic certificate generation failed\")"
+            },
+            {
+              "new": 110,
+              "old": null,
+              "op": "+",
+              "text": "        output = tmp / \"source.cms\""
+            },
+            {
+              "new": 111,
+              "old": null,
+              "op": "+",
+              "text": "        encrypted, methods = await exercise(\"complete\", cert, output)"
+            },
+            {
+              "new": 112,
+              "old": null,
+              "op": "+",
+              "text": "        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 113,
+              "old": null,
+              "op": "+",
+              "text": "        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"
+            },
+            {
+              "new": 114,
+              "old": null,
+              "op": "+",
+              "text": "        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"
+            },
+            {
+              "new": 115,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"
+            },
+            {
+              "new": 116,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"
+            },
+            {
+              "new": 117,
+              "old": null,
+              "op": "+",
+              "text": "        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"
+            },
+            {
+              "new": 118,
+              "old": null,
+              "op": "+",
+              "text": "        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 119,
+              "old": null,
+              "op": "+",
+              "text": "        missing_rows = json.loads(missing_result.stdout).get(\"prospects\", {}).get(\"rows\", []) if missing_result.returncode == 0 else []"
+            },
+            {
+              "new": 120,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"missing_created_at_not_fabricated\"] = bool(missing) and len(missing_rows) == 2 and \"created_at\" not in missing_rows[1]"
+            },
+            {
+              "new": 121,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"private_plaintext_absent_encrypted_artifact\"] = encrypted is not None and MARKER.encode() not in encrypted"
+            },
+            {
+              "new": 122,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"read_only_http\"] = set(methods) == {\"GET\"}"
+            },
+            {
+              "new": 123,
+              "old": null,
+              "op": "+",
+              "text": "        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"
+            },
+            {
+              "new": 124,
+              "old": null,
+              "op": "+",
+              "text": "        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 125,
+              "old": null,
+              "op": "+",
+              "text": "        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"
+            },
+            {
+              "new": 126,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"
+            },
+            {
+              "new": 127,
+              "old": null,
+              "op": "+",
+              "text": "        for case in EXPECTED_FAILURES:"
+            },
+            {
+              "new": 128,
+              "old": null,
+              "op": "+",
+              "text": "            target = tmp / f\"{case}.cms\""
+            },
+            {
+              "new": 129,
+              "old": null,
+              "op": "+",
+              "text": "            encrypted, methods = await exercise(case, cert, target)"
+            },
+            {
+              "new": 130,
+              "old": null,
+              "op": "+",
+              "text": "            verdicts[f\"{case}_rejected_without_artifact\"] = encrypted is None and not target.exists() and set(methods) == {\"GET\"}"
+            },
+            {
+              "new": 131,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"collect_sources\", side_effect=RuntimeError(\"unrelated synthetic fault\")):"
+            },
+            {
+              "new": 132,
+              "old": null,
+              "op": "+",
+              "text": "            try:"
+            },
+            {
+              "new": 133,
+              "old": null,
+              "op": "+",
+              "text": "                await exercise(\"db_missing_count\", cert, tmp / \"unrelated.cms\")"
+            },
+            {
+              "new": 134,
+              "old": null,
+              "op": "+",
+              "text": "            except RuntimeError as error:"
+            },
+            {
+              "new": 135,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = str(error) == \"unexpected synthetic collection failure\""
+            },
+            {
+              "new": 136,
+              "old": null,
+              "op": "+",
+              "text": "            else:"
+            },
+            {
+              "new": 137,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = False"
+            },
+            {
+              "new": 138,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"collect_sources\", return_value={}), patch.object(collector, \"encrypt_bundle\", side_effect=RuntimeError(\"private source collection failed\")):"
+            },
+            {
+              "new": 139,
+              "old": null,
+              "op": "+",
+              "text": "            try:"
+            },
+            {
+              "new": 140,
+              "old": null,
+              "op": "+",
+              "text": "                await exercise(\"db_missing_count\", cert, tmp / \"encrypt-fault.cms\")"
+            },
+            {
+              "new": 141,
+              "old": null,
+              "op": "+",
+              "text": "            except RuntimeError as error:"
+            },
+            {
+              "new": 142,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"encryption_failure_not_counted_as_rejection\"] = str(error) == \"private source collection failed\""
+            },
+            {
+              "new": 143,
+              "old": null,
+              "op": "+",
+              "text": "            else:"
+            },
+            {
+              "new": 144,
+              "old": null,
+              "op": "+",
+              "text": "                verdicts[\"encryption_failure_not_counted_as_rejection\"] = False"
+            }
+          ],
+          "new_start": 99,
+          "old_start": 0
+        },
+        {
+          "lines": [
+            {
+              "new": 150,
+              "old": null,
+              "op": "+",
+              "text": "        logged = StringIO()"
+            },
+            {
+              "new": 151,
+              "old": null,
+              "op": "+",
+              "text": "        cli_target = tmp / \"cli.cms\""
+            },
+            {
+              "new": 152,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"export\", synthetic_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(cli_target)]), redirect_stdout(logged):"
+            },
+            {
+              "new": 153,
+              "old": null,
+              "op": "+",
+              "text": "            code = await asyncio.to_thread(collector.main)"
+            },
+            {
+              "new": 154,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"cli_fixed_success_log_without_plaintext\"] = code == 0 and logged.getvalue() == \"private source export: encrypted\\n\" and MARKER not in logged.getvalue()"
+            }
+          ],
+          "new_start": 150,
+          "old_start": 0
+        },
+        {
+          "lines": [
+            {
+              "new": 158,
+              "old": null,
+              "op": "+",
+              "text": "        logged = StringIO()"
+            },
+            {
+              "new": 159,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(collector, \"export\", failing_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(tmp / \"failed.cms\")]), redirect_stdout(logged):"
+            },
+            {
+              "new": 160,
+              "old": null,
+              "op": "+",
+              "text": "            code = await asyncio.to_thread(collector.main)"
+            },
+            {
+              "new": 161,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"cli_fixed_failure_log_without_plaintext\"] = code == 1 and logged.getvalue() == \"private source export: failed\\n\" and not (tmp / \"failed.cms\").exists()"
+            },
+            {
+              "new": 162,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"no_plaintext_source_file\"] = all(path.suffix != \".json\" for path in tmp.iterdir())"
+            },
+            {
+              "new": 163,
+              "old": null,
+              "op": "+",
+              "text": "        stale = tmp / \"stale-evidence.json\""
+            },
+            {
+              "new": 164,
+              "old": null,
+              "op": "+",
+              "text": "        stale.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\", \"scenarios\": {\"stale\": True}}))"
+            },
+            {
+              "new": 165,
+              "old": null,
+              "op": "+",
+              "text": "        with patch.object(subprocess, \"run\", return_value=subprocess.CompletedProcess([], 1, b\"\", b\"\")):"
+            },
+            {
+              "new": 166,
+              "old": null,
+              "op": "+",
+              "text": "            try:"
+            },
+            {
+              "new": 167,
+              "old": null,
+              "op": "+",
+              "text": "                await main(stale)"
+            },
+            {
+              "new": 168,
+              "old": null,
+              "op": "+",
+              "text": "            except RuntimeError:"
+            },
+            {
+              "new": 169,
+              "old": null,
+              "op": "+",
+              "text": "                pass"
+            },
+            {
+              "new": 170,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"early_failure_invalidates_stale_evidence\"] = json.loads(stale.read_text()) == {\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}"
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\" if all(verdicts.values()) else \"failed\", \"scenarios\": verdicts}, indent=2) + \"\\n\")"
+            },
+            {
+              "new": 172,
+              "old": null,
+              "op": "+",
+              "text": "    if not all(verdicts.values()):"
+            },
+            {
+              "new": 173,
+              "old": null,
+              "op": "+",
+              "text": "        raise RuntimeError(\"private source E2E failed\")"
+            },
+            {
+              "new": 174,
+              "old": null,
+              "op": "+",
+              "text": "    print(\"private source synthetic E2E: verified\")"
+            }
+          ],
+          "new_start": 158,
+          "old_start": 0
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "main",
+      "removed": 0,
+      "span": [
+        99,
+        174
+      ],
+      "status": "added"
+    },
+    {
+      "added": 3,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 155,
+              "old": null,
+              "op": "+",
+              "text": "        async def failing_export(certificate: Path, target: Path) -> None:"
+            },
+            {
+              "new": 156,
+              "old": null,
+              "op": "+",
+              "text": "            \"\"\"Raise a deliberately private error to verify CLI sanitization.\"\"\""
+            },
+            {
+              "new": 157,
+              "old": null,
+              "op": "+",
+              "text": "            raise RuntimeError(MARKER)"
+            }
+          ],
+          "new_start": 155,
+          "old_start": 0
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.failing_export",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "main.failing_export",
+      "removed": 0,
+      "span": [
+        155,
+        157
+      ],
+      "status": "added"
+    },
+    {
+      "added": 5,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 145,
+              "old": null,
+              "op": "+",
+              "text": "        async def synthetic_export(certificate: Path, target: Path) -> None:"
+            },
+            {
+              "new": 146,
+              "old": null,
+              "op": "+",
+              "text": "            \"\"\"Exercise the actual collector/encryptor under the CLI verdict boundary.\"\"\""
+            },
+            {
+              "new": 147,
+              "old": null,
+              "op": "+",
+              "text": "            value, _ = await exercise(\"complete\", certificate, target)"
+            },
+            {
+              "new": 148,
+              "old": null,
+              "op": "+",
+              "text": "            if value is None:"
+            },
+            {
+              "new": 149,
+              "old": null,
+              "op": "+",
+              "text": "                raise RuntimeError(MARKER)"
+            }
+          ],
+          "new_start": 145,
+          "old_start": 0
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "main.synthetic_export",
+      "removed": 0,
+      "span": [
+        145,
+        149
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        36,
+        333
+      ],
+      "call_sites": 11,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient",
+      "kind": "class",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInMDPClient",
+      "removed": 0,
+      "span": [
+        36,
+        333
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        19,
+        181
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/supabase_client.py::SupabaseClient",
+      "kind": "class",
+      "path": "src/linkedin_mdp_mcp/supabase_client.py",
+      "qualname": "SupabaseClient",
+      "removed": 0,
+      "span": [
+        19,
+        181
+      ],
+      "status": "context"
+    }
+  ],
+  "title": "fix(collector): fetch prospect timestamps",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"
+      ],
+      "kind": "callee",
+      "via": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main"
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.database"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.failing_export"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/komaksym/linkedin-mdp/pull/11"
+}

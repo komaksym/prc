@@ -8,3 +8,5 @@ artifacts/
 prototypes/
 todo.md
 research_notes/
+eval/runs/*/outputs/**/*.mp4
+eval/runs/*/packets/**/*.png
