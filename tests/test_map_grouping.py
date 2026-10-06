@@ -365,3 +365,46 @@ def test_grouped_first_screen_labels_pass_ocr(
         assert box is not None and box["height"] >= 20
         assert 0 <= box["x"] and box["x"] + box["width"] <= VIEWPORT["width"]
         assert 0 <= box["y"] and box["y"] + box["height"] <= VIEWPORT["height"]
+
+
+def test_board_coverage_states_changed_file_budget() -> None:
+    from prc.explainer.boards import coverage
+
+    change_map = {
+        "files": [
+            {"path": "a.py", "kind": "code", "added": 2},
+            {"path": "b.py", "kind": "code", "added": 5},
+        ],
+        "brief": {
+            "files": [
+                {"path": "a.py", "kind": "code"},
+                {"path": "b.py", "kind": "code"},
+            ]
+        },
+        "symbols": [
+            {
+                "id": "a.py::f",
+                "path": "a.py",
+                "status": "modified",
+                "span": [1, 10],
+                "base_span": [1, 10],
+            },
+            {
+                "id": "b.py::g",
+                "path": "b.py",
+                "status": "added",
+                "span": [1, 4],
+                "base_span": None,
+            },
+        ],
+        "tour": [{"kind": "entry", "focus": ["a.py::f"]}],
+    }
+    board = {
+        "name": "budget",
+        "scenes": [{"type": "list", "cite": [{"line": "a.py:3"}]}],
+    }
+
+    out = coverage(board, change_map)
+
+    assert "covers 1 of 2 changed files" in out
+    assert "files 1/2" in out

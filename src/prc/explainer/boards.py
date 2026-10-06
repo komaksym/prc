@@ -87,9 +87,11 @@ def coverage(board: dict[str, Any], m: dict[str, Any]) -> str:
         k[1] += f["added"] if f["path"] in files_shown else 0
 
     name = board.get("name", "board")
+    covered_files = len(files_shown & set(kinds))
     out = [
         f"{name}: tour stops {sum(stop_hit)}/{len(stops)} · code symbols {sum(map(hit, code))}/{len(code)} · "
-        f"files {len(files_shown & set(kinds))}/{len(kinds)}",
+        f"files {covered_files}/{len(kinds)}",
+        f"covers {covered_files} of {len(kinds)} changed files",
         "  added lines in files on screen, by kind: "
         + ", ".join(f"{k} {v[1]}/{v[0]}" for k, v in by_kind.items()),
     ]
