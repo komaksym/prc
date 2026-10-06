@@ -109,25 +109,28 @@ def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
 
 
 def look_first(m: dict[str, Any], brief: Any = None, limit: int = 3) -> tuple[LookEntry, ...]:
-    """The first tour symbols that change code, with their files."""
+    """Changed code symbols with a direct test first, then most-called, then largest."""
     tests = _test_paths(_brief_of(m, brief))
-    by_id = {s["id"]: s for s in m.get("symbols", [])}
-    out: list[LookEntry] = []
-    seen: set[str] = set()
-    for step in m.get("tour", []):
-        for sid in step.get("focus", ()):
-            sym = by_id.get(sid)
-            if (
-                sym is not None
-                and sym.get("status") in CHANGED
-                and sym.get("path") not in tests
-                and sid not in seen
-            ):
-                seen.add(sid)
-                out.append(LookEntry(sid, sym["qualname"], sym["path"], sym["status"]))
-            if len(out) >= limit:
-                return tuple(out)
-    return tuple(out)
+    callers: dict[str, int] = {}
+    for e in m.get("edges", []):
+        callers[e.get("source", "")] = callers.get(e.get("source", ""), 0) + 1
+        callers[e.get("target", "")] = callers.get(e.get("target", ""), 0) + 1
+    test_symbols = {s["id"] for s in m.get("symbols", []) if s.get("path") in tests}
+    covered = {e["target"] for e in m.get("edges", []) if e.get("source") in test_symbols}
+    cands = [
+        sym
+        for sym in m.get("symbols", [])
+        if sym.get("status") in CHANGED and sym.get("path") not in tests
+    ]
+    cands.sort(
+        key=lambda s: (
+            s["id"] not in covered,
+            -callers.get(s["id"], 0),
+            -(s.get("added", 0) + s.get("removed", 0)),
+            s["id"],
+        )
+    )
+    return tuple(LookEntry(s["id"], s["qualname"], s["path"], s["status"]) for s in cands[:limit])
 
 
 def risky(m: dict[str, Any], brief: Any = None) -> tuple[RiskEntry, ...]:

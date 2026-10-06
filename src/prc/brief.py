@@ -193,6 +193,21 @@ def reason_of(path: str) -> str | None:
     return None if rule is None else rule.reason
 
 
+_EXTERNAL_HOSTS = ("api.linkedin.com", "googleapis.com", "supabase.co")
+
+
+def calls_external(diff: str, head: str) -> bool:
+    """Added lines reach an outside API host or build a named API client."""
+    text = "\n".join([diff, head])
+    if any(host in text for host in _EXTERNAL_HOSTS):
+        return True
+    return bool(
+        re.search(
+            r"LinkedInMDPClient\.from_env|SupabaseClient\.from_env|GoogleDocConfig\.from_env", text
+        )
+    )
+
+
 _FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 _COMMENT = re.compile(r"<!--.*?(?:-->|\Z)", re.DOTALL)
 _DETAILS = re.compile(r"<details\b[^>]*>|</details\s*>", re.IGNORECASE)
@@ -589,7 +604,7 @@ def brief_of(
             d.added,
             d.removed,
             _is_named(d, tokens, words, flat, idents),
-            reason_of(d.path),
+            reason_of(d.path) or ("external calls" if calls_external(d.diff, d.head) else None),
         )
         for d in sorted(deltas, key=lambda d: d.path)
     )
