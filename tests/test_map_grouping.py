@@ -115,6 +115,42 @@ def test_small_folder_uses_one_card_per_file() -> None:
     assert not by_label["web/src/cart.ts"].is_dir
 
 
+def long_label_map() -> ChangeMap:
+    """Large map with one file whose path is too long for the default card width."""
+    base = large_map(33)
+    path = "src/pkg/diagnostics/verify_inbox_live.py"
+    sid = f"{path}::verify"
+    hunk = Hunk(
+        1,
+        1,
+        (DiffLine("+", 1, None, "    new()"),),
+    )
+    symbol = Symbol(sid, path, "verify", "function", "added", (1, 2), None, 1, 0, (hunk,), 0)
+    files = base.files + (FileNode(path, "code", "added", "python", None, 1, 0, (), (sid,)),)
+
+    return dataclasses.replace(
+        base, files=files, symbols=tuple(sorted(base.symbols + (symbol,), key=lambda s: s.id))
+    )
+
+
+def test_group_card_label_and_counts_never_clip(
+    open_map: Callable[[ChangeMap], Any],
+) -> None:
+    page = open_map(long_label_map())
+    clipped = page.evaluate(
+        """() => [...document.querySelectorAll(".fcard")].flatMap((card) => {
+            const name = card.querySelector(".f-name");
+            const counts = card.querySelector(".f-counts");
+            const out = [];
+            if (name.scrollWidth > name.clientWidth) out.push(name.textContent);
+            if (counts.scrollHeight > counts.clientHeight) out.push(counts.textContent);
+            return out;
+        })"""
+    )
+
+    assert clipped == [], clipped
+
+
 def test_group_counts_equal_member_sums() -> None:
     for changed in (33, 60):
         change_map = large_map(changed)

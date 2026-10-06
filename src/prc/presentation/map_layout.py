@@ -361,6 +361,12 @@ def _chip_width(f: FileNode) -> int:
     return max(128, min(_snap(56 + 7.5 * len(name) + badge + GRID - 1), 360))
 
 
+def _folder_width(label: str) -> int:
+    """Wide enough for the label at the page's 13 px mono font, capped like a chip."""
+
+    return max(CARD_W, min(_snap(56 + 7.5 * len(label) + GRID - 1), 360))
+
+
 def _flow(
     items: Iterable[tuple[str, int]],
     left: int,
@@ -612,7 +618,7 @@ def layout_map(change_map: ChangeMap) -> Layout:
     folder_boxes = [
         Box("group", fid, "folders", x, y, w, FOLDER_H)
         for fid, x, y, w in _flow(
-            ((folder.id, CARD_W) for folder in folders),
+            ((folder.id, _folder_width(folder.label)) for folder in folders),
             PAD,
             PAD + LABEL,
             limit,
