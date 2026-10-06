@@ -376,11 +376,23 @@ def _change_map_from_stored(stored: dict[str, object]) -> ChangeMap:
     from prc.changemap import ChangeMap, DiffLine, Edge, FileNode, Hunk, Step, Symbol
 
     raw_brief = cast(dict[str, Any], stored["brief"])
+    from prc.brief import calls_external
+
+    raw_files_for_brief = cast(list[Any], stored["files"])
+    brief_files = []
+    for f in raw_files_for_brief:
+        diff_text = "\n".join(
+            ln["text"] for h in f["hunks"] for ln in h["lines"] if ln["op"] == "+"
+        )
+        sensitive = f["sensitive"] or ("external calls" if calls_external(diff_text, "") else None)
+        brief_files.append(
+            FileChange(f["path"], f["kind"], f["added"], f["removed"], False, sensitive)
+        )
     brief = Brief(
         pr=str(raw_brief["pr"]),
         title=str(raw_brief["title"]),
         head_sha=str(raw_brief["head_sha"]),
-        files=tuple(FileChange(**f) for f in raw_brief["files"]),
+        files=tuple(brief_files),
         checks=tuple(Check(**c) for c in raw_brief["checks"]),
         mismatches=tuple(Mismatch(**mm) for mm in raw_brief["mismatches"]),
         look_first=tuple(Pointer(**p) for p in raw_brief["look_first"]),
