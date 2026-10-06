@@ -55,9 +55,10 @@ body {
 .stat.good .stat-value { color: var(--green); }
 .stat.warn .stat-value { color: var(--amber); }
 .stat.bad .stat-value { color: var(--red); }
-.cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; margin-top: 14px; flex: 1 1 auto; min-height: 0; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 14px; flex: 1 1 auto; min-height: 0; }
+.cols > div { min-width: 0; }
 h2 {
-  margin: 0 0 10px; font-size: 15px; font-weight: 700;
+  margin: 0 0 10px; font-size: 15px; font-weight: 700; white-space: nowrap;
   letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint);
 }
 ul { margin: 0; padding: 0; list-style: none; }
