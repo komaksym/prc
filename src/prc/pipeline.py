@@ -434,8 +434,6 @@ def run_explain(
             "tests_added": facts["tests_added"],
         }
         estimate = estimate_seconds(board)
-        board_out = out_dir / "board.json"
-        board_out.write_text(json.dumps(board, indent=2, sort_keys=True))
         rendered = explain_render.render(
             board,
             used,
@@ -444,6 +442,8 @@ def run_explain(
             backend,
             git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
         )
+        board_out = out_dir / "board.json"
+        board_out.write_text(json.dumps(board, indent=2, sort_keys=True))
         duration, warnings = rendered.duration, rendered.layout_warnings
         video = out_dir / "video.mp4"
         predicted = predict_seconds(board, backend)
@@ -451,7 +451,8 @@ def run_explain(
         doc_out = out_dir / "doc.html"
 
     card_html = out_dir / "card.html"
-    card_html.write_text(build_pr_card_html(cast("dict[str, Any]", used), board))
+    used_any = cast("dict[str, Any]", used)
+    card_html.write_text(build_pr_card_html(used_any, used_any.get("brief"), board))
     card_png: Path | None = None
     try:
         render_pr_card_png(card_html, out_dir / "card.png")
@@ -459,7 +460,7 @@ def run_explain(
     except CardError as error:
         warnings = [*warnings, str(error)]
     comment_md = out_dir / "comment.md"
-    comment_md.write_text(render_pr_comment(cast("dict[str, Any]", used), board))
+    comment_md.write_text(render_pr_comment(used_any, used_any.get("brief"), board))
 
     run = {
         "source": source.label,
