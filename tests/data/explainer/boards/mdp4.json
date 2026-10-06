@@ -1,0 +1,400 @@
+{
+ "name": "mdp4",
+ "scenes": [
+  {
+   "type": "title",
+   "kicker": "Open pull request",
+   "say": [
+    "This pull request builds a report of what we know about one prospect.",
+    "The hard part is a person with conflicting current jobs."
+   ]
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cl",
+     "title": "Claims about one person",
+     "sub": "all three marked current",
+     "col": 0,
+     "row": false,
+     "items": [
+      {
+       "id": "c1",
+       "text": "Acme"
+      },
+      {
+       "id": "c2",
+       "text": "Beta Labs"
+      },
+      {
+       "id": "c3",
+       "text": "Open Lab"
+      }
+     ]
+    },
+    {
+     "id": "em",
+     "title": "Employment",
+     "sub": "no validation applies",
+     "col": 1,
+     "row": true,
+     "items": [
+      {
+       "id": "st",
+       "text": "needs_review",
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "id": "rq",
+     "title": "Research request",
+     "sub": "scope",
+     "col": 1,
+     "row": true,
+     "items": [
+      {
+       "id": "rs",
+       "text": "current_employment",
+       "tone": "info"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/test_e2e_prospect_report.py:109",
+     "match": "\"Acme\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:110",
+     "match": "\"Beta Labs\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:111",
+     "match": "\"Open Lab\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:103",
+     "match": "needs_review"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:113",
+     "match": "current_employment"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:94",
+     "match": "payload[\"validations\"] = [payload[\"validations\"][0]]"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:151",
+     "match": "\"applies_until\": \"2026-09-15T00:00:00Z\""
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:52",
+     "match": "return False, \"validation_expired\""
+    }
+   ],
+   "say": [
+    "Three sources disagree about where this person works now.",
+    "The only validation backed Acme, but it expired, so the report picks none of them.",
+    "It marks the employment as needing review, and asks for research."
+   ],
+   "cues": [
+    {
+     "at": "Three sources",
+     "do": "show",
+     "ids": [
+      "cl"
+     ]
+    },
+    {
+     "at": "backed Acme",
+     "do": "note",
+     "id": "cl",
+     "text": "Acme's validation expired",
+     "tone": "bad"
+    },
+    {
+     "at": "so the report",
+     "do": "show",
+     "ids": [
+      "em"
+     ]
+    },
+    {
+     "at": "picks none",
+     "do": "tone",
+     "id": "em",
+     "tone": "bad"
+    },
+    {
+     "at": "needing review",
+     "do": "show",
+     "ids": [
+      "st"
+     ]
+    },
+    {
+     "at": "asks for research",
+     "do": "show",
+     "ids": [
+      "rq"
+     ]
+    }
+   ],
+   "hold": 0.6
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cl",
+     "title": "Claims about one person",
+     "sub": "all three marked current",
+     "col": 0,
+     "row": false,
+     "items": [
+      {
+       "id": "c1",
+       "text": "Acme"
+      },
+      {
+       "id": "c2",
+       "text": "Beta Labs"
+      },
+      {
+       "id": "c3",
+       "text": "Open Lab"
+      }
+     ]
+    },
+    {
+     "id": "va",
+     "title": "Validation",
+     "sub": "cites the evidence",
+     "col": 1,
+     "row": true,
+     "items": [
+      {
+       "id": "v",
+       "text": "v-active",
+       "tone": "info"
+      }
+     ]
+    },
+    {
+     "id": "em",
+     "title": "Employment",
+     "sub": "with the validation",
+     "col": 2,
+     "row": true,
+     "items": [
+      {
+       "id": "st",
+       "text": "resolved",
+       "tone": "good"
+      }
+     ]
+    },
+    {
+     "id": "cr",
+     "title": "Current roles",
+     "sub": "",
+     "col": 2,
+     "row": true,
+     "items": [
+      {
+       "id": "r1",
+       "text": "Beta Labs",
+       "tone": "good"
+      },
+      {
+       "id": "r2",
+       "text": "Open Lab",
+       "tone": "good"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/test_e2e_prospect_report.py:54",
+     "match": "(\"Beta Labs\", \"Senior ML Engineer\"), (\"Open Lab\", \"Advisor\")"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:50",
+     "match": "resolved"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:55",
+     "match": "v-active"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:109",
+     "match": "\"Acme\""
+    }
+   ],
+   "say": [
+    "A newer validation cites the Beta Labs and Open Lab evidence.",
+    "Both are current at once, so the report resolves to both.",
+    "Acme is left out of the current roles."
+   ],
+   "cues": [
+    {
+     "at": "A newer validation",
+     "do": "show",
+     "ids": [
+      "cl",
+      "va"
+     ]
+    },
+    {
+     "at": "cites the Beta",
+     "do": "fly",
+     "from": "v",
+     "to": "c2",
+     "fade": true
+    },
+    {
+     "at": "Open Lab evidence",
+     "do": "fly",
+     "from": "v",
+     "to": "c3",
+     "fade": true
+    },
+    {
+     "at": "resolves to both",
+     "do": "show",
+     "ids": [
+      "em",
+      "cr"
+     ]
+    },
+    {
+     "at": "Acme is left",
+     "do": "strike",
+     "id": "c1"
+    }
+   ],
+   "hold": 0.6
+  },
+  {
+   "type": "diff",
+   "file": "src/linkedin_mdp_mcp/prospect_report/engine.py",
+   "label": "The rule, in code",
+   "lines": [
+    {
+     "ref": "144",
+     "step": 0
+    },
+    {
+     "ref": "152",
+     "step": 0
+    },
+    {
+     "ref": "154",
+     "step": 0
+    },
+    {
+     "ref": "165",
+     "step": 0
+    },
+    {
+     "ref": "166",
+     "step": 0
+    }
+   ],
+   "say": [
+    "If the applicable validations agree on one set of roles, those roles are current.",
+    "If no validation applies, the status is needs review."
+   ],
+   "cues": [
+    {
+     "at": "agree on one set",
+     "do": "note",
+     "line": "144",
+     "text": "one supported role set",
+     "tone": "good"
+    },
+    {
+     "at": "no validation applies",
+     "do": "note",
+     "line": "165",
+     "text": "no validation applies",
+     "tone": "bad"
+    }
+   ],
+   "hold": 0.8
+  },
+  {
+   "type": "list",
+   "big": "{tests_added}",
+   "label": "new tests",
+   "items": [
+    {
+     "text": "test_cli_resolves_atomic_concurrent_roles_and_channel_facts",
+     "cite": "tests/test_e2e_prospect_report.py:43"
+    },
+    {
+     "text": "test_unresolved_conflict_preserves_alternatives_and_requests_research",
+     "cite": "tests/test_e2e_prospect_report.py:91"
+    },
+    {
+     "text": "test_supported_validation_must_cite_each_selected_claim",
+     "cite": "tests/test_e2e_prospect_report.py:166"
+    }
+   ],
+   "code": true,
+   "say": [
+    "New tests run the real command line on a fixture, and pin both outcomes."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.3
+    }
+   ],
+   "hold": 1.0
+  },
+  {
+   "type": "outro",
+   "l1": "Conflicting jobs need a cited answer.",
+   "l2": "Otherwise the report says: review.",
+   "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
+   "nocap": true,
+   "say": [
+    "Conflicting jobs need a cited answer. Otherwise the report says review."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.0
+     ],
+     "do": "l1"
+    },
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "l2"
+    },
+    {
+     "at": [
+      0,
+      0.9
+     ],
+     "do": "cmd"
+    }
+   ],
+   "hold": 2.0
+  }
+ ]
+}

@@ -1,0 +1,825 @@
+{
+ "name": "mdp4zoom",
+ "scenes": [
+  {
+   "type": "title",
+   "kicker": "Open pull request",
+   "say": [
+    "This pull request settles conflicting evidence about a prospect."
+   ]
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cmd",
+     "title": "Command",
+     "sub": "__main__.py",
+     "col": 0,
+     "row": true,
+     "ground": "main",
+     "items": [
+      {
+       "id": "m",
+       "text": "main"
+      },
+      {
+       "id": "pr",
+       "text": "_parser"
+      }
+     ]
+    },
+    {
+     "id": "files",
+     "title": "File handling",
+     "sub": "files.py",
+     "col": 0,
+     "row": false,
+     "ground": "read_batch",
+     "items": [
+      {
+       "id": "rb",
+       "text": "read_batch"
+      },
+      {
+       "id": "wr",
+       "text": "write_report"
+      },
+      {
+       "id": "err",
+       "text": "ProspectReportError"
+      }
+     ]
+    },
+    {
+     "id": "tests",
+     "title": "Tests",
+     "sub": "test_e2e_prospect_report.py",
+     "col": 2,
+     "row": true,
+     "ground": "FIXTURE",
+     "items": [
+      {
+       "id": "fx",
+       "text": "input.json"
+      }
+     ]
+    },
+    {
+     "id": "model",
+     "title": "Models",
+     "sub": "model.py",
+     "col": 1,
+     "row": false,
+     "ground": "Batch",
+     "items": [
+      {
+       "id": "ev",
+       "text": "Evidence"
+      },
+      {
+       "id": "ec",
+       "text": "EmploymentClaim"
+      },
+      {
+       "id": "mc",
+       "text": "MessageClaim"
+      },
+      {
+       "id": "val",
+       "text": "Validation"
+      },
+      {
+       "id": "bt",
+       "text": "Batch"
+      }
+     ]
+    },
+    {
+     "id": "eng",
+     "title": "Engine",
+     "sub": "engine.py",
+     "col": 2,
+     "row": false,
+     "ground": "resolve",
+     "items": [
+      {
+       "id": "res",
+       "text": "resolve"
+      },
+      {
+       "id": "re",
+       "text": "_resolve_employment"
+      },
+      {
+       "id": "rc",
+       "text": "_resolve_channels"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/__main__.py:22",
+     "match": "def main"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/files.py:33",
+     "match": "def read_batch"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/files.py:48",
+     "match": "def write_report"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:76",
+     "match": "class Evidence"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:96",
+     "match": "class EmploymentClaim"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:132",
+     "match": "class MessageClaim"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:161",
+     "match": "class Validation"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:204",
+     "match": "class Batch"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:215",
+     "match": "unique IDs"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:264",
+     "match": "def resolve"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:112",
+     "match": "def _resolve_employment"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:251",
+     "match": "def _resolve_channels"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:10",
+     "match": "FIXTURE = Path(__file__).parent / \"fixtures\" / \"prospect_report\" / \"input.json\""
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/files.py:15",
+     "match": "class ProspectReportError"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/__main__.py:13",
+     "match": "def _parser"
+    }
+   ],
+   "say": [
+    "A new command, main, takes an evidence file and an as-of time.",
+    {
+     "show": "`read_batch` loads it, and models like Evidence check it.",
+     "speak": "read batch loads it, and models like Evidence check it."
+    },
+    {
+     "show": "`resolve` picks current jobs, and `write_report` saves them.",
+     "speak": "resolve picks current jobs, and write report saves them."
+    },
+    "Bad input stops with one safe error, and tests run it all."
+   ],
+   "cues": [
+    {
+     "at": "A new command",
+     "do": "show",
+     "ids": [
+      "cmd"
+     ]
+    },
+    {
+     "at": "loads it",
+     "do": "show",
+     "ids": [
+      "files"
+     ]
+    },
+    {
+     "at": "loads it",
+     "do": "fly",
+     "from": "m",
+     "to": "rb",
+     "arc": 60,
+     "fade": true
+    },
+    {
+     "at": "models like",
+     "do": "show",
+     "ids": [
+      "model"
+     ],
+     "step": 0.1
+    },
+    {
+     "at": "check it",
+     "do": "fly",
+     "from": "rb",
+     "to": "bt",
+     "arc": 60,
+     "fade": true
+    },
+    {
+     "at": "picks current",
+     "do": "show",
+     "ids": [
+      "eng"
+     ]
+    },
+    {
+     "at": "picks current",
+     "do": "fly",
+     "from": "bt",
+     "to": "res",
+     "arc": 60,
+     "fade": true
+    },
+    {
+     "at": "saves them",
+     "do": "fly",
+     "from": "res",
+     "to": "wr",
+     "arc": 60,
+     "fade": true
+    },
+    {
+     "at": "safe error",
+     "do": "tone",
+     "id": "err",
+     "tone": "info"
+    },
+    {
+     "at": "tests run",
+     "do": "show",
+     "ids": [
+      "tests"
+     ]
+    }
+   ],
+   "hold": 0.3
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cl",
+     "title": "Current claims",
+     "sub": "job-mdp, job-profile, job-advisor",
+     "col": 0,
+     "row": false,
+     "ground": "job-mdp",
+     "items": [
+      {
+       "id": "acme",
+       "text": "Acme"
+      },
+      {
+       "id": "beta",
+       "text": "Beta Labs"
+      },
+      {
+       "id": "open",
+       "text": "Open Lab"
+      }
+     ]
+    },
+    {
+     "id": "va",
+     "title": "Validation",
+     "sub": "applies until 2026-09-15",
+     "col": 1,
+     "row": true,
+     "ground": "v-old-expired",
+     "items": [
+      {
+       "id": "v",
+       "text": "v-old-expired",
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "id": "cr",
+     "title": "Current roles",
+     "sub": "status needs_review",
+     "col": 1,
+     "row": true,
+     "items": [
+      {
+       "id": "c1",
+       "text": "",
+       "kind": "slot"
+      },
+      {
+       "id": "c2",
+       "text": "",
+       "kind": "slot"
+      }
+     ]
+    },
+    {
+     "id": "rq",
+     "title": "Research request",
+     "col": 2,
+     "row": true,
+     "items": [
+      {
+       "id": "r1",
+       "text": "current_employment"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/test_e2e_prospect_report.py:109",
+     "match": "(\"Acme\", \"ML Engineer\")"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:110",
+     "match": "(\"Beta Labs\", \"Senior ML Engineer\")"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:111",
+     "match": "(\"Open Lab\", \"Advisor\")"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:115",
+     "match": "\"job-mdp\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:103",
+     "match": "needs_review"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:104",
+     "match": "report[\"employment\"][\"current_roles\"] == []"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:113",
+     "match": "current_employment"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:141",
+     "match": "v-old-expired"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:151",
+     "match": "2026-09-15"
+    }
+   ],
+   "say": [
+    "One person has three current job claims: Acme, Beta Labs, Open Lab.",
+    "The only validation expired, so no role is chosen and research is requested."
+   ],
+   "cues": [
+    {
+     "at": "three current",
+     "do": "show",
+     "ids": [
+      "cl"
+     ],
+     "step": 0.2
+    },
+    {
+     "at": "only validation",
+     "do": "show",
+     "ids": [
+      "va",
+      "cr"
+     ],
+     "step": 0.2
+    },
+    {
+     "at": "expired",
+     "do": "mark",
+     "id": "va",
+     "text": "\u2717",
+     "tone": "bad"
+    },
+    {
+     "at": "no role",
+     "do": "tone",
+     "id": "cr",
+     "tone": "bad"
+    },
+    {
+     "at": "research is requested",
+     "do": "show",
+     "ids": [
+      "rq"
+     ]
+    }
+   ],
+   "hold": 0.3
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cl",
+     "title": "Current claims",
+     "sub": "job-mdp, job-profile, job-advisor",
+     "col": 0,
+     "row": false,
+     "ground": "job-profile",
+     "items": [
+      {
+       "id": "acme",
+       "text": "Acme"
+      },
+      {
+       "id": "beta",
+       "text": "Beta Labs"
+      },
+      {
+       "id": "open",
+       "text": "Open Lab"
+      }
+     ]
+    },
+    {
+     "id": "va",
+     "title": "Validation",
+     "sub": "supported, no end date",
+     "col": 1,
+     "row": true,
+     "ground": "v-active",
+     "items": [
+      {
+       "id": "v",
+       "text": "v-active",
+       "tone": "good"
+      }
+     ]
+    },
+    {
+     "id": "cr",
+     "title": "Current roles",
+     "sub": "status resolved",
+     "col": 1,
+     "row": true,
+     "items": [
+      {
+       "id": "c1",
+       "text": "Beta Labs",
+       "kind": "slot"
+      },
+      {
+       "id": "c2",
+       "text": "Open Lab",
+       "kind": "slot"
+      }
+     ]
+    },
+    {
+     "id": "rq",
+     "title": "Research request",
+     "col": 2,
+     "row": true,
+     "items": [
+      {
+       "id": "r1",
+       "text": "",
+       "kind": "slot"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/fixtures/prospect_report/input.json:154",
+     "match": "v-active"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:159",
+     "match": "[\"job-profile\", \"job-advisor\"]"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:92",
+     "match": "Beta Labs"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:104",
+     "match": "Open Lab"
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:80",
+     "match": "Acme"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:50",
+     "match": "\"resolved\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:54",
+     "match": "{(\"Beta Labs\", \"Senior ML Engineer\"), (\"Open Lab\", \"Advisor\")}"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:55",
+     "match": "[\"v-active\"]"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:177",
+     "match": "not in selected_facts"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:180",
+     "match": "if status != \"resolved\":"
+    }
+   ],
+   "say": [
+    "Now v-active backs Beta Labs and Open Lab.",
+    "They become current roles, Acme stays an alternative, and no research is requested."
+   ],
+   "cues": [
+    {
+     "at": "Now v-active",
+     "do": "show",
+     "ids": [
+      "cl",
+      "va",
+      "cr",
+      "rq"
+     ],
+     "step": 0.15
+    },
+    {
+     "at": "backs Beta Labs",
+     "do": "fly",
+     "from": "beta",
+     "to": "c1",
+     "arc": 60
+    },
+    {
+     "at": "Open Lab",
+     "do": "fly",
+     "from": "open",
+     "to": "c2",
+     "arc": 60
+    },
+    {
+     "at": "current roles",
+     "do": "mark",
+     "id": "cr",
+     "text": "\u2713",
+     "tone": "good"
+    },
+    {
+     "at": "Acme stays",
+     "do": "note",
+     "id": "acme",
+     "text": "alternative only",
+     "tone": "info",
+     "side": "right"
+    },
+    {
+     "at": "no research",
+     "do": "note",
+     "id": "rq",
+     "text": "none requested",
+     "tone": "good",
+     "side": "below"
+    }
+   ],
+   "hold": 0.3
+  },
+  {
+   "type": "diff",
+   "file": "src/linkedin_mdp_mcp/prospect_report/engine.py",
+   "label": "The rule, in _resolve_employment",
+   "lines": [
+    {
+     "ref": "144",
+     "step": 1
+    },
+    {
+     "ref": "154",
+     "step": 1
+    },
+    {
+     "ref": "156",
+     "step": 2
+    },
+    {
+     "ref": "157",
+     "step": 2
+    },
+    {
+     "ref": "165",
+     "step": 3
+    },
+    {
+     "ref": "171",
+     "step": 3
+    },
+    {
+     "ref": "172",
+     "step": 3
+    }
+   ],
+   "say": [
+    "One validated role set means resolved.",
+    "Two supported sets mean needs review.",
+    "Claims without validation need review, and no claims means unknown."
+   ],
+   "cues": [
+    {
+     "at": "One validated",
+     "do": "step",
+     "n": 1
+    },
+    {
+     "at": "Two supported",
+     "do": "step",
+     "n": 2
+    },
+    {
+     "at": "without validation",
+     "do": "step",
+     "n": 3
+    }
+   ],
+   "hold": 0.3
+  },
+  {
+   "type": "list",
+   "big": "{tests_added}",
+   "label": "new tests, all through the real command",
+   "tone": "good",
+   "mark": "\u2713",
+   "code": true,
+   "more": null,
+   "items": [
+    {
+     "text": "test_cli_is_permutation_stable_and_matches_repeatable_artifact",
+     "cite": "tests/test_e2e_prospect_report.py:70"
+    },
+    {
+     "text": "test_unresolved_conflict_preserves_alternatives_and_requests_research",
+     "cite": "tests/test_e2e_prospect_report.py:91"
+    },
+    {
+     "text": "test_invalid_utf8_fails_with_stable_input_error",
+     "cite": "tests/test_e2e_prospect_report.py:207"
+    }
+   ],
+   "assert": [
+    {
+     "fact": "tests_added",
+     "equals": 11
+    }
+   ],
+   "say": [
+    "Eleven new tests run the real command.",
+    "Shuffled input gives identical bytes."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.3
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/test_e2e_prospect_report.py:87",
+     "match": "first.read_bytes() == second.read_bytes()"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:204",
+     "match": "existing-safe-artifact"
+    }
+   ],
+   "hold": 0.3
+  },
+  {
+   "type": "bars",
+   "label": "lines added",
+   "bars": [
+    {
+     "id": "eng",
+     "label": "engine.py, explained in part",
+     "paths": [
+      "src/linkedin_mdp_mcp/prospect_report/engine.py"
+     ],
+     "tone": "blue"
+    },
+    {
+     "id": "named",
+     "label": "model, files, command: only named",
+     "paths": [
+      "src/linkedin_mdp_mcp/prospect_report/model.py",
+      "src/linkedin_mdp_mcp/prospect_report/files.py",
+      "src/linkedin_mdp_mcp/prospect_report/__main__.py",
+      "src/linkedin_mdp_mcp/prospect_report/__init__.py"
+     ],
+     "tone": "grey"
+    },
+    {
+     "id": "tests",
+     "label": "tests and fixture",
+     "paths": [
+      "tests/"
+     ],
+     "tone": "good"
+    },
+    {
+     "id": "docs",
+     "label": "docs, example report, notes: not covered",
+     "paths": [
+      "docs/",
+      "infographic/",
+      "PLANS.md"
+     ],
+     "tone": "grey"
+    }
+   ],
+   "say": [
+    "Only named, not explained: models, file handling, and the docs.",
+    "Message history in engine.py is not explained either."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "bars",
+     "step": 0.2
+    },
+    {
+     "at": "models",
+     "do": "dim",
+     "keep": [
+      "named"
+     ]
+    },
+    {
+     "at": "the docs",
+     "do": "dim",
+     "keep": [
+      "docs"
+     ]
+    },
+    {
+     "at": "Message history",
+     "do": "dim",
+     "keep": [
+      "eng"
+     ]
+    }
+   ],
+   "hold": 0.3
+  },
+  {
+   "type": "outro",
+   "l1": "Conflicting evidence stays visible.",
+   "l2": "Only a cited validation picks the current roles.",
+   "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
+   "nocap": true,
+   "say": [
+    "Conflicting evidence stays visible. Only a cited validation picks the current roles."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.0
+     ],
+     "do": "l1"
+    },
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "l2"
+    },
+    {
+     "at": [
+      0,
+      0.9
+     ],
+     "do": "cmd"
+    }
+   ],
+   "hold": 0.5
+  }
+ ]
+}

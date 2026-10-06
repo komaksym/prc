@@ -1,0 +1,578 @@
+{
+ "name": "mdp4high",
+ "scenes": [
+  {
+   "type": "title",
+   "kicker": "Open pull request",
+   "say": [
+    "This pull request adds a command that turns evidence about one prospect into one report."
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cl",
+     "title": "Claims",
+     "sub": "all marked current",
+     "col": 0,
+     "row": false,
+     "items": [
+      {
+       "id": "c1",
+       "text": "Acme",
+       "label": "ML Engineer"
+      },
+      {
+       "id": "c2",
+       "text": "Beta Labs",
+       "label": "Senior ML Engineer"
+      },
+      {
+       "id": "c3",
+       "text": "Open Lab",
+       "label": "Advisor"
+      }
+     ]
+    },
+    {
+     "id": "rp",
+     "title": "Report",
+     "sub": "current employment",
+     "col": 2,
+     "row": false,
+     "items": [
+      {
+       "id": "r1",
+       "text": "needs_review",
+       "tone": "bad"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/fixtures/prospect_report/input.json:80",
+     "match": "\"company\": \"Acme\""
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:92",
+     "match": "\"company\": \"Beta Labs\""
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:104",
+     "match": "\"company\": \"Open Lab\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:103",
+     "match": "needs_review"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:113",
+     "match": "report[\"research_requests\"][0][\"scope\"] == \"current_employment\""
+    }
+   ],
+   "say": [
+    "Three claims say the prospect currently works at Acme, Beta Labs and Open Lab.",
+    "With nothing to settle them, the report says needs review and asks for research."
+   ],
+   "cues": [
+    {
+     "at": "Three claims",
+     "do": "show",
+     "ids": [
+      "cl"
+     ]
+    },
+    {
+     "at": "With nothing",
+     "do": "show",
+     "ids": [
+      "rp"
+     ]
+    },
+    {
+     "at": "asks for research",
+     "do": "note",
+     "id": "rp",
+     "text": "research request",
+     "tone": "info",
+     "side": "below"
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "cl",
+     "title": "Claims",
+     "sub": "all marked current",
+     "col": 0,
+     "row": false,
+     "items": [
+      {
+       "id": "c1",
+       "text": "Acme",
+       "label": "ML Engineer"
+      },
+      {
+       "id": "c2",
+       "text": "Beta Labs",
+       "label": "Senior ML Engineer"
+      },
+      {
+       "id": "c3",
+       "text": "Open Lab",
+       "label": "Advisor"
+      }
+     ]
+    },
+    {
+     "id": "va",
+     "title": "Validation",
+     "sub": "v-active, supported",
+     "col": 1,
+     "row": false,
+     "items": [
+      {
+       "id": "v1",
+       "text": "job-profile"
+      },
+      {
+       "id": "v2",
+       "text": "job-advisor"
+      }
+     ]
+    },
+    {
+     "id": "rp",
+     "title": "Report",
+     "sub": "current employment",
+     "col": 2,
+     "row": false,
+     "items": [
+      {
+       "id": "r1",
+       "text": "resolved",
+       "tone": "good"
+      },
+      {
+       "id": "r2",
+       "text": "Beta Labs",
+       "tone": "good"
+      },
+      {
+       "id": "r3",
+       "text": "Open Lab",
+       "tone": "good"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/fixtures/prospect_report/input.json:154",
+     "match": "\"id\": \"v-active\""
+    },
+    {
+     "line": "tests/fixtures/prospect_report/input.json:159",
+     "match": "\"claim_ids\": [\"job-profile\", \"job-advisor\"]"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:50",
+     "match": "\"resolved\""
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:54",
+     "match": "(\"Open Lab\", \"Advisor\")"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:144",
+     "match": "if len(supported_sets) == 1:"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/engine.py:177",
+     "match": "[item for item in candidate_list if _fact_key(item) not in selected_facts]"
+    },
+    {
+     "line": "tests/test_e2e_prospect_report.py:54",
+     "match": "(\"Beta Labs\", \"Senior ML Engineer\")"
+    },
+    {
+     "line": "docs/assets/prospect-report-example.json:150",
+     "match": "\"company\": \"Acme\""
+    }
+   ],
+   "say": [
+    "Now a validation cites the Beta Labs and Open Lab claims as one complete set.",
+    "Those become the current roles. Acme stays an alternative."
+   ],
+   "cues": [
+    {
+     "at": "Now a validation",
+     "do": "show",
+     "ids": [
+      "cl"
+     ]
+    },
+    {
+     "at": "validation cites",
+     "do": "show",
+     "ids": [
+      "va"
+     ]
+    },
+    {
+     "at": "Beta Labs and Open Lab",
+     "do": "fly",
+     "from": "v1",
+     "to": "r2",
+     "arc": 80
+    },
+    {
+     "at": "Beta Labs and Open Lab",
+     "do": "fly",
+     "from": "v2",
+     "to": "r3",
+     "arc": 80
+    },
+    {
+     "at": "current roles",
+     "do": "show",
+     "ids": [
+      "rp"
+     ]
+    },
+    {
+     "at": "Acme stays",
+     "do": "note",
+     "id": "c1",
+     "text": "alternative",
+     "tone": "info",
+     "side": "right"
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "list",
+   "label": "the input: evidence, claims, validations",
+   "tone": "info",
+   "mark": "\u2022",
+   "code": false,
+   "more": null,
+   "items": [
+    {
+     "text": "Immutable source observation",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/model.py:77"
+    },
+    {
+     "text": "One indivisible job assertion",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/model.py:97"
+    },
+    {
+     "text": "One channel event claim; drafts and plans remain non-events for state derivation.",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/model.py:133"
+    },
+    {
+     "text": "Cited assessment of a complete current-employment role set",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/model.py:162"
+    },
+    {
+     "text": "Validate unique IDs, identity bindings and every provenance reference",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/model.py:215"
+    }
+   ],
+   "say": [
+    "Input is evidence, job claims, message claims and validations, all immutable.",
+    "A check rejects duplicate IDs, wrong identities and unknown references."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.2
+     ],
+     "do": "items",
+     "step": 0.7
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "diff",
+   "file": "src/linkedin_mdp_mcp/prospect_report/__main__.py",
+   "label": "The command, end to end",
+   "lines": [
+    {
+     "ref": "17",
+     "step": 0
+    },
+    {
+     "ref": "18",
+     "step": 0
+    },
+    {
+     "ref": "22",
+     "step": 0
+    },
+    {
+     "ref": "26",
+     "step": 0
+    },
+    {
+     "ref": "27",
+     "step": 0
+    },
+    {
+     "ref": "28",
+     "step": 0
+    },
+    {
+     "ref": "29",
+     "step": 0
+    },
+    {
+     "ref": "30",
+     "step": 0
+    }
+   ],
+   "say": [
+    "The command takes an input file, a report time and an output path.",
+    "It reads, resolves and writes. Failures print only an error code."
+   ],
+   "cues": [
+    {
+     "at": "resolves",
+     "do": "note",
+     "line": "27",
+     "text": "pure resolve",
+     "tone": "good"
+    },
+    {
+     "at": "error code",
+     "do": "note",
+     "line": "30",
+     "text": "code only",
+     "tone": "info"
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "list",
+   "label": "the engine: pure and deterministic",
+   "tone": "blue",
+   "mark": "\u2022",
+   "code": false,
+   "more": null,
+   "items": [
+    {
+     "text": "Resolve the complete current-role set from applicable cited validations.",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/engine.py:116"
+    },
+    {
+     "text": "Derive email and LinkedIn histories independently from actual event claims.",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/engine.py:252"
+    },
+    {
+     "text": "Purely derive one canonical report from an immutable batch and explicit clock.",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/engine.py:265"
+    }
+   ],
+   "say": [
+    "One pure function, resolve, settles current roles and derives each channel."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.2
+     ],
+     "do": "items",
+     "step": 0.6
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "list",
+   "label": "the output file",
+   "tone": "good",
+   "mark": "\u2713",
+   "code": false,
+   "more": null,
+   "items": [
+    {
+     "text": "Read and strictly validate one input file without exposing raw values on failure.",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/files.py:34"
+    },
+    {
+     "text": "Safe boundary error carrying only a stable non-sensitive code",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/files.py:16"
+    },
+    {
+     "text": "Encode a report with stable key/list ordering and a trailing newline",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/files.py:43"
+    },
+    {
+     "text": "Atomically replace a report so failures never leave a partial artifact",
+     "cite": "src/linkedin_mdp_mcp/prospect_report/files.py:49"
+    }
+   ],
+   "say": [
+    "Input is read strictly; errors carry a code, never raw input.",
+    "The report is written atomically."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.2
+     ],
+     "do": "items",
+     "step": 0.6
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "bars",
+   "label": "lines added",
+   "bars": [
+    {
+     "id": "src",
+     "label": "prospect_report package",
+     "paths": [
+      "src/"
+     ],
+     "tone": "blue"
+    },
+    {
+     "id": "tests",
+     "label": "tests and fixture",
+     "paths": [
+      "tests/"
+     ],
+     "tone": "good"
+    },
+    {
+     "id": "docs",
+     "label": "docs, example, notes",
+     "paths": [
+      "docs/",
+      "infographic/",
+      "PLANS.md"
+     ],
+     "tone": "grey"
+    }
+   ],
+   "say": [
+    "Most added lines are the package. The rest is tests and docs."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "bars",
+     "step": 0.3
+    },
+    {
+     "at": "The rest",
+     "do": "dim",
+     "keep": [
+      "tests",
+      "docs"
+     ]
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "list",
+   "big": "{tests_added}",
+   "label": "new end-to-end tests",
+   "tone": "good",
+   "mark": "\u2713",
+   "code": false,
+   "more": null,
+   "items": [
+    {
+     "text": "Run the public file-to-file CLI exactly as an operator would.",
+     "cite": "tests/test_e2e_prospect_report.py:16"
+    },
+    {
+     "text": "Resolve cited roles without mixing fields and keep email/LinkedIn state separate.",
+     "cite": "tests/test_e2e_prospect_report.py:44"
+    },
+    {
+     "text": "Permuting evidence, claims and validations must produce the same canonical bytes.",
+     "cite": "tests/test_e2e_prospect_report.py:71"
+    },
+    {
+     "text": "Reject unsafe identity/ID input while preserving an existing output atomically.",
+     "cite": "tests/test_e2e_prospect_report.py:190"
+    }
+   ],
+   "assert": [
+    {
+     "fact": "tests_added",
+     "equals": 11
+    }
+   ],
+   "say": [
+    "Eleven tests run the real command, including shuffled and bad input."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.5
+    }
+   ],
+   "hold": 0.2
+  },
+  {
+   "type": "outro",
+   "l1": "Evidence goes in.",
+   "l2": "One repeatable report comes out.",
+   "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
+   "nocap": true,
+   "say": [
+    "Evidence goes in. One repeatable report comes out."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.0
+     ],
+     "do": "l1"
+    },
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "l2"
+    },
+    {
+     "at": [
+      0,
+      0.9
+     ],
+     "do": "cmd"
+    }
+   ],
+   "hold": 0.3
+  }
+ ]
+}

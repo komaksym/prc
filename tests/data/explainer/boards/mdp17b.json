@@ -1,0 +1,668 @@
+{
+ "name": "mdp17b",
+ "scenes": [
+  {
+   "type": "title",
+   "kicker": "Open pull request",
+   "say": [
+    "This pull request changes who makes the LinkedIn invitation shortlist.",
+    "It's about people with two jobs at once."
+   ]
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "pa",
+     "title": "Person A",
+     "sub": "two current jobs",
+     "ground": "PROFILE_A",
+     "items": [
+      {
+       "id": "a",
+       "text": "A",
+       "ground": "PROFILE_A"
+      }
+     ],
+     "row": true,
+     "col": 0
+    },
+    {
+     "id": "coa",
+     "title": "co-a",
+     "sub": "max 3 invitations",
+     "ground": "co-a",
+     "items": [
+      {
+       "id": "a1",
+       "text": "A",
+       "kind": "slot",
+       "ground": "PROFILE_A"
+      },
+      {
+       "id": "a2",
+       "text": "",
+       "kind": "slot"
+      },
+      {
+       "id": "a3",
+       "text": "",
+       "kind": "slot"
+      }
+     ],
+     "row": true,
+     "col": 1
+    },
+    {
+     "id": "cob",
+     "title": "co-b",
+     "sub": "max 3 invitations",
+     "ground": "co-b",
+     "items": [
+      {
+       "id": "b1",
+       "text": "B",
+       "kind": "slot",
+       "ground": "PROFILE_B"
+      },
+      {
+       "id": "b2",
+       "text": "C",
+       "kind": "slot",
+       "ground": "PROFILE_C"
+      },
+      {
+       "id": "b3",
+       "text": "D",
+       "kind": "slot",
+       "ground": "person-d"
+      },
+      {
+       "id": "bx",
+       "text": "A",
+       "outside": true,
+       "tone": "bad",
+       "ground": "PROFILE_A"
+      }
+     ],
+     "row": true,
+     "col": 1
+    }
+   ],
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1038",
+     "match": "max(0, 3 - company_counts[company_id])"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:-73",
+     "match": "company_id: str"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:-1018",
+     "match": "if slots[candidate_row.company_id] <= 0:"
+    },
+    {
+     "line": "tests/test_invitation_shortlist_e2e.py:89",
+     "match": "secondary employer at capacity admitted an invitation"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1059",
+     "match": "profiles = [PROFILE_B, PROFILE_C, \"https://www.linkedin.com/in/person-d\"]"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1061",
+     "match": "claims = {PROFILE_A: employer_set(\"co-a\", \"co-b\")"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1063",
+     "match": "assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3"
+    }
+   ],
+   "say": [
+    "No company gets more than three invitations.",
+    "Here, co-b has already used all three, on B, C and D.",
+    "Person A works at both co-a and co-b.",
+    "Before this change, A had one employer on record, say co-a, so only co-a's limit was checked.",
+    "Nothing stopped A, and co-b's people got a fourth invitation."
+   ],
+   "cues": [
+    {
+     "at": "No company",
+     "do": "show",
+     "ids": [
+      "coa",
+      "cob"
+     ],
+     "step": 0.3
+    },
+    {
+     "at": "on B",
+     "do": "fill",
+     "ids": [
+      "b1",
+      "b2",
+      "b3"
+     ],
+     "step": 0.25
+    },
+    {
+     "at": "and D",
+     "do": "tone",
+     "id": "cob",
+     "tone": "bad"
+    },
+    {
+     "at": "Person A works",
+     "do": "show",
+     "ids": [
+      "pa"
+     ]
+    },
+    {
+     "at": "say co-a",
+     "do": "fly",
+     "from": "a",
+     "to": "a1"
+    },
+    {
+     "at": "only co-a's limit",
+     "do": "note",
+     "id": "coa",
+     "text": "only this limit checked",
+     "tone": "info",
+     "side": "right"
+    },
+    {
+     "at": "Nothing stopped A",
+     "do": "fly",
+     "from": "a",
+     "to": "bx",
+     "arc": 120
+    },
+    {
+     "at": "co-b's people",
+     "do": "note",
+     "id": "bx",
+     "text": "4th invite",
+     "tone": "bad"
+    },
+    {
+     "at": "fourth invitation",
+     "do": "mark",
+     "id": "cob",
+     "text": "✗",
+     "tone": "bad"
+    }
+   ],
+   "hold": 0.8
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "pa",
+     "title": "Person A",
+     "sub": "two current jobs",
+     "ground": "PROFILE_A",
+     "items": [
+      {
+       "id": "a",
+       "text": "A",
+       "ground": "PROFILE_A"
+      }
+     ],
+     "row": true,
+     "col": 0
+    },
+    {
+     "id": "coa",
+     "title": "co-a",
+     "sub": "max 3 invitations",
+     "ground": "co-a",
+     "items": [
+      {
+       "id": "a1",
+       "text": "",
+       "kind": "slot"
+      },
+      {
+       "id": "a2",
+       "text": "",
+       "kind": "slot"
+      },
+      {
+       "id": "a3",
+       "text": "",
+       "kind": "slot"
+      }
+     ],
+     "row": true,
+     "col": 1
+    },
+    {
+     "id": "cob",
+     "title": "co-b",
+     "sub": "max 3 invitations",
+     "ground": "co-b",
+     "items": [
+      {
+       "id": "b1",
+       "text": "B",
+       "ground": "PROFILE_B"
+      },
+      {
+       "id": "b2",
+       "text": "C",
+       "ground": "PROFILE_C"
+      },
+      {
+       "id": "b3",
+       "text": "D",
+       "ground": "person-d"
+      }
+     ],
+     "row": true,
+     "col": 1
+    }
+   ],
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1031",
+     "match": "if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1064",
+     "match": "assert result[\"invitations\"] == []"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1059",
+     "match": "profiles = [PROFILE_B, PROFILE_C"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1061",
+     "match": "claims = {PROFILE_A: employer_set(\"co-a\", \"co-b\")"
+    }
+   ],
+   "say": [
+    "Now A needs a free slot at every company A works at.",
+    "co-b is full, so A is not invited."
+   ],
+   "cues": [
+    {
+     "at": "Now A needs",
+     "do": "show",
+     "ids": [
+      "pa",
+      "coa",
+      "cob"
+     ],
+     "step": 0.15
+    },
+    {
+     "at": "A needs",
+     "do": "show",
+     "ids": [
+      "a"
+     ]
+    },
+    {
+     "at": "every company",
+     "do": "mark",
+     "id": "coa",
+     "text": "✓",
+     "tone": "good"
+    },
+    {
+     "at": "works at",
+     "do": "mark",
+     "id": "cob",
+     "text": "✗",
+     "tone": "bad"
+    },
+    {
+     "at": "is full",
+     "do": "tone",
+     "id": "cob",
+     "tone": "bad"
+    },
+    {
+     "at": "not invited",
+     "do": "strike",
+     "id": "a"
+    },
+    {
+     "at": "not invited",
+     "do": "note",
+     "id": "pa",
+     "text": "not invited",
+     "tone": "bad"
+    }
+   ],
+   "hold": 0.6
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "pa",
+     "title": "Person A",
+     "sub": "two current jobs",
+     "ground": "PROFILE_A",
+     "items": [
+      {
+       "id": "a",
+       "text": "A",
+       "ground": "PROFILE_A"
+      }
+     ],
+     "row": true,
+     "col": 0
+    },
+    {
+     "id": "coa",
+     "title": "co-a",
+     "sub": "max 3 invitations",
+     "ground": "co-a",
+     "items": [
+      {
+       "id": "a1",
+       "text": "A",
+       "kind": "slot",
+       "ground": "PROFILE_A"
+      },
+      {
+       "id": "a2",
+       "text": "",
+       "kind": "slot"
+      },
+      {
+       "id": "a3",
+       "text": "",
+       "kind": "slot"
+      }
+     ],
+     "row": true,
+     "col": 1
+    },
+    {
+     "id": "cob",
+     "title": "co-b",
+     "sub": "max 3 invitations",
+     "ground": "co-b",
+     "items": [
+      {
+       "id": "b1",
+       "text": "A",
+       "kind": "slot",
+       "ground": "PROFILE_A"
+      },
+      {
+       "id": "b2",
+       "text": "",
+       "kind": "slot"
+      },
+      {
+       "id": "b3",
+       "text": "",
+       "kind": "slot"
+      }
+     ],
+     "row": true,
+     "col": 1
+    }
+   ],
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1035",
+     "match": "slots[company_id] -= 1"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1066",
+     "match": "[\"co-a\"][\"remaining_slots_after_selection\"] == 2"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1067",
+     "match": "[\"co-b\"][\"remaining_slots_after_selection\"] == 2"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1065",
+     "match": "qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\")})"
+    }
+   ],
+   "say": [
+    "When both companies have room, A is invited once and uses a slot at each.",
+    "That leaves two at co-a and two at co-b."
+   ],
+   "cues": [
+    {
+     "at": "When both",
+     "do": "show",
+     "ids": [
+      "pa",
+      "coa",
+      "cob"
+     ],
+     "step": 0.15
+    },
+    {
+     "at": "invited once",
+     "do": "fly",
+     "from": "a",
+     "to": "a1"
+    },
+    {
+     "at": "invited once",
+     "do": "fly",
+     "from": "a",
+     "to": "b1"
+    },
+    {
+     "at": "two at co-a",
+     "do": "note",
+     "id": "coa",
+     "text": "2 left",
+     "tone": "good",
+     "side": "right"
+    },
+    {
+     "at": "two at co-b",
+     "do": "note",
+     "id": "cob",
+     "text": "2 left",
+     "tone": "good",
+     "side": "right"
+    }
+   ],
+   "hold": 0.6
+  },
+  {
+   "type": "diff",
+   "file": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+   "label": "The change, line for line",
+   "lines": [
+    "1030",
+    "-1018",
+    "1031",
+    "1032",
+    "1033",
+    {
+     "ref": "-1021",
+     "step": 2
+    },
+    {
+     "ref": "1034",
+     "step": 2
+    },
+    {
+     "ref": "1035",
+     "step": 2
+    }
+   ],
+   "say": [
+    "In the code, the old check looked at one company per person.",
+    "Now it checks every company the person works at.",
+    "And a person who gets picked uses up a slot at each of them."
+   ],
+   "cues": [
+    {
+     "at": "the old check",
+     "do": "note",
+     "line": "-1018",
+     "text": "one company",
+     "tone": "bad",
+     "until": "Now it checks"
+    },
+    {
+     "at": "every company",
+     "do": "step",
+     "n": 1
+    },
+    {
+     "at": "uses up a slot",
+     "do": "step",
+     "n": 2
+    },
+    {
+     "at": "each of them",
+     "do": "note",
+     "line": "1035",
+     "text": "−1 slot at each employer",
+     "tone": "good"
+    }
+   ],
+   "hold": 0.8
+  },
+  {
+   "type": "list",
+   "label": "kinds of unclear employer data stop the whole shortlist",
+   "tone": "bad",
+   "mark": "✗",
+   "more": null,
+   "items": [
+    {
+     "text": "current_employer_assignment_invalid",
+     "cite": "tests/e2e_invitation_shortlist.py:1010"
+    },
+    {
+     "text": "current_employer_unregistered",
+     "cite": "tests/e2e_invitation_shortlist.py:1011"
+    },
+    {
+     "text": "current_employer_coverage_incomplete",
+     "cite": "tests/e2e_invitation_shortlist.py:1012"
+    },
+    {
+     "text": "conflicting_current_employer_assignments",
+     "cite": "tests/e2e_invitation_shortlist.py:1045"
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1018",
+     "match": "assert result[\"status\"] == \"withheld_current_employer_assignments\""
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1019",
+     "match": "assert result[\"invitations\"] == []"
+    },
+    {
+     "line": "tests/e2e_invitation_shortlist.py:1020",
+     "match": "result[\"research_queue\"]"
+    }
+   ],
+   "say": [
+    "If anyone's employer data is empty, unknown, partial or conflicting, no one is invited.",
+    "Each reason goes to a research queue instead."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.2
+     ],
+     "do": "items",
+     "step": 0.5
+    }
+   ],
+   "hold": 0.8,
+   "code": true
+  },
+  {
+   "type": "list",
+   "big": "{tests_added}",
+   "label": "new tests",
+   "items": [
+    {
+     "text": "A second employer at capacity blocks the person, and selected people charge every job.",
+     "cite": "tests/e2e_invitation_shortlist.py:1058"
+    },
+    {
+     "text": "Replayed invitation facts charge one profile once to every present employer.",
+     "cite": "tests/e2e_invitation_shortlist.py:989"
+    },
+    {
+     "text": "Unbounded or contradictory claims cannot create company capacity.",
+     "cite": "tests/e2e_invitation_shortlist.py:1016"
+    }
+   ],
+   "say": [
+    "Seven new tests pin it down."
+   ],
+   "assert": [
+    {
+     "fact": "tests_added",
+     "equals": 7
+    }
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.3
+    }
+   ],
+   "hold": 1.4
+  },
+  {
+   "type": "outro",
+   "l1": "The AI wrote the words.",
+   "l2": "The tests drew the picture.",
+   "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
+   "nocap": true,
+   "say": [
+    {
+     "show": "The AI wrote the words. The tests drew the picture.",
+     "speak": "The A.I. wrote the words. The tests drew the picture."
+    }
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.0
+     ],
+     "do": "l1"
+    },
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "l2"
+    },
+    {
+     "at": [
+      0,
+      0.9
+     ],
+     "do": "cmd"
+    }
+   ],
+   "hold": 2.0
+  }
+ ]
+}

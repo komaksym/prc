@@ -1,0 +1,63 @@
+{
+ "files": [
+  {
+   "path": "synth.py",
+   "hunks": [
+    {
+     "new_start": 1,
+     "old_start": 1,
+     "lines": [
+      {
+       "op": "+",
+       "new": 1,
+       "old": null,
+       "text": "\tif x:"
+      },
+      {
+       "op": "+",
+       "new": 2,
+       "old": null,
+       "text": "x = 1   "
+      },
+      {
+       "op": "+",
+       "new": 3,
+       "old": null,
+       "text": "a\r"
+      },
+      {
+       "op": "+",
+       "new": 4,
+       "old": null,
+       "text": ""
+      },
+      {
+       "op": "+",
+       "new": 5,
+       "old": null,
+       "text": "x = 1  # [!code ++]"
+      },
+      {
+       "op": "+",
+       "new": 6,
+       "old": null,
+       "text": "result = compute(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16)#####################"
+      },
+      {
+       "op": "+",
+       "new": 7,
+       "old": null,
+       "text": "a < b && c > \"d\""
+      },
+      {
+       "op": "+",
+       "new": 8,
+       "old": null,
+       "text": "café ⋯ − x"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
