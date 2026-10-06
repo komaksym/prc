@@ -496,7 +496,7 @@ def run_explain(
     slug = explain_slug(ref, str(used["head_sha"]))
     out_dir = out_root / slug
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "map.json").write_text(json.dumps(used, indent=2, sort_keys=True))
+    (out_dir / "map.json").write_text(json.dumps(to_jsonable(change_map), indent=2, sort_keys=True))
     (out_dir / "map.html").write_text(render_map(change_map))
 
     check_passed, board_out, video, doc_out, duration, estimate, predicted, warnings = (
