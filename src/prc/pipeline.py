@@ -379,12 +379,15 @@ def _change_map_from_stored(stored: dict[str, object]) -> ChangeMap:
     from prc.brief import calls_external
 
     raw_files_for_brief = cast(list[Any], stored["files"])
+    brief_reasons = {f["path"]: f.get("sensitive") for f in raw_brief["files"]}  # type: ignore[union-attr]
     brief_files = []
     for f in raw_files_for_brief:
         diff_text = "\n".join(
             ln["text"] for h in f["hunks"] for ln in h["lines"] if ln["op"] == "+"
         )
-        sensitive = f["sensitive"] or ("external calls" if calls_external(diff_text, "") else None)
+        sensitive = brief_reasons.get(f["path"]) or (
+            "external calls" if calls_external(diff_text, "") else None
+        )
         brief_files.append(
             FileChange(f["path"], f["kind"], f["added"], f["removed"], False, sensitive)
         )
