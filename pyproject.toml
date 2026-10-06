@@ -42,7 +42,7 @@ packages = ["src/prc"]
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
-exclude = ["tests/data/"]
+exclude = ["tests/data/", ".claude/"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
