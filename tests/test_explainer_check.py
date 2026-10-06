@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -66,7 +67,7 @@ def too_many_rows(board: dict[str, Any], m: dict[str, Any]) -> None:
     s["lines"] = refs[:15]
 
 
-PLANTS = {
+PLANTS: dict[str, Callable[[dict[str, Any], dict[str, Any]], None]] = {
     "is not in the narration": lambda b, m: phrase_cue(b).update(at="a phrase nobody says"),
     "times in the narration": lambda b, m: say_twice(b),
     "is not a line of the diff": lambda b, m: scene(b, "diff")["lines"].append("99999"),
