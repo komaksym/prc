@@ -20,3 +20,19 @@ Append one entry per stage or session. Newest at the bottom. Label every number 
   - `--voice none` uses character-share timing;
   - the engine refactors to `mount()` for the doc;
   - `--map` covers stored heads.
+
+## 2026-10-06 02:25 CEST. Stage 0 start (full MVP run, poteto-mode)
+
+- Throughput checkpoint: blocking first steps are Stage 0 verify, then Stage 1 questions and Stage 2 diff scene in parallel. Independent workstreams are (a) eval questions plus C0 baseline in main repo and (b) diff scene in prototypes/explainer (own git repo, no shared files except LOG.md). Smallest safe decomposition is one owner per stage. Stages 4 to 7 fan out after Stage 3 merges.
+- Verify at `458f61b` on main: ruff ok, format ok, mypy ok (64 files, measured). pytest running in background at start. Tools measured: ffmpeg 8.1 present, Playwright Chromium 1232 and 1234 cached, explainer `.kvenv` Python 3.12.7 with tree-sitter plus Pygments plus Playwright.
+- Launched two background delegates: Stage 1 eval questions and C0 baseline, Stage 2 diff scene per docs/mvp/diff-scene.md.
+
+## 2026-10-06 11:00-13:00 CEST. Stage 1 questions and C0 baseline (eval-questions branch)
+
+- Subagent spawn blocked (depth limit 1), so all 12 PRs were done directly. Read each PR body plus `gh pr diff` (measured line counts: pr19 8568, pr10 2822, pr8 2140, pr13 1517, pr16 1387, pr5 1111, pr15 993, pr7 998, pr14 495, pr17 453, pr11 340, pr12 357) and head code from `prototypes/mdp/store/git-cache/*.git`.
+- Git note: `rev:path` does not resolve in these caches (`cat-file -p <sha>:<path>` prints the commit); used `ls-tree` to get the blob sha then `cat-file -p <blob>`. `validate_questions.py` does the same.
+- Committed `test(eval): freeze comprehension questions v1` (`e5c7261`): 12 files, 8 questions q1..q8 each, head_shas 5ec569d (19), 537a16d (17), df74ac3 (16), 1b18345 (15), 66e8fe4 (14), f59b09a (13), 0c54c1a (12), 306ff5a (11), 5498b6c (10), dc3f451 (8), 1f2f010 (7), 5f4440d (5). Every evidence line re-checked against its head blob; exact keys are substrings of evidence lines.
+- Harness: `scripts/eval/validate_questions.py` (5 PLAN Stage 1 checks) passes checks 1-4 on all 12 files; `scripts/eval/grade.py` grades exact/set/bool/location after whitespace+quote normalization, free text by hand.
+- C0 baseline (title+description packets, honest `CANNOT TELL` answering): overall correct 31/96 = 32.3% (measured), partial 31/96, wrong 0, cannot-tell 34/96. Per-PR correct: 37.5% max (PRs 7,8,10,13,14,15,16,17), 25% (PRs 5,12,19), 12.5% (PR 11). Check 5 holds: no PR above 60%, questions are not too easy. Targets C4>=85, C3>=70, C2>=60, C1>=35, misleading 0 committed in `eval/runs/2026-10-06-baseline/scoreboard.md`.
+- Committed `test(eval): add C0 baseline packets, answers and scoreboard` (`7e7aba7`): 40 files (12 packets + prompts, 12 answers, results.json, scoreboard.md, 2 harness scripts).
+- Open problems: C0 reader/grader was the question author (no fresh agent available at this depth); mitigated by mechanical exact-match discipline, but Stage 8 should re-run C0 with a fresh reader. `grade.py` set-grading treats a proper subset as partial; free-text q6 has no key_facts (kept as prose keys).
