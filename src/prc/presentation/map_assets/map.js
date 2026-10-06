@@ -9,6 +9,7 @@
   const PILL = { added: "new", modified: "modified", deleted: "deleted" };
   const LANE_LABEL = {
     files: "Other changed files",
+    folders: "Folders",
     callers: "Callers",
     changed: "Changed code",
     callees: "Callees",
@@ -16,7 +17,7 @@
   };
   const MINUS = "\u2212";
   const DOT = " \u00b7 ";
-  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6 };
+  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6, folder: 3.2 };
   const MAX_TOUR = 60;
   const MIN_STEP = 1.6;
   const MOVE = 1.0;
@@ -86,6 +87,26 @@
   });
 
   const edges = [];
+
+  const folderNodes = [];
+  const folderByIndex = new Map();
+
+  for (let i = 0; i < (LAYOUT.folders || []).length; i++) {
+    const box = LAYOUT.folders[i];
+    const info = (LAYOUT.folderInfo || [])[i];
+    if (!box || !info) continue;
+    const members = (info.members || [])
+      .map((si) => symbolNode.get((MAP.symbols[si] || {}).id))
+      .filter(Boolean);
+    const folder = {
+      key: `g${i}`, index: i, info, members,
+      x: box[0], y: box[1], w: box[2], h: box[3],
+    };
+    folderNodes.push(folder);
+    folderByIndex.set(i, folder);
+  }
+
+  const grouped = folderNodes.length > 0;
 
   MAP.edges.forEach((edge, i) => {
     const src = symbolNode.get(edge.source);
@@ -172,6 +193,7 @@
   world.style.height = `${LAYOUT.h}px`;
 
   if (LAYOUT.dense) world.classList.add("dense");
+  if (grouped) world.classList.add("grouped");
 
   for (const band of LAYOUT.bands) {
     const box = el("div", "band");
@@ -223,6 +245,45 @@
 
   edgeLayer.appendChild(defs);
   world.appendChild(edgeLayer);
+
+  function folderPath(p, q, across) {
+    const bend = across ? Math.max(24, Math.abs(q[0] - p[0]) / 2) : 0;
+    const drop = across ? 0 : Math.max(24, Math.abs(q[1] - p[1]) / 2);
+    const r = (v) => Math.round(v * 10) / 10;
+    return `M${r(p[0])} ${r(p[1])}C${r(p[0] + bend)} ${r(p[1] + drop)} ` +
+      `${r(q[0] - bend)} ${r(q[1] - drop)} ${r(q[0])} ${r(q[1])}`;
+  }
+
+  function folderPorts(a, b) {
+    if (a.x + a.w <= b.x) return [[a.x + a.w, a.y + a.h / 2], [b.x, b.y + b.h / 2], true];
+    if (b.x + b.w <= a.x) return [[a.x, a.y + a.h / 2], [b.x + b.w, b.y + b.h / 2], true];
+    if (a.y + a.h <= b.y) return [[a.x + a.w / 2, a.y + a.h], [b.x + b.w / 2, b.y], false];
+    if (b.y + b.h <= a.y) return [[a.x + a.w / 2, a.y], [b.x + b.w / 2, b.y + b.h], false];
+    return [[a.x + a.w / 2, a.y + a.h / 2], [b.x + b.w / 2, b.y + b.h / 2], true];
+  }
+
+  if (grouped) {
+    const folderLayer = svg("svg", "fedges");
+    folderLayer.setAttribute("width", String(LAYOUT.w));
+    folderLayer.setAttribute("height", String(LAYOUT.h));
+    folderLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+    world.appendChild(folderLayer);
+
+    for (const [a, b, count, raw] of (LAYOUT.folderEdges || [])) {
+      const from = folderByIndex.get(a);
+      const to = folderByIndex.get(b);
+      if (!from || !to) continue;
+      const st = edgeStatus(raw);
+      const [p, q, across] = folderPorts(from, to);
+      const line = svg("path", `ge ge-${st}`);
+      line.setAttribute("d", folderPath(p, q, across));
+      line.setAttribute("marker-end", `url(#arrow-${st})`);
+      line.setAttribute("data-folder-edge", `${from.key}-${to.key}`);
+      line.setAttribute("data-count", String(count));
+      line.setAttribute("stroke-width", String(Math.min(10, Math.round((1.5 + 2 * Math.sqrt(count)) * 10) / 10)));
+      folderLayer.appendChild(line);
+    }
+  }
 
   const round = (v) => Math.round(v * 10) / 10;
 
@@ -280,6 +341,84 @@
     card.setAttribute("title", node.path);
   }
 
+  const expanded = new Set();
+  const memberFolder = new Map();
+
+  for (const folder of folderNodes) {
+    for (const member of folder.members) memberFolder.set(member, folder.index);
+  }
+
+  function countsLine(info) {
+    return `${info.added} added${DOT}${info.modified} modified${DOT}` +
+      `${info.deleted} deleted${DOT}${info.tests} tests`;
+  }
+
+  function folderBounds() {
+    return bounds(folderNodes);
+  }
+
+  function applyConceal() {
+    for (const [member, fi] of memberFolder) {
+      member.el.classList.toggle("concealed", !expanded.has(fi));
+    }
+    for (const folder of folderNodes) {
+      const open = expanded.has(folder.index);
+      folder.el.classList.toggle("open", open);
+      folder.el.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+  }
+
+  function toggleFolder(folder) {
+    if (touring) exitTour();
+    if (expanded.has(folder.index)) expanded.delete(folder.index);
+    else expanded.add(folder.index);
+    applyConceal();
+    flyTo(fitTo(expanded.has(folder.index) ? bounds(folder.members) : folderBounds(), viewArea(), 1.25));
+  }
+
+  function collapseAll() {
+    expanded.clear();
+    applyConceal();
+    userMoved = false;
+    flyTo(fitTo(folderBounds(), viewArea(), 1.1));
+  }
+
+  for (const folder of folderNodes) {
+    const card = el("button", "fcard");
+    card.setAttribute("data-folder", folder.key);
+    card.setAttribute("type", "button");
+    card.setAttribute("aria-expanded", "false");
+    card.setAttribute("title", folder.info.label);
+    card.style.left = `${folder.x}px`;
+    card.style.top = `${folder.y}px`;
+    card.style.width = `${folder.w}px`;
+    card.style.height = `${folder.h}px`;
+    add(card, el("div", "f-name", folder.info.label), el("div", "f-counts", countsLine(folder.info)));
+    const list = el("div", "flist");
+    for (const member of folder.members) {
+      const row = el("button", `fmem st-${member.status}`);
+      row.setAttribute("type", "button");
+      add(row, el("span", "fmem-name", member.name), el("span", "fmem-tag", member.status));
+      row.addEventListener("click", (event) => {
+        event.stopPropagation();
+        select(member, true);
+      });
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    card.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (!dragged) toggleFolder(folder);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      toggleFolder(folder);
+    });
+    folder.el = card;
+    world.appendChild(card);
+  }
+
   for (const node of nodes) {
     const card = el("div", `node ${node.kind === "file" ? "chip" : "sym"} st-${node.status}`);
     card.setAttribute("data-node", node.key);
@@ -294,6 +433,8 @@
     else fileCard(node);
     world.appendChild(card);
   }
+
+  if (grouped) applyConceal();
 
   /* Camera */
 
@@ -338,6 +479,11 @@
   }
 
   function open() {
+    if (grouped) {
+      Object.assign(cam, fitTo(folderBounds(), viewArea(), 1.1));
+      applyCamera();
+      return;
+    }
     const area = viewArea();
     const whole = fitTo(all, area, 1.1);
     const band = LAYOUT.bands.find((b) => b[0] === "changed");
@@ -648,6 +794,17 @@
 
     if (step.kind === "summary") return { kicker: "Summary", count, main: "", sub: "" };
 
+    if (step.kind === "folder") {
+      const folder = folderByIndex.get(step.folder);
+      const info = folder ? folder.info : { added: 0, modified: 0, deleted: 0, tests: 0 };
+      return {
+        kicker: "Group", count, main: folder ? folder.info.label : "",
+        sub: [plural(focus.length, "symbol", "symbols"),
+          `${info.added} added`, `${info.modified} modified`,
+          `${info.deleted} deleted`, `${info.tests} tests`].join(DOT),
+      };
+    }
+
     if (!node || node.kind !== "symbol") return { kicker: step.kind, count, main: step.focus.join(", "), sub: "" };
 
     const word = node.sym.kind;
@@ -686,22 +843,33 @@
   }
 
   const timeline = (() => {
-    const base = MAP.tour.map((s) => STEP_SECONDS[s.kind] || 3);
-    const fixed = MAP.tour.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
+    const plan = grouped && MAP.tour.length >= 2 ? [
+      MAP.tour[0],
+      ...folderNodes.map((folder) => ({
+        kind: "folder",
+        folder: folder.index,
+        focus: folder.members.map((member) => member.sym.id),
+        via: null,
+      })),
+      ...MAP.tour.slice(1),
+    ] : MAP.tour;
+    const base = plan.map((s) => STEP_SECONDS[s.kind] || 3);
+    const fixed = plan.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
     const middle = base.reduce((sum, v) => sum + v, 0) - fixed;
     const scale = middle > 0 && fixed + middle > MAX_TOUR ? Math.max((MAX_TOUR - fixed) / middle, 0) : 1;
     let start = 0;
-    return MAP.tour.map((step, i) => {
+    return plan.map((step, i) => {
       const plain = step.kind === "overview" || step.kind === "summary";
       const duration = Math.round((plain ? base[i] : Math.max(base[i] * scale, MIN_STEP)) * 1000) / 1000;
       const focus = focusNodes(step.focus);
       const via = step.via ? symbolNode.get(step.via) : null;
       const lit = new Set(focus);
       if (via) lit.add(via);
-      if (step.kind !== "risky_file") for (const n of focus) for (const m of n.near) lit.add(m);
+      if (step.kind !== "risky_file" && step.kind !== "folder") for (const n of focus) for (const m of n.near) lit.add(m);
       const item = {
-        kind: step.kind, focus: step.focus, via: step.via, start: Math.round(start * 1000) / 1000, duration,
-        caption: describe(step, i, MAP.tour.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
+        kind: step.kind, focus: step.focus, via: step.via, folder: step.folder ?? null,
+        start: Math.round(start * 1000) / 1000, duration,
+        caption: describe(step, i, plan.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
       };
       start += duration;
       return item;
@@ -714,6 +882,13 @@
     const w = viewport.clientWidth;
     const h = viewport.clientHeight;
     const area = { x: 48, y: 32, w: Math.max(200, w - 96), h: Math.max(160, h - 32 - 176) };
+    if (step.folder !== undefined && step.folder !== null) {
+      const folder = folderByIndex.get(step.folder);
+      const box = folder
+        ? { x: folder.x - 16, y: folder.y - 16, w: folder.w + 32, h: folder.h + 32 }
+        : all;
+      return fitTo(box, area, 1.25);
+    }
     if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
     const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
     const wide = fitTo(bounds([...step.lit]), area, 1.25);
@@ -899,6 +1074,7 @@
     const key = event.key;
     if (key === "Escape") {
       if (drawerOpen()) select(null);
+      else if (grouped && expanded.size) collapseAll();
       else if (touring) exitTour();
     } else if (key === "ArrowRight" || key === " " || key === "PageDown") {
       next();

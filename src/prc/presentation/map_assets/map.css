@@ -472,6 +472,110 @@ h1 {
 .chip .name { flex: 0 1 auto; font-weight: 500; font-size: 12.5px; }
 .chip.st-deleted .name { color: var(--muted); }
 
+/* Grouped overview */
+
+.fedges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ge {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 2;
+}
+
+.ge-added { stroke: var(--green); }
+.ge-removed { stroke: var(--red); }
+
+.fcard {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 14px 10px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+}
+
+.fcard:hover { border-color: var(--border-strong); }
+.fcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.f-name {
+  font: 600 13px/1.3 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.f-counts {
+  font: 11px/1.4 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flist {
+  display: none;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+  gap: 2px;
+  overflow: auto;
+}
+
+.fcard.open {
+  justify-content: flex-start;
+  height: auto !important;
+  max-height: 360px;
+  z-index: 5;
+}
+
+.fcard.open .flist { display: grid; }
+
+.fmem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+
+.fmem:hover { background: var(--band); }
+
+.fmem-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 12px/1.35 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fmem-tag {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.world.grouped .node.concealed { opacity: 0; }
+
 .dense .sym {
   flex-direction: row;
   align-items: center;

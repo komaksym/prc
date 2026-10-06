@@ -278,12 +278,12 @@ def test_click_expands_group_in_place_and_escape_collapses(
     folder_cards(page).nth(owner).click()
 
     assert "open" in (folder_cards(page).nth(owner).get_attribute("class") or "")
-    assert page.evaluate(hidden) == "1"
+    page.wait_for_function(hidden + " === '1'")
 
     page.keyboard.press("Escape")
 
     assert "open" not in (folder_cards(page).nth(owner).get_attribute("class") or "")
-    assert page.evaluate(hidden) == "0"
+    page.wait_for_function(hidden + " === '0'")
 
 
 def test_expanding_all_groups_yields_map_json_edge_total(
