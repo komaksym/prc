@@ -67,7 +67,11 @@ def grade_question(q: dict, answer: object) -> str:
     qtype = q.get("type")
     key = q.get("key")
     if qtype == "bool":
-        return "correct" if isinstance(answer, str) and norm(answer).lower() == str(key).lower() else "wrong"
+        return (
+            "correct"
+            if isinstance(answer, str) and norm(answer).lower() == str(key).lower()
+            else "wrong"
+        )
     if qtype in {"exact", "exact_code"}:
         if not isinstance(answer, str):
             return "wrong"
@@ -92,7 +96,9 @@ def main() -> int:
         verdict = grade_question(q, by_id.get(q["id"]))
         out.append({"id": q["id"], "verdict": verdict})
         print(f"{q['id']}: {verdict}")
-    Path(sys.argv[3]).write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8") if len(sys.argv) > 3 else None
+    Path(sys.argv[3]).write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8") if len(
+        sys.argv
+    ) > 3 else None
     return 0
 
 
