@@ -146,8 +146,10 @@ what is left out.
 prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.json
 ```
 
-Add `--map <stored map.json>` when step 1 needed it. A failed check
-stops the render with exit 2 and one line per error: go back to step 5.
+Add `--map <stored map.json>` when step 1 needed it. Pass `--out` as an
+absolute path: a relative one currently crashes the renderer before the
+first frame. A failed check stops the render with exit 2 and one line per
+error: go back to step 5.
 On success the command prints the `out` folder with the 5 files:
 `map.json`, `map.html`, `board.json`, `video.mp4` and `run.json`.
 
@@ -166,10 +168,12 @@ ffmpeg -v error -y -sseof -1 -i <out>/video.mp4 -frames:v 1 -vf scale=800:-1 fra
 ```
 
 Every scene type must appear and read cleanly at 800 px: no text running
-into the captions, no clipped callouts, no overlapping boxes. Also read
-`run.json`: `layout_warnings` must be empty and the video duration must
-be within 10% of `predicted_seconds`. Fix the board for anything
-unreadable or wrong (fewer rows, shorter lines, shorter notes, a `hold`
+into the captions, no clipped callouts, no overlapping boxes. The still at
+`t = 0` is usually blank (the title fades in); judge the title from a
+later still. Also read `run.json`: `layout_warnings` must be empty and the
+video duration must be close to `predicted_seconds` (about 15% with a
+voice backend; wider gaps deserve a second render to rule out a stuck
+scene). Fix the board for anything unreadable or wrong (fewer rows, shorter lines, shorter notes, a `hold`
 for a picture that needs a beat), then repeat steps 5 to 8 until the
 frames read cleanly.
 

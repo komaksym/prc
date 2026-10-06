@@ -105,6 +105,7 @@ def test_skill_text_follows_the_nine_plan_steps() -> None:
         "prc board check",
         "prc board coverage",
         "--board",
+        "--out",
         "posted nothing",
     ):
         assert anchor in text, anchor
