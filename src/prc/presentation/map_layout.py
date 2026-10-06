@@ -14,9 +14,9 @@ from pathlib import PurePosixPath
 from typing import Literal
 
 from prc.brief import Delta, kind_of
-from prc.changemap import ChangeMap, FileNode, Symbol
+from prc.changemap import ChangeMap, EdgeStatus, FileNode, Symbol
 
-Lane = Literal["files", "callers", "changed", "callees", "tests"]
+Lane = Literal["files", "folders", "callers", "changed", "callees", "tests"]
 BoxKind = Literal["symbol", "file", "group"]
 Side = Literal["l", "r", "t"]
 Point = tuple[float, float, Literal["h", "v"]]
@@ -42,6 +42,8 @@ ROW_GAP = 8
 GROUP_H = 24
 TEST_GAP = 24
 CLEAR = 12
+GROUPED_AT = 40
+FOLDER_H = 96
 MIN_ROW_W = 3 * CARD_W + 2 * GAP_X
 SWEEPS = 4
 
@@ -73,6 +75,30 @@ class Route:
     source: str
     target: str
     points: tuple[Point, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class Folder:
+    """One grouped-overview card: a folder, or one file when its folder holds few files."""
+
+    id: str
+    label: str
+    is_dir: bool
+    members: tuple[str, ...]
+    added: int
+    modified: int
+    deleted: int
+    tests: int
+
+
+@dataclass(frozen=True, slots=True)
+class FolderEdge:
+    """Summed calls between two folders: how many member edges run from one to the other."""
+
+    source: int
+    target: int
+    count: int
+    status: EdgeStatus
 
 
 @dataclass(frozen=True, slots=True)
@@ -229,6 +255,92 @@ def _columns(
         split.extend((lane, ids[i : i + size]) for i in range(0, len(ids), size))
 
     return split
+
+
+def _folder_of(path: str) -> str:
+    return str(PurePosixPath(path).parent)
+
+
+def folders_of(change_map: ChangeMap) -> tuple[Folder, ...]:
+    """Folder cards for PRs changing more than GROUPED_AT symbols, else none.
+
+    One card per folder, or per file when a folder holds fewer than 3 changed files.
+    Members are the changed symbols; context symbols stay outside the groups.
+    Sorted by label, so the result never depends on input order.
+    """
+
+    kinds = {f.path: f.kind for f in change_map.files}
+    changed = sorted(
+        (s for s in change_map.symbols if s.status != "context"), key=lambda s: s.id
+    )
+
+    if len(changed) <= GROUPED_AT:
+        return ()
+
+    by_file: dict[str, list[Symbol]] = {}
+
+    for symbol in changed:
+        by_file.setdefault(symbol.path, []).append(symbol)
+
+    by_folder: dict[str, list[str]] = {}
+
+    for path in by_file:
+        by_folder.setdefault(_folder_of(path), []).append(path)
+
+    def make(fid: str, label: str, is_dir: bool, members: list[Symbol]) -> Folder:
+        return Folder(
+            fid,
+            label,
+            is_dir,
+            tuple(s.id for s in members),
+            sum(s.status == "added" for s in members),
+            sum(s.status == "modified" for s in members),
+            sum(s.status == "deleted" for s in members),
+            sum(kinds.get(s.path) == "test" for s in members),
+        )
+
+    folders = []
+
+    for folder in sorted(by_folder):
+        paths = sorted(by_folder[folder])
+
+        if len(paths) >= 3:
+            members = [s for path in paths for s in by_file[path]]
+            folders.append(make(f"dir:{folder}", folder, True, members))
+        else:
+            folders.extend(
+                make(f"file:{path}", path, False, by_file[path]) for path in paths
+            )
+
+    return tuple(sorted(folders, key=lambda f: f.label))
+
+
+def folder_edges(
+    change_map: ChangeMap, folders: tuple[Folder, ...]
+) -> tuple[FolderEdge, ...]:
+    """One directed edge per folder pair, counting the member calls between them."""
+
+    if not folders:
+        return ()
+
+    owner = {sid: i for i, folder in enumerate(folders) for sid in folder.members}
+    order = {"added": 0, "removed": 1, "kept": 2}
+    counts: dict[tuple[int, int], list[int]] = {}
+
+    for edge in sorted(change_map.edges, key=lambda e: (e.source, e.target)):
+        if edge.source in owner and edge.target in owner:
+            pair = (owner[edge.source], owner[edge.target])
+
+            if pair[0] != pair[1]:
+                counts.setdefault(pair, [0, 0, 0])[order[edge.status]] += 1
+
+    out = []
+
+    for (a, b), (added, removed, _kept) in sorted(counts.items()):
+        status: EdgeStatus = "added" if added else "removed" if removed else "kept"
+        out.append(FolderEdge(a, b, added + removed + _kept, status))
+
+    return tuple(out)
 
 
 def _grouped(ids: list[str], path: dict[str, str]) -> list[list[str]]:
@@ -496,23 +608,40 @@ def layout_map(change_map: ChangeMap) -> Layout:
 
     columns = _columns(change_map, lanes, neighbors)
     limit = PAD + max(MIN_ROW_W, len(columns) * (CARD_W + GAP_X) - GAP_X)
+    folders = folders_of(change_map)
+    folder_boxes = [
+        Box("group", fid, "folders", x, y, w, FOLDER_H)
+        for fid, x, y, w in _flow(
+            ((folder.id, CARD_W) for folder in folders),
+            PAD,
+            PAD + LABEL,
+            limit,
+            FOLDER_H,
+            (CHIP_GAP, CHIP_GAP),
+        )
+    ]
+    folders_bottom = max((b.y + b.h for b in folder_boxes), default=PAD)
+    chips_top = folders_bottom + LANE_GAP if folders else PAD + LABEL
     drawn = {s.path for s in change_map.symbols if s.status != "context"}
     chips = sorted(
         (f for f in change_map.files if f.path not in drawn),
         key=lambda f: (f.sensitive is None, f.path),
     )
-    boxes = [
+    boxes = folder_boxes + [
         Box("file", chip, "files", x, y, w, CHIP_H)
         for chip, x, y, w in _flow(
             ((f.path, _chip_width(f)) for f in chips),
             PAD,
-            PAD + LABEL,
+            chips_top,
             limit,
             CHIP_H,
             (CHIP_GAP, CHIP_GAP),
         )
     ]
-    files_bottom = max((b.y + b.h for b in boxes), default=PAD)
+    files_bottom = max(
+        (b.y + b.h for b in boxes if b.lane == "files"),
+        default=folders_bottom if folders else PAD,
+    )
     main_top = files_bottom + LANE_GAP if boxes else PAD + LABEL + BAND_PAD
     stacks: list[list[tuple[str, BoxKind, int]]] = []
 
@@ -582,7 +711,7 @@ def layout_map(change_map: ChangeMap) -> Layout:
     canvas_h = max((b.y + b.h for b in boxes), default=PAD) + PAD
     bands: list[Band] = []
 
-    for lane in ("files", *MAIN, "tests"):
+    for lane in ("folders", "files", *MAIN, "tests"):
         members = [b for b in boxes if b.lane == lane]
 
         if not members:

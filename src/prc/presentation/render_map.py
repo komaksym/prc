@@ -13,7 +13,15 @@ from importlib.resources import files
 
 from prc.changemap import ChangeMap
 from prc.identity import to_jsonable
-from prc.presentation.map_layout import Box, Layout, layout_map, path_data
+from prc.presentation.map_layout import (
+    Box,
+    Layout,
+    MAIN,
+    folder_edges,
+    folders_of,
+    layout_map,
+    path_data,
+)
 
 BRAND = "PR map · computed from the code, no AI drew this"
 _ASSETS = files("prc.presentation") / "map_assets"
@@ -85,11 +93,13 @@ def layout_json(change_map: ChangeMap, layout: Layout) -> str:
     for box in layout.boxes:
         if box.kind == "symbol":
             symbols[symbol_at[box.id]] = _box(box)
-        elif box.kind == "group":
+        elif box.kind == "group" and box.lane in MAIN:
             groups.append([*_box(box), symbol_at[box.id]])
-        else:
+        elif box.kind == "file":
             chips[file_at[box.id]] = _box(box)
 
+    folders = folders_of(change_map)
+    folder_box = {box.id: _box(box) for box in layout.boxes if box.lane == "folders"}
     route = {(r.source, r.target): path_data(r.points) for r in layout.routes}
 
     return json.dumps(
@@ -102,6 +112,23 @@ def layout_json(change_map: ChangeMap, layout: Layout) -> str:
             "groups": groups,
             "dense": layout.dense,
             "edges": [route.get((e.source, e.target)) for e in change_map.edges],
+            "folders": [folder_box[f.id] for f in folders],
+            "folderInfo": [
+                {
+                    "label": f.label,
+                    "is_dir": f.is_dir,
+                    "added": f.added,
+                    "modified": f.modified,
+                    "deleted": f.deleted,
+                    "tests": f.tests,
+                    "members": [symbol_at[sid] for sid in f.members],
+                }
+                for f in folders
+            ],
+            "folderEdges": [
+                [e.source, e.target, e.count, e.status]
+                for e in folder_edges(change_map, folders)
+            ],
         },
         separators=(",", ":"),
     )
