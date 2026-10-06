@@ -74,7 +74,10 @@ def scattered_map() -> ChangeMap:
         hunk = Hunk(
             1,
             1,
-            (DiffLine("-", 1, None, "    old()"), DiffLine("+", 1, None, "    new()"),),
+            (
+                DiffLine("-", 1, None, "    old()"),
+                DiffLine("+", 1, None, "    new()"),
+            ),
         )
         extra.append(
             Symbol(sid, path, qualname, "function", "modified", (1, 1), (1, 1), 1, 1, (hunk,), 0)
@@ -87,7 +90,9 @@ def scattered_map() -> ChangeMap:
     add("lonely/only.py::solo")
 
     files = base.files + tuple(
-        FileNode(path, "code", "modified", "python", None, len(ids), len(ids), (), tuple(sorted(ids)))
+        FileNode(
+            path, "code", "modified", "python", None, len(ids), len(ids), (), tuple(sorted(ids))
+        )
         for path, ids in sorted(paths.items())
     )
 
@@ -111,8 +116,8 @@ def test_small_folder_uses_one_card_per_file() -> None:
 
 
 def test_group_counts_equal_member_sums() -> None:
-    for make in (lambda: large_map(33), lambda: large_map(60)):
-        change_map = make()
+    for changed in (33, 60):
+        change_map = large_map(changed)
         by_id = {s.id: s for s in change_map.symbols}
         kinds = {f.path: f.kind for f in change_map.files}
 
@@ -138,9 +143,7 @@ def test_folder_edges_sum_member_calls() -> None:
 
     assert sum(e.count for e in edges) == len(cross)
     assert all(e.count >= 1 for e in edges)
-    assert {(e.source, e.target) for e in edges} == {
-        (owner[s], owner[t]) for s, t in cross
-    }
+    assert {(e.source, e.target) for e in edges} == {(owner[s], owner[t]) for s, t in cross}
 
 
 def test_grouped_layout_stays_well_formed_and_deterministic() -> None:
@@ -161,10 +164,7 @@ def test_grouped_layout_stays_well_formed_and_deterministic() -> None:
     for i, a in enumerate(flat):
         for b in flat[i + 1 :]:
             assert not (
-                a.x < b.x + b.w
-                and b.x < a.x + a.w
-                and a.y < b.y + b.h
-                and b.y < a.y + a.h
+                a.x < b.x + b.w and b.x < a.x + a.w and a.y < b.y + b.h and b.y < a.y + a.h
             ), (a, b)
 
     bands = {band.lane: band for band in layout.bands}
@@ -193,9 +193,17 @@ def test_grouped_layout_stays_well_formed_and_deterministic() -> None:
     assert layout_map(variant) == layout
 
 
+def layout_payload(html: str) -> Any:
+    found = re.search(r"<script>(const LAYOUT = .*?;\n)", html, re.DOTALL)
+
+    assert found is not None
+
+    return json.loads(found[1][len("const LAYOUT = ") : -2])
+
+
 def test_grouped_map_json_carries_folders_and_edges() -> None:
     html = render_map(large_map(60))
-    payload = json.loads(re.search(r"<script>(const LAYOUT = .*?;\n)", html, re.DOTALL)[1][len("const LAYOUT = ") : -2])
+    payload = layout_payload(html)
 
     assert [f["label"] for f in payload["folderInfo"]] == ["src/pkg", "tests"]
     assert len(payload["folders"]) == 2
@@ -203,9 +211,7 @@ def test_grouped_map_json_carries_folders_and_edges() -> None:
         e.count for e in folder_edges(large_map(60), folders_of(large_map(60)))
     )
 
-    small = json.loads(
-        re.search(r"<script>(const LAYOUT = .*?;\n)", render_map(shop_map()), re.DOTALL)[1][len("const LAYOUT = ") : -2]
-    )
+    small = layout_payload(render_map(shop_map()))
 
     assert small["folders"] == [] and small["folderEdges"] == [] and small["folderInfo"] == []
 
@@ -265,12 +271,12 @@ def test_click_expands_group_in_place_and_escape_collapses(
     change_map = large_map(60)
     ids = [s.id for s in change_map.symbols]
     member = next(s.id for s in change_map.symbols if s.status != "context")
-    owner = next(
-        i for i, f in enumerate(folders_of(change_map)) if member in f.members
+    owner = next(i for i, f in enumerate(folders_of(change_map)) if member in f.members)
+    hidden = (
+        "() => getComputedStyle(document.querySelector('[data-node=\"s"
+        + str(ids.index(member))
+        + "\"]')).opacity"
     )
-    hidden = "() => getComputedStyle(document.querySelector('[data-node=\"s" + str(
-        ids.index(member)
-    ) + "\"]')).opacity"
     page = open_map(change_map)
 
     assert page.evaluate(hidden) == "0"
@@ -363,8 +369,8 @@ def test_grouped_first_screen_labels_pass_ocr(
         box = folder_cards(page).nth(i).bounding_box()
 
         assert box is not None and box["height"] >= 20
-        assert 0 <= box["x"] and box["x"] + box["width"] <= VIEWPORT["width"]
-        assert 0 <= box["y"] and box["y"] + box["height"] <= VIEWPORT["height"]
+        assert box["x"] >= 0 and box["x"] + box["width"] <= VIEWPORT["width"]
+        assert box["y"] >= 0 and box["y"] + box["height"] <= VIEWPORT["height"]
 
 
 def test_board_coverage_states_changed_file_budget() -> None:

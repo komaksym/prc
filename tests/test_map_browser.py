@@ -219,6 +219,11 @@ def test_dense_map_draws_edges_only_for_the_hovered_symbol(
     assert scale(opened.page) >= 0.55
     assert {edges.nth(i).evaluate(opacity) for i in range(edges.count())} == {"0"}
 
+    cards = opened.page.locator("[data-folder]")
+
+    for i in range(cards.count()):
+        cards.nth(i).click()
+
     on_screen = opened.page.evaluate(
         """() => [...document.querySelectorAll("[data-node]")]
           .filter((n) => { const r = n.getBoundingClientRect(); return r.top > 100 && r.bottom < 800 && r.left > 0 && r.right < 1400; })
