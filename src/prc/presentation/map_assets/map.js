@@ -100,7 +100,7 @@
       .filter(Boolean);
     const folder = {
       key: `g${i}`, index: i, info, members,
-      x: box[0], y: box[1], w: box[2], h: box[3],
+      x: box[1], y: box[2], w: box[3], h: box[4],
     };
     folderNodes.push(folder);
     folderByIndex.set(i, folder);
