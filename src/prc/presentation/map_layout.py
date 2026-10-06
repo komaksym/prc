@@ -270,9 +270,7 @@ def folders_of(change_map: ChangeMap) -> tuple[Folder, ...]:
     """
 
     kinds = {f.path: f.kind for f in change_map.files}
-    changed = sorted(
-        (s for s in change_map.symbols if s.status != "context"), key=lambda s: s.id
-    )
+    changed = sorted((s for s in change_map.symbols if s.status != "context"), key=lambda s: s.id)
 
     if len(changed) <= GROUPED_AT:
         return ()
@@ -308,16 +306,12 @@ def folders_of(change_map: ChangeMap) -> tuple[Folder, ...]:
             members = [s for path in paths for s in by_file[path]]
             folders.append(make(f"dir:{folder}", folder, True, members))
         else:
-            folders.extend(
-                make(f"file:{path}", path, False, by_file[path]) for path in paths
-            )
+            folders.extend(make(f"file:{path}", path, False, by_file[path]) for path in paths)
 
     return tuple(sorted(folders, key=lambda f: f.label))
 
 
-def folder_edges(
-    change_map: ChangeMap, folders: tuple[Folder, ...]
-) -> tuple[FolderEdge, ...]:
+def folder_edges(change_map: ChangeMap, folders: tuple[Folder, ...]) -> tuple[FolderEdge, ...]:
     """One directed edge per folder pair, counting the member calls between them."""
 
     if not folders:

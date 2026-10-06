@@ -14,9 +14,9 @@ from importlib.resources import files
 from prc.changemap import ChangeMap
 from prc.identity import to_jsonable
 from prc.presentation.map_layout import (
+    MAIN,
     Box,
     Layout,
-    MAIN,
     folder_edges,
     folders_of,
     layout_map,
@@ -126,8 +126,7 @@ def layout_json(change_map: ChangeMap, layout: Layout) -> str:
                 for f in folders
             ],
             "folderEdges": [
-                [e.source, e.target, e.count, e.status]
-                for e in folder_edges(change_map, folders)
+                [e.source, e.target, e.count, e.status] for e in folder_edges(change_map, folders)
             ],
         },
         separators=(",", ":"),
