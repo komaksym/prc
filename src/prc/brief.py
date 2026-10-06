@@ -203,7 +203,9 @@ def calls_external(diff: str, head: str) -> bool:
         return True
     return bool(
         re.search(
-            r"LinkedInMDPClient\.from_env|SupabaseClient\.from_env|GoogleDocConfig\.from_env", text
+            r"LinkedInMDPClient|SupabaseClient|GoogleDocConfig|GoogleDocPublisher"
+            r"|httpx\.(AsyncClient|Client|get|post|request)|supabase|googleapis",
+            text,
         )
     )
 
