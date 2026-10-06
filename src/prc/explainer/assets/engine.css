@@ -1,16 +1,20 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0E1320; }
+html, body { background: #0E1320; }
 body { color: #ECEFF4; font-family: system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; font-variant-ligatures: none; }
 code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
-#stage { position: absolute; inset: 0; }
+body.video { width: 1920px; height: 1080px; overflow: hidden; }
+body.video .emount { width: 1920px; height: 1080px; }
+.emount { position: relative; overflow: hidden; background: #0E1320; }
+.emount .escale { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: scale(var(--k, 1)); transform-origin: top left; }
+.emount .estage { position: absolute; inset: 0; }
 .scene { position: absolute; inset: 0; opacity: 0; }
 
-#header { position: absolute; left: 64px; top: 46px; font: 500 24px ui-monospace, Menlo, monospace; color: #6B7488; z-index: 5; }
-#header b { color: #C9D1DE; font-weight: 600; }
-#cap { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); width: 1640px; text-align: center; font: 400 46px/1.28 Charter, "Iowan Old Style", Georgia, serif; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.7); z-index: 5; text-wrap: balance; }
-#cap code { font-size: 0.84em; color: #F0AC5F; }
-#foot { position: absolute; left: 64px; bottom: 34px; font: 20px ui-monospace, Menlo, monospace; color: #4F5868; z-index: 5; letter-spacing: 0.01em; }
-#bar { position: absolute; left: 0; bottom: 0; height: 6px; background: #F0AC5F; z-index: 6; }
+.emount .eheader { position: absolute; left: 64px; top: 46px; font: 500 24px ui-monospace, Menlo, monospace; color: #6B7488; z-index: 5; }
+.emount .eheader b { color: #C9D1DE; font-weight: 600; }
+.emount .ecap { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); width: 1640px; text-align: center; font: 400 46px/1.28 Charter, "Iowan Old Style", Georgia, serif; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.7); z-index: 5; text-wrap: balance; }
+.emount .ecap code { font-size: 0.84em; color: #F0AC5F; }
+.emount .efoot { position: absolute; left: 64px; bottom: 34px; font: 20px ui-monospace, Menlo, monospace; color: #4F5868; z-index: 5; letter-spacing: 0.01em; }
+.emount .ebar { position: absolute; left: 0; bottom: 0; height: 6px; background: #F0AC5F; z-index: 6; }
 
 .title-wrap { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 1560px; text-align: center; }
 .kicker { font: 650 26px system-ui; letter-spacing: 0.22em; text-transform: uppercase; color: #F0AC5F; margin-bottom: 40px; }
