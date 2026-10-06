@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import html as htmlmod
 import json
 import re
 import shutil
@@ -27,11 +26,14 @@ from prc.explainer.voice import NoneBackend
 DATA = Path(__file__).resolve().parent / "data" / "explainer"
 ENGINE_JS = Path(__file__).resolve().parents[1] / "src" / "prc" / "explainer" / "assets"
 
-def need_doc():  # type: ignore[no-untyped-def]
+
+def need_doc() -> Any:
     return pytest.importorskip("prc.explainer.doc")
 
 
-def filled(board_name: str, map_name: str, tmp_path: Path):  # type: ignore[no-untyped-def]
+def filled(
+    board_name: str, map_name: str, tmp_path: Path
+) -> tuple[dict[str, Any], dict[str, Any], float]:
     board = json.loads((DATA / "boards" / board_name).read_text())
     m = json.loads((DATA / "maps" / map_name).read_text())
     facts = verify_board(board, m)
@@ -55,7 +57,7 @@ class Doc(HTMLParser):
     """Sections, prose, links, styles and the one script of a doc.html."""
 
     def __init__(self) -> None:
-        super().__init__(convert_charrefs=False)
+        super().__init__(convert_charrefs=True)
         self.stack: list[tuple[str, dict[str, str], bool]] = []
         self.shot_depth = 0
         self.prose: list[list[str]] = []
@@ -113,14 +115,14 @@ class Doc(HTMLParser):
             self.styles.append(self.style_buf)
             self.in_style = False
         if tag == "p" and self.in_prose:
-            text = htmlmod.unescape(self.buf.strip())
+            text = self.buf.strip()
             if self.prose and len(self.prose[-1]) < 99:
                 self.prose[-1].append(text)
             else:
                 self.prose.append([text])
             self.in_prose = False
         if tag == "a" and self.in_a:
-            self.links.append((self.a_class, self.a_href, htmlmod.unescape(self.a_buf.strip())))
+            self.links.append((self.a_class, self.a_href, self.a_buf.strip()))
             self.in_a = False
         if self.stack and self.stack[-1][0] == tag:
             _, _, was_shot = self.stack.pop()
@@ -138,7 +140,7 @@ class Doc(HTMLParser):
             if self.in_a:
                 self.a_buf += data
             if data.strip():
-                self.texts.append(htmlmod.unescape(data.strip()))
+                self.texts.append(data.strip())
 
 
 def parse(html: str) -> Doc:
@@ -200,6 +202,7 @@ def test_prose_is_board_sentences(tmp_path: Path) -> None:
 
 def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
     """Every doc string is a board sentence, a fixed template, or map-verbatim."""
+    docmod = need_doc()
     board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
@@ -228,112 +231,110 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
     owner_repo = m["pr"].split("#")[0]
-    new_lines = {
+    head_lines = {
         (f["path"], line["new"])
         for f in m["files"]
         for h in f["hunks"]
         for line in h["lines"]
         if line["op"] != "-"
     }
-    old_lines = {
+    removed_lines = {
         (f["path"], line["old"])
         for f in m["files"]
         for h in f["hunks"]
         for line in h["lines"]
         if line["op"] == "-"
     }
+    # Oracle straight from board syntax: a negative ref is a removed line and
+    # must point at the base sha; anything else must point at the head sha.
+    want: dict[str, tuple[str, int]] = {}
+    for s in board["scenes"]:
+        for c in s.get("cite", []):
+            path, n = c["line"].rsplit(":", 1)
+            want[f"{path}#L{abs(int(n))}"] = (
+                m["base_sha"] if int(n) < 0 else m["head_sha"],
+                abs(int(n)),
+            )
+        for it in s.get("items", []):
+            if "cite" in it:
+                path, n = it["cite"].rsplit(":", 1)
+                want[f"{path}#L{abs(int(n))}"] = (
+                    m["base_sha"] if int(n) < 0 else m["head_sha"],
+                    abs(int(n)),
+                )
+        if s["type"] == "diff":
+            for r in s["rows"]:
+                if "text" not in r:
+                    continue
+                want[f"{s['file']}#L{r['num']}"] = (
+                    m["base_sha"] if r["op"] == "-" else m["head_sha"],
+                    r["num"],
+                )
     receipts = [link for link in doc.links if "receipt" in link[0]]
     assert receipts, "scenes with receipts must link them"
-    for _, href, _ in receipts:
-        hit = re.fullmatch(
-            r"https://github\.com/([^/]+/[^/]+)/blob/([0-9a-f]{40})/(.+)#L(\d+)", href
-        )
-        assert hit, href
-        assert hit.group(1) == owner_repo, href
-        sha, path, n = hit.group(2), hit.group(3), int(hit.group(4))
-        if (path, n) in new_lines:
-            assert sha == m["head_sha"], href
+    assert {label for _, _, label in receipts} == set(want), "one link per receipt, no extras"
+    for _, href, label in receipts:
+        sha, n = want[label]
+        path = label.split("#L")[0]
+        assert href == f"https://github.com/{owner_repo}/blob/{sha}/{path}#L{n}", href
+        if sha == m["head_sha"]:
+            assert (path, n) in head_lines, href
         else:
-            assert (path, n) in old_lines, href
-            assert sha == m["base_sha"], href
-
-
-class DomTokens(HTMLParser):
-    """Tokens per diff scene from the doc DOM: .mt spans in order, gaps kept."""
-
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self.scenes: list[list[dict[str, Any]]] = []
-        self.current: list[dict[str, Any]] | None = None
-        self.depth = 0
-        self.in_drow = False
-        self.gap = False
-        self.in_mt = False
-        self.mt_buf = ""
-        self.tokens: list[str] = []
-
-    VOID = {"br", "img", "hr", "meta", "link", "input"}
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        at = {k: v or "" for k, v in attrs}
-        cls = at.get("class", "").split()
-        if self.current is None:
-            if tag == "div" and "code" in cls:
-                self.current = []
-                self.scenes.append(self.current)
-                self.depth = 1
-            return
-        if tag not in self.VOID:
-            self.depth += 1
-        if tag == "div" and "drow" in cls:
-            self.in_drow = True
-            self.gap = "gap" in cls
-            self.tokens = []
-        if self.in_drow and tag == "span" and "mt" in cls:
-            self.in_mt = True
-            self.mt_buf = ""
-
-    def handle_endtag(self, tag: str) -> None:
-        if self.current is None:
-            return
-        if self.in_mt and tag == "span":
-            self.tokens.append(self.mt_buf)
-            self.in_mt = False
-        if self.in_drow and tag == "div":
-            self.current.append({"gap": True} if self.gap else {"tokens": self.tokens})
-            self.in_drow = False
-        self.depth -= 1
-        if self.depth <= 0:
-            self.current = None
-
-    def handle_data(self, data: str) -> None:
-        if self.in_mt:
-            self.mt_buf += data
+            assert (path, n) in removed_lines, href
 
 
 def test_doc_code_rows_join_to_the_diff(tmp_path: Path) -> None:
     """The join test on the doc DOM: rendered tokens must join to the diff lines."""
+    pytest.importorskip("playwright.sync_api")
+    docmod = need_doc()
     board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
-    html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
-    dom = DomTokens()
-    dom.feed(html)
+    docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as driver:
+        try:
+            browser = driver.chromium.launch()
+        except Exception as error:  # noqa: BLE001
+            pytest.skip(f"Chromium cannot launch here: {str(error).splitlines()[0]}")
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((tmp_path / "doc.html").as_uri())
+        page.wait_for_function("window.docReady === true", timeout=15000)
+        dom_rows = page.evaluate(
+            """() => [...document.querySelectorAll('.shot')].map(shot => {
+              const code = shot.querySelector('.diff .code');
+              if (!code) return null;
+              return [...code.querySelectorAll(':scope > .drow')].map(row => {
+                if (row.classList.contains('gap')) return {gap: true};
+                return {marker: row.querySelector('.sg').textContent,
+                        tokens: [...row.querySelectorAll('.mt')].map(el => el.textContent)};
+              });
+            })"""
+        )
+        browser.close()
     diffs = [s for s in board["scenes"] if s["type"] == "diff"]
-    assert len(dom.scenes) == len(diffs) and dom.scenes
-    for s, rows in zip(diffs, dom.scenes, strict=True):
+    got = [rows for rows in dom_rows if rows is not None]
+    assert len(got) == len(diffs) and got
+    for s, rows in zip(diffs, got, strict=True):
         code = [r for r in s["rows"] if "text" in r]
         assert len(rows) == len(s["rows"]), "gap rows stay in the DOM in order"
         frames = [
-            {"gap": True} if row.get("gap") else {
+            {"gap": True}
+            if row.get("gap")
+            else {
                 "ref": r["ref"],
-                "marker": "+" if r["op"] == "+" else "−" if r["op"] == "-" else "",
+                "marker": row["marker"],
                 "tokens": row["tokens"],
             }
             for row, r in zip(rows, s["rows"], strict=True)
         ]
         errs, rc = join_run(
-            {"file": s["file"], "cut": s["cut"], "transform": "build",
-             "refs": [r["ref"] for r in code],
-             "frames": [{"t": s["end"] - 0.5, "rows": frames}]},
+            {
+                "file": s["file"],
+                "cut": s["cut"],
+                "transform": "build",
+                "refs": [r["ref"] for r in code],
+                "frames": [{"t": s["end"] - 0.5, "rows": frames}],
+            },
             m,
             [r["ref"] for r in code],
         )
@@ -392,19 +393,30 @@ def test_null_url_header_shows_pr() -> None:
         "url": None,
     }
     header = docmod.header_html(m)
-    assert ">pr<" in header and "github.com" not in header
+    assert ">pr<" in header
+    assert "/pull/" not in header, "null url must not link anywhere"
 
 
 def test_hostile_text_cannot_break_doc(tmp_path: Path) -> None:
     board: dict[str, Any] = {
         "name": "hostile",
         "scenes": [
-            {"type": "title", "kicker": "Open pull request",
-             "say": ['A title with a quote " and </script> inside.']},
-            {"type": "outro", "l1": "First line with </script> in it.", "l2": "Second line.",
-             "say": ["Closing out."],
-             "cues": [{"at": [0, 0.0], "do": "l1"}, {"at": [0, 0.5], "do": "l2"},
-                      {"at": [0, 0.9], "do": "cmd"}]},
+            {
+                "type": "title",
+                "kicker": "Open pull request",
+                "say": ['A title with a quote " and </script> inside.'],
+            },
+            {
+                "type": "outro",
+                "l1": "First line with </script> in it.",
+                "l2": "Second line.",
+                "say": ["Closing out."],
+                "cues": [
+                    {"at": [0, 0.0], "do": "l1"},
+                    {"at": [0, 0.5], "do": "l2"},
+                    {"at": [0, 0.9], "do": "cmd"},
+                ],
+            },
         ],
     }
     m = json.loads((DATA / "maps" / "pr12.json").read_text())
@@ -426,13 +438,11 @@ def test_engine_exposes_mount() -> None:
     assert "window.BOARD" not in js, "mount takes the board as an argument now"
 
 
-needs_browser = pytest.mark.skipif(
-    shutil.which("ffmpeg") is None, reason="ffmpeg not on PATH"
-)
+needs_browser = pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg not on PATH")
 
 
 @pytest.fixture(scope="module")
-def doc_page_url(tmp_path_factory):
+def doc_page_url(tmp_path_factory: pytest.TempPathFactory) -> str:
     docmod = need_doc()
     pytest.importorskip("playwright.sync_api")
     tmp_path = tmp_path_factory.mktemp("doc")
@@ -463,7 +473,9 @@ def test_doc_loads_offline(doc_page_url: str) -> None:
             pytest.skip(f"Chromium cannot launch here: {str(error).splitlines()[0]}")
         page = browser.new_page(viewport={"width": 1280, "height": 900})
         page.route(re.compile(r"^https?://"), lambda route: route.abort())
-        page.on("request", lambda req: http_hits.append(req.url) if req.url.startswith("http") else None)
+        page.on(
+            "request", lambda req: http_hits.append(req.url) if req.url.startswith("http") else None
+        )
         failed: list[str] = []
         page.on("requestfailed", lambda req: failed.append(req.url))
         page.goto(doc_page_url)

@@ -9,7 +9,6 @@ from __future__ import annotations
 import base64
 import hashlib
 import html
-import json
 from pathlib import Path
 from typing import Any
 
@@ -57,12 +56,16 @@ def receipt_refs(scene: dict[str, Any]) -> list[tuple[str, int, bool]]:
     return refs
 
 
-def receipt_url(owner_repo: str, head_sha: str, base_sha: str, path: str, n: int, removed: bool) -> str:
+def receipt_url(
+    owner_repo: str, head_sha: str, base_sha: str, path: str, n: int, removed: bool
+) -> str:
     sha = base_sha if removed else head_sha
     return f"https://github.com/{owner_repo}/blob/{sha}/{path}#L{n}"
 
 
-def uncovered(board: dict[str, Any], m: dict[str, Any]) -> tuple[list[tuple[str, str]], list[dict[str, Any]]]:
+def uncovered(
+    board: dict[str, Any], m: dict[str, Any]
+) -> tuple[list[tuple[str, str]], list[dict[str, Any]]]:
     """Changed files and symbols the board does not show. Same rule as board coverage."""
     kinds = {f["path"]: f["kind"] for f in m["files"]}
     shown: set[tuple[str, int]] = set()
@@ -90,8 +93,13 @@ def uncovered(board: dict[str, Any], m: dict[str, Any]) -> tuple[list[tuple[str,
     on_screen = {p for p, _ in shown}
     files = sorted((p, kinds[p]) for p in kinds if p not in on_screen)
     syms = sorted(
-        (s for s in m["symbols"]
-         if s["status"] in ("added", "modified") and kinds.get(s["path"]) == "code" and not hit(s)),
+        (
+            s
+            for s in m["symbols"]
+            if s["status"] in ("added", "modified")
+            and kinds.get(s["path"]) == "code"
+            and not hit(s)
+        ),
         key=lambda s: (s["path"], s["qualname"]),
     )
     return files, syms
@@ -135,8 +143,7 @@ def _scene_section(board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str
             continue
         seen.add(href)
         items.append(
-            f'<li><a class="receipt" href="{html.escape(href)}">'
-            f"{html.escape(path)}#L{n}</a></li>"
+            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(path)}#L{n}</a></li>'
         )
     if items:
         receipts = "<h3>Receipts</h3>\n" + '<ul class="receipts">\n' + "\n".join(items) + "\n</ul>"
@@ -171,10 +178,14 @@ def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
             )
             parts.append(f"<h3>Changed symbols not shown</h3>\n<ul>\n{rows}\n</ul>")
         body = "\n".join(parts)
-    return f'<section class="not-covered" id="not-covered">\n<h2>Not covered</h2>\n{body}\n</section>'
+    return (
+        f'<section class="not-covered" id="not-covered">\n<h2>Not covered</h2>\n{body}\n</section>'
+    )
 
 
-def render_doc(board: dict[str, Any], m: dict[str, Any], out_dir: Path, duration: float, has_video: bool) -> str:
+def render_doc(
+    board: dict[str, Any], m: dict[str, Any], out_dir: Path, duration: float, has_video: bool
+) -> str:
     """Write doc.html beside video.mp4. `board` must be filled and timed (as render leaves it)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     video = (
@@ -182,9 +193,7 @@ def render_doc(board: dict[str, Any], m: dict[str, Any], out_dir: Path, duration
         if has_video
         else ""
     )
-    sections = "\n".join(
-        _scene_section(board, i, s, m) for i, s in enumerate(board["scenes"])
-    )
+    sections = "\n".join(_scene_section(board, i, s, m) for i, s in enumerate(board["scenes"]))
     script = (
         f"window.DOC = {board_json(board)};\n"
         + (ASSETS / "engine.js").read_text()
