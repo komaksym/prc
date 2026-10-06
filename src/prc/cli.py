@@ -349,7 +349,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "doctor":
-        from prc import doctor
+        from prc.explainer import doctor
 
         print(doctor.report(), end="")
 

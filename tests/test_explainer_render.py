@@ -10,8 +10,7 @@ from typing import Any
 
 import pytest
 
-from prc import doctor
-from prc.explainer import render
+from prc.explainer import doctor, render
 from prc.explainer.check import find_phrase, spoken
 from prc.explainer.timing import at as cue_at
 from prc.explainer.voice import NoneBackend, available, estimate_seconds, select
