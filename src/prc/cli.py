@@ -15,7 +15,15 @@ from prc.fixture_source import FIXTURE_EPOCH
 from prc.github_source import GitHubSource
 from prc.identity import to_jsonable
 from prc.model import PrRef
-from prc.pipeline import run_brief, run_decide, run_map, run_review, run_status
+from prc.pipeline import (
+    ExplainCheckError,
+    run_brief,
+    run_decide,
+    run_explain,
+    run_map,
+    run_review,
+    run_status,
+)
 from prc.presentation import map_video
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
 from prc.source import PullRequestSource
@@ -112,6 +120,42 @@ def build_parser() -> argparse.ArgumentParser:
     mutate.add_argument("mutation", choices=["edit-title", "rerun-check", "expire-checks"])
     mutate.add_argument("--store", type=Path, default=Path("artifacts/store"))
 
+    explain = sub.add_parser("explain", help="render a narrated explainer video for a PR")
+    explain.add_argument("--source", required=True)
+    explain.add_argument("--store", type=Path, default=Path("artifacts/store"))
+    explain.add_argument("--clock-offset", type=float, default=0.0, help="fixture clock only")
+    explain.add_argument("--map", type=Path, default=None, help="stored map.json to render from")
+    explain.add_argument("--board", type=Path, default=None, help="checked board.json to render")
+    explain.add_argument("--out", type=Path, default=Path("artifacts/explain"))
+    explain.add_argument(
+        "--voice",
+        default="auto",
+        choices=["auto", "kokoro", "say", "none"],
+        help="narration backend; auto is the first one that works",
+    )
+
+    board = sub.add_parser("board", help="board tools for the story a video tells")
+    board_sub = board.add_subparsers(dest="board_command", required=True)
+    board_sub.add_parser("guide", help="print the board-writing guide")
+    board_cmds = {}
+    for name in ("show", "find", "coverage", "check"):
+        cmd = board_sub.add_parser(name)
+        cmd.add_argument("--source", default=None)
+        cmd.add_argument("--map", type=Path, default=None)
+        cmd.add_argument("--store", type=Path, default=Path("artifacts/store"))
+        cmd.add_argument("--clock-offset", type=float, default=0.0, help="fixture clock only")
+        board_cmds[name] = cmd
+
+    board_cmds["show"].add_argument(
+        "paths", nargs="*", help="only files with one of these in the path"
+    )
+    board_cmds["find"].add_argument("needles", nargs="+")
+    board_cmds["find"].add_argument("--path", default=None, help="only files with this in the path")
+    board_cmds["coverage"].add_argument("board", type=Path)
+    board_cmds["check"].add_argument("board", type=Path)
+
+    sub.add_parser("doctor", help="check the tools explain needs")
+
     analyze = sub.add_parser("eval-analyze", help="analyze recorded pilot pair outcomes")
     analyze.add_argument("results", type=Path)
 
@@ -135,12 +179,24 @@ def main(argv: list[str] | None = None) -> int:
 
         return 0
 
-    if args.required_check is not None:
-        policy = EligibilityPolicy(required_names=tuple(args.required_check))
-    elif not args.source.startswith("fixture:"):
-        policy = EligibilityPolicy(required_names=())
+    required = getattr(args, "required_check", None)
+    has_source = getattr(args, "source", None)
 
-    source, ref = _resolve(args.source, args.store)
+    if required is not None:
+        policy = EligibilityPolicy(required_names=tuple(required))
+    elif has_source is not None and not has_source.startswith("fixture:"):
+        policy = EligibilityPolicy(required_names=())
+    else:
+        policy = EligibilityPolicy()
+
+    resolved: tuple[PullRequestSource, PrRef] | None = (
+        _resolve(has_source, args.store)
+        if args.command in ("review", "status", "decide", "brief", "map") and has_source
+        else None
+    )
+
+    if resolved is not None:
+        source, ref = resolved
 
     if args.command == "brief":
         brief = run_brief(source, ref, _clock(args.source, args.clock_offset), policy, args.out)
@@ -198,6 +254,104 @@ def main(argv: list[str] | None = None) -> int:
                 indent=2,
             )
         )
+
+        return 0
+
+    if args.command == "explain":
+        from prc.explainer.render import RenderError
+        from prc.explainer.voice import VoiceError
+
+        source, ref = _resolve(args.source, args.store)
+
+        try:
+            explained = run_explain(
+                source,
+                ref,
+                _clock(args.source, args.clock_offset),
+                policy,
+                args.out,
+                board_path=args.board,
+                map_path=args.map,
+                voice=args.voice,
+            )
+        except ExplainCheckError as error:
+            print(str(error), file=sys.stderr)
+
+            return 2
+        except (RenderError, VoiceError) as error:
+            raise SystemExit(f"prc explain: {error}") from error
+
+        print(
+            json.dumps(
+                {
+                    "source": source.label,
+                    "out": str(explained.out_dir),
+                    "map": str(explained.map_json),
+                    "board": str(explained.board_json) if explained.board_json else None,
+                    "video": str(explained.video) if explained.video else None,
+                    "duration": explained.duration,
+                    "estimate": explained.estimate,
+                    "check_passed": explained.check_passed,
+                },
+                indent=2,
+            )
+        )
+
+        return 0
+
+    if args.command == "board":
+        from prc.explainer import boards
+        from prc.pipeline import load_map_dict
+
+        if args.board_command == "guide":
+            print(boards.guide(), end="")
+
+            return 0
+
+        if args.map is not None:
+            used = json.loads(args.map.read_text())
+        elif args.source:
+            source, ref = _resolve(args.source, args.store)
+            used, _, _, _ = load_map_dict(
+                source, ref, _clock(args.source, args.clock_offset), policy, None
+            )
+        else:
+            raise SystemExit(f"prc board {args.board_command} needs --source or --map")
+
+        if args.board_command == "show":
+            print(boards.show(used, args.paths), end="")
+
+            return 0
+
+        if args.board_command == "find":
+            print(boards.find(used, args.needles, args.path), end="")
+
+            return 0
+
+        board_doc = json.loads(args.board.read_text())
+
+        if args.board_command == "coverage":
+            print(boards.coverage(board_doc, used), end="")
+
+            return 0
+
+        from prc.explainer.check import verify_board
+
+        try:
+            facts = verify_board(board_doc, used)
+        except SystemExit as error:
+            print(str(error), file=sys.stderr)
+
+            return 2
+
+        print(f"{facts['receipts']} receipts verified")
+
+        return 0
+
+    if args.command == "doctor":
+        from prc import doctor
+
+        print(doctor.report(), end="")
 
         return 0
 

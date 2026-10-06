@@ -13,6 +13,12 @@ from prc.brief import Brief, build_brief
 from prc.capture import Clock, capture_bundle
 from prc.changemap import ChangeMap, build_change_map
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
+from prc.explainer import render as explain_render
+from prc.explainer.check import verify_board
+from prc.explainer.timing import estimate as estimate_seconds
+from prc.explainer.timing import predict as predict_seconds
+from prc.explainer.voice import Backend
+from prc.explainer.voice import select as select_voice
 from prc.freshness import FreshnessReport, StoredBasis, reconcile
 from prc.gitutil import list_paths
 from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_hex, to_jsonable
@@ -316,3 +322,146 @@ def run_decide(
     )
 
     return decision_id, report
+
+
+class ExplainCheckError(RuntimeError):
+    """A board that failed the checker, one line per error."""
+
+
+@dataclass(frozen=True, slots=True)
+class ExplainResult:
+    out_dir: Path
+    map_json: Path
+    map_html: Path
+    board_json: Path | None
+    video: Path | None
+    run_json: Path
+    duration: float
+    estimate: float
+    check_passed: bool
+
+
+def _live_map_dict(
+    source: PullRequestSource, ref: PrRef, clock: Clock, policy: EligibilityPolicy
+) -> tuple[dict[str, object], ChangeMap, Path]:
+    acquisition, repo, brief = _acquire_brief(source, ref, clock, policy)
+    url = f"https://github.com/{ref.owner}/{ref.repo}/pull/{ref.number}"
+    change_map = dataclasses.replace(
+        build_change_map(acquisition, repo, brief), url=url if source.live_verified else None
+    )
+
+    return to_jsonable(change_map), change_map, repo
+
+
+def explain_slug(ref: PrRef, head_sha: str) -> str:
+    """One output folder per head: files from an older head never mix with a newer one."""
+    return f"{ref.owner}-{ref.repo}-{ref.number}-{head_sha[:12]}"
+
+
+def load_map_dict(
+    source: PullRequestSource,
+    ref: PrRef,
+    clock: Clock,
+    policy: EligibilityPolicy,
+    map_path: Path | None = None,
+) -> tuple[dict[str, object], dict[str, object], ChangeMap, Path]:
+    """The map a board reads: the stored one when its head differs from live, else live."""
+    live_dict, change_map, repo = _live_map_dict(source, ref, clock, policy)
+    if map_path is None:
+        return live_dict, live_dict, change_map, repo
+    stored = json.loads(map_path.read_text())
+    if stored["head_sha"] != live_dict["head_sha"]:
+        return stored, live_dict, change_map, repo
+    return live_dict, live_dict, change_map, repo
+
+
+def run_explain(
+    source: PullRequestSource,
+    ref: PrRef,
+    clock: Clock,
+    policy: EligibilityPolicy,
+    out_root: Path,
+    board_path: Path | None = None,
+    map_path: Path | None = None,
+    voice: str = "auto",
+    git_dir: str | None = None,
+) -> ExplainResult:
+    used, live_dict, change_map, repo = load_map_dict(source, ref, clock, policy, map_path)
+    map_source = "stored" if used is not live_dict else "live"
+    stored_head = used["head_sha"]
+
+    backend: Backend = select_voice(voice)
+    slug = explain_slug(ref, str(used["head_sha"]))
+    out_dir = out_root / slug
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "map.json").write_text(json.dumps(used, indent=2, sort_keys=True))
+    (out_dir / "map.html").write_text(render_map(change_map))
+
+    check_passed, board_out, video, duration, estimate, predicted, warnings = (
+        False,
+        None,
+        None,
+        0.0,
+        0.0,
+        0.0,
+        [],
+    )
+    check_detail: dict[str, object] = {"passed": False, "board": None}
+    if board_path is not None:
+        board = json.loads(board_path.read_text())
+        try:
+            facts = verify_board(board, used)
+        except SystemExit as error:
+            raise ExplainCheckError(str(error)) from error
+        check_passed = True
+        check_detail = {
+            "passed": True,
+            "receipts": facts["receipts"],
+            "covered": facts["covered"],
+            "changed": facts["changed"],
+            "tests_added": facts["tests_added"],
+        }
+        estimate = estimate_seconds(board)
+        board_out = out_dir / "board.json"
+        board_out.write_text(json.dumps(board, indent=2, sort_keys=True))
+        rendered = explain_render.render(
+            board,
+            used,
+            facts,
+            out_dir,
+            backend,
+            git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
+        )
+        duration, warnings = rendered.duration, rendered.layout_warnings
+        video = out_dir / "video.mp4"
+        predicted = predict_seconds(board, backend)
+
+    run = {
+        "source": source.label,
+        "pr": used["pr"],
+        "live_head_sha": live_dict["head_sha"],
+        "stored_head_sha": stored_head,
+        "map_source": map_source,
+        "board": str(board_path) if board_path else None,
+        "check": check_detail,
+        "voice": backend.name,
+        "estimate_seconds": round(estimate, 2),
+        "predicted_seconds": round(predicted, 2),
+        "duration_seconds": round(duration, 2),
+        "fps": explain_render.FPS,
+        "layout_warnings": warnings,
+    }
+    run_json = out_dir / "run.json"
+    run_json.write_text(json.dumps(run, indent=2, sort_keys=True))
+
+    return ExplainResult(
+        out_dir,
+        out_dir / "map.json",
+        out_dir / "map.html",
+        board_out,
+        video,
+        run_json,
+        duration,
+        estimate,
+        check_passed,
+    )
