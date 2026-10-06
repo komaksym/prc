@@ -487,6 +487,27 @@ def test_doc_loads_offline(doc_page_url: str) -> None:
 
 
 @needs_browser
+def test_doc_scenes_stack_in_flow(doc_page_url: str) -> None:
+    """Engine `.scene` is absolute inside the stage; doc sections must stay in flow."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as driver:
+        try:
+            browser = driver.chromium.launch()
+        except Exception as error:  # noqa: BLE001
+            pytest.skip(f"Chromium cannot launch here: {str(error).splitlines()[0]}")
+        page = browser.new_page(viewport={"width": 1280, "height": 900})
+        page.goto(doc_page_url)
+        page.wait_for_function("window.docReady === true", timeout=15000)
+        tops = page.evaluate(
+            "[...document.querySelectorAll('section.scene')].map(s => s.offsetTop)"
+        )
+        browser.close()
+    assert len(tops) > 1
+    assert len(set(tops)) == len(tops) == len(sorted(tops)), tops
+
+
+@needs_browser
 def test_doc_fits_a_phone(doc_page_url: str) -> None:
     from playwright.sync_api import sync_playwright
 
