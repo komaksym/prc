@@ -1,5 +1,4 @@
 (() => {
-  const B = window.BOARD;
   const W = 1920, H = 1080;
   const C = { blue: '#58C4DD', green: '#83C167', red: '#FC6255', gold: '#F0AC5F', grey: '#8A93A6', text: '#ECEFF4', dim: '#5B6475', bg: '#0E1320' };
   const STATUS = { modified: C.blue, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
@@ -527,7 +526,7 @@
     let FS = Math.min(40, widthBound);
     while (FS > 22 && topAt(tallAt(FS)) + tallAt(FS) > 862) FS -= 1;
     FS = Math.max(22, FS);
-    if (FS < 28) window.lint.push(`scene ${s.i}: diff font ${FS} px is small at GitHub width; show fewer or shorter lines`);
+    if (FS < 28 && window.lint) window.lint.push(`scene ${s.i}: diff font ${FS} px is small at GitHub width; show fewer or shorter lines`);
     const RH = rowH(FS);
     const digits = Math.max(1, ...s.rows.filter(r => r.num != null).map(r => String(r.num).length));
     const rows = s.rows.map((r, k) => {
@@ -611,47 +610,62 @@
     };
   };
 
-  const stage = document.getElementById('stage');
-  const cap = document.getElementById('cap'), foot = document.getElementById('foot'), bar = document.getElementById('bar');
-  document.getElementById('header').innerHTML = B.header;
-  const scenes = B.scenes.map(s => { const root = D('scene', null, stage); return { s, root, update: MAKERS[s.type](s, root) }; });
-  const sentences = B.scenes.flatMap(s => (s.nocap ? [] : s.sentences));
-  let lastCap, lastFoot;
+  // One mount draws a 1920x1080 stage inside root. sceneIndex null draws the
+  // whole board (the video); a scene number draws one scene, which the doc
+  // freezes with seek(scene.end - 0.5). The stage scales to its container
+  // with CSS transform: scale(var(--k)).
+  function mount(root, board, sceneIndex) {
+    const B = board;
+    const stage = D('estage', null, root);
+    D('eheader', B.header, root);
+    const cap = D('ecap', null, root), foot = D('efoot', null, root), bar = D('ebar', null, root);
+    if (sceneIndex == null) window.lint = [];
+    const scenes = B.scenes
+      .map((s, idx) => ({ s, idx }))
+      .filter(x => sceneIndex == null || x.idx === sceneIndex)
+      .map(x => { const r = D('scene', null, stage); return { s: x.s, root: r, update: MAKERS[x.s.type](x.s, r) }; });
+    const sentences = scenes.flatMap(sc => (sc.s.nocap ? [] : sc.s.sentences));
+    let lastCap, lastFoot;
 
-  window.seek = t => {
-    scenes.forEach(sc => {
-      const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, sc.s.end - 0.35, 0.35));
-      sc.root.style.opacity = o;
-      sc.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
-      if (o > 0.001) sc.update(t);
-    });
-    const cur = sentences.find(x => t >= x.start - 0.15 && t < x.start + x.dur + 0.25);
-    if (cur !== lastCap) { cap.innerHTML = cur ? fmt(cur.text).replace(/(\S+-\S+)/g, '<span style="white-space:nowrap">$1</span>') : ''; lastCap = cur; }
-    cap.style.opacity = cur ? Math.min(prog(t, cur.start - 0.15, 0.15), 1 - prog(t, cur.start + cur.dur + 0.1, 0.15)) : 0;
-    const sc = scenes.find(x => t >= x.s.start && t < x.s.end);
-    const f = sc ? sc.s.footer || '' : '';
-    if (f !== lastFoot) { foot.textContent = f; lastFoot = f; }
-    foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, sc.s.end - 0.35, 0.35)) : 0;
-    bar.style.width = `${(t / B.duration) * 100}%`;
-  };
-  // Layout lint: sample each scene after every cue and at its end, and report boxes that leave the safe frame.
-  const SAFE = { left: 30, top: 96, right: W - 30, bottom: 862 };
-  window.lint = [];
-  scenes.forEach(({ s, root, update }) => {
-    root.style.visibility = 'visible';
-    const times = (s.cues || []).map(c => c.t + 0.8).concat([s.end - 0.4]);
-    times.forEach(t => {
-      update(t);
-      root.querySelectorAll('.grp,.pill:not(.fly),.gnote,.gmark,.code,.dnote,.item,.item .c,.brow,.stat,.rc .rows').forEach(el => {
-        if (parseFloat(getComputedStyle(el).opacity) < 0.05) return;
-        const r = el.getBoundingClientRect();
-        const edge = r.bottom > SAFE.bottom ? `bottom ${Math.round(r.bottom)}px (captions start at ${SAFE.bottom})` : r.right > SAFE.right ? `right edge ${Math.round(r.right)}px` : r.left < SAFE.left ? `left edge ${Math.round(r.left)}px` : r.top < SAFE.top ? `top ${Math.round(r.top)}px` : null;
-        const msg = edge && `scene ${s.i}: ${el.className.split(' ')[0]} "${el.textContent.trim().slice(0, 32)}" leaves the frame at the ${edge}`;
-        if (msg && !window.lint.includes(msg)) window.lint.push(msg);
+    const seek = t => {
+      scenes.forEach(sc => {
+        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, sc.s.end - 0.35, 0.35));
+        sc.root.style.opacity = o;
+        sc.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+        if (o > 0.001) sc.update(t);
       });
-    });
-  });
-  window.prcTour = { duration: B.duration, seek: window.seek };
-  window.seek(0);
-  window.ready = true;
+      const cur = sentences.find(x => t >= x.start - 0.15 && t < x.start + x.dur + 0.25);
+      if (cur !== lastCap) { cap.innerHTML = cur ? fmt(cur.text).replace(/(\S+-\S+)/g, '<span style="white-space:nowrap">$1</span>') : ''; lastCap = cur; }
+      cap.style.opacity = cur ? Math.min(prog(t, cur.start - 0.15, 0.15), 1 - prog(t, cur.start + cur.dur + 0.1, 0.15)) : 0;
+      const sc = scenes.find(x => t >= x.s.start && t < x.s.end);
+      const f = sc ? sc.s.footer || '' : '';
+      if (f !== lastFoot) { foot.textContent = f; lastFoot = f; }
+      foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, sc.s.end - 0.35, 0.35)) : 0;
+      bar.style.width = `${(t / B.duration) * 100}%`;
+    };
+    if (sceneIndex == null) {
+      // Layout lint: sample each scene after every cue and at its end, and report boxes that leave the safe frame.
+      const SAFE = { left: 30, top: 96, right: W - 30, bottom: 862 };
+      scenes.forEach(({ s, root, update }) => {
+        root.style.visibility = 'visible';
+        const times = (s.cues || []).map(c => c.t + 0.8).concat([s.end - 0.4]);
+        times.forEach(t => {
+          update(t);
+          root.querySelectorAll('.grp,.pill:not(.fly),.gnote,.gmark,.code,.dnote,.item,.item .c,.brow,.stat,.rc .rows').forEach(el => {
+            if (parseFloat(getComputedStyle(el).opacity) < 0.05) return;
+            const r = el.getBoundingClientRect();
+            const edge = r.bottom > SAFE.bottom ? `bottom ${Math.round(r.bottom)}px (captions start at ${SAFE.bottom})` : r.right > SAFE.right ? `right edge ${Math.round(r.right)}px` : r.left < SAFE.left ? `left edge ${Math.round(r.left)}px` : r.top < SAFE.top ? `top ${Math.round(r.top)}px` : null;
+            const msg = edge && `scene ${s.i}: ${el.className.split(' ')[0]} "${el.textContent.trim().slice(0, 32)}" leaves the frame at the ${edge}`;
+            if (msg && !window.lint.includes(msg)) window.lint.push(msg);
+          });
+        });
+      });
+      window.seek = seek;
+      window.prcTour = { duration: B.duration, seek };
+      seek(0);
+      window.ready = true;
+    }
+    return seek;
+  }
+  window.prcMount = mount;
 })();

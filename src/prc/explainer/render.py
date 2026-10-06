@@ -22,8 +22,9 @@ ASSETS = Path(__file__).resolve().parent / "assets"
 FPS = 30
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head>
-<body><div id="stage"></div><div id="header"></div><div id="cap"></div><div id="foot"></div><div id="bar"></div>
-<script>window.BOARD = {board};</script><script>{js}</script></body></html>"""
+<body class="video"><div id="app" class="emount"><div class="escale" id="scale"></div></div>
+<script>window.BOARD = {board};</script><script>{js}
+prcMount(document.getElementById('scale'), window.BOARD, null);</script></body></html>"""
 
 
 class RenderError(RuntimeError):

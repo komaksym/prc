@@ -289,6 +289,7 @@ def main(argv: list[str] | None = None) -> int:
                     "map": str(explained.map_json),
                     "board": str(explained.board_json) if explained.board_json else None,
                     "video": str(explained.video) if explained.video else None,
+                    "doc": str(explained.doc_html) if explained.doc_html else None,
                     "duration": explained.duration,
                     "estimate": explained.estimate,
                     "check_passed": explained.check_passed,
