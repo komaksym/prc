@@ -1,0 +1,29 @@
+body.doc { margin: 0 auto; max-width: 1060px; padding: 34px 22px 90px; line-height: 1.55; }
+body.doc a { color: #58C4DD; }
+body.doc code { overflow-wrap: anywhere; }
+body.doc pre { overflow-x: auto; max-width: 100%; }
+.doc-head .kicker { font: 650 15px system-ui; letter-spacing: 0.22em; text-transform: uppercase; color: #F0AC5F; margin-bottom: 14px; }
+.doc-head h1 { font: 400 40px/1.25 Charter, "Iowan Old Style", Georgia, serif; color: #fff; overflow-wrap: break-word; margin-bottom: 14px; }
+.doc-head .meta { font: 16px ui-monospace, Menlo, monospace; color: #8A93A6; margin: 6px 0; overflow-wrap: anywhere; }
+.doc-head .meta .lbl { display: inline-block; min-width: 64px; font: 700 12px system-ui; letter-spacing: 0.14em; text-transform: uppercase; color: #5B6475; }
+.video { margin: 22px 0 0; }
+.video a { display: inline-block; padding: 12px 22px; border: 2px solid #2A3348; border-radius: 12px; background: #121828; font: 600 17px system-ui; text-decoration: none; }
+.scene { margin-top: 54px; border-top: 1px solid #1F2738; padding-top: 26px; }
+.scene h2, .not-covered h2 { font: 700 14px system-ui; letter-spacing: 0.14em; text-transform: uppercase; color: #8A93A6; margin-bottom: 14px; }
+.scene h3, .not-covered h3 { font: 700 13px system-ui; letter-spacing: 0.12em; text-transform: uppercase; color: #5B6475; margin: 20px 0 8px; }
+.prose { font: 400 20px/1.6 Charter, "Iowan Old Style", Georgia, serif; color: #ECEFF4; max-width: 68ch; margin: 8px 0; }
+.shot { width: 100%; margin: 22px 0; border: 1px solid #1F2738; border-radius: 14px; }
+.shot .efoot, .shot .ebar { display: none; }
+.receipts { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font: 15px ui-monospace, Menlo, monospace; }
+.receipts a { overflow-wrap: anywhere; }
+.not-covered { margin-top: 54px; border-top: 1px solid #1F2738; padding-top: 26px; }
+.not-covered ul { margin: 0; padding-left: 22px; font: 16px ui-monospace, Menlo, monospace; }
+.not-covered li { margin: 5px 0; overflow-wrap: anywhere; }
+.not-covered li span { color: #5B6475; }
+.not-covered p { font-size: 17px; }
+body.doc footer { margin-top: 60px; border-top: 1px solid #1F2738; padding-top: 20px; font: 14px ui-monospace, Menlo, monospace; color: #5B6475; overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  body.doc { padding: 22px 14px 70px; }
+  .doc-head h1 { font-size: 29px; }
+  .prose { font-size: 18px; }
+}
