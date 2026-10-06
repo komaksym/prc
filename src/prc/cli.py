@@ -126,13 +126,19 @@ def build_parser() -> argparse.ArgumentParser:
     explain.add_argument("--clock-offset", type=float, default=0.0, help="fixture clock only")
     explain.add_argument("--map", type=Path, default=None, help="stored map.json to render from")
     explain.add_argument("--board", type=Path, default=None, help="checked board.json to render")
-    explain.add_argument("--out", type=Path, default=Path("artifacts/explain"))
+    explain.add_argument(
+        "--git-dir",
+        type=Path,
+        default=None,
+        help="bare git cache for highlighting when rendering from --map offline",
+    )
     explain.add_argument(
         "--voice",
         default="auto",
         choices=["auto", "kokoro", "say", "none"],
         help="narration backend; auto is the first one that works",
     )
+    explain.add_argument("--out", type=Path, default=Path("artifacts/explain"))
 
     board = sub.add_parser("board", help="board tools for the story a video tells")
     board_sub = board.add_subparsers(dest="board_command", required=True)
@@ -285,6 +291,7 @@ def main(argv: list[str] | None = None) -> int:
                 board_path=args.board,
                 map_path=args.map,
                 voice=args.voice,
+                git_dir=str(args.git_dir) if args.git_dir else None,
             )
         except ExplainCheckError as error:
             print(str(error), file=sys.stderr)

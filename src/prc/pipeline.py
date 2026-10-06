@@ -368,6 +368,81 @@ def explain_slug(ref: PrRef, head_sha: str) -> str:
     return f"{ref.owner}-{ref.repo}-{ref.number}-{head_sha[:12]}"
 
 
+def _change_map_from_stored(stored: dict[str, object]) -> ChangeMap:
+    """Rebuild render inputs from a stored map.json. No network, no acquisition."""
+    from typing import Any, cast
+
+    from prc.brief import Brief, Check, FileChange, Mismatch, Pointer
+    from prc.changemap import ChangeMap, DiffLine, Edge, FileNode, Hunk, Step, Symbol
+
+    raw_brief = cast(dict[str, Any], stored["brief"])
+    brief = Brief(
+        pr=str(raw_brief["pr"]),
+        title=str(raw_brief["title"]),
+        head_sha=str(raw_brief["head_sha"]),
+        files=tuple(FileChange(**f) for f in raw_brief["files"]),
+        checks=tuple(Check(**c) for c in raw_brief["checks"]),
+        mismatches=tuple(Mismatch(**mm) for mm in raw_brief["mismatches"]),
+        look_first=tuple(Pointer(**p) for p in raw_brief["look_first"]),
+    )
+
+    def hunks(raw: Any) -> Any:
+        return tuple(
+            Hunk(h["old_start"], h["new_start"], tuple(DiffLine(**ln) for ln in h["lines"]))
+            for h in raw
+        )
+
+    raw_files = cast(list[Any], stored["files"])
+    files = tuple(
+        FileNode(
+            f["path"],
+            f["kind"],
+            f["status"],
+            f["language"],
+            f["sensitive"],
+            f["added"],
+            f["removed"],
+            hunks(f["hunks"]),
+            tuple(f["symbols"]),
+        )
+        for f in raw_files
+    )
+    raw_symbols = cast(list[Any], stored["symbols"])
+    symbols = tuple(
+        Symbol(
+            s["id"],
+            s["path"],
+            s["qualname"],
+            s["kind"],
+            s["status"],
+            tuple(s["span"]) if s["span"] else None,
+            tuple(s["base_span"]) if s["base_span"] else None,
+            s["added"],
+            s["removed"],
+            hunks(s["hunks"]),
+            s["call_sites"],
+        )
+        for s in raw_symbols
+    )
+    raw_edges = cast(list[Any], stored["edges"])
+    edges = tuple(Edge(**e) for e in raw_edges)
+    raw_tour = cast(list[Any], stored["tour"])
+    tour = tuple(Step(s["kind"], tuple(s["focus"]), s["via"]) for s in raw_tour)
+    return ChangeMap(
+        pr=str(stored["pr"]),
+        url=cast(Any, stored.get("url")),
+        title=str(stored["title"]),
+        author=str(stored["author"]),
+        base_sha=str(stored["base_sha"]),
+        head_sha=str(stored["head_sha"]),
+        brief=brief,
+        files=files,
+        symbols=symbols,
+        edges=edges,
+        tour=tour,
+    )
+
+
 def load_map_dict(
     source: PullRequestSource,
     ref: PrRef,
@@ -375,13 +450,15 @@ def load_map_dict(
     policy: EligibilityPolicy,
     map_path: Path | None = None,
 ) -> tuple[dict[str, object], dict[str, object], ChangeMap, Path]:
-    """The map a board reads: the stored one when its head differs from live, else live."""
+    """The map a board reads: the stored one when given, else live."""
+    if map_path is not None:
+        stored = json.loads(map_path.read_text())
+        change_map = _change_map_from_stored(stored)
+        repo = Path(f"prototypes/mdp/store/git-cache/{ref.owner}__{ref.repo}__{ref.number}.git")
+        if not repo.exists():
+            repo = Path(".")
+        return stored, stored, change_map, repo
     live_dict, change_map, repo = _live_map_dict(source, ref, clock, policy)
-    if map_path is None:
-        return live_dict, live_dict, change_map, repo
-    stored = json.loads(map_path.read_text())
-    if stored["head_sha"] != live_dict["head_sha"]:
-        return stored, live_dict, change_map, repo
     return live_dict, live_dict, change_map, repo
 
 
