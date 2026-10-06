@@ -122,9 +122,14 @@ def test_doctor_reports_each_dependency_with_ok_or_missing() -> None:
         assert "ok" in line or "missing" in line or "set" in line or "unset" in line, line
 
 
-def test_doctor_missing_tools_name_the_install_command() -> None:
-    assert "brew install ffmpeg" in doctor.report()
-    assert "playwright install chromium" in doctor.report()
+def test_doctor_missing_tools_name_the_install_command(monkeypatch: pytest.MonkeyPatch) -> None:
+    import shutil
+
+    monkeypatch.setattr(shutil, "which", lambda _name: None)
+    assert "brew install ffmpeg" in doctor._ffmpeg()
+
+    monkeypatch.setitem(sys.modules, "playwright.sync_api", None)
+    assert "playwright install chromium" in doctor._chromium()
 
 
 def test_doctor_never_prints_the_token(monkeypatch: pytest.MonkeyPatch) -> None:

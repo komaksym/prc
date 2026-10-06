@@ -154,6 +154,18 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmds["coverage"].add_argument("board", type=Path)
     board_cmds["check"].add_argument("board", type=Path)
 
+    skill = sub.add_parser("skill", help="install the board-writer skill for your agent")
+    skill_sub = skill.add_subparsers(dest="skill_command", required=True)
+    install = skill_sub.add_parser("install", help="install the prc-explain skill")
+    install.add_argument("agent", choices=["claude", "codex"])
+    install.add_argument(
+        "--dest",
+        type=Path,
+        default=None,
+        help="folder to install into (default ~/.claude/skills for claude, "
+        "the current folder's AGENTS.md for codex; asks before touching it)",
+    )
+
     sub.add_parser("doctor", help="check the tools explain needs")
 
     analyze = sub.add_parser("eval-analyze", help="analyze recorded pilot pair outcomes")
@@ -355,6 +367,33 @@ def main(argv: list[str] | None = None) -> int:
         print(doctor.report(), end="")
 
         return 0
+
+    if args.command == "skill":
+        from prc import skill as skill_pkg
+
+        if args.skill_command == "install":
+            dest = args.dest
+            if dest is None:
+                dest = skill_pkg.default_dest(args.agent)
+                print(
+                    f"prc skill install {args.agent} defaults to {dest}. "
+                    "That is your own configuration.",
+                    file=sys.stderr,
+                )
+                try:
+                    answer = input(f"Install into {dest} anyway? [y/N] ")
+                except EOFError:
+                    answer = "no"
+                if answer.strip().lower() not in ("y", "yes"):
+                    print("aborted: nothing written. Re-run with --dest DIR.", file=sys.stderr)
+
+                    return 2
+            written = skill_pkg.install(args.agent, dest)
+            print(str(written))
+
+            return 0
+
+        raise SystemExit(f"unknown skill command {args.skill_command!r}")
 
     store = Store(args.store / "prc.sqlite")
     clock = _clock(args.source, args.clock_offset)
