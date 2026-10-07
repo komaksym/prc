@@ -1,0 +1,40 @@
+{
+  "pr": 13,
+  "findings": [
+    {
+      "code": "src/linkedin_mdp_mcp/dm_actions.py:505-506 — `blocking = any(item.occurred_at is None or item.occurred_at >= latest_out.occurred_at for item in unknown)`; only unknown/ambiguous evidence new enough to change the decision blocks, older anonymous evidence allows the follow-up (E2E verdicts older_anonymous_observation_allows_due_followup / allows_verified_reply pass)",
+      "output": "board spoken text scene 2/3 + doc.html scene 3 groups",
+      "statement": "Ambiguous history withholds the action."
+    },
+    {
+      "code": "src/linkedin_mdp_mcp/dm_actions.py:501 and :506 — explicit time-scoped blocking rule for uncertain rows, plus tests/e2e_dm_uncertainty_scope.py 6 dedicated anonymous-timing scenarios",
+      "output": "board spoken text scene 1 + doc.html scene 2 groups",
+      "statement": "Anonymous rows nearby have no clear decision rule."
+    },
+    {
+      "code": "src/linkedin_mdp_mcp/dm_actions.py:430 — `def plan_dm_actions(` carries the reply/follow-up/first-DM planning logic (ground-truth reviewer start point); comment steers only to CLI scaffolding",
+      "output": "comment.md Look here first",
+      "statement": "Look here first: `main`, `_Parser`, `_read` in `scripts/build_private_dm_actions.py` (omits plan_dm_actions, the function carrying the change)."
+    }
+  ],
+  "verdicts": [
+    {
+      "statement": "Recent ambiguous history withholds the action, and the owner still writes every word.",
+      "output": "board.json scene 2 (i=2) and scene 3 (i=3), say — also doc.html Scenes 3-4 of 7",
+      "verdict": "rejected",
+      "evidence": "src/linkedin_mdp_mcp/dm_actions.py:501 and :506 `blocking = any(item.occurred_at is None or item.occurred_at >= latest_in|latest_out.occurred_at for item in unknown)` — only ambiguity at/after the decision anchor blocks; tests/e2e_dm_uncertainty_scope.py:37 older_anonymous_observation_allows_due_followup and :50 older_anonymous_observation_allows_verified_reply pass, :41-46/:54-59 newer observations block. The claim is scoped to recent ambiguity."
+    },
+    {
+      "statement": "Anonymous rows nearby follow a time-scoped rule.",
+      "output": "board.json scene 1 (i=1), say — also doc.html Scene 2 of 7",
+      "verdict": "rejected",
+      "evidence": "src/linkedin_mdp_mcp/dm_actions.py:501 and :506 compare each uncertain row's occurred_at with the decision anchor; tests/e2e_dm_uncertainty_scope.py:1 \"Exercise time-scoped anonymous DM uncertainty through the real classifier and planner.\" with six verdicts (:37 older allows follow-up, :41 newer blocks, :50 older allows reply, :72 timeless blocks)."
+    },
+    {
+      "statement": "Look here first: `classify_dm_evidence` and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`; `main` in `scripts/build_private_dm_actions.py`.",
+      "output": "comment.md lines 62-66 (Look here first)",
+      "verdict": "rejected",
+      "evidence": "comment.md:64-65 lists plan_dm_actions in src/linkedin_mdp_mcp/dm_actions.py; src/linkedin_mdp_mcp/dm_actions.py:430 `def plan_dm_actions(` carries the reply/follow-up/first-DM planning. The CLI helpers _Parser/_read no longer appear in Look here first."
+    }
+  ]
+}

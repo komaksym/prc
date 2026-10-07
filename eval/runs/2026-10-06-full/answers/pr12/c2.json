@@ -1,0 +1,44 @@
+{
+  "pr": 12,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The invitation report gains a date on each row: \"This pull request adds a date to each row of the invitation report.\" The packet does not name the person or role the report is for, so the \"for whom\" part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "`build_invitation_shortlist` in `src/linkedin_mdp_mcp/invitation_shortlist.py`. It is the first entry under \"Look here first\" and the diagram marks it `modified`; the diagram also shows it calling the newly `added` helper `_date_added` in the same file (edge `n2 --> n3`), which is where the date value itself is produced."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet shows no code or diff, so neither the check nor the recorded reason is visible. The only related evidence is the truncated test name `test_invalid_or_future_date_added_stays_unknown_with_safe_po` (the diagram cuts it off at `safe_po`), which suggests an invalid or future timestamp stays \"unknown\"."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "Added test symbols: `test_date_added_uses_exact_canonical_source_match_and_never_`, `test_invalid_or_future_date_added_stays_unknown_with_safe_po`, `test_missing_date_added_stays_unknown_and_does_not_change_me`.",
+        "Modified test symbols: `test_cli_writes_private_outputs_and_sanitized_stdout`, `test_invitation_shortlist_e2e`.",
+        "CI: the footer reports \"CI 1/1\".",
+        "Total footprint: \"Files 12, symbols 8, CI 1/1\", so files beyond the main source module change, but the packet names no test file paths and no other file paths besides `src/linkedin_mdp_mcp/invitation_shortlist.py`.",
+        "`main` and `run` appear in the diagram without an added, modified, or deleted class, so the packet does not show them as changed."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. Under \"Risky surfaces and description vs diff\" the comment states \"No risky surfaces.\" The footer also reports \"CI 1/1\"."
+    },
+    {
+      "id": "q6",
+      "answer": "The three added tests pin the date_added behaviour: an exact canonical source match (`test_date_added_uses_exact_canonical_source_match_and_never_`), invalid or future timestamps staying unknown with a safe po... (`test_invalid_or_future_date_added_stays_unknown_with_safe_po`), and a missing timestamp staying unknown without changing me... (`test_missing_date_added_stays_unknown_and_does_not_change_me`). All three names are cut off in the diagram, so the full pinned assertions are not visible. The comment's \"Not covered by tests\" section still lists `_date_added` and `_make_markdown` as not covered."
+    },
+    {
+      "id": "q7",
+      "answer": "\"Look here first\" lists, in order, `build_invitation_shortlist`, `_date_added`, and `_make_markdown`, all in `src/linkedin_mdp_mcp/invitation_shortlist.py`. Start with `build_invitation_shortlist`, then read `_date_added` (the added helper) and `_make_markdown` in the same file."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The description says the pull request \"adds a date to each row of the invitation report\", the comment reports \"No risky surfaces.\", and the test name `test_missing_date_added_stays_unknown_and_does_not_change_me` (truncated in the diagram) states that a missing date_added does not change me... (membership). No code or diff is in the packet, so this rests on the comment and the diagram."
+    }
+  ]
+}

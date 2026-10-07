@@ -1,0 +1,38 @@
+{
+  "pr": 11,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The PR changes private-report collection so prospect timestamps are fetched for the owner. CANNOT TELL for exactly whom beyond the owner."
+    },
+    {
+      "id": "q2",
+      "answer": "main"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "PLANS.md, README.md, collect_private_source.py, e2e-evidence.json, analysis.md, infographic.png, 01-infographic-prospect-created-at.md, 02-infographic-prospect-created-at.md, 03-infographic-prospect-created-at.md, source.md, and structured-content.md."
+    },
+    {
+      "id": "q5",
+      "answer": "External calls. The map shows calls to LinkedInMDPClient and SupabaseClient."
+    },
+    {
+      "id": "q6",
+      "answer": "No new tests are shown; the map says 0 tests touched."
+    },
+    {
+      "id": "q7",
+      "answer": "main in e2e_private_source.py"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

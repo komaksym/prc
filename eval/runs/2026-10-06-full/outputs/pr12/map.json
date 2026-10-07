@@ -1,0 +1,3579 @@
+{
+  "author": "komaksym",
+  "base_sha": "9b8662189a592a85adc76d7691b42e553989e03b",
+  "brief": {
+    "checks": [
+      {
+        "name": "synthetic-e2e",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 21,
+        "kind": "docs",
+        "named": false,
+        "path": "PLANS.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 6,
+        "kind": "docs",
+        "named": false,
+        "path": "PR10-present-employer-e2e-matrix.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 8,
+        "kind": "config",
+        "named": false,
+        "path": "artifacts/invitation-shortlist-e2e-evidence.json",
+        "removed": 2,
+        "sensitive": null
+      },
+      {
+        "added": 2,
+        "kind": "docs",
+        "named": false,
+        "path": "docs/invitation-shortlist.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-date-added/analysis.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "opaque",
+        "named": false,
+        "path": "infographic/prospect-date-added/infographic.png",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 11,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-date-added/prompts/01-infographic-date-added.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 13,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-date-added/source.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 3,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/prospect-date-added/structured-content.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 47,
+        "kind": "code",
+        "named": false,
+        "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 86,
+        "kind": "test",
+        "named": false,
+        "path": "tests/e2e_invitation_shortlist.py",
+        "removed": 2,
+        "sensitive": null
+      },
+      {
+        "added": 6,
+        "kind": "test",
+        "named": false,
+        "path": "tests/test_invitation_shortlist_e2e.py",
+        "removed": 0,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7",
+    "look_first": [
+      {
+        "lines": [],
+        "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+        "reason": "largest code change (+47 \u22120)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "komaksym/linkedin-mdp#12",
+    "title": "feat(report): show date added"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "scripts/build_invitation_shortlist.py::main",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"
+    },
+    {
+      "resolution": "exact",
+      "source": "scripts/build_invitation_shortlist.py::main",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/inbox_sync.py::normalize_profile_url"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/inbox_sync.py::normalize_profile_url"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::run",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout",
+      "status": "kept",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout",
+      "status": "kept",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::qualification"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::run"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership",
+      "status": "added",
+      "target": "tests/e2e_invitation_shortlist.py::source_export"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    }
+  ],
+  "files": [
+    {
+      "added": 21,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 31,
+              "old": 31,
+              "op": " ",
+              "text": "The live verification utility compares complete stored payloads and all event timestamps, preserving earlier observation times on idempotent replay. Its missing-credentials path emits only a fixed failure message. The approved live run https://github.com/komaksym/linkedin-mdp/actions/runs/36985062303 verified persistence, full private readback, and duplicate-free frozen-snapshot replay at revision `5cc23814450c14b4a8d3312c682b5f65fa87e22c`. Updated PR CI run 36985032311 passed. Actual DM queue readiness remains pending reliable message classification and coverage checks. A pytest entry point repeats the existing E2E runner in PR CI without changing workflow infrastructure."
+            },
+            {
+              "new": 32,
+              "old": 32,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 33,
+              "old": 33,
+              "op": " ",
+              "text": "Applied principles: Model the Domain keeps event bodies in `InboxSyncPlan` and sanitized counts in `InboxSyncSummary`. Sequence Work into Verifiable Units makes inbox evidence the first slice before ranking, research, and action publication."
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "### Prospect date-added report enrichment"
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "Summary: expose the existing Supabase prospect `created_at` value as report-only `date_added`. This is the database row creation time; it is not a LinkedIn connection or acceptance date. It must not affect qualification, exclusions, rank, or company capacity."
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "Failure modes to reject before implementation:"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "- Missing `created_at`, null, wrong-type, malformed, or timezone-naive values must remain unknown, never be replaced with collection time or another date."
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "- A future timestamp must remain unknown rather than being rendered as a valid creation date."
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "- A timestamp string with a valid timezone and no future instant must be preserved byte-for-byte in JSON and Markdown."
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "- Qualification input must not spoof or override the source prospect timestamp."
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "- Profile aliases must join through the same canonical profile normalizer, while zero or multiple source rows must not attach an ambiguous prospect ID or pointer."
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "- One uniquely matched row with invalid/missing time must retain its stable prospect ID and source pointer with a fixed reason, without leaking the invalid raw value."
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "- Adding or removing `created_at` must not change shortlist membership, ranking, exclusion counts, or company-cap results."
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "- The private CLI must still emit only fixed stdout and create only private JSON/Markdown files whose date-added values and source pointers match the pure result."
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "Implementation is one late output-enrichment helper over validated source prospects, preserving existing qualification and ranking decisions. Red-first verification must use the existing whole-CLI E2E matrix before production edits; no schema, workflow, live source call, or new dependency is needed."
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "Verification, 2026-10-02: all eight new date-added behavior assertions failed against the unchanged implementation; 83 of the existing 84 matrix scenarios remained green. The corrected implementation passes all 91 matrix scenarios, the CLI artifact wrapper, and the full 22-check repository suite. The selected row preserves an exact offset/fraction timestamp and source pointer in JSON/Markdown, while missing, invalid, naive, or future timestamps remain unknown without affecting membership or ranking. Scoped Ruff and strict mypy on the touched module pass; full-source mypy passes across nine modules. Sdist and wheel builds pass. An unfiltered E501 scan reports only pre-existing long lines outside the added sections. The generated artifact contains aggregate verdicts only."
+            },
+            {
+              "new": 53,
+              "old": 34,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 54,
+              "old": 35,
+              "op": " ",
+              "text": "## Google Docs morning report"
+            },
+            {
+              "new": 55,
+              "old": 36,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 31,
+          "old_start": 31
+        },
+        {
+          "lines": [
+            {
+              "new": 213,
+              "old": 194,
+              "op": " ",
+              "text": "PR10 fresh review audit corrections: six invalid canonical-alias scenarios and one distinct unsupported-key queue scenario failed before production fixes. Queued profiles no longer retain resolved current employer assignments or capacity attribution. Every employer queue entry retains a stable opaque key ID and source pointer.82 scenario matrix plus wrapper,22 full-suite checks, scoped strict Ruff,12-file mypy and package builds pass. No report publication or database writes occurred."
+            },
+            {
+              "new": 214,
+              "old": 195,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 215,
+              "old": 196,
+              "op": " ",
+              "text": "PR10 Unicode repair verification before publication: 84 scenarios plus wrapper, 22 full-suite checks, strict scoped Ruff, 12-file mypy and builds passed before the usage pause. Pending diff inspected on resume; no source behavior changed since that validation. Separate synthetic CLI proof and independent review requested. Fixed fresh CodeRabbit wording finding by spacing adjacent counts in the matrix record."
+            },
+            {
+              "new": 216,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 217,
+              "old": null,
+              "op": "+",
+              "text": "PR12 review correction: two UTC conversion overflow boundaries and the Markdown prospect-ID provenance assertion failed before the fix (3 failed, 90 passed). The correction catches overflow as invalid_timestamp and prints the prospect ID beside the source pointer. All 93 E2E scenarios, the full 22-test suite, scoped Ruff, 9-file default source mypy and source/wheel builds pass. Independent read-only review found no actionable issue."
+            }
+          ],
+          "new_start": 213,
+          "old_start": 194
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "PLANS.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 12,
+              "old": 12,
+              "op": " ",
+              "text": "| Historical invitation has unsupported identity or absent/unregistered mapping | Withhold the global shortlist and retain an explicit queue item. |"
+            },
+            {
+              "new": 13,
+              "old": 13,
+              "op": " ",
+              "text": "| Recommendation report is built | No recommendation event plan or persistence key is emitted. |"
+            },
+            {
+              "new": 14,
+              "old": 14,
+              "op": " ",
+              "text": "| Existing sent/accepted/connectivity/suppression, ranking, exact identity, and transport freshness rules | Preserve prior behavior. |"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "| Valid source `created_at` with timezone and fractional seconds | Preserve the exact value with prospect ID and source pointer in JSON and Markdown. |"
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": "| Missing, null, wrong-type, malformed, timezone-naive, or future `created_at` | Render unknown, retain only safe pointer/ID for one unique source row, and do not leak invalid values. |"
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "| Canonical profile URL alias or qualification-provided `date_added` | Join the source row canonically; ignore qualification timestamp and preserve eligibility/ranking. |"
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": "| No unique source prospect row | Keep date and provenance unknown; preserve existing identity-withhold behavior. |"
+            },
+            {
+              "new": 19,
+              "old": 15,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 20,
+              "old": 16,
+              "op": " ",
+              "text": "## Red-first evidence"
+            },
+            {
+              "new": 21,
+              "old": 17,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 12,
+          "old_start": 12
+        },
+        {
+          "lines": [
+            {
+              "new": 35,
+              "old": 31,
+              "op": " ",
+              "text": "## Unicode key repair"
+            },
+            {
+              "new": 36,
+              "old": 32,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 37,
+              "old": 33,
+              "op": " ",
+              "text": "Two JSON-decoded unpaired surrogate key cases failed before the repair because raw UTF-8 hashing raised UnicodeEncodeError before unresolved evidence was recorded. Current-employer key IDs now hash ASCII-escaped JSON bytes. Identity normalization stays unchanged, and invalid keys remain unresolved without exposing them. The 84-scenario matrix plus wrapper, 22 full-suite checks, scoped strict Ruff, 12-file mypy and source/wheel builds pass. Surrogate fixtures use distinct numeric codepoints without a lint suppression."
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "PR12 review correction: two UTC conversion overflow boundaries and the Markdown prospect-ID provenance assertion failed before the fix (3 failed, 90 passed). The correction catches overflow as invalid_timestamp and prints the prospect ID beside the source pointer. All 93 E2E scenarios, the full 22-test suite, scoped Ruff, 9-file default source mypy and source/wheel builds pass. Independent read-only review found no actionable issue."
+            }
+          ],
+          "new_start": 35,
+          "old_start": 31
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "PR10-present-employer-e2e-matrix.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 8,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "{"
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "op": " ",
+              "text": "  \"schema_version\": 1,"
+            },
+            {
+              "new": null,
+              "old": 3,
+              "op": "-",
+              "text": "  \"scenario_count\": 88,"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "  \"scenario_count\": 97,"
+            },
+            {
+              "new": 4,
+              "old": 4,
+              "op": " ",
+              "text": "  \"all_scenarios_passed\": true,"
+            },
+            {
+              "new": 5,
+              "old": 5,
+              "op": " ",
+              "text": "  \"red_first_failures_reproduced\": ["
+            },
+            {
+              "new": 6,
+              "old": 6,
+              "op": " ",
+              "text": "    \"provider-local invitation dates lost to ISO-only parsing\","
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        },
+        {
+          "lines": [
+            {
+              "new": 23,
+              "old": 23,
+              "op": " ",
+              "text": "    \"invalid canonical employer aliases left contradictory resolved audit entries\","
+            },
+            {
+              "new": 24,
+              "old": 24,
+              "op": " ",
+              "text": "    \"distinct invalid employer identity keys collapsed without source pointers\","
+            },
+            {
+              "new": 25,
+              "old": 25,
+              "op": " ",
+              "text": "    \"unpaired Unicode employer keys failed before unresolved queue recording\","
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": "    \"report omitted a valid exact-profile prospect creation timestamp\","
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "    \"invalid or future creation timestamps were not withheld as unknown\","
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "    \"creation timestamp or qualification spoof changed ranking or membership\","
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "    \"private Markdown omitted creation-time provenance\","
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": "    \"UTC conversion overflow aborted timestamp enrichment\","
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "    \"private Markdown omitted the creation-time prospect ID\","
+            },
+            {
+              "new": 32,
+              "old": 26,
+              "op": " ",
+              "text": "    \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","
+            },
+            {
+              "new": 33,
+              "old": 27,
+              "op": " ",
+              "text": "    \"candidate qualification citation attested a different profile\""
+            },
+            {
+              "new": 34,
+              "old": 28,
+              "op": " ",
+              "text": "  ],"
+            },
+            {
+              "new": null,
+              "old": 29,
+              "op": "-",
+              "text": "  \"artifact_digest\": \"2dabc51de56f7b9d802c8441f279d3d1239107f719426e0a5cafcf5e69afa59f\""
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "  \"artifact_digest\": \"2c976cad44b739cc1f27e0a616a51099bbd0dbd5725d64b2bb2c71a1792650d2\""
+            },
+            {
+              "new": 36,
+              "old": 30,
+              "op": " ",
+              "text": "}"
+            }
+          ],
+          "new_start": 23,
+          "old_start": 23
+        }
+      ],
+      "kind": "config",
+      "language": null,
+      "path": "artifacts/invitation-shortlist-e2e-evidence.json",
+      "removed": 2,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 59,
+              "old": 59,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 60,
+              "old": 60,
+              "op": " ",
+              "text": "The priority heuristic is versioned as `invitation-priority-v1`. It awards up to 4 points for observed exact-person activity, 3 for mutual connections, 2 for connection count, and 1 for a profile photo. Activity must be at most 30 days old. Other ranking signals must be at most 90 days old. Numeric inputs are capped at 20 mutual connections and 500 total connections for scoring. Missing or stale signals stay unknown and do not produce an all-unknown zero score. The score is a sorting aid, not an acceptance probability. Stable ties use the canonical profile URL. Eligibility and remaining lifetime company slots apply before the report selects at most 25 rows."
+            },
+            {
+              "new": 61,
+              "old": 61,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "Each selected invitation row may also show `date_added`, read only from `created_at` on exactly one canonical-profile-matched Supabase prospect row. This is the database record creation timestamp, not a LinkedIn connection or acceptance date. Preserve a valid timezone-aware ISO string exactly and show its `prospects.rows[i].created_at` source pointer. Missing, malformed, naive, or future timestamps remain `unknown`; the report retains the unique source row ID and a fixed reason without copying an invalid value. Zero or multiple matching prospect rows have no source provenance. Qualification data cannot override this field, and it never affects shortlist eligibility, ranking, exclusions, or capacity."
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 64,
+              "old": 62,
+              "op": " ",
+              "text": "The report preserves existing exact identity checks, suppression handling, connected and previously invited exclusions, candidate qualification checks, ranking behavior, and transport freshness rules. The report includes no event plan, persistence key, draft, or hypothetical Supabase event."
+            },
+            {
+              "new": 65,
+              "old": 63,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 66,
+              "old": 64,
+              "op": " ",
+              "text": "Run with private files and a new output directory:"
+            }
+          ],
+          "new_start": 59,
+          "old_start": 59
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "docs/invitation-shortlist.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Technical system scope: existing Supabase insertion timestamp through approved collector to private invitation report. Presentation metadata does not change priority, eligibility or capacity. English structural-breakdown, technical-schematic, landscape16:9, native imagegen; saved backend auto. No live database verification or invented sample rows."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-date-added/analysis.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "opaque",
+      "language": null,
+      "path": "infographic/prospect-date-added/infographic.png",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 11,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Use case: infographic-diagram"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Create a small high-level technical system infographic, English landscape 16:9, structural-breakdown exploded layers in technical-schematic style. Opaque neutral pale-gray canvas with visible dark border, charcoal high-contrast large sans-serif labels, restrained teal/blue accents, ample whitespace. Three exploded layers representing a database, read-only collector, and private report card. Blank document icons carry teal lines, never sample rows or dates. A side callout connects missing/invalid data to unknown display, separate from the retained timestamp path."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Text verbatim only:"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Title \"Invitation report date added\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Layer1 \"Supabase\" and \"Existing created_at\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Layer2 \"Collector\" and \"Fetch existing field\""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Layer3 \"Private invitation report\" and \"Exact date_added and evidence pointer\""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Callout \"Missing or invalid\" and \"Show unknown\""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "Meaning line \"First added to Supabase\""
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "Bottom scope band \"Read-only report\", \"No new column\", \"No invented dates\""
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "No additional text, dates, numbers, person names, URLs, logos or invented row data. Do not imply the live database was queried or a Google Doc was published. This is an exploded component illustration, not a generic DAG/node graph."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-date-added/prompts/01-infographic-date-added.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 13,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Invitation report date added"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "Supabase"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Existing created_at"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Collector"
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Fetch existing field"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Private invitation report"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Exact date_added and evidence pointer"
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Missing or invalid"
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "Show unknown"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "First added to Supabase"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "Read-only report"
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "No new column"
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "No invented dates"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-date-added/source.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Invitation report date added"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Learning objective: show source-backed insertion time separately from outreach eligibility. Three system layers Supabase existing created_at, Collector fetch existing field, Private invitation report exact date_added and evidence pointer. Missing or invalid shows unknown. Meaning: first added to Supabase. Scope: read-only report, no new column, no invented dates."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/prospect-date-added/structured-content.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 47,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 438,
+              "old": 438,
+              "op": " ",
+              "text": "    return ids_by_url, conflicts"
+            },
+            {
+              "new": 439,
+              "old": 439,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 440,
+              "old": 440,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 441,
+              "old": null,
+              "op": "+",
+              "text": "def _date_added("
+            },
+            {
+              "new": 442,
+              "old": null,
+              "op": "+",
+              "text": "    profile_url: str,"
+            },
+            {
+              "new": 443,
+              "old": null,
+              "op": "+",
+              "text": "    prospects: Sequence[Mapping[str, Any]],"
+            },
+            {
+              "new": 444,
+              "old": null,
+              "op": "+",
+              "text": "    now: datetime,"
+            },
+            {
+              "new": 445,
+              "old": null,
+              "op": "+",
+              "text": ") -> dict[str, Any]:"
+            },
+            {
+              "new": 446,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Enrich one report row from a unique exact-profile prospect creation timestamp.\"\"\""
+            },
+            {
+              "new": 447,
+              "old": null,
+              "op": "+",
+              "text": "    canonical_url = normalize_profile_url(profile_url)"
+            },
+            {
+              "new": 448,
+              "old": null,
+              "op": "+",
+              "text": "    matches = ["
+            },
+            {
+              "new": 449,
+              "old": null,
+              "op": "+",
+              "text": "        (index, row)"
+            },
+            {
+              "new": 450,
+              "old": null,
+              "op": "+",
+              "text": "        for index, row in enumerate(prospects)"
+            },
+            {
+              "new": 451,
+              "old": null,
+              "op": "+",
+              "text": "        if normalize_profile_url(row.get(\"linkedin_url\")) == canonical_url"
+            },
+            {
+              "new": 452,
+              "old": null,
+              "op": "+",
+              "text": "    ] if canonical_url else []"
+            },
+            {
+              "new": 453,
+              "old": null,
+              "op": "+",
+              "text": "    if len(matches) != 1:"
+            },
+            {
+              "new": 454,
+              "old": null,
+              "op": "+",
+              "text": "        reason = \"missing\" if not matches else \"source_identity_ambiguous\""
+            },
+            {
+              "new": 455,
+              "old": null,
+              "op": "+",
+              "text": "        return {"
+            },
+            {
+              "new": 456,
+              "old": null,
+              "op": "+",
+              "text": "            \"date_added\": None,"
+            },
+            {
+              "new": 457,
+              "old": null,
+              "op": "+",
+              "text": "            \"date_added_source\": {\"prospect_id\": None, \"source_ref\": None, \"reason\": reason},"
+            },
+            {
+              "new": 458,
+              "old": null,
+              "op": "+",
+              "text": "        }"
+            },
+            {
+              "new": 459,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 460,
+              "old": null,
+              "op": "+",
+              "text": "    index, row = matches[0]"
+            },
+            {
+              "new": 461,
+              "old": null,
+              "op": "+",
+              "text": "    provenance = {"
+            },
+            {
+              "new": 462,
+              "old": null,
+              "op": "+",
+              "text": "        \"prospect_id\": row.get(\"id\"),"
+            },
+            {
+              "new": 463,
+              "old": null,
+              "op": "+",
+              "text": "        \"source_ref\": f\"prospects.rows[{index}].created_at\","
+            },
+            {
+              "new": 464,
+              "old": null,
+              "op": "+",
+              "text": "        \"reason\": None,"
+            },
+            {
+              "new": 465,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 466,
+              "old": null,
+              "op": "+",
+              "text": "    value = row.get(\"created_at\")"
+            },
+            {
+              "new": 467,
+              "old": null,
+              "op": "+",
+              "text": "    if value is None:"
+            },
+            {
+              "new": 468,
+              "old": null,
+              "op": "+",
+              "text": "        provenance[\"reason\"] = \"missing\""
+            },
+            {
+              "new": 469,
+              "old": null,
+              "op": "+",
+              "text": "        return {\"date_added\": None, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 470,
+              "old": null,
+              "op": "+",
+              "text": "    try:"
+            },
+            {
+              "new": 471,
+              "old": null,
+              "op": "+",
+              "text": "        parsed = _timestamp(value, \"source_created_at_invalid\")"
+            },
+            {
+              "new": 472,
+              "old": null,
+              "op": "+",
+              "text": "    except (ShortlistInputError, OverflowError):"
+            },
+            {
+              "new": 473,
+              "old": null,
+              "op": "+",
+              "text": "        provenance[\"reason\"] = \"invalid_timestamp\""
+            },
+            {
+              "new": 474,
+              "old": null,
+              "op": "+",
+              "text": "        return {\"date_added\": None, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 475,
+              "old": null,
+              "op": "+",
+              "text": "    if parsed > now:"
+            },
+            {
+              "new": 476,
+              "old": null,
+              "op": "+",
+              "text": "        provenance[\"reason\"] = \"future_timestamp\""
+            },
+            {
+              "new": 477,
+              "old": null,
+              "op": "+",
+              "text": "        return {\"date_added\": None, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 478,
+              "old": null,
+              "op": "+",
+              "text": "    return {\"date_added\": value, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 479,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 480,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 481,
+              "old": 441,
+              "op": " ",
+              "text": "def _stable_hash(value: Any) -> str:"
+            },
+            {
+              "new": 482,
+              "old": 442,
+              "op": " ",
+              "text": "    \"\"\"Return a deterministic opaque identifier for a JSON value.\"\"\""
+            },
+            {
+              "new": 483,
+              "old": 443,
+              "op": " ",
+              "text": "    encoded = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(\",\", \":\"))"
+            }
+          ],
+          "new_start": 438,
+          "old_start": 438
+        },
+        {
+          "lines": [
+            {
+              "new": 778,
+              "old": 738,
+              "op": " ",
+              "text": "                f\"{item['role']} at {item['company_name']}. Priority score {item['score'] if item['score'] is not None else 'unknown'} ({item['score_version']}); this is not an acceptance probability.\","
+            },
+            {
+              "new": 779,
+              "old": 739,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 780,
+              "old": 740,
+              "op": " ",
+              "text": "                f\"Reason: {item['reason']}.\","
+            },
+            {
+              "new": 781,
+              "old": null,
+              "op": "+",
+              "text": "                \"\","
+            },
+            {
+              "new": 782,
+              "old": null,
+              "op": "+",
+              "text": "                f\"Date added: {item['date_added'] or 'unknown'} \""
+            },
+            {
+              "new": 783,
+              "old": null,
+              "op": "+",
+              "text": "                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""
+            },
+            {
+              "new": 784,
+              "old": null,
+              "op": "+",
+              "text": "                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""
+            },
+            {
+              "new": 785,
+              "old": null,
+              "op": "+",
+              "text": "                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","
+            },
+            {
+              "new": 786,
+              "old": 741,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 787,
+              "old": 742,
+              "op": " ",
+              "text": "                f\"Action: {item['action']}.\","
+            },
+            {
+              "new": 788,
+              "old": 743,
+              "op": " ",
+              "text": "                \"\","
+            }
+          ],
+          "new_start": 778,
+          "old_start": 738
+        },
+        {
+          "lines": [
+            {
+              "new": 1027,
+              "old": 982,
+              "op": " ",
+              "text": "        slots = remaining_slots"
+            },
+            {
+              "new": 1028,
+              "old": 983,
+              "op": " ",
+              "text": "    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"
+            },
+            {
+              "new": 1029,
+              "old": 984,
+              "op": " ",
+              "text": "    rows_out = [_candidate_json(item) for item in selected]"
+            },
+            {
+              "new": 1030,
+              "old": null,
+              "op": "+",
+              "text": "    for row in rows_out:"
+            },
+            {
+              "new": 1031,
+              "old": null,
+              "op": "+",
+              "text": "        row.update(_date_added(row[\"profile_url\"], prospects, now))"
+            },
+            {
+              "new": 1032,
+              "old": 985,
+              "op": " ",
+              "text": "    company_usage: dict[str, dict[str, Any]] = {}"
+            },
+            {
+              "new": 1033,
+              "old": 986,
+              "op": " ",
+              "text": "    for company_id in sorted(registry):"
+            },
+            {
+              "new": 1034,
+              "old": 987,
+              "op": " ",
+              "text": "        usage: dict[str, Any] = {"
+            }
+          ],
+          "new_start": 1027,
+          "old_start": 982
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+      ]
+    },
+    {
+      "added": 86,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 2,
+              "old": 2,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": 3,
+              "op": " ",
+              "text": "from __future__ import annotations"
+            },
+            {
+              "new": 4,
+              "old": 4,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "import hashlib"
+            },
+            {
+              "new": 6,
+              "old": 5,
+              "op": " ",
+              "text": "import json"
+            },
+            {
+              "new": 7,
+              "old": 6,
+              "op": " ",
+              "text": "import os"
+            },
+            {
+              "new": 8,
+              "old": 7,
+              "op": " ",
+              "text": "import stat"
+            }
+          ],
+          "new_start": 2,
+          "old_start": 2
+        },
+        {
+          "lines": [
+            {
+              "new": 617,
+              "old": 616,
+              "op": " ",
+              "text": "        source_path = temp_path / \"source.json\""
+            },
+            {
+              "new": 618,
+              "old": 617,
+              "op": " ",
+              "text": "        qualification_path = temp_path / \"qualification.json\""
+            },
+            {
+              "new": 619,
+              "old": 618,
+              "op": " ",
+              "text": "        output_path = temp_path / \"out\""
+            },
+            {
+              "new": null,
+              "old": 619,
+              "op": "-",
+              "text": "        source_path.write_text(json.dumps(source_export()), encoding=\"utf-8\")"
+            },
+            {
+              "new": 620,
+              "old": null,
+              "op": "+",
+              "text": "        source = source_export()"
+            },
+            {
+              "new": 621,
+              "old": null,
+              "op": "+",
+              "text": "        created_at = \"2026-09-30T14:12:13.123456+02:00\""
+            },
+            {
+              "new": 622,
+              "old": null,
+              "op": "+",
+              "text": "        source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"
+            },
+            {
+              "new": 623,
+              "old": null,
+              "op": "+",
+              "text": "        source_path.write_text(json.dumps(source), encoding=\"utf-8\")"
+            },
+            {
+              "new": 624,
+              "old": 620,
+              "op": " ",
+              "text": "        qualification_path.write_text(json.dumps(qualification()), encoding=\"utf-8\")"
+            },
+            {
+              "new": 625,
+              "old": 621,
+              "op": " ",
+              "text": "        os.chmod(source_path, 0o600)"
+            },
+            {
+              "new": 626,
+              "old": 622,
+              "op": " ",
+              "text": "        os.chmod(qualification_path, 0o600)"
+            }
+          ],
+          "new_start": 617,
+          "old_start": 616
+        },
+        {
+          "lines": [
+            {
+              "new": 646,
+              "old": 642,
+              "op": " ",
+              "text": "        assert stat.S_IMODE(markdown_path.stat().st_mode) == 0o600"
+            },
+            {
+              "new": 647,
+              "old": 643,
+              "op": " ",
+              "text": "        report = json.loads(report_path.read_text(encoding=\"utf-8\"))"
+            },
+            {
+              "new": 648,
+              "old": 644,
+              "op": " ",
+              "text": "        assert report[\"invitations\"][0][\"profile_url\"] == PROFILE_A"
+            },
+            {
+              "new": null,
+              "old": 645,
+              "op": "-",
+              "text": "        assert \"Synthetic Person\" in markdown_path.read_text(encoding=\"utf-8\")"
+            },
+            {
+              "new": 649,
+              "old": null,
+              "op": "+",
+              "text": "        row = report[\"invitations\"][0]"
+            },
+            {
+              "new": 650,
+              "old": null,
+              "op": "+",
+              "text": "        assert row[\"date_added\"] == created_at"
+            },
+            {
+              "new": 651,
+              "old": null,
+              "op": "+",
+              "text": "        assert row[\"date_added_source\"] == {"
+            },
+            {
+              "new": 652,
+              "old": null,
+              "op": "+",
+              "text": "            \"prospect_id\": \"tracked-a\","
+            },
+            {
+              "new": 653,
+              "old": null,
+              "op": "+",
+              "text": "            \"source_ref\": \"prospects.rows[0].created_at\","
+            },
+            {
+              "new": 654,
+              "old": null,
+              "op": "+",
+              "text": "            \"reason\": None,"
+            },
+            {
+              "new": 655,
+              "old": null,
+              "op": "+",
+              "text": "        }"
+            },
+            {
+              "new": 656,
+              "old": null,
+              "op": "+",
+              "text": "        markdown = markdown_path.read_text(encoding=\"utf-8\")"
+            },
+            {
+              "new": 657,
+              "old": null,
+              "op": "+",
+              "text": "        assert \"Synthetic Person\" in markdown"
+            },
+            {
+              "new": 658,
+              "old": null,
+              "op": "+",
+              "text": "        assert f\"Date added: {created_at}\" in markdown"
+            },
+            {
+              "new": 659,
+              "old": null,
+              "op": "+",
+              "text": "        assert \"source: prospects.rows[0].created_at; prospect: tracked-a; reason: none\" in markdown"
+            },
+            {
+              "new": 660,
+              "old": 646,
+              "op": " ",
+              "text": "        assert not any(name in process.stdout for name in (\"Synthetic Person\", PROFILE_A))"
+            },
+            {
+              "new": 661,
+              "old": null,
+              "op": "+",
+              "text": "        digest_input = dict(report)"
+            },
+            {
+              "new": 662,
+              "old": null,
+              "op": "+",
+              "text": "        digest = digest_input.pop(\"output_digest\")"
+            },
+            {
+              "new": 663,
+              "old": null,
+              "op": "+",
+              "text": "        assert digest == hashlib.sha256("
+            },
+            {
+              "new": 664,
+              "old": null,
+              "op": "+",
+              "text": "            json.dumps(digest_input, ensure_ascii=False, sort_keys=True, separators=(\",\", \":\")).encode(\"utf-8\")"
+            },
+            {
+              "new": 665,
+              "old": null,
+              "op": "+",
+              "text": "        ).hexdigest()"
+            },
+            {
+              "new": 666,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 667,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 668,
+              "old": null,
+              "op": "+",
+              "text": "def test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking() -> None:"
+            },
+            {
+              "new": 669,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"An exact URL alias may enrich output, but its source time cannot affect selection.\"\"\""
+            },
+            {
+              "new": 670,
+              "old": null,
+              "op": "+",
+              "text": "    source = source_export()"
+            },
+            {
+              "new": 671,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""
+            },
+            {
+              "new": 672,
+              "old": null,
+              "op": "+",
+              "text": "    created_at = \"2026-09-30T14:12:13.123456+02:00\""
+            },
+            {
+              "new": 673,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"
+            },
+            {
+              "new": 674,
+              "old": null,
+              "op": "+",
+              "text": "    qualification_data = qualification()"
+            },
+            {
+              "new": 675,
+              "old": null,
+              "op": "+",
+              "text": "    qualification_data[\"candidates\"][0][\"date_added\"] = \"2099-01-01T00:00:00Z\""
+            },
+            {
+              "new": 676,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 677,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source, qualification_data)"
+            },
+            {
+              "new": 678,
+              "old": null,
+              "op": "+",
+              "text": "    without_source_time = source_export()"
+            },
+            {
+              "new": 679,
+              "old": null,
+              "op": "+",
+              "text": "    without_source_time[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""
+            },
+            {
+              "new": 680,
+              "old": null,
+              "op": "+",
+              "text": "    baseline = run(without_source_time, qualification())"
+            },
+            {
+              "new": 681,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 682,
+              "old": null,
+              "op": "+",
+              "text": "    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == ["
+            },
+            {
+              "new": 683,
+              "old": null,
+              "op": "+",
+              "text": "        item[\"profile_url\"] for item in baseline[\"invitations\"]"
+            },
+            {
+              "new": 684,
+              "old": null,
+              "op": "+",
+              "text": "    ]"
+            },
+            {
+              "new": 685,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"score\"] == baseline[\"invitations\"][0][\"score\"]"
+            },
+            {
+              "new": 686,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added\"] == created_at"
+            },
+            {
+              "new": 687,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added_source\"][\"prospect_id\"] == \"tracked-a\""
+            },
+            {
+              "new": 688,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 689,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 690,
+              "old": null,
+              "op": "+",
+              "text": "@pytest.mark.parametrize("
+            },
+            {
+              "new": 691,
+              "old": null,
+              "op": "+",
+              "text": "    (\"created_at\", \"reason\"),"
+            },
+            {
+              "new": 692,
+              "old": null,
+              "op": "+",
+              "text": "    ["
+            },
+            {
+              "new": 693,
+              "old": null,
+              "op": "+",
+              "text": "        (None, \"missing\"),"
+            },
+            {
+              "new": 694,
+              "old": null,
+              "op": "+",
+              "text": "        (42, \"invalid_timestamp\"),"
+            },
+            {
+              "new": 695,
+              "old": null,
+              "op": "+",
+              "text": "        (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 696,
+              "old": null,
+              "op": "+",
+              "text": "        (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 697,
+              "old": null,
+              "op": "+",
+              "text": "        (\"not-a-timestamp\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 698,
+              "old": null,
+              "op": "+",
+              "text": "        (\"2026-09-30T14:12:13\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 699,
+              "old": null,
+              "op": "+",
+              "text": "        (\"2026-10-03T00:00:00Z\", \"future_timestamp\"),"
+            },
+            {
+              "new": 700,
+              "old": null,
+              "op": "+",
+              "text": "    ],"
+            },
+            {
+              "new": 701,
+              "old": null,
+              "op": "+",
+              "text": ")"
+            },
+            {
+              "new": 702,
+              "old": null,
+              "op": "+",
+              "text": "def test_invalid_or_future_date_added_stays_unknown_with_safe_pointer(created_at: Any, reason: str) -> None:"
+            },
+            {
+              "new": 703,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Invalid values stay unknown and never leak their raw timestamp into output.\"\"\""
+            },
+            {
+              "new": 704,
+              "old": null,
+              "op": "+",
+              "text": "    source = source_export()"
+            },
+            {
+              "new": 705,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"
+            },
+            {
+              "new": 706,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 707,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source, qualification())"
+            },
+            {
+              "new": 708,
+              "old": null,
+              "op": "+",
+              "text": "    row = result[\"invitations\"][0]"
+            },
+            {
+              "new": 709,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 710,
+              "old": null,
+              "op": "+",
+              "text": "    assert row[\"date_added\"] is None"
+            },
+            {
+              "new": 711,
+              "old": null,
+              "op": "+",
+              "text": "    assert row[\"date_added_source\"] == {"
+            },
+            {
+              "new": 712,
+              "old": null,
+              "op": "+",
+              "text": "        \"prospect_id\": \"tracked-a\","
+            },
+            {
+              "new": 713,
+              "old": null,
+              "op": "+",
+              "text": "        \"source_ref\": \"prospects.rows[0].created_at\","
+            },
+            {
+              "new": 714,
+              "old": null,
+              "op": "+",
+              "text": "        \"reason\": reason,"
+            },
+            {
+              "new": 715,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 716,
+              "old": null,
+              "op": "+",
+              "text": "    assert str(created_at) not in json.dumps(row)"
+            },
+            {
+              "new": 717,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 718,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 719,
+              "old": null,
+              "op": "+",
+              "text": "def test_missing_date_added_stays_unknown_and_does_not_change_membership() -> None:"
+            },
+            {
+              "new": 720,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"A missing creation time is not inferred and cannot alter eligibility.\"\"\""
+            },
+            {
+              "new": 721,
+              "old": null,
+              "op": "+",
+              "text": "    source = source_export()"
+            },
+            {
+              "new": 722,
+              "old": null,
+              "op": "+",
+              "text": "    baseline = run(source, qualification())"
+            },
+            {
+              "new": 723,
+              "old": null,
+              "op": "+",
+              "text": "    expected_membership = [item[\"profile_url\"] for item in baseline[\"invitations\"]]"
+            },
+            {
+              "new": 724,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 725,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0].pop(\"created_at\", None)"
+            },
+            {
+              "new": 726,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source, qualification())"
+            },
+            {
+              "new": 727,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 728,
+              "old": null,
+              "op": "+",
+              "text": "    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == expected_membership"
+            },
+            {
+              "new": 729,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added\"] is None"
+            },
+            {
+              "new": 730,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added_source\"][\"reason\"] == \"missing\""
+            },
+            {
+              "new": 731,
+              "old": 647,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 732,
+              "old": 648,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 733,
+              "old": 649,
+              "op": " ",
+              "text": "def test_cli_refuses_to_overwrite_existing_outputs() -> None:"
+            }
+          ],
+          "new_start": 646,
+          "old_start": 642
+        }
+      ],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "removed": 2,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/e2e_invitation_shortlist.py::qualification",
+        "tests/e2e_invitation_shortlist.py::run",
+        "tests/e2e_invitation_shortlist.py::source_export",
+        "tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout",
+        "tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+        "tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+        "tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership",
+        "tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm"
+      ]
+    },
+    {
+      "added": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 65,
+              "old": 65,
+              "op": " ",
+              "text": "            \"invalid canonical employer aliases left contradictory resolved audit entries\","
+            },
+            {
+              "new": 66,
+              "old": 66,
+              "op": " ",
+              "text": "            \"distinct invalid employer identity keys collapsed without source pointers\","
+            },
+            {
+              "new": 67,
+              "old": 67,
+              "op": " ",
+              "text": "            \"unpaired Unicode employer keys failed before unresolved queue recording\","
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "            \"report omitted a valid exact-profile prospect creation timestamp\","
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "            \"invalid or future creation timestamps were not withheld as unknown\","
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "            \"creation timestamp or qualification spoof changed ranking or membership\","
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "            \"private Markdown omitted creation-time provenance\","
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "            \"UTC conversion overflow aborted timestamp enrichment\","
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "            \"private Markdown omitted the creation-time prospect ID\","
+            },
+            {
+              "new": 74,
+              "old": 68,
+              "op": " ",
+              "text": "            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","
+            },
+            {
+              "new": 75,
+              "old": 69,
+              "op": " ",
+              "text": "            \"candidate qualification citation attested a different profile\","
+            },
+            {
+              "new": 76,
+              "old": 70,
+              "op": " ",
+              "text": "        ],"
+            }
+          ],
+          "new_start": 65,
+          "old_start": 65
+        }
+      ],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_invitation_shortlist_e2e.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e"
+      ]
+    }
+  ],
+  "head_sha": "0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7",
+  "pr": "komaksym/linkedin-mdp#12",
+  "symbols": [
+    {
+      "added": 0,
+      "base_span": [
+        61,
+        85
+      ],
+      "call_sites": 1,
+      "hunks": [],
+      "id": "scripts/build_invitation_shortlist.py::main",
+      "kind": "function",
+      "path": "scripts/build_invitation_shortlist.py",
+      "qualname": "main",
+      "removed": 0,
+      "span": [
+        61,
+        85
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        50,
+        88
+      ],
+      "call_sites": 23,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/inbox_sync.py::normalize_profile_url",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/inbox_sync.py",
+      "qualname": "normalize_profile_url",
+      "removed": 0,
+      "span": [
+        50,
+        88
+      ],
+      "status": "context"
+    },
+    {
+      "added": 38,
+      "base_span": null,
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 441,
+              "old": null,
+              "op": "+",
+              "text": "def _date_added("
+            },
+            {
+              "new": 442,
+              "old": null,
+              "op": "+",
+              "text": "    profile_url: str,"
+            },
+            {
+              "new": 443,
+              "old": null,
+              "op": "+",
+              "text": "    prospects: Sequence[Mapping[str, Any]],"
+            },
+            {
+              "new": 444,
+              "old": null,
+              "op": "+",
+              "text": "    now: datetime,"
+            },
+            {
+              "new": 445,
+              "old": null,
+              "op": "+",
+              "text": ") -> dict[str, Any]:"
+            },
+            {
+              "new": 446,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Enrich one report row from a unique exact-profile prospect creation timestamp.\"\"\""
+            },
+            {
+              "new": 447,
+              "old": null,
+              "op": "+",
+              "text": "    canonical_url = normalize_profile_url(profile_url)"
+            },
+            {
+              "new": 448,
+              "old": null,
+              "op": "+",
+              "text": "    matches = ["
+            },
+            {
+              "new": 449,
+              "old": null,
+              "op": "+",
+              "text": "        (index, row)"
+            },
+            {
+              "new": 450,
+              "old": null,
+              "op": "+",
+              "text": "        for index, row in enumerate(prospects)"
+            },
+            {
+              "new": 451,
+              "old": null,
+              "op": "+",
+              "text": "        if normalize_profile_url(row.get(\"linkedin_url\")) == canonical_url"
+            },
+            {
+              "new": 452,
+              "old": null,
+              "op": "+",
+              "text": "    ] if canonical_url else []"
+            },
+            {
+              "new": 453,
+              "old": null,
+              "op": "+",
+              "text": "    if len(matches) != 1:"
+            },
+            {
+              "new": 454,
+              "old": null,
+              "op": "+",
+              "text": "        reason = \"missing\" if not matches else \"source_identity_ambiguous\""
+            },
+            {
+              "new": 455,
+              "old": null,
+              "op": "+",
+              "text": "        return {"
+            },
+            {
+              "new": 456,
+              "old": null,
+              "op": "+",
+              "text": "            \"date_added\": None,"
+            },
+            {
+              "new": 457,
+              "old": null,
+              "op": "+",
+              "text": "            \"date_added_source\": {\"prospect_id\": None, \"source_ref\": None, \"reason\": reason},"
+            },
+            {
+              "new": 458,
+              "old": null,
+              "op": "+",
+              "text": "        }"
+            },
+            {
+              "new": 459,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 460,
+              "old": null,
+              "op": "+",
+              "text": "    index, row = matches[0]"
+            },
+            {
+              "new": 461,
+              "old": null,
+              "op": "+",
+              "text": "    provenance = {"
+            },
+            {
+              "new": 462,
+              "old": null,
+              "op": "+",
+              "text": "        \"prospect_id\": row.get(\"id\"),"
+            },
+            {
+              "new": 463,
+              "old": null,
+              "op": "+",
+              "text": "        \"source_ref\": f\"prospects.rows[{index}].created_at\","
+            },
+            {
+              "new": 464,
+              "old": null,
+              "op": "+",
+              "text": "        \"reason\": None,"
+            },
+            {
+              "new": 465,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 466,
+              "old": null,
+              "op": "+",
+              "text": "    value = row.get(\"created_at\")"
+            },
+            {
+              "new": 467,
+              "old": null,
+              "op": "+",
+              "text": "    if value is None:"
+            },
+            {
+              "new": 468,
+              "old": null,
+              "op": "+",
+              "text": "        provenance[\"reason\"] = \"missing\""
+            },
+            {
+              "new": 469,
+              "old": null,
+              "op": "+",
+              "text": "        return {\"date_added\": None, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 470,
+              "old": null,
+              "op": "+",
+              "text": "    try:"
+            },
+            {
+              "new": 471,
+              "old": null,
+              "op": "+",
+              "text": "        parsed = _timestamp(value, \"source_created_at_invalid\")"
+            },
+            {
+              "new": 472,
+              "old": null,
+              "op": "+",
+              "text": "    except (ShortlistInputError, OverflowError):"
+            },
+            {
+              "new": 473,
+              "old": null,
+              "op": "+",
+              "text": "        provenance[\"reason\"] = \"invalid_timestamp\""
+            },
+            {
+              "new": 474,
+              "old": null,
+              "op": "+",
+              "text": "        return {\"date_added\": None, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 475,
+              "old": null,
+              "op": "+",
+              "text": "    if parsed > now:"
+            },
+            {
+              "new": 476,
+              "old": null,
+              "op": "+",
+              "text": "        provenance[\"reason\"] = \"future_timestamp\""
+            },
+            {
+              "new": 477,
+              "old": null,
+              "op": "+",
+              "text": "        return {\"date_added\": None, \"date_added_source\": provenance}"
+            },
+            {
+              "new": 478,
+              "old": null,
+              "op": "+",
+              "text": "    return {\"date_added\": value, \"date_added_source\": provenance}"
+            }
+          ],
+          "new_start": 441,
+          "old_start": 441
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_date_added",
+      "removed": 0,
+      "span": [
+        441,
+        478
+      ],
+      "status": "added"
+    },
+    {
+      "added": 5,
+      "base_span": [
+        727,
+        777
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 778,
+              "old": 738,
+              "op": " ",
+              "text": "                f\"{item['role']} at {item['company_name']}. Priority score {item['score'] if item['score'] is not None else 'unknown'} ({item['score_version']}); this is not an acceptance probability.\","
+            },
+            {
+              "new": 779,
+              "old": 739,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 780,
+              "old": 740,
+              "op": " ",
+              "text": "                f\"Reason: {item['reason']}.\","
+            },
+            {
+              "new": 781,
+              "old": null,
+              "op": "+",
+              "text": "                \"\","
+            },
+            {
+              "new": 782,
+              "old": null,
+              "op": "+",
+              "text": "                f\"Date added: {item['date_added'] or 'unknown'} \""
+            },
+            {
+              "new": 783,
+              "old": null,
+              "op": "+",
+              "text": "                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""
+            },
+            {
+              "new": 784,
+              "old": null,
+              "op": "+",
+              "text": "                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""
+            },
+            {
+              "new": 785,
+              "old": null,
+              "op": "+",
+              "text": "                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","
+            },
+            {
+              "new": 786,
+              "old": 741,
+              "op": " ",
+              "text": "                \"\","
+            },
+            {
+              "new": 787,
+              "old": 742,
+              "op": " ",
+              "text": "                f\"Action: {item['action']}.\","
+            },
+            {
+              "new": 788,
+              "old": 743,
+              "op": " ",
+              "text": "                \"\","
+            }
+          ],
+          "new_start": 778,
+          "old_start": 738
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_make_markdown",
+      "removed": 0,
+      "span": [
+        767,
+        822
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        136,
+        146
+      ],
+      "call_sites": 5,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "_timestamp",
+      "removed": 0,
+      "span": [
+        136,
+        146
+      ],
+      "status": "context"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        816,
+        1028
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1027,
+              "old": 982,
+              "op": " ",
+              "text": "        slots = remaining_slots"
+            },
+            {
+              "new": 1028,
+              "old": 983,
+              "op": " ",
+              "text": "    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"
+            },
+            {
+              "new": 1029,
+              "old": 984,
+              "op": " ",
+              "text": "    rows_out = [_candidate_json(item) for item in selected]"
+            },
+            {
+              "new": 1030,
+              "old": null,
+              "op": "+",
+              "text": "    for row in rows_out:"
+            },
+            {
+              "new": 1031,
+              "old": null,
+              "op": "+",
+              "text": "        row.update(_date_added(row[\"profile_url\"], prospects, now))"
+            },
+            {
+              "new": 1032,
+              "old": 985,
+              "op": " ",
+              "text": "    company_usage: dict[str, dict[str, Any]] = {}"
+            },
+            {
+              "new": 1033,
+              "old": 986,
+              "op": " ",
+              "text": "    for company_id in sorted(registry):"
+            },
+            {
+              "new": 1034,
+              "old": 987,
+              "op": " ",
+              "text": "        usage: dict[str, Any] = {"
+            }
+          ],
+          "new_start": 1027,
+          "old_start": 982
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist",
+      "kind": "function",
+      "path": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "qualname": "build_invitation_shortlist",
+      "removed": 0,
+      "span": [
+        861,
+        1075
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        94,
+        117
+      ],
+      "call_sites": 57,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::qualification",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "qualification",
+      "removed": 0,
+      "span": [
+        95,
+        118
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        157,
+        159
+      ],
+      "call_sites": 54,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::run",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "run",
+      "removed": 0,
+      "span": [
+        158,
+        160
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        47,
+        91
+      ],
+      "call_sites": 56,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::source_export",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "source_export",
+      "removed": 0,
+      "span": [
+        48,
+        92
+      ],
+      "status": "context"
+    },
+    {
+      "added": 20,
+      "base_span": [
+        612,
+        646
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 617,
+              "old": 616,
+              "op": " ",
+              "text": "        source_path = temp_path / \"source.json\""
+            },
+            {
+              "new": 618,
+              "old": 617,
+              "op": " ",
+              "text": "        qualification_path = temp_path / \"qualification.json\""
+            },
+            {
+              "new": 619,
+              "old": 618,
+              "op": " ",
+              "text": "        output_path = temp_path / \"out\""
+            },
+            {
+              "new": null,
+              "old": 619,
+              "op": "-",
+              "text": "        source_path.write_text(json.dumps(source_export()), encoding=\"utf-8\")"
+            },
+            {
+              "new": 620,
+              "old": null,
+              "op": "+",
+              "text": "        source = source_export()"
+            },
+            {
+              "new": 621,
+              "old": null,
+              "op": "+",
+              "text": "        created_at = \"2026-09-30T14:12:13.123456+02:00\""
+            },
+            {
+              "new": 622,
+              "old": null,
+              "op": "+",
+              "text": "        source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"
+            },
+            {
+              "new": 623,
+              "old": null,
+              "op": "+",
+              "text": "        source_path.write_text(json.dumps(source), encoding=\"utf-8\")"
+            },
+            {
+              "new": 624,
+              "old": 620,
+              "op": " ",
+              "text": "        qualification_path.write_text(json.dumps(qualification()), encoding=\"utf-8\")"
+            },
+            {
+              "new": 625,
+              "old": 621,
+              "op": " ",
+              "text": "        os.chmod(source_path, 0o600)"
+            },
+            {
+              "new": 626,
+              "old": 622,
+              "op": " ",
+              "text": "        os.chmod(qualification_path, 0o600)"
+            }
+          ],
+          "new_start": 617,
+          "old_start": 616
+        },
+        {
+          "lines": [
+            {
+              "new": 646,
+              "old": 642,
+              "op": " ",
+              "text": "        assert stat.S_IMODE(markdown_path.stat().st_mode) == 0o600"
+            },
+            {
+              "new": 647,
+              "old": 643,
+              "op": " ",
+              "text": "        report = json.loads(report_path.read_text(encoding=\"utf-8\"))"
+            },
+            {
+              "new": 648,
+              "old": 644,
+              "op": " ",
+              "text": "        assert report[\"invitations\"][0][\"profile_url\"] == PROFILE_A"
+            },
+            {
+              "new": null,
+              "old": 645,
+              "op": "-",
+              "text": "        assert \"Synthetic Person\" in markdown_path.read_text(encoding=\"utf-8\")"
+            },
+            {
+              "new": 649,
+              "old": null,
+              "op": "+",
+              "text": "        row = report[\"invitations\"][0]"
+            },
+            {
+              "new": 650,
+              "old": null,
+              "op": "+",
+              "text": "        assert row[\"date_added\"] == created_at"
+            },
+            {
+              "new": 651,
+              "old": null,
+              "op": "+",
+              "text": "        assert row[\"date_added_source\"] == {"
+            },
+            {
+              "new": 652,
+              "old": null,
+              "op": "+",
+              "text": "            \"prospect_id\": \"tracked-a\","
+            },
+            {
+              "new": 653,
+              "old": null,
+              "op": "+",
+              "text": "            \"source_ref\": \"prospects.rows[0].created_at\","
+            },
+            {
+              "new": 654,
+              "old": null,
+              "op": "+",
+              "text": "            \"reason\": None,"
+            },
+            {
+              "new": 655,
+              "old": null,
+              "op": "+",
+              "text": "        }"
+            },
+            {
+              "new": 656,
+              "old": null,
+              "op": "+",
+              "text": "        markdown = markdown_path.read_text(encoding=\"utf-8\")"
+            },
+            {
+              "new": 657,
+              "old": null,
+              "op": "+",
+              "text": "        assert \"Synthetic Person\" in markdown"
+            },
+            {
+              "new": 658,
+              "old": null,
+              "op": "+",
+              "text": "        assert f\"Date added: {created_at}\" in markdown"
+            },
+            {
+              "new": 659,
+              "old": null,
+              "op": "+",
+              "text": "        assert \"source: prospects.rows[0].created_at; prospect: tracked-a; reason: none\" in markdown"
+            },
+            {
+              "new": 660,
+              "old": 646,
+              "op": " ",
+              "text": "        assert not any(name in process.stdout for name in (\"Synthetic Person\", PROFILE_A))"
+            },
+            {
+              "new": 661,
+              "old": null,
+              "op": "+",
+              "text": "        digest_input = dict(report)"
+            },
+            {
+              "new": 662,
+              "old": null,
+              "op": "+",
+              "text": "        digest = digest_input.pop(\"output_digest\")"
+            },
+            {
+              "new": 663,
+              "old": null,
+              "op": "+",
+              "text": "        assert digest == hashlib.sha256("
+            },
+            {
+              "new": 664,
+              "old": null,
+              "op": "+",
+              "text": "            json.dumps(digest_input, ensure_ascii=False, sort_keys=True, separators=(\",\", \":\")).encode(\"utf-8\")"
+            },
+            {
+              "new": 665,
+              "old": null,
+              "op": "+",
+              "text": "        ).hexdigest()"
+            }
+          ],
+          "new_start": 646,
+          "old_start": 642
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_cli_writes_private_outputs_and_sanitized_stdout",
+      "removed": 2,
+      "span": [
+        613,
+        665
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 20,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 668,
+              "old": null,
+              "op": "+",
+              "text": "def test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking() -> None:"
+            },
+            {
+              "new": 669,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"An exact URL alias may enrich output, but its source time cannot affect selection.\"\"\""
+            },
+            {
+              "new": 670,
+              "old": null,
+              "op": "+",
+              "text": "    source = source_export()"
+            },
+            {
+              "new": 671,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""
+            },
+            {
+              "new": 672,
+              "old": null,
+              "op": "+",
+              "text": "    created_at = \"2026-09-30T14:12:13.123456+02:00\""
+            },
+            {
+              "new": 673,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"
+            },
+            {
+              "new": 674,
+              "old": null,
+              "op": "+",
+              "text": "    qualification_data = qualification()"
+            },
+            {
+              "new": 675,
+              "old": null,
+              "op": "+",
+              "text": "    qualification_data[\"candidates\"][0][\"date_added\"] = \"2099-01-01T00:00:00Z\""
+            },
+            {
+              "new": 676,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 677,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source, qualification_data)"
+            },
+            {
+              "new": 678,
+              "old": null,
+              "op": "+",
+              "text": "    without_source_time = source_export()"
+            },
+            {
+              "new": 679,
+              "old": null,
+              "op": "+",
+              "text": "    without_source_time[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""
+            },
+            {
+              "new": 680,
+              "old": null,
+              "op": "+",
+              "text": "    baseline = run(without_source_time, qualification())"
+            },
+            {
+              "new": 681,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 682,
+              "old": null,
+              "op": "+",
+              "text": "    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == ["
+            },
+            {
+              "new": 683,
+              "old": null,
+              "op": "+",
+              "text": "        item[\"profile_url\"] for item in baseline[\"invitations\"]"
+            },
+            {
+              "new": 684,
+              "old": null,
+              "op": "+",
+              "text": "    ]"
+            },
+            {
+              "new": 685,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"score\"] == baseline[\"invitations\"][0][\"score\"]"
+            },
+            {
+              "new": 686,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added\"] == created_at"
+            },
+            {
+              "new": 687,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added_source\"][\"prospect_id\"] == \"tracked-a\""
+            }
+          ],
+          "new_start": 668,
+          "old_start": 647
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+      "removed": 0,
+      "span": [
+        668,
+        687
+      ],
+      "status": "added"
+    },
+    {
+      "added": 27,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 690,
+              "old": null,
+              "op": "+",
+              "text": "@pytest.mark.parametrize("
+            },
+            {
+              "new": 691,
+              "old": null,
+              "op": "+",
+              "text": "    (\"created_at\", \"reason\"),"
+            },
+            {
+              "new": 692,
+              "old": null,
+              "op": "+",
+              "text": "    ["
+            },
+            {
+              "new": 693,
+              "old": null,
+              "op": "+",
+              "text": "        (None, \"missing\"),"
+            },
+            {
+              "new": 694,
+              "old": null,
+              "op": "+",
+              "text": "        (42, \"invalid_timestamp\"),"
+            },
+            {
+              "new": 695,
+              "old": null,
+              "op": "+",
+              "text": "        (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 696,
+              "old": null,
+              "op": "+",
+              "text": "        (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 697,
+              "old": null,
+              "op": "+",
+              "text": "        (\"not-a-timestamp\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 698,
+              "old": null,
+              "op": "+",
+              "text": "        (\"2026-09-30T14:12:13\", \"invalid_timestamp\"),"
+            },
+            {
+              "new": 699,
+              "old": null,
+              "op": "+",
+              "text": "        (\"2026-10-03T00:00:00Z\", \"future_timestamp\"),"
+            },
+            {
+              "new": 700,
+              "old": null,
+              "op": "+",
+              "text": "    ],"
+            },
+            {
+              "new": 701,
+              "old": null,
+              "op": "+",
+              "text": ")"
+            },
+            {
+              "new": 702,
+              "old": null,
+              "op": "+",
+              "text": "def test_invalid_or_future_date_added_stays_unknown_with_safe_pointer(created_at: Any, reason: str) -> None:"
+            },
+            {
+              "new": 703,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Invalid values stay unknown and never leak their raw timestamp into output.\"\"\""
+            },
+            {
+              "new": 704,
+              "old": null,
+              "op": "+",
+              "text": "    source = source_export()"
+            },
+            {
+              "new": 705,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"
+            },
+            {
+              "new": 706,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 707,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source, qualification())"
+            },
+            {
+              "new": 708,
+              "old": null,
+              "op": "+",
+              "text": "    row = result[\"invitations\"][0]"
+            },
+            {
+              "new": 709,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 710,
+              "old": null,
+              "op": "+",
+              "text": "    assert row[\"date_added\"] is None"
+            },
+            {
+              "new": 711,
+              "old": null,
+              "op": "+",
+              "text": "    assert row[\"date_added_source\"] == {"
+            },
+            {
+              "new": 712,
+              "old": null,
+              "op": "+",
+              "text": "        \"prospect_id\": \"tracked-a\","
+            },
+            {
+              "new": 713,
+              "old": null,
+              "op": "+",
+              "text": "        \"source_ref\": \"prospects.rows[0].created_at\","
+            },
+            {
+              "new": 714,
+              "old": null,
+              "op": "+",
+              "text": "        \"reason\": reason,"
+            },
+            {
+              "new": 715,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 716,
+              "old": null,
+              "op": "+",
+              "text": "    assert str(created_at) not in json.dumps(row)"
+            }
+          ],
+          "new_start": 690,
+          "old_start": 647
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "removed": 0,
+      "span": [
+        690,
+        716
+      ],
+      "status": "added"
+    },
+    {
+      "added": 12,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 719,
+              "old": null,
+              "op": "+",
+              "text": "def test_missing_date_added_stays_unknown_and_does_not_change_membership() -> None:"
+            },
+            {
+              "new": 720,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"A missing creation time is not inferred and cannot alter eligibility.\"\"\""
+            },
+            {
+              "new": 721,
+              "old": null,
+              "op": "+",
+              "text": "    source = source_export()"
+            },
+            {
+              "new": 722,
+              "old": null,
+              "op": "+",
+              "text": "    baseline = run(source, qualification())"
+            },
+            {
+              "new": 723,
+              "old": null,
+              "op": "+",
+              "text": "    expected_membership = [item[\"profile_url\"] for item in baseline[\"invitations\"]]"
+            },
+            {
+              "new": 724,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 725,
+              "old": null,
+              "op": "+",
+              "text": "    source[\"prospects\"][\"rows\"][0].pop(\"created_at\", None)"
+            },
+            {
+              "new": 726,
+              "old": null,
+              "op": "+",
+              "text": "    result = run(source, qualification())"
+            },
+            {
+              "new": 727,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 728,
+              "old": null,
+              "op": "+",
+              "text": "    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == expected_membership"
+            },
+            {
+              "new": 729,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added\"] is None"
+            },
+            {
+              "new": 730,
+              "old": null,
+              "op": "+",
+              "text": "    assert result[\"invitations\"][0][\"date_added_source\"][\"reason\"] == \"missing\""
+            }
+          ],
+          "new_start": 719,
+          "old_start": 647
+        }
+      ],
+      "id": "tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_missing_date_added_stays_unknown_and_does_not_change_membership",
+      "removed": 0,
+      "span": [
+        719,
+        730
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        578,
+        581
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm",
+      "kind": "function",
+      "path": "tests/e2e_invitation_shortlist.py",
+      "qualname": "test_real_cap_policy_is_explicit_and_never_defaults_to_crm",
+      "removed": 0,
+      "span": [
+        579,
+        582
+      ],
+      "status": "context"
+    },
+    {
+      "added": 6,
+      "base_span": [
+        14,
+        76
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 65,
+              "old": 65,
+              "op": " ",
+              "text": "            \"invalid canonical employer aliases left contradictory resolved audit entries\","
+            },
+            {
+              "new": 66,
+              "old": 66,
+              "op": " ",
+              "text": "            \"distinct invalid employer identity keys collapsed without source pointers\","
+            },
+            {
+              "new": 67,
+              "old": 67,
+              "op": " ",
+              "text": "            \"unpaired Unicode employer keys failed before unresolved queue recording\","
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "            \"report omitted a valid exact-profile prospect creation timestamp\","
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "            \"invalid or future creation timestamps were not withheld as unknown\","
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "            \"creation timestamp or qualification spoof changed ranking or membership\","
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "            \"private Markdown omitted creation-time provenance\","
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "            \"UTC conversion overflow aborted timestamp enrichment\","
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "            \"private Markdown omitted the creation-time prospect ID\","
+            },
+            {
+              "new": 74,
+              "old": 68,
+              "op": " ",
+              "text": "            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","
+            },
+            {
+              "new": 75,
+              "old": 69,
+              "op": " ",
+              "text": "            \"candidate qualification citation attested a different profile\","
+            },
+            {
+              "new": 76,
+              "old": 70,
+              "op": " ",
+              "text": "        ],"
+            }
+          ],
+          "new_start": 65,
+          "old_start": 65
+        }
+      ],
+      "id": "tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e",
+      "kind": "function",
+      "path": "tests/test_invitation_shortlist_e2e.py",
+      "qualname": "test_invitation_shortlist_e2e",
+      "removed": 0,
+      "span": [
+        14,
+        82
+      ],
+      "status": "modified"
+    }
+  ],
+  "title": "feat(report): show date added",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added"
+      ],
+      "kind": "callee",
+      "via": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "focus": [
+        "tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout",
+        "tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking",
+        "tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+        "tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership",
+        "tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e"
+      ],
+      "kind": "test",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/komaksym/linkedin-mdp/pull/12"
+}

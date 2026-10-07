@@ -1,0 +1,967 @@
+{
+  "duration": 60.75704225352114,
+  "header": "<b>linkedin-mdp #10</b> \u00b7 komaksym",
+  "name": "pr10",
+  "scenes": [
+    {
+      "end": 9.678169014084508,
+      "footer": "base dc3f451  \u2192  head 5498b6c",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+2698</span> <span class=\"del\">\u221216</span> \u00b7 14 files \u00b7 komaksym/linkedin-mdp#10",
+      "say": [
+        "The invitation report ignored history outside the CRM.",
+        "This change counts every outgoing invitation before ranking."
+      ],
+      "sentences": [
+        {
+          "dur": 3.802816901408451,
+          "off": 3.802816901408451,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The invitation report ignored history outside the CRM."
+        },
+        {
+          "dur": 4.225352112676057,
+          "off": 4.225352112676057,
+          "on": 0.0,
+          "start": 4.552816901408451,
+          "text": "This change counts every outgoing invitation before ranking."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(report): plan invitations from complete history",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "provider invitations"
+        },
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "CRM sent facts"
+        },
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "Supabase invitation events"
+        },
+        {
+          "line": "artifacts/invitation-shortlist-e2e-evidence.json:11",
+          "match": "CRM-only policy permitted for an all-history report"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1024",
+          "match": "company_counts[employer.company_id] += 1"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1027",
+          "match": "\"profile_url\": profile_url,"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "who"
+          ],
+          "step": 0.4,
+          "t": 10.522535211267606
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "cap"
+          ],
+          "step": 0.4,
+          "t": 15.498591549295776
+        }
+      ],
+      "end": 17.525352112676057,
+      "footer": "receipts   invitation-shortlist.md:52  \u00b7  invitation-shortlist.md:52  \u00b7  invitation-shortlist.md:52  \u00b7  invitation-shortlist-e2e-evidence.json:11",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "profile_url",
+          "id": "who",
+          "items": [
+            {
+              "ground": "provider invitations",
+              "id": "p",
+              "text": "provider"
+            },
+            {
+              "ground": "CRM sent facts",
+              "id": "c",
+              "text": "CRM"
+            },
+            {
+              "ground": "Supabase invitation events",
+              "id": "s",
+              "text": "Supabase"
+            }
+          ],
+          "row": true,
+          "sub": "three sources, one person",
+          "title": "outgoing history"
+        },
+        {
+          "col": 1,
+          "ground": "company_counts",
+          "id": "cap",
+          "items": [
+            {
+              "ground": "company_counts",
+              "id": "u",
+              "text": "used"
+            }
+          ],
+          "row": true,
+          "sub": "a narrower slice counted",
+          "title": "company cap"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "One person appears across provider, CRM, and event rows.",
+        "The scope must read all history."
+      ],
+      "sentences": [
+        {
+          "dur": 3.943661971830986,
+          "off": 3.943661971830986,
+          "on": 0.0,
+          "start": 10.128169014084508,
+          "text": "One person appears across provider, CRM, and event rows."
+        },
+        {
+          "dur": 2.2535211267605635,
+          "off": 2.2535211267605635,
+          "on": 0.0,
+          "start": 14.371830985915494,
+          "text": "The scope must read all history."
+        }
+      ],
+      "start": 9.678169014084508,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "grouped by normalized exact profile identity"
+        },
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "counts each person once"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1024",
+          "match": "company_counts[employer.company_id] += 1"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1027",
+          "match": "\"profile_url\": profile_url,"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1050",
+          "match": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+        }
+      ],
+      "cues": [
+        {
+          "at": "counts once",
+          "do": "fly",
+          "from": "p",
+          "t": 19.454225352112676,
+          "to": "u"
+        },
+        {
+          "at": "recorded history",
+          "do": "tone",
+          "ids": [
+            "u"
+          ],
+          "t": 24.05,
+          "tone": "good"
+        },
+        {
+          "at": "mapped latest employer",
+          "do": "note",
+          "id": "cap",
+          "t": 21.144366197183096,
+          "text": "one count per person"
+        }
+      ],
+      "end": 27.5556338028169,
+      "footer": "receipts   invitation-shortlist.md:52  \u00b7  invitation-shortlist.md:52  \u00b7  invitation_shortlist.py:1024  \u00b7  invitation_shortlist.py:1027",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "profile_url",
+          "id": "who",
+          "items": [
+            {
+              "ground": "provider invitations",
+              "id": "p",
+              "text": "provider"
+            },
+            {
+              "ground": "CRM sent facts",
+              "id": "c",
+              "text": "CRM"
+            },
+            {
+              "ground": "Supabase invitation events",
+              "id": "s",
+              "text": "Supabase"
+            }
+          ],
+          "row": true,
+          "sub": "three sources, one person",
+          "title": "outgoing history"
+        },
+        {
+          "col": 1,
+          "ground": "company_counts",
+          "id": "cap",
+          "items": [
+            {
+              "ground": "company_counts",
+              "id": "u",
+              "text": "used"
+            }
+          ],
+          "row": true,
+          "sub": "every source counts",
+          "title": "company cap"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "Each recorded person counts once against the mapped latest employer.",
+        "Slots fall as recorded history rises, down to zero."
+      ],
+      "sentences": [
+        {
+          "dur": 4.788732394366197,
+          "off": 4.788732394366197,
+          "on": 0.0,
+          "start": 17.975352112676056,
+          "text": "Each recorded person counts once against the mapped latest employer."
+        },
+        {
+          "dur": 3.591549295774648,
+          "off": 3.591549295774648,
+          "on": 0.0,
+          "start": 23.064084507042253,
+          "text": "Slots fall as recorded history rises, down to zero."
+        }
+      ],
+      "start": 17.525352112676057,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1024",
+          "match": "company_counts[employer.company_id] += 1"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1046",
+          "match": "status = \"withheld_current_employer_assignments\""
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1050",
+          "match": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1054",
+          "match": "if slots[candidate_row.company_id] <= 0:"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1056",
+          "match": "selected.append(candidate_row)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1058",
+          "match": "if len(selected) == 25:"
+        }
+      ],
+      "cues": [
+        {
+          "at": "mapped company count",
+          "do": "step",
+          "n": 1,
+          "t": 30.752112676056335
+        },
+        {
+          "at": "withholds the shortlist",
+          "do": "note",
+          "line": "1046",
+          "t": 33.86901408450704,
+          "text": "queue blocks every slot"
+        },
+        {
+          "at": "rank order",
+          "do": "note",
+          "line": "1050",
+          "t": 39.16901408450704,
+          "text": "cap minus recorded history"
+        }
+      ],
+      "cut": 8,
+      "end": 42.322535211267606,
+      "file": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "footer": "receipts   7 lines quoted verbatim from the diff of invitation_shortlist.py",
+      "gutter": 4,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        "1024",
+        "1046",
+        "1050",
+        "1054",
+        "1056",
+        "1057",
+        "1058"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 1024,
+          "op": "+",
+          "ref": "1024",
+          "step": 1,
+          "text": "company_counts[employer.company_id] += 1",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "company_counts"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "employer"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "company_id"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "+"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 1046,
+          "op": "+",
+          "ref": "1046",
+          "step": 1,
+          "text": "status = \"withheld_current_employer_assignments\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "status"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "withheld_current_employer_assignments"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            25
+          ],
+          "hang": 4,
+          "num": 1050,
+          "op": "+",
+          "ref": "1050",
+          "step": 1,
+          "text": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "slots"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "{"
+            },
+            {
+              "cls": "",
+              "text": "company_id"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "max"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "n",
+              "text": "0"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "3"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "-"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "company_counts"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "company_id"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "company_id"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "registry"
+            },
+            {
+              "cls": "",
+              "text": "}"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 1054,
+          "op": "+",
+          "ref": "1054",
+          "step": 1,
+          "text": "    if slots[candidate_row.company_id] <= 0:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "slots"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "candidate_row"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "company_id"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "<"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "0"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 1056,
+          "op": "+",
+          "ref": "1056",
+          "step": 1,
+          "text": "    selected.append(candidate_row)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "selected"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "append"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "candidate_row"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 1057,
+          "op": "+",
+          "ref": "1057",
+          "step": 1,
+          "text": "    slots[candidate_row.company_id] -= 1",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "slots"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "candidate_row"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "company_id"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "-"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 1058,
+          "op": "+",
+          "ref": "1058",
+          "step": 1,
+          "text": "    if len(selected) == 25:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "len"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "selected"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "25"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "Each recorded person adds one to their mapped company count.",
+        "Unresolved history withholds the shortlist instead of guessing.",
+        "Remaining slots pay out in rank order up to the list limit."
+      ],
+      "sentences": [
+        {
+          "dur": 4.225352112676057,
+          "off": 4.225352112676057,
+          "on": 0.0,
+          "start": 28.0056338028169,
+          "text": "Each recorded person adds one to their mapped company count."
+        },
+        {
+          "dur": 4.436619718309859,
+          "off": 4.436619718309859,
+          "on": 0.0,
+          "start": 32.530985915492955,
+          "text": "Unresolved history withholds the shortlist instead of guessing."
+        },
+        {
+          "dur": 4.154929577464789,
+          "off": 4.154929577464789,
+          "on": 0.0,
+          "start": 37.267605633802816,
+          "text": "Remaining slots pay out in rank order up to the list limit."
+        }
+      ],
+      "start": 27.5556338028169,
+      "type": "diff"
+    },
+    {
+      "big": "66",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 43.27957746478874
+        }
+      ],
+      "end": 48.74295774647888,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1068",
+          "text": "test_present_employer_counts_undated_all_history_once_and_keeps_audit_pointers"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1092",
+          "text": "test_current_employer_conflict_across_canonical_profile_keys_withholds_all"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1107",
+          "text": "test_candidate_company_conflict_with_current_employer_is_withheld"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1115",
+          "text": "test_unknown_historical_identity_or_employer_globally_withholds_capacity"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1124",
+          "text": "test_read_only_report_has_no_recommendation_event_plan"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": "+ 61 more",
+      "say": [
+        "New tests pin all-history capacity, conflicts, and the read-only report."
+      ],
+      "sentences": [
+        {
+          "dur": 5.070422535211268,
+          "off": 5.070422535211268,
+          "on": 0.0,
+          "start": 42.77253521126761,
+          "text": "New tests pin all-history capacity, conflicts, and the read-only report."
+        }
+      ],
+      "start": 42.322535211267606,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "66"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "49"
+        }
+      ],
+      "end": 56.519718309859165,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "New tests guard the shortlist pipeline.",
+        "Changed functions carry the capacity accounting."
+      ],
+      "sentences": [
+        {
+          "dur": 2.746478873239437,
+          "off": 2.746478873239437,
+          "on": 0.0,
+          "start": 49.19295774647888,
+          "text": "New tests guard the shortlist pipeline."
+        },
+        {
+          "dur": 3.3802816901408455,
+          "off": 3.3802816901408455,
+          "on": 0.0,
+          "start": 52.23943661971832,
+          "text": "Changed functions carry the capacity accounting."
+        }
+      ],
+      "start": 48.74295774647888,
+      "type": "stats"
+    },
+    {
+      "end": 60.75704225352114,
+      "footer": "",
+      "i": 6,
+      "l1": "All invitation history counts once per person against the mapped latest employer.",
+      "l2": "Start review at build_invitation_shortlist in invitation_shortlist.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 56.96971830985917,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 56.519718309859165,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/10"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "pr": 11,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Before: 'The private collector dropped prospect timestamps.' and 'The projection left out the created_at column.', so each prospect row was fetched 'without its timestamp'. After: 'This change fetches the existing created_at column.' and 'Prospect rows now carry their creation timestamps.', with 'Each encrypted row keeps the provider timestamp exactly.' The only affected party the packet names is the owner of the private reports behind the private collector / private source ('The private collector', 'private-source'); no other audience is shown."
+    },
+    {
+      "id": "q2",
+      "answer": "The packet shows no function name. The change is in the module-level projection map TABLE_COLUMNS in diagnostics/action-report-private-source-20261002/collect_private_source.py ('Start at TABLE_COLUMNS in collect_private_source.py.', 'Start at the projection map in collect_private_source.py.'), where line 19 is the changed line."
+    },
+    {
+      "id": "q3",
+      "answer": "Old prospects projection (removed line '-19'): \"prospects\": \"id,lead_id,linkedin_url,attributes\",  New prospects projection (added line '+19'): \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\","
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py - synthetic end to end test (receipts #L116, #L117, #L63); changed symbols not shown: exercise.provider, main.failing_export, main.synthetic_export",
+        "PLANS.md (docs)",
+        "diagnostics/action-report-private-source-20261002/README.md (docs)",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json (config)",
+        "infographic/prospect-created-at/analysis.md (docs)",
+        "infographic/prospect-created-at/infographic.png (opaque)",
+        "infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md (docs)",
+        "infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md (docs)",
+        "infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md (docs)",
+        "infographic/prospect-created-at/source.md (docs)",
+        "infographic/prospect-created-at/structured-content.md (docs)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None shown. The packet shows one column added to the prospects projection in TABLE_COLUMNS (collect_private_source.py), a synthetic end to end test, and docs/infographic/config files. It shows no CI, dependency, auth, schema, secrets, or external call change."
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests pin that prospect created_at values survive paging exactly - item 'prospect_created_at_exact_across_pages' (diagnostics/action-report-private-source-20261002/e2e_private_source.py#L116) with the value '2025-01-02T03:04:05.123456+00:00' (#L63) - and that a missing value stays missing - item 'missing_created_at' (#L117)."
+    },
+    {
+      "id": "q7",
+      "answer": "Start at TABLE_COLUMNS in diagnostics/action-report-private-source-20261002/collect_private_source.py ('Start at the projection map in collect_private_source.py.', 'Start at TABLE_COLUMNS in collect_private_source.py.'). The diff quotes lines 18-20; line 19 is the changed line."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The packet says 'Exact timestamps survive paging, and a missing value stays missing.' and lists the item 'missing_created_at' (e2e_private_source.py#L117); 'Each encrypted row keeps the provider timestamp exactly.' No fill-in of the collection time is shown."
+    }
+  ]
+}

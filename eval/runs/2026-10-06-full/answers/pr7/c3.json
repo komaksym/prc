@@ -1,0 +1,42 @@
+{
+  "pr": 7,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Invitation rows change from 'raw provider history' (chip 'OUTGOING') to 'durable history events' (chip 'history'), and 'This change reconciles past outbound invitations.': the new path fetches all provider pages first ('\"\"\"Fetch and validate all provider pages before any database read or write.\"\"\"'), plans events ('plan = plan_invitation_events(rows, prospects_by_key, observed_at=observed_at)') and writes them idempotently ('inserted = await supabase.insert_events_ignore_duplicates(plan.events)', badge 'dedupe safe, replay clean'). The only party named in the packet is 'komaksym' ('komaksym/linkedin-mdp#7'); the packet names no other affected person, so any other audience is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "'reconcile_invitations' - in src/linkedin_mdp_mcp/invitation_sync.py the quoted diff opens with '170 + async def reconcile_invitations(' (receipt: '6 lines quoted verbatim from the diff of invitation_sync.py')."
+    },
+    {
+      "id": "q3",
+      "answer": "'A manual workflow stays gated behind main branch plus one variable.' - the 'MANUAL WORKFLOW' card reads 'stays disabled' (chip 'manual') before and 'still gated' (chip 'gated') after, with receipts 'sync-invitations.yml:11' and 'sync-invitations.yml:4'. The packet does not name the variable, so its exact name is CANNOT TELL."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "sync-invitations.yml - the manual workflow's file; receipts read 'sync-invitations.yml:11 \u00b7 sync-invitations.yml:4'",
+        "test_invitation_sync_e2e.py - the test file; '6 new tests', first shown as 'ok test_complete_multipage_history_is_matched_deduped_and_idempotent' at 'test_invitation_sync_e2e.py:111', then '+ 5 more'",
+        "Overall change footprint: '+818 \u22129 \u00b7 17 files \u00b7 komaksym/linkedin-mdp#7' (base 1253403 \u2192 head 1f2f010); the packet does not show the remaining files"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI and external calls. CI: the manual workflow's file sync-invitations.yml is cited ('sync-invitations.yml:11 \u00b7 sync-invitations.yml:4') with a gate ('A manual workflow stays gated behind main branch plus one variable.'). External calls: a provider fetch, 'snapshot = await linkedin.snapshot(' / '\"INVITATIONS\", max_pages=50, strict_elements=True', and a database insert, 'inserted = await supabase.insert_events_ignore_duplicates(plan.events)'. The packet shows nothing about dependencies, auth, schema, or secrets."
+    },
+    {
+      "id": "q6",
+      "answer": "'New tests pin multipage matching with dedupe and replay.' - under '6 new tests', the shown test is 'ok test_complete_multipage_history_is_matched_deduped_and_idempotent' ('test_invitation_sync_e2e.py:111') with '+ 5 more'."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with src/linkedin_mdp_mcp/invitation_sync.py: the section 'The change, line for line' points to that path, the caption says 'Changed functions carry the reconcile path.', and the quoted diff starts at '170 + async def reconcile_invitations('. The test file 'test_invitation_sync_e2e.py:111' ('6 new tests') is the follow-up read."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The 'MANUAL WORKFLOW' card reads 'stays disabled' (chip 'manual') / 'still gated' (chip 'gated'), and the caption says 'A manual workflow stays gated behind main branch plus one variable.'"
+    }
+  ]
+}

@@ -1,0 +1,770 @@
+{
+  "duration": 49.96408450704227,
+  "header": "<b>linkedin-mdp #8</b> \u00b7 komaksym",
+  "name": "pr8",
+  "scenes": [
+    {
+      "end": 7.354225352112677,
+      "footer": "base 5f4440d  \u2192  head dc3f451",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+1892</span> <span class=\"del\">\u22127</span> \u00b7 29 files \u00b7 komaksym/linkedin-mdp#8",
+      "say": [
+        "The owner had no durable inbox evidence.",
+        "This change syncs private inbox messages."
+      ],
+      "sentences": [
+        {
+          "dur": 2.8169014084507045,
+          "off": 2.8169014084507045,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The owner had no durable inbox evidence."
+        },
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 3.5669014084507045,
+          "text": "This change syncs private inbox messages."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(inbox): record private LinkedIn inbox evidence",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/inbox-evidence.md:3",
+          "match": "DRY_RUN_COMPLETE"
+        },
+        {
+          "line": "tests/e2e_inbox_sync.py:27",
+          "match": "\"CONVERSATION ID\""
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "cli",
+            "rows"
+          ],
+          "step": 0.4,
+          "t": 8.135211267605635
+        }
+      ],
+      "end": 15.06056338028169,
+      "footer": "receipts   inbox-evidence.md:3  \u00b7  e2e_inbox_sync.py:27",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "CONVERSATION ID",
+          "id": "rows",
+          "items": [
+            {
+              "ground": "CONVERSATION ID",
+              "id": "r",
+              "text": "message"
+            }
+          ],
+          "row": true,
+          "sub": "raw provider snapshot",
+          "title": "inbox rows"
+        },
+        {
+          "col": 1,
+          "ground": "DRY_RUN_COMPLETE",
+          "id": "cli",
+          "items": [
+            {
+              "ground": "DRY_RUN_COMPLETE",
+              "id": "g",
+              "text": "dry run"
+            }
+          ],
+          "row": true,
+          "sub": "dry run default",
+          "title": "sync command"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "Inbox rows arrive as one raw provider snapshot.",
+        "The sync command defaults to a dry run."
+      ],
+      "sentences": [
+        {
+          "dur": 3.3098591549295775,
+          "off": 3.3098591549295775,
+          "on": 0.0,
+          "start": 7.804225352112677,
+          "text": "Inbox rows arrive as one raw provider snapshot."
+        },
+        {
+          "dur": 2.746478873239437,
+          "off": 2.746478873239437,
+          "on": 0.0,
+          "start": 11.414084507042254,
+          "text": "The sync command defaults to a dry run."
+        }
+      ],
+      "start": 7.354225352112677,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/inbox_sync.py:295",
+          "match": "LINKEDIN_MESSAGE_OBSERVED"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/inbox_sync.py:317",
+          "match": "dry_run: bool = True,"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/inbox_sync.py:357",
+          "match": "if not dry_run:"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "cli",
+            "rows"
+          ],
+          "step": 0.4,
+          "t": 15.855633802816902
+        }
+      ],
+      "end": 23.119014084507043,
+      "footer": "receipts   inbox_sync.py:295  \u00b7  inbox_sync.py:317  \u00b7  inbox_sync.py:357",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "LINKEDIN_MESSAGE_OBSERVED",
+          "id": "rows",
+          "items": [
+            {
+              "ground": "LINKEDIN_MESSAGE_OBSERVED",
+              "id": "r",
+              "text": "evidence"
+            }
+          ],
+          "row": true,
+          "sub": "planned message evidence",
+          "title": "inbox rows"
+        },
+        {
+          "col": 1,
+          "ground": "dry_run",
+          "id": "cli",
+          "items": [
+            {
+              "ground": "dry_run",
+              "id": "g",
+              "text": "still dry"
+            }
+          ],
+          "row": true,
+          "sub": "still dry run",
+          "title": "sync command"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "Complete clean snapshots become planned evidence.",
+        "Writes stay off unless the caller opts in."
+      ],
+      "sentences": [
+        {
+          "dur": 3.450704225352113,
+          "off": 3.450704225352113,
+          "on": 0.0,
+          "start": 15.51056338028169,
+          "text": "Complete clean snapshots become planned evidence."
+        },
+        {
+          "dur": 2.9577464788732395,
+          "off": 2.9577464788732395,
+          "on": 0.0,
+          "start": 19.261267605633805,
+          "text": "Writes stay off unless the caller opts in."
+        }
+      ],
+      "start": 15.06056338028169,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/inbox_sync.py:311",
+          "match": "async def reconcile_inbox("
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/inbox_sync.py:357",
+          "match": "if not dry_run:"
+        }
+      ],
+      "cues": [
+        {
+          "at": "complete inbox snapshot",
+          "do": "step",
+          "n": 1,
+          "t": 25.259154929577466
+        },
+        {
+          "at": "opts into apply",
+          "do": "note",
+          "line": "357",
+          "t": 31.26338028169014,
+          "text": "writes only when applied",
+          "tone": "good"
+        }
+      ],
+      "cut": 0,
+      "end": 33.290140845070425,
+      "file": "src/linkedin_mdp_mcp/inbox_sync.py",
+      "footer": "receipts   5 lines quoted verbatim from the diff of inbox_sync.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        "311",
+        "317",
+        "319",
+        "326",
+        "357"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 311,
+          "op": "+",
+          "ref": "311",
+          "step": 1,
+          "text": "async def reconcile_inbox(",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "async"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "def"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "reconcile_inbox"
+            },
+            {
+              "cls": "",
+              "text": "("
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 317,
+          "op": "+",
+          "ref": "317",
+          "step": 1,
+          "text": "    dry_run: bool = True,",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "dry_run"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "bool"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "True"
+            },
+            {
+              "cls": "",
+              "text": ","
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            22
+          ],
+          "hang": 8,
+          "num": 319,
+          "op": "+",
+          "ref": "319",
+          "step": 1,
+          "text": "    \"\"\"Validate a complete INBOX snapshot, plan evidence, then optionally apply it.\"\"\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "Validate"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "a"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "complete"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "INBOX"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "snapshot"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "plan"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "evidence"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "then"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "optionally"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "apply"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "it"
+            },
+            {
+              "cls": "s",
+              "text": "."
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            21
+          ],
+          "hang": 12,
+          "num": 326,
+          "op": "+",
+          "ref": "326",
+          "step": 1,
+          "text": "        snapshot = await linkedin.snapshot(\"INBOX\", max_pages=50, strict_elements=True)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "",
+              "text": "snapshot"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "await"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "linkedin"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "snapshot"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "INBOX"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "max_pages"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "n",
+              "text": "50"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "strict_elements"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "k",
+              "text": "True"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 357,
+          "op": "+",
+          "ref": "357",
+          "step": 1,
+          "text": "    if not dry_run:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "not"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "dry_run"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "Reconcile validates the complete inbox snapshot, then plans evidence.",
+        "It writes nothing unless the caller opts into apply."
+      ],
+      "sentences": [
+        {
+          "dur": 4.859154929577465,
+          "off": 4.859154929577465,
+          "on": 0.0,
+          "start": 23.569014084507042,
+          "text": "Reconcile validates the complete inbox snapshot, then plans evidence."
+        },
+        {
+          "dur": 3.6619718309859155,
+          "off": 3.6619718309859155,
+          "on": 0.0,
+          "start": 28.728169014084507,
+          "text": "It writes nothing unless the caller opts into apply."
+        }
+      ],
+      "start": 23.119014084507043,
+      "type": "diff"
+    },
+    {
+      "big": "2",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 34.134507042253524
+        }
+      ],
+      "end": 38.58380281690142,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_inbox_sync.py:115",
+          "text": "unicode_profile_identity_persisted"
+        },
+        {
+          "cite": "tests/e2e_inbox_sync.py:298",
+          "text": "dry_run_writes_nothing"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": null,
+      "say": [
+        "New scenarios pin Unicode identity and dry-run defaults."
+      ],
+      "sentences": [
+        {
+          "dur": 3.943661971830986,
+          "off": 3.943661971830986,
+          "on": 0.0,
+          "start": 33.74014084507043,
+          "text": "New scenarios pin Unicode identity and dry-run defaults."
+        }
+      ],
+      "start": 33.290140845070425,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "2"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "30"
+        }
+      ],
+      "end": 45.726760563380296,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "New tests guard the inbox pipeline.",
+        "Changed functions carry the reconcile path."
+      ],
+      "sentences": [
+        {
+          "dur": 2.4647887323943665,
+          "off": 2.4647887323943665,
+          "on": 0.0,
+          "start": 39.03380281690142,
+          "text": "New tests guard the inbox pipeline."
+        },
+        {
+          "dur": 3.028169014084507,
+          "off": 3.028169014084507,
+          "on": 0.0,
+          "start": 41.798591549295786,
+          "text": "Changed functions carry the reconcile path."
+        }
+      ],
+      "start": 38.58380281690142,
+      "type": "stats"
+    },
+    {
+      "end": 49.96408450704227,
+      "footer": "",
+      "i": 6,
+      "l1": "Private inbox rows gain validated evidence with dry run as default.",
+      "l2": "Start review at reconcile_inbox in inbox_sync.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 46.1767605633803,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 45.726760563380296,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/8"
+    }
+  ]
+}

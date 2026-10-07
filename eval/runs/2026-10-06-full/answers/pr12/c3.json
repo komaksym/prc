@@ -1,0 +1,42 @@
+{
+  "pr": 12,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private invitation report gains a date for each row. Before this change, the report row showed none of it: the row ('REPORT ROW invitation', 'Synthetic Person') had a dashed DATE_ADDED cell marked 'no date'. Now the report row carries that exact timestamp as date added: the matching prospect row in Supabase (tracked-a, created_at) supplies its creation time. The slides say 'Each prospect row matched here supplies its creation time, or unknown when missing', 'Each selected invitation row then gets its date' and 'Each row now shows its date added. Unknown stays unknown.' So the reviewer of the private invitation report sees, for every row, when it was added; a bad value is never guessed and is never copied ('The row keeps a reason, and the bad value is never copied'). The packet names no audience other than the reviewer of that private invitation report; no other consumer is shown."
+    },
+    {
+      "id": "q2",
+      "answer": "The only function named in the packet is _date_added, applied per row at lines 1030-1031: 'for row in rows_out:' then 'row.update(_date_added(row[\"profile_url\"], prospect'. The packet does not name the function that encloses the other changed lines (line 453 'if len(matches) != 1:' and lines 472-476 'except (ShortlistInputError, OverflowError):' ... 'if parsed > now:' ... 'provenance[\"reason\"] = \"future_timestamp\"'), so the enclosing function of that validation block is CANNOT TELL."
+    },
+    {
+      "id": "q3",
+      "answer": "The new code rejects a timestamp in two ways. It catches a raising parse with 'except (ShortlistInputError, OverflowError):' then 'provenance[\"reason\"] = \"invalid_timestamp\"' and returns the row as unknown: 'return {\"date_added\": None, \"date_added_source\": provenance}'. It also compares the parsed value with the current time: 'if parsed > now:' and then 'provenance[\"reason\"] = \"future_timestamp\"'. So for a timestamp in the future the reason recorded is exactly 'future_timestamp', and the row stays unknown, because 'The row keeps a reason, and the bad value is never copied.' The cases slide shows '(None, \"missing\")', '(42, \"invalid_timestamp\")', '(\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\")', '(\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\")', '(\"not-a-timestamp\", \"invalid_timestamp\")', '(\"2026-09-30T14:12:13\", \"invalid_timestamp\")' and '(\"2026-10-03T00:00:00Z\", \"future_timestamp\")'. The check above these is line 453, 'if len(matches) != 1:'."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "Tests in 'e2e_invitation_shortlist.py': the '3 new tests' slide cites e2e_invitation_shortlist.py:669 ('An exact URL alias may enrich output, but its source time cannot affect selection.'), e2e_invitation_shortlist.py:703 ('Invalid values stay unknown and never leak their raw timestamp into output.') and e2e_invitation_shortlist.py:720 ('A missing creation time is not inferred and cannot alter eligibility.').",
+        "The same test file appears in the receipts of the other slides at e2e_invitation_shortlist.py:621, :652, :657, :658, :693, :694, :695, :696, :697, :698, :699, :710 and :716.",
+        "No other file or area is shown in this packet; the main source module named is 'src/linkedin_mdp_mcp/invitation_shortlist.py'."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None of CI, dependencies, auth, schema or secrets are shown to change; the packet shows no such surface. The only outside-system element visible is data: the 'PROSPECT ROW in Supabase' with tracked-a and created_at, whose creation time is read and copied into the report row, plus the per-row call 'row.update(_date_added(row[\"profile_url\"], prospect'. The packet does not show whether that prospect lookup is new or whether any schema changed, so that part is CANNOT TELL."
+    },
+    {
+      "id": "q6",
+      "answer": "The three new tests pin: 'An exact URL alias may enrich output, but its source time cannot affect selection.'; 'Invalid values stay unknown and never leak their raw timestamp into output.'; 'A missing creation time is not inferred and cannot alter eligibility.' Together they pin that date added only enriches output rows and cannot change selection or eligibility, that invalid timestamps stay unknown and are not copied into output, and that a missing creation time is not inferred."
+    },
+    {
+      "id": "q7",
+      "answer": "Start in 'src/linkedin_mdp_mcp/invitation_shortlist.py' - the 'The change, line for line' slide names this path. Read the validation block first: line 453 'if len(matches) != 1:', then lines 472-476 'except (ShortlistInputError, OverflowError):' / 'provenance[\"reason\"] = \"invalid_timestamp\"' / 'return {\"date_added\": None, \"date_added_source\": provenance}' / 'if parsed > now:' / 'provenance[\"reason\"] = \"future_timestamp\"'. Then follow the per-row application at lines 1030-1031 'for row in rows_out:' / 'row.update(_date_added(row[\"profile_url\"], prospect'. After that, the 3 new tests in 'e2e_invitation_shortlist.py' (lines 669, 703, 720)."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The new tests pin that the source time 'cannot affect selection', that invalid values 'never leak their raw timestamp into output' and that a missing creation time 'cannot alter eligibility'; the slides only claim enrichment ('Each row now shows its date added. Unknown stays unknown.'). So adding date_added enriches the output rows and does not change shortlist membership or ranking."
+    }
+  ]
+}

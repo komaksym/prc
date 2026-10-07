@@ -1,0 +1,42 @@
+{
+  "pr": 11,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The card title states: \"The private collector dropped prospect timestamps.\" So the private collector no longer carries prospect timestamps in the private reports (path shown truncated as \"diagnostics/action-report-private-so…\"). The card does not say which audience is affected beyond that — the \"for whom\" is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "The card does not label one symbol as carrying the main change. \"Look here first\" lists three symbols, in this order: \"exercise\", \"main\", \"main.synthetic_export\" (file path truncated as \"diagnostics/action-report-private-so…\"). The only function-scoped name among them is \"main.synthetic_export\"; \"exercise\" is listed first (\"No direct test\" lists \"exercise.database\" and \"exercise.provider\", so those are module level)."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The card shows no column projection and no code; no old or new projection appears anywhere in the packet."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "diagnostics/action-report-pr… (truncated on the card; the only area named besides the collector module) — flagged under \"Risky surfaces\" with \"external calls\"",
+        "The card reports 12 files changed in total, but it names no other file: every file path on the card is truncated (\"diagnostics/action-report-private-so…\", \"diagnostics/action-report-pr…\")"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls. The \"Risky surfaces\" section shows \"diagnostics/action-report-pr…\" with \"external calls\". No CI, dependencies, auth, schema, or secrets surface is named beyond the \"1/1 CI passed\" stat."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card reports \"0 tests touched\" and \"6 no direct test\" (listed: \"exercise, exercise.database, exercise.provider +3 more\"); it shows no new test and does not state which behaviour a test would pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with \"Look here first\" in \"diagnostics/action-report-private-so…\": \"exercise\", then \"main\", then \"main.synthetic_export\" (in the order shown on the card)."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card shows nothing about created_at or any fallback value; it only states \"The private collector dropped prospect timestamps.\""
+    }
+  ]
+}
+

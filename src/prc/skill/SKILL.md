@@ -6,7 +6,9 @@ description: Write a board.json storyboard for one pull request so prc can rende
 # prc-explain: write the board for one pull request video
 
 You write one JSON file, the board. `prc` turns it into a narrated 1920x1080
-video plus a map page, and checks every fact in it. `prc` never posts
+video, walkthrough, map, card, and comment draft. It checks cited code and explicit numeric assertions.
+Review the prose against the captured code. A valid citation can support a false interpretation.
+`prc` never posts
 anything to GitHub: it only writes local files. Say that to the user at
 the end.
 
@@ -20,8 +22,10 @@ no wordplay.
 
 ## 1. Render the deterministic outputs and read `map.json`
 
-Run `prc doctor` first. If it reports anything missing, install it and
-re-run until every line says ok. Then render the PR without a board:
+Run `prc doctor` first. Video and card rendering require Chromium and ffmpeg.
+Use `--voice none` for silent output when voice backends are unavailable.
+Follow the user's installation policy before installing missing tools or voice models.
+Then render the PR without a board:
 
 ```sh
 prc explain --source https://github.com/<owner>/<repo>/pull/<N>
@@ -61,6 +65,8 @@ with the evidence (the tests the PR adds, when it adds any), then the
 outro. The outro's two lines hand the reviewer off: what changed in one
 plain sentence, then where to start reviewing (a file and what it decides)
 or what the PR leaves untested. Never a slogan or a quotable line.
+The card and comment headline use the outro's `l1` change summary when supplied.
+Write `l1` about the resulting behavior. Keep the old behavior in the introduction or diff scene.
 
 ## 3. Pick lines with `board show` and `board find`
 
@@ -155,7 +161,8 @@ On success the command prints the `out` folder with the 5 files:
 
 ## 8. Review your own frames and fix them
 
-The checker proves the facts, not the picture. Extract stills across the
+The checker verifies receipts and explicit assertions. Review prose accuracy and the picture separately.
+Extract stills across the
 video at 800 px wide and look at each one with the Read tool:
 
 ```sh
@@ -179,9 +186,15 @@ frames read cleanly.
 
 ## 9. Tell the user where the 5 files are
 
-Report the `out` folder and its 5 files: `map.json` (the checked facts),
-`map.html` (the browsable map), `board.json` (the story you wrote),
-`video.mp4` (the narrated video) and `run.json` (check result, timings,
-versions). Say how many tries `prc board check` needed, what the board
+Report the `out` folder and its five product outputs:
+
+- `map.html` is the browsable code map.
+- `video.mp4` is the explainer video.
+- `doc.html` is the written walkthrough.
+- `card.png` is the PR card.
+- `comment.md` is the comment draft.
+
+Also report `map.json`, `board.json`, and `run.json` as evidence and run metadata.
+Say how many tries `prc board check` needed, what the board
 leaves out (step 6), and that prc posted nothing: the files are local,
 and publishing the video or the comment text is the user's own step.

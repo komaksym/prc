@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -13,6 +14,20 @@ from prc import cli
 from prc.explainer import doctor
 
 SENTINEL_TOKEN = "ghp_TESTSENTINEL9x8y7z"
+
+
+def test_installed_skill_reports_the_five_product_outputs(tmp_path: Path) -> None:
+    installed = subprocess.run(
+        [sys.executable, "-m", "prc.cli", "skill", "install", "claude", "--dest", str(tmp_path)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert installed.returncode == 0, installed.stderr
+    text = (tmp_path / "prc-explain/SKILL.md").read_text()
+    handoff = text.split("## 9.", 1)[1]
+    for name in ("map.html", "video.mp4", "doc.html", "card.png", "comment.md"):
+        assert name in handoff, name
 
 
 def _install(*argv: str) -> int:

@@ -1710,7 +1710,7 @@ dev = [
 requires-dist = [
     { name = "kokoro", marker = "python_full_version < '3.13' and extra == 'voice'", specifier = "==0.9.4" },
     { name = "numpy", specifier = ">=1.26" },
-    { name = "playwright", marker = "extra == 'video'", specifier = ">=1.55" },
+    { name = "playwright", marker = "extra == 'video'", specifier = ">=1.55,<1.63" },
     { name = "pygments", specifier = "==2.21.0" },
     { name = "soundfile", marker = "extra == 'voice'", specifier = "==0.14.0" },
     { name = "tree-sitter", specifier = "==0.26.0" },

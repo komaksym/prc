@@ -1,0 +1,38 @@
+{
+  "pr": 17,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private invitation report now counts every present employer, including people with more than one present employer."
+    },
+    {
+      "id": "q2",
+      "answer": "CurrentEmployer"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "Besides invitation_shortlist.py, the packet shows changes to PLANS.md, invitation-shortlist-e2e-evidence.json, invitation-shortlist.md, analysis.md, infographic.png, 01-infographic-present-employers.md, source.md, and structured-content.md."
+    },
+    {
+      "id": "q5",
+      "answer": "None. The map reports 0 risky surfaces."
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests cover employer sets, conflicting and identical employer cases, invalid present-employer input, legacy employer handling, and present-employer-set behavior."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with build_invita... in invitation_shortlist.py, then follow _current_cmp... and CurrentEmplo...."
+    },
+    {
+      "id": "q8",
+      "answer": "False"
+    }
+  ]
+}

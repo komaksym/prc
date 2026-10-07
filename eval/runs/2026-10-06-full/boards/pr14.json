@@ -1,0 +1,278 @@
+{
+  "name": "mdp14",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Open pull request",
+      "say": [
+        "This pull request makes the private source collector gather LinkedIn's member changelog.",
+        "It also guards how that changelog is paged."
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "bun",
+          "title": "Encrypted source bundle",
+          "sub": "collected with no writes",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "c",
+              "text": "CONNECTIONS"
+            },
+            {
+              "id": "i",
+              "text": "INVITATIONS"
+            },
+            {
+              "id": "x",
+              "text": "INBOX"
+            },
+            {
+              "id": "cl",
+              "text": "changelog",
+              "kind": "slot",
+              "tone": "good"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:179",
+          "match": "{\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"
+        },
+        {
+          "line": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:177",
+          "match": "bundle.get(\"changelog\", {})"
+        }
+      ],
+      "say": [
+        "Before, the bundle held three snapshots: connections, invitations and inbox.",
+        "Now it also holds the changelog."
+      ],
+      "cues": [
+        {
+          "at": "Before",
+          "do": "show",
+          "ids": [
+            "bun"
+          ]
+        },
+        {
+          "at": "Now it",
+          "do": "fill",
+          "ids": [
+            "cl"
+          ]
+        },
+        {
+          "at": "also holds",
+          "do": "note",
+          "id": "cl",
+          "text": "new in this PR",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "req",
+          "title": "Caller request",
+          "sub": "no startTime set",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "r",
+              "text": "count=50"
+            }
+          ]
+        },
+        {
+          "id": "nxt",
+          "title": "Next link from provider",
+          "sub": "second page",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "n1",
+              "text": "start=1"
+            },
+            {
+              "id": "n2",
+              "text": "startTime=1710000000",
+              "tone": "bad"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "diagnostics/action-report-private-source-20261002/collect_private_source.py:92",
+          "match": "count=50"
+        },
+        {
+          "line": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:72",
+          "match": "/rest/memberChangeLogs?start=1&startTime=1710000000"
+        }
+      ],
+      "say": [
+        "The caller sets no start time.",
+        "If the next page link adds one, the scope has changed.",
+        "The collector now stops with an error."
+      ],
+      "cues": [
+        {
+          "at": "The caller",
+          "do": "show",
+          "ids": [
+            "req"
+          ]
+        },
+        {
+          "at": "next page link",
+          "do": "show",
+          "ids": [
+            "nxt"
+          ],
+          "step": 0.2
+        },
+        {
+          "at": "adds one",
+          "do": "note",
+          "id": "n2",
+          "text": "not in request",
+          "tone": "bad"
+        },
+        {
+          "at": "stops with",
+          "do": "mark",
+          "id": "nxt",
+          "text": "✗",
+          "tone": "bad"
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "diff",
+      "file": "src/linkedin_mdp_mcp/client.py",
+      "label": "The new scope check",
+      "lines": [
+        "217",
+        {
+          "ref": "218",
+          "step": 1
+        },
+        {
+          "ref": "219",
+          "step": 1
+        },
+        "220",
+        "221"
+      ],
+      "say": [
+        "In the client, a changelog next link is compared with the request.",
+        "A startTime the caller never sent raises an error."
+      ],
+      "cues": [
+        {
+          "at": "compared with",
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": "never sent",
+          "do": "note",
+          "line": "219",
+          "text": "rejects the link",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.8
+    },
+    {
+      "type": "list",
+      "label": "changelog checks in the end-to-end script",
+      "tone": "good",
+      "mark": "✓",
+      "code": true,
+      "more": "plus more rejection cases for bad changelog pages",
+      "items": [
+        {
+          "text": "changelog_complete_watermark",
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:183"
+        },
+        {
+          "text": "changelog_valid_pagination_preserves_scope_and_events",
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:187"
+        },
+        {
+          "text": "changelog_original_start_time_survives_pagination",
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:197"
+        },
+        {
+          "text": "change_added_start_time",
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:39"
+        }
+      ],
+      "say": [
+        "The end-to-end script checks the watermark, valid paging, and a caller's own start time.",
+        "It also feeds in a next link that adds a start time, and expects a rejection."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.4
+        }
+      ],
+      "hold": 1.0
+    },
+    {
+      "type": "outro",
+      "l1": "The bundle now carries the changelog.",
+      "l2": "Paging cannot add a start time.",
+      "fine": "Every name on screen was checked against the pull request's code before rendering.",
+      "nocap": true,
+      "say": [
+        "The bundle now carries the changelog. Paging cannot add a start time."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd"
+        }
+      ],
+      "hold": 2.0
+    }
+  ]
+}

@@ -2,14 +2,10 @@
 
 One function: list_frames(board, duration) returns up to 30 frame specs at
 800px wide — one 0.5s before each scene ends, one 0.6s after each cue fires.
-No rendering here; packets.py writes the list to frames.json and the reader
-renders with ffmpeg (e.g. ``ffmpeg -ss <t> -i video.mp4 -frames:v 1
--vf scale=800:-1 frame_NN.png``).
+No rendering here; packets.py decodes these samples into reader-facing PNGs.
 
-Scene/cue times are estimated, not rendered timings: words run at 3 per
-second plus the same lead/gap/tail/hold constants the explainer render uses
-(see src/prc/explainer/timing.py), scaled to the actual duration from
-run.json. Cue phrases resolve to a character share of their sentence.
+Rendered boards supply exact scene bounds and cue times. Untimed boards
+retain the word-count estimate, scaled to run.json duration.
 """
 
 from __future__ import annotations
@@ -38,9 +34,12 @@ def _sentence_seconds(text: str) -> float:
 
 
 def _scene_bounds(board: dict[str, Any], duration: float) -> list[tuple[float, float]]:
-    """(start, end) per scene, estimated then scaled to the real duration."""
+    """Use recorded bounds when available, otherwise estimate untimed scenes."""
+    scenes = board.get("scenes", [])
+    if all("start" in scene and "end" in scene for scene in scenes):
+        return [(float(scene["start"]), float(scene["end"])) for scene in scenes]
     raw: list[float] = []
-    for scene in board.get("scenes", []):
+    for scene in scenes:
         sentences = _spoken(scene)
         total = LEAD + sum(_sentence_seconds(t) for t in sentences)
         total += GAP * max(0, len(sentences) - 1) + TAIL + float(scene.get("hold", 0))
@@ -83,7 +82,11 @@ def list_frames(
         frames.append({"label": f"scene{i:02d}_end", "t": round(t, 2), "width": width})
         for cue in scene.get("cues", []):
             at = cue.get("at")
-            cue_t = _cue_time(scene, start, end, at) if isinstance(at, str) else None
+            cue_t = (
+                float(cue["t"])
+                if "t" in cue
+                else (_cue_time(scene, start, end, at) if isinstance(at, str) else None)
+            )
             if cue_t is None:
                 continue
             t = min(cue_t + CUE_LEAD, duration)

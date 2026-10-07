@@ -1,0 +1,52 @@
+{
+  "pr": 10,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Before: the invitation report \"ignored history outside the CRM\" and counted \"a narrower slice\" of company capacity. After: a reviewer of the private invitation report reads a shortlist whose capacity counts all outgoing history, not just CRM rows. The grouped sources are \"provider\" invitations, \"CRM\" sent facts and \"Supabase\" invitation events (\"three sources, one person\", \"every source counts\"), grouped by \"normalized exact profile identity\", so \"Each recorded person counts once against the mapped latest employer\". \"Slots fall as recorded history rises, down to zero\" (slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}), \"Unresolved history withholds the shortlist instead of guessing\" (status = \"withheld_current_employer_assignments\"), and \"Remaining slots pay out in rank order up to the list limit\" (line 1058: \"if len(selected) == 25:\"). For whom: for the reviewer of that private report (the report is read-only: test_read_only_report_has_no_recommendation_event_plan), and for every person/company with recorded invitation history - their slots drop, down to a fully withheld shortlist."
+    },
+    {
+      "id": "q2",
+      "answer": "build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shortlist.py. The outro says: \"Start review at build_invitation_shortlist in invitation_shortlist.py.\" The quoted diff lines of that function are 1024, 1046, 1050, 1054, 1056, 1057 and 1058, and scene 6 of 7 says \"Changed functions carry the capacity accounting.\" (\"changed functions\" = 49)."
+    },
+    {
+      "id": "q3",
+      "answer": "A per-company cap of 3 minus the recorded all-history count of that company, floored at zero: \"slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}\". Every recorded person adds one to the count of their mapped latest employer (\"company_counts[employer.company_id] += 1\"), counting once per person (\"one count per person\", \"Each recorded person counts once against the mapped latest employer\"). No candidate is selected when the company has no slot left (\"if slots[candidate_row.company_id] <= 0:\"), and each selection pays out one slot (\"slots[candidate_row.company_id] -= 1\") until the list limit is reached (\"if len(selected) == 25:\")."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "docs/invitation-shortlist.md (docs; receipt docs/invitation-shortlist.md#L52)",
+        "artifacts/invitation-shortlist-e2e-evidence.json (evidence artifact; receipt artifacts/invitation-shortlist-e2e-evidence.json#L11)",
+        "tests/e2e_invitation_shortlist.py (test; receipts #L1068, #L1092, #L1107, #L1115, #L1124)",
+        "PLANS.md (docs; changed file not shown)",
+        "PR10-present-employer-e2e-matrix.md (docs; changed file not shown)",
+        "docs/action-report-contract.md (docs; changed file not shown)",
+        "infographic/invitation-shortlist/analysis.md (docs; changed file not shown)",
+        "infographic/invitation-shortlist/infographic.png (opaque; changed file not shown)",
+        "infographic/invitation-shortlist/prompts/01-infographic-invitation-shortlist.md (docs; changed file not shown)",
+        "infographic/invitation-shortlist/source.md (docs; changed file not shown)",
+        "infographic/invitation-shortlist/structured-content.md (docs; changed file not shown)",
+        "scripts/build_invitation_shortlist.py (code; changed file not shown, symbols include _Parser, _Parser.error, _arguments, _private_json, _write_new_private, main)",
+        "tests/test_invitation_shortlist_e2e.py (test; changed file not shown)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The board accounts for the whole change (\"14 files\": 4 files shown plus 10 \"Changed files not shown\"), and those files are source logic, tests, docs and infographic artifacts. No CI configuration, no dependency manifest, no auth, no schema/migration, no secret and no external-call file or symbol appears. The quoted diff is in-file Python logic only (company_counts, slots, status = \"withheld_current_employer_assignments\")."
+    },
+    {
+      "id": "q6",
+      "answer": "The board names five of the 66 new tests (\"+ 61 more\"): \"test_present_employer_counts_undated_all_history_once_and_keeps_audit_pointers\" (tests/e2e_invitation_shortlist.py:1068), \"test_current_employer_conflict_across_canonical_profile_keys_withholds_all\" (:1092), \"test_candidate_company_conflict_with_current_employer_is_withheld\" (:1107), \"test_unknown_historical_identity_or_employer_globally_withholds_capacity\" (:1115) and \"test_read_only_report_has_no_recommendation_event_plan\" (:1124). Caption: \"New tests pin all-history capacity, conflicts, and the read-only report.\" So they pin all-history counting (once per person, with audit pointers kept), current-employer conflicts across canonical profile keys, candidate/company conflicts, unknown historical identity or employer withholds capacity, and a read-only report with no recommendation event plan."
+    },
+    {
+      "id": "q7",
+      "answer": "At build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shortlist.py (\"Start review at build_invitation_shortlist in invitation_shortlist.py\"), specifically the quoted lines 1024, 1046, 1050, 1054, 1056, 1057 and 1058. Then read the new tests in tests/e2e_invitation_shortlist.py (lines 1068, 1092, 1107, 1115, 1124), with docs/invitation-shortlist.md#L52 and artifacts/invitation-shortlist-e2e-evidence.json#L11 as the receipts for the claimed behaviour."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The packet pins the opposite: the new test \"test_read_only_report_has_no_recommendation_event_plan\" (tests/e2e_invitation_shortlist.py:1124) and the caption \"New tests pin all-history capacity, conflicts, and the read-only report.\" Nothing in the packet shows the built recommendation report emitting a recommendation event plan; a persistence key for the report is also not shown (the private-write symbols _private_json / _write_new_private in scripts/build_invitation_shortlist.py are only listed as changed symbols not shown)."
+    }
+  ]
+}

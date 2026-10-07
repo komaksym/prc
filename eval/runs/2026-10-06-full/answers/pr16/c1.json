@@ -1,0 +1,44 @@
+{
+  "pr": 16,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL beyond the card headline. The card title reads: \"The owner had no record of real LinkedIn activity.\" The packet does not state the new behaviour or which other users are affected."
+    },
+    {
+      "id": "q2",
+      "answer": "sync_actual_actions (first item under \"LOOK HERE FIRST\", shown as sync_actual_actions above src/linkedin_mdp_mcp/actual_action_s…)."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The card shows no old default or new explicit behaviour for writes."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/sync_actual_actions.py (the \"run\" entry under LOOK HERE FIRST)",
+        "scripts/sync_actual_actions.… (risky surface: external calls)",
+        "src/linkedin_mdp_mcp/actual_… (risky surface: external calls)",
+        "src/linkedin_mdp_mcp/invitat… (risky surface: external calls)",
+        "tests/e2e_actual_action_sync… (risky surface: external calls)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "external calls. Every entry in the \"RISKY SURFACES\" panel is labelled \"external calls\": scripts/sync_actual_actions.…, src/linkedin_mdp_mcp/actual_…, src/linkedin_mdp_mcp/invitat…, tests/e2e_actual_action_sync…"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card shows only that 2 tests were touched and that tests/e2e_actual_action_sync… is a risky surface (external calls); it does not describe what behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the \"LOOK HERE FIRST\" list: sync_actual_actions in src/linkedin_mdp_mcp/actual_action_s…, then run in scripts/sync_actual_actions.py, then plan_verified_dm_events in src/linkedin_mdp_mcp/actual_action_s…"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card does not mention persisting events to a store, or any flags."
+    }
+  ]
+}

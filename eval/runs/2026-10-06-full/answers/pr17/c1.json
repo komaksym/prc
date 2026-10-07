@@ -1,0 +1,42 @@
+{
+  "pr": 17,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The card states: 'This pull request changes who makes the LinkedIn invitation shortlist.' So the behaviour that changes concerns the LinkedIn invitation shortlist: who makes it changes, and a reviewer of the invitation report will see a different shortlist. The card does not show for whom (no person or group beyond the LinkedIn invitation shortlist is named), so that part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL. No class is shown as carrying the main change. The 'LOOK HERE FIRST' entries are 'build_invitation_shortlist', '_current_employers', and '_make_markdown', all at 'src/linkedin_mdp/mcp/invitation_shor…'. The only class-like name on the card is 'CurrentEmployer', which appears only in 'No direct test: CurrentEmployer, _current_employers, _make_markdown'."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The card shows the names 'CurrentEmployer' and '_current_employers' but no field names; it never shows an old single-employer field or the new field."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "The card reports '11 files' changed in total but does not list them.",
+        "It reports '2 tests touched', so test files are another area that changes.",
+        "The only file path shown is 'src/linkedin_mdp/mcp/invitation_shor…' (truncated), the module holding 'build_invitation_shortlist', '_current_employers', and '_make_markdown'; no other specific files or areas are named, so those are CANNOT TELL."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The card has a 'RISKY SURFACES' section that reads 'None.'"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card only reports '2 tests touched' and 'No direct test: CurrentEmployer, _current_employers, _make_markdown'; it does not say what behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with 'build_invitation_shortlist' — it is the first entry under 'LOOK HERE FIRST', at 'src/linkedin_mdp/mcp/invitation_shor…' (path truncated on the card). The same section also lists '_current_employers' and '_make_markdown' at the same file."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card does not state whether the PR sends invitations or writes anything to a database. It only says the PR 'changes who makes the LinkedIn invitation shortlist' and lists 'Risky surfaces: None.'"
+    }
+  ]
+}

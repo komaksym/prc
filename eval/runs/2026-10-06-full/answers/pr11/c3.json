@@ -1,0 +1,38 @@
+{
+  "pr": 11,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet's only behaviour statement is \"Prospect rows now carry their creation timestamps.\" (this change \"fetches the existing created_at column.\"). The packet does not name the owner of the private reports or show who else is affected, so the \"for whom\" part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL — the packet's only code site is TABLE_COLUMNS in collect_private_source.py (line 19); it shows no function name."
+    },
+    {
+      "id": "q3",
+      "answer": "Old: \"prospects\": \"id,lead_id,linkedin_url,attributes\". New: \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\"."
+    },
+    {
+      "id": "q4",
+      "answer": ["CANNOT TELL — the packet names no other file or area; it shows only \"diagnostics/action-report-private-source-20261002/collect_private_source.py\" and the aggregate \"+259 −1 · 12 files\"."]
+    },
+    {
+      "id": "q5",
+      "answer": "None shown in the packet: the quoted change is the added created_at in the TABLE_COLUMNS prospects projection, and the packet says the column already exists (\"This change fetches the existing created_at column.\"). No CI, dependency, auth, schema, secrets, or external-call change appears. (The packet does not show the other files in the 12-file change.)"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL — the packet shows no test file, test name, or test behaviour."
+    },
+    {
+      "id": "q7",
+      "answer": "Start at TABLE_COLUMNS in collect_private_source.py."
+    },
+    {
+      "id": "q8",
+      "answer": "False — the packet labels the new created_at \"provider value kept\" and says \"Prospect rows now carry their creation timestamps.\"; the quoted diff only adds created_at to the prospects projection and shows no code that fills in the collection time."
+    }
+  ]
+}

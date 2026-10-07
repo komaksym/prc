@@ -8,13 +8,15 @@ With --write, stores the table in results.json under the "gates" key.
 
 from __future__ import annotations
 
+import html
 import json
+import math
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
 GATE_NAMES = (
@@ -69,7 +71,7 @@ def gate_dom_text(pr_dir: Path) -> tuple[bool, str]:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return True, "skip: no playwright"
+        return False, "playwright unavailable"
     from prc.explainer.jointest import run as join_run
 
     m = _read(pr_dir / "map.json")
@@ -81,7 +83,7 @@ def gate_dom_text(pr_dir: Path) -> tuple[bool, str]:
         try:
             browser = driver.chromium.launch()
         except Exception as error:  # noqa: BLE001
-            return True, f"skip: {str(error).splitlines()[0]}"
+            return False, f"browser unavailable: {str(error).splitlines()[0]}"
         page = browser.new_page(viewport={"width": 1920, "height": 1080})
         page.goto((pr_dir / "doc.html").resolve().as_uri())
         try:
@@ -100,6 +102,9 @@ def gate_dom_text(pr_dir: Path) -> tuple[bool, str]:
               });
             })"""
         )
+        proof = ROOT / "artifacts/release/gates/screenshots"
+        proof.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(proof / f"{pr_dir.name}.png"), full_page=True)
         browser.close()
     got = [rows for rows in dom_rows if rows is not None]
     if len(got) != len(diffs) or not got:
@@ -169,23 +174,46 @@ def gate_card_facts(pr_dir: Path) -> tuple[bool, str]:
 
     m = _read(pr_dir / "map.json")
     stats = compute_stats(m, m.get("brief"))
-    html = (pr_dir / "card.html").read_text()
-    for value in (stats.files, stats.symbols_changed, stats.call_sites, stats.tests_touched):
-        if str(value) not in html:
-            return False, f"{value} missing from card.html"
-    if stats.ci_text not in html:
-        return False, f"{stats.ci_text} missing from card.html"
+    card = (pr_dir / "card.html").read_text()
+    pairs = re.findall(
+        r'<div class="stat-value">([^<]*)</div>\s*<div class="stat-label">([^<]*)</div>',
+        card,
+    )
+    expected = {
+        "files": str(stats.files),
+        "symbols changed": str(stats.symbols_changed),
+        "call sites": str(stats.call_sites),
+        "tests touched": str(stats.tests_touched),
+        "CI passed": stats.ci_text,
+        "no direct test": str(stats.untested_total),
+    }
+    actual = {html.unescape(label): html.unescape(value) for value, label in pairs}
+    if len(pairs) != len(expected) or actual != expected:
+        return False, "displayed card statistics differ from recomputation"
     return True, "card numbers match recomputation"
 
 
 def gate_doc_links(pr_dir: Path) -> tuple[bool, str]:
+    from prc.explainer.doc import receipt_refs, receipt_url
+
     doc = (pr_dir / "doc.html").read_text()
-    links = re.findall(
-        r"https://github\.com/[^\"'\s<>]+/blob/([0-9a-f]{40})/([^\"'#]+)#L(\d+)", doc
-    )
-    if not links:
-        return True, "no receipt links"
-    return True, f"{len(links)} receipt links with sha"
+    m = _read(pr_dir / "map.json")
+    board = _read(pr_dir / "board.json")
+    expected = {
+        receipt_url(m["pr"].split("#")[0], m["head_sha"], m["base_sha"], path, n, removed)
+        for scene in board.get("scenes", [])
+        for path, n, removed in receipt_refs(scene)
+    }
+    actual = {
+        html.unescape(url)
+        for url in re.findall(r'href=["\'](https://github\.com/[^"\']+/blob/[^"\']+)["\']', doc)
+    }
+    if actual != expected:
+        return (
+            False,
+            f"receipt links differ: {len(expected - actual)} missing, {len(actual - expected)} unexpected",
+        )
+    return True, f"{len(actual)} receipt links match board, revisions and lines"
 
 
 def gate_video_file(pr_dir: Path) -> tuple[bool, str]:
@@ -197,10 +225,8 @@ def gate_video_file(pr_dir: Path) -> tuple[bool, str]:
             "ffprobe",
             "-v",
             "error",
-            "-select_streams",
-            "v:0",
             "-show_entries",
-            "stream=width,height,r_frame_rate,codec_name:format=duration",
+            "stream=codec_type,width,height,r_frame_rate,codec_name:format=duration",
             "-of",
             "json",
             str(video),
@@ -212,11 +238,38 @@ def gate_video_file(pr_dir: Path) -> tuple[bool, str]:
     if out.returncode != 0:
         return False, "ffprobe failed"
     info = json.loads(out.stdout)
-    stream = info["streams"][0]
+    streams = info.get("streams", [])
+    stream = next((s for s in streams if s.get("codec_type") == "video"), None)
+    if stream is None:
+        return False, "video stream missing"
+    voice = _read(pr_dir / "run.json").get("voice")
+    if voice != "none" and not any(s.get("codec_type") == "audio" for s in streams):
+        return False, "narrated video has no audio stream"
     if (stream["width"], stream["height"]) != (1920, 1080):
         return False, f"{stream['width']}x{stream['height']} not 1920x1080"
     if stream["r_frame_rate"] != "30/1":
         return False, f"fps {stream['r_frame_rate']} not 30/1"
+    if voice != "none":
+        audio = subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-i",
+                str(video),
+                "-vn",
+                "-af",
+                "volumedetect",
+                "-f",
+                "null",
+                "-",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        volume = re.search(r"mean_volume: ([^ ]+) dB", audio.stderr)
+        if audio.returncode != 0 or volume is None or not math.isfinite(float(volume[1])):
+            return False, "narration audio missing, silent or unreadable"
     duration = float(info["format"]["duration"])
     limit = 90.0 if pr_dir.name in ("pr17", "pr19") else 80.0
     if not (45.0 <= duration <= limit):
@@ -270,7 +323,7 @@ def main() -> int:
     failed = [
         f"{pr}/{g}" for pr, row in table.items() for g, cell in row.items() if not cell["pass"]
     ]
-    return 1 if failed else 0
+    return 1 if failed or not table else 0
 
 
 if __name__ == "__main__":

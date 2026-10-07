@@ -1,0 +1,52 @@
+{
+  "pr": 14,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private source collector now also gathers LinkedIn's member changelog, so the encrypted source bundle ('collected with no writes') gains a fourth snapshot, 'changelog', beside 'CONNECTIONS', 'INVITATIONS' and 'INBOX' (marked 'new in this PR'); and paging is guarded: if the next page link adds a start time, 'the scope has changed' and 'The collector now stops with an error.' The packet shows this change only for the owner of the private source bundle; it does not name any other party who is affected."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL - the packet shows no function definition and never says which function encloses the change. The only code quoted is in 'src/linkedin_mdp_mcp/client.py' lines 217-221 ('The new scope check'): 'next_params = parse_qs(parsed.query, keep_blank_values=True)' and the added lines 'if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:' and 'raise LinkedInAPIError(0, \"changelog next link changed request scope\")'. The changed symbols the packet names are 'LinkedInMDPClient._next_link' and 'LinkedInMDPClient.changelog' in 'src/linkedin_mdp_mcp/client.py' plus 'main.seeded_provider' in the end-to-end script, but the packet lists them under 'Changed symbols not shown'."
+    },
+    {
+      "id": "q3",
+      "answer": "Old behaviour: the packet does not quote the old pagination code; it shows only the two added lines (marked '+') and says 'The collector now stops with an error', with the scene text 'If the next page link adds one, the scope has changed.' - so the old behaviour it implies is that a next page link was followed instead of stopped. New rejection: line 218 'if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:' followed by line 219 'raise LinkedInAPIError(0, \"changelog next link changed request scope\")', with the packet's note on line 219 'rejects the link'. Trigger shown: the caller request has 'no startTime set' ('count=50') while the next link ('second page') carries 'start=1' and 'startTime=1710000000', noted 'not in request' and marked with an 'x'."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py - the only diff quoted (lines 217-221, 'The new scope check')",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py - the end-to-end script (receipts at lines 39, 72, 177, 179, 183, 187, 197)",
+        "diagnostics/action-report-private-source-20261002/README.md",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "diagnostics/source-refresh-proposal-20261002/README.md",
+        "diagnostics/source-refresh-proposal-20261002/private-action-source.yml",
+        "PLANS.md",
+        "infographic/source-changelog/analysis.md",
+        "infographic/source-changelog/infographic.png",
+        "infographic/source-changelog/prompts/01-infographic-source-changelog.md",
+        "infographic/source-changelog/source.md",
+        "infographic/source-changelog/structured-content.md",
+        "Changed symbols not shown: main.seeded_provider (e2e_private_source.py), LinkedInMDPClient._next_link and LinkedInMDPClient.changelog (src/linkedin_mdp_mcp/client.py)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls: the collector's LinkedIn changelog request is shown (caller request 'count=50' at 'diagnostics/action-report-private-source-20261002/collect_private_source.py:92' and the next link '/rest/memberChangeLogs?start=1&startTime=1710000000' at 'diagnostics/action-report-private-source-20261002/e2e_private_source.py:72'). The packet shows no CI, dependency, auth, schema or secrets surface: apart from the code files shown, the changed files are labelled only docs, config or opaque (PLANS.md, two README.md files, e2e-evidence.json, private-action-source.yml, the infographic files)."
+    },
+    {
+      "id": "q6",
+      "answer": "The four checks the packet lists for the end-to-end script, all marked with a check and cited to 'diagnostics/action-report-private-source-20261002/e2e_private_source.py': 'changelog_complete_watermark' (line 183), 'changelog_valid_pagination_preserves_scope_and_events' (line 187), 'changelog_original_start_time_survives_pagination' (line 197), and 'change_added_start_time' (line 39), 'plus more rejection cases for bad changelog pages'. In the packet's words: the changelog is complete to its watermark, valid paging preserves scope and events, a caller's own start time survives pagination, and a next link that adds a start time is rejected ('It also feeds in a next link that adds a start time, and expects a rejection.')."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the only code quoted verbatim: 'The new scope check' in 'src/linkedin_mdp_mcp/client.py' lines 217-221 (receipts 'src/linkedin_mdp_mcp/client.py#L217' through '#L221'). The packet's receipts then lead to the collector call site 'diagnostics/action-report-private-source-20261002/collect_private_source.py#L92' (caller request 'count=50', 'no startTime set') and the end-to-end checks in 'diagnostics/action-report-private-source-20261002/e2e_private_source.py' (#L39, #L72, #L177, #L179, #L183, #L187, #L197). The packet itself does not state a reading order."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The packet shows the changelog checks running in the end-to-end script against a seeded provider - the changed symbol 'main.seeded_provider' in 'diagnostics/action-report-private-source-20261002/e2e_private_source.py' - with fixed values ('start=1', 'startTime=1710000000') and an everyday evidence file 'diagnostics/action-report-private-source-20261002/e2e-evidence.json'. The packet never mentions live or real services, and the bundle is 'collected with no writes'."
+    }
+  ]
+}

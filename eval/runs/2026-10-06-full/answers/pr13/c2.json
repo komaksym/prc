@@ -1,0 +1,41 @@
+{
+  "pr": 13,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet's title states the change: \"The owner had no offline plan for inbox messages.\" So before this PR the owner of the private inbox had no offline plan for inbox messages, and the change gives the owner an offline plan for inbox messages, carried by `classify_dm_evidence` and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, driven by `main` in `scripts/build_private_dm_actions.py`. The only audience the packet names is the owner of the private inbox; it does not show anyone else's behaviour changing."
+    },
+    {
+      "id": "q2",
+      "answer": "`classify_dm_evidence` in `src/linkedin_mdp_mcp/dm_actions.py` (first entry under \"Look here first\"); the packet also points to `plan_dm_actions` in the same file and `main` in `scripts/build_private_dm_actions.py`."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL — the packet quotes no code and never states the rule or the reason the code records. The closest names shown are `classify_dm_evidence`, `_qualified`, and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, but no rule text and no recorded reason appear anywhere in the packet."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/build_private_dm_actions.py (the only other file path named in the packet; it contains `_Parser`, `_Parser.error`, `_markdown`, `_read`, `_write`, and `main`)",
+        "The packet's summary reports \"Files 15\" changed in total, but it lists no other paths."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None — the packet's \"Risky surfaces and description vs diff\" section says \"No risky surfaces.\" and \"Everything the description names is in the diff.\" The packet separately reports \"CI 1/1\"."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL — the packet only lists symbols under \"Not covered by tests\" and reports \"CI 1/1\". It names no new tests and does not say what behaviour any test pins."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the \"Look here first\" list: `classify_dm_evidence` in `src/linkedin_mdp_mcp/dm_actions.py`, then `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, then `main` in `scripts/build_private_dm_actions.py`."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The packet describes the change as an offline plan (title: \"The owner had no offline plan for inbox messages.\") through `classify_dm_evidence` and `plan_dm_actions`, and reports \"No risky surfaces\"; it never states that the PR sends messages or writes to the database."
+    }
+  ]
+}

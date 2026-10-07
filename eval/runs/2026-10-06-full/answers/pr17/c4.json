@@ -1,0 +1,49 @@
+{
+  "pr": 17,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet never says 'private invitation report' or 'reviewer' — it frames the change as 'This pull request changes who makes the LinkedIn invitation shortlist.' The behaviour change: the capacity check moved from one employer per person to every employer — old 'if slots[candidate_row.company_id] <= 0:' (line 1018) becomes 'if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):' (line 1031), and a selected person now charges a slot to every company ('slots[company_id] -= 1', lines 1034-1035). Before, 'A had one employer on record, say co-a, so only co-a's limit was checked' and 'Nothing stopped A, and co-b's people got a fourth invitation'; now 'A needs a free slot at every company A works at', and when both have room 'A is invited once and uses a slot at each' ('2 left' at co-a and co-b). It changes the outcome for people with two jobs at once (Person A, 'two current jobs') under the per-company cap of 3 invitations ('max(0, 3 - company_counts[company_id])', line 1038)."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL — the packet shows the change only as lines inside the file 'src/linkedin_mdp_mcp/invitation_shortlist.py' (the loop 'for candidate_row in eligible:' and the symbols '_current_employers', '_make_markdown'); no class name appears anywhere in the packet."
+    },
+    {
+      "id": "q3",
+      "answer": "Old field: 'company_id' — cited as old line 73, 'company_id: str' ('src/linkedin_mdp_mcp/invitation_shortlist.py:73 (old)', receipt struck through against base 0c54c1a), used directly by the old check 'if slots[candidate_row.company_id] <= 0:'. New field: 'assignments' — the new check reads 'employers[candidate_row.profile_url].assignments' (line 1031) and the new decrement loops 'for company_id in employers[candidate_row.profile_url].assignments:' (lines 1034-1035). The packet does not itself print the class/type name 'CurrentEmployer'."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "PLANS.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "docs/invitation-shortlist.md",
+        "infographic/present-employer-sets/analysis.md",
+        "infographic/present-employer-sets/infographic.png",
+        "infographic/present-employer-sets/prompts/01-infographic-present-employers.md",
+        "infographic/present-employer-sets/source.md",
+        "infographic/present-employer-sets/structured-content.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None of the listed surfaces. The packet shows no CI, dependency, auth, schema, secret or external-call change: the change is Python selection logic in 'src/linkedin_mdp_mcp/invitation_shortlist.py', plus tests and docs. The packet's only non-doc, non-test changed file with another tag is 'artifacts/invitation-shortlist-e2e-evidence.json', tagged 'config' ('Changed files not shown'). The 'company_id' to 'assignments' switch is internal to the module — no database schema or migration is shown."
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests pin the multi-employer capacity rules. The packet names three of seven ('7 new tests', '+ 4 more'): 'A second employer at capacity blocks the person, and selected people charge every job.' (tests/e2e_invitation_shortlist.py:1058); 'Replayed invitation facts charge one profile once to every present employer.' (tests/e2e_invitation_shortlist.py:989); 'Unbounded or contradictory claims cannot create company capacity.' (tests/e2e_invitation_shortlist.py:1016). Assertions shown: 'assert result[\"invitations\"] == []', 'assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3', '[\"co-a\"][\"remaining_slots_after_selection\"] == 2' / '[\"co-b\"][\"remaining_slots_after_selection\"] == 2', 'assert result[\"status\"] == \"withheld_current_employer_assignments\"' and 'result[\"research_queue\"]' for 'current_employer_assignment_invalid', 'current_employer_unregistered', 'current_employer_coverage_incomplete', 'conflicting_current_employer_assignments'. The older file pins the regression name 'secondary employer at capacity admitted an invitation' (tests/test_invitation_shortlist_e2e.py:89)."
+    },
+    {
+      "id": "q7",
+      "answer": "Start at the change itself: scene 5, 'The change, line for line', 'src/linkedin_mdp_mcp/invitation_shortlist.py' lines 1018-1035 — the replaced check 'if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):' (line 1031) paired with old line 1018, and the replaced decrement 'for company_id in employers[candidate_row.profile_url].assignments:' / 'slots[company_id] -= 1' (lines 1034-1035) paired with old line 1021. Then the cap it relies on, 'max(0, 3 - company_counts[company_id])' (line 1038), and the tests in 'tests/e2e_invitation_shortlist.py' (e.g. 1058) and 'tests/test_invitation_shortlist_e2e.py:89'."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The packet shows only shortlist-selection logic: the change edits the in-memory check and decrement over 'slots' ('if any(slots[company_id] <= 0 ...)' and 'slots[company_id] -= 1'), and the tests assert on a returned 'result' dict (keys 'invitations', 'company_usage', 'remaining_slots_after_selection', 'research_queue'). No invitation sending and no database write appears anywhere in the packet; its only written output file is the changed evidence artifact 'artifacts/invitation-shortlist-e2e-evidence.json'."
+    }
+  ]
+}

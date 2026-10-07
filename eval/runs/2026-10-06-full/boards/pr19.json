@@ -1,0 +1,332 @@
+{
+  "name": "pr19",
+  "scenes": [
+    {
+      "kicker": "Open pull request",
+      "say": [
+        "The owner had no private DM reports.",
+        "This change publishes three reports to Google Docs."
+      ],
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:260",
+          "match": "LinkedIn first-time DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:267",
+          "match": "LinkedIn follow-up DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:287",
+          "match": "Synthetic researched opener"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:272",
+          "match": "Action: Owner writes follow-up"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "first"
+          ],
+          "step": 0.4
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "follow"
+          ],
+          "step": 0.4
+        }
+      ],
+      "groups": [
+        {
+          "col": 0,
+          "ground": "LinkedIn first-time DM report",
+          "id": "first",
+          "items": [
+            {
+              "ground": "Synthetic researched opener",
+              "id": "d",
+              "outside": true,
+              "text": "draft",
+              "tone": "bad"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "first-DM doc"
+        },
+        {
+          "col": 1,
+          "ground": "LinkedIn follow-up DM report",
+          "id": "follow",
+          "items": [
+            {
+              "ground": "Action: Owner writes follow-up",
+              "id": "f",
+              "outside": true,
+              "text": "follow-up",
+              "tone": "bad"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "follow-up doc"
+        }
+      ],
+      "say": [
+        "The owner drafts first messages and follow-ups by hand.",
+        "Neither report reaches its own private doc yet."
+      ],
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:260",
+          "match": "LinkedIn first-time DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:267",
+          "match": "LinkedIn follow-up DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:287",
+          "match": "Synthetic researched opener"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:272",
+          "match": "Action: Owner writes follow-up"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:280",
+          "match": "FIRST_ID: 2, FOLLOW_ID: 2"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "first"
+          ],
+          "step": 0.4
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "follow"
+          ],
+          "step": 0.4
+        }
+      ],
+      "groups": [
+        {
+          "col": 0,
+          "ground": "LinkedIn first-time DM report",
+          "id": "first",
+          "items": [
+            {
+              "ground": "Synthetic researched opener",
+              "id": "d",
+              "text": "draft",
+              "tone": "good"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "first-DM doc"
+        },
+        {
+          "col": 1,
+          "ground": "LinkedIn follow-up DM report",
+          "id": "follow",
+          "items": [
+            {
+              "ground": "Action: Owner writes follow-up",
+              "id": "f",
+              "text": "follow-up",
+              "tone": "good"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "follow-up doc"
+        }
+      ],
+      "say": [
+        "Now each report publishes to its own doc.",
+        "A rerun converges on the same text."
+      ],
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+          "match": "build_dm_doc_bodies"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:50",
+          "match": "actions = _actions(actions_value)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:51",
+          "match": "_retained_evidence(retained_value, actions)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:53",
+          "match": "_render_follow_up(actions, now)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:54",
+          "match": "BEGIN_MARKER, END_MARKER"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:55",
+          "match": "managed_marker_in_body"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:56",
+          "match": "DmDocBodies(first_dm=first_dm, follow_up=follow_up)"
+        }
+      ],
+      "cues": [
+        {
+          "at": "validates both inputs",
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": "managed marker is refused",
+          "do": "step",
+          "n": 2
+        }
+      ],
+      "file": "src/linkedin_mdp_mcp/dm_doc_report.py",
+      "label": "The change, line for line",
+      "lines": [
+        {
+          "ref": "46",
+          "step": 1
+        },
+        {
+          "ref": "50",
+          "step": 1
+        },
+        {
+          "ref": "51",
+          "step": 1
+        },
+        {
+          "ref": "53",
+          "step": 1
+        },
+        {
+          "ref": "54",
+          "step": 2
+        },
+        {
+          "ref": "55",
+          "step": 2
+        },
+        {
+          "ref": "56",
+          "step": 2
+        }
+      ],
+      "say": [
+        "The builder validates both inputs, then renders each body.",
+        "Any body holding a managed marker is refused."
+      ],
+      "type": "diff"
+    },
+    {
+      "big": "{tests_added}",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ],
+      "items": [
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:275",
+          "text": "both_docs_complete"
+        },
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:281",
+          "text": "rerun_converges"
+        },
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:294",
+          "text": "second_conflict_fails_closed"
+        },
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:302",
+          "text": "dual_preflight_"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "say": [
+        "New scenarios pin both docs, reruns, conflicts, and preflight."
+      ],
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "{tests_added}"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "{changed}"
+        }
+      ],
+      "say": [
+        "New tests guard the publication path.",
+        "Changed functions carry the two reports."
+      ],
+      "type": "stats"
+    },
+    {
+      "l1": "Two private DM reports now publish to separate owner-only docs.",
+      "l2": "Start review at build_dm_doc_bodies in dm_doc_report.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "type": "outro"
+    }
+  ]
+}

@@ -1,90 +1,190 @@
-# prc map: see what a pull request rewired
+# prc explain
 
-Your agent wrote 800 lines. `prc map` shows which functions it changed, which calls it added or removed, and what it left untested, as one interactive page and a 30-second video. Every box and arrow is computed by parsing the base and head code. No model draws anything, so no arrow is made up.
+`prc explain` turns a pull request and an agent-authored board into a local video, written walkthrough, map, card, and comment draft.
 
-## Try it in 10 seconds
+Code rows come from the captured diff. Your coding agent writes the explanation.
 
-```sh
-uv sync
-uv run prc map --source fixture:shop                       # offline sample, no network
-uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>
-open artifacts/maps/*/index.html
-```
+This is a release candidate. Release remains blocked by evaluation and human, license, and publishing gates.
 
-A public PR needs no token. Set `GITHUB_TOKEN` for private repos or higher rate limits. Add `--video` for `tour.mp4` and `card.png` (see below).
+## Install from this checkout
 
-## What you get
-
-- **The map.** Changed functions and classes sit in the middle, layered by call depth. Their unchanged callers sit on the left, their callees on the right, and tests along the bottom. Green dashed arrows are calls the PR added, red ones calls it removed, and grey ones calls it kept. A dotted arrow was matched by name only.
-- **The drawer.** Click any card for its diff, callers, callees and the tests that call it.
-- **The tour.** Press Play. The camera walks from each entry point through the code it calls, with one caption per step, and ends on a summary card: symbols changed, calls added and removed, call sites affected, changed symbols with no direct test, CI on the head commit.
-- **Overlay facts.** CI status on the head commit, and risky files (CI workflows, dependency manifests, auth), flagged when the PR description never mentions them.
-- **One offline file.** `index.html` loads nothing from the network, and its strict CSP blocks scripts from the PR's own content.
-
-Python, JavaScript, TypeScript and TSX are parsed with tree-sitter. A call is drawn only when an import, the same file, `self`/`this`, or a receiver named after the target's class or module proves it. On 19 public agent-authored PRs, 879 of 882 drawn arrows have a call of the target on a line of the source. The other 3 are generic calls such as `useReport<T>(...)` or calls through a re-export, and they are correct on inspection.
-
-## The rest of prc
-
-`prc` began as a PR comprehension MVP for a human reviewing an AI-generated change. The commands below remain: an evidence-linked review view (`review`), a freshness check (`status`), a recorded decision (`decide`), and a one-comment text brief (`brief`).
-
-## What is real and what is a fixture
-
-- All development and the E2E test use deterministic **local fixtures**: real local git repositories plus fixture provider data. Every artifact and page from them is labelled `fixture` / `live_verified: false`.
-- The comprehension, support-assessor and closure-falsifier "models" are deterministic **fixture heuristics** behind typed protocols (`prc.comprehension`). No LLM is wired in. Their output is labelled `fixture` in every artifact.
-- `prc.github_source.GitHubSource` implements the same `PullRequestSource` contract against the GitHub REST API and `git fetch`. It has contract tests with canned payloads, and `brief` and `map` have run it read-only against 19 public PRs. It reads `GITHUB_TOKEN` from the environment and never writes it to output.
-
-## Usage
+Python 3.12 is required for Kokoro. The base package supports Python 3.12 and later.
+Git is required to acquire PR code. Public GitHub PRs need no token.
+For private repositories or higher rate limits, set `GITHUB_TOKEN` in your environment.
 
 ```sh
 uv sync
-uv run prc review --source fixture:basic          # fixtures: basic, hostile, opaque, gaps, advanced, claims
-uv run prc status --source fixture:basic          # reconcile freshness: match / stale / unknown + deadline
-uv run prc decide --source fixture:basic --expect-snapshot <id> --expect-view <id> \
-    --reviewer me --decision request_changes --confidence 70 --note "..."
-uv run prc fixture-mutate basic edit-title         # simulate a provider change (fixture only)
-uv run prc eval-analyze results.json               # solo pilot analysis
-uv run prc review --source github:<owner>/<repo>#<n>   # live adapter
-uv run prc brief --source fixture:claims           # one PR comment from diff, description and CI; no model
-uv run prc map --source https://github.com/<owner>/<repo>/pull/<n>   # interactive map of what the PR rewired; also fixture:shop; add --video for tour.mp4 and card.png
 ```
 
-`review` prints the snapshot, semantic and published-view identities and writes `index.html`, `infographic.svg`, `flow.svg` (when relations exist), `entry.md`, `semantic.json`, `snapshot.json`, `manifest.json` and `view.json`. `decide` refuses (exit 2) when the expected snapshot/view is no longer the current local exposure.
+The base dependencies include NumPy, Pygments, tree-sitter, and its Python, JavaScript, and TypeScript grammars.
+See [pyproject.toml](pyproject.toml) for versions and extras.
 
-`map --video` also writes `tour.mp4` (1920x1080, 30 fps) and `card.png` (2400x1260) next to `index.html`. It needs the `video` extra (`uv sync --extra video`, then `playwright install chromium`) and ffmpeg on PATH.
+Video rendering needs Playwright, Chromium, `ffmpeg`, and `ffprobe` on `PATH`.
+Card rendering also needs Playwright and Chromium.
+The following commands install the video extra and Chromium, then report available tools.
 
-`brief` computes one GitHub comment from the diff, the PR description and CI results, with no model calls and no store writes. It writes `<out>/<snapshot id short>/brief.md` and `brief.json` (default `--out artifacts/briefs`) and prints the `brief.md` path, the mismatch count and the look-first files. Domain: `prc.brief`; renderer: `prc.presentation.render_brief`, which routes every PR-controlled string through one code-span helper.
+```sh
+uv sync --extra video
+uv run playwright install chromium
+uv run prc doctor
+```
 
-`map` parses the base and head code and writes `<out>/<snapshot id short>/index.html` and `map.json` (default `--out artifacts/maps`). The page is one offline file: a left-to-right call map of the changed symbols with their callers, callees and tests, a diff drawer per node, and a computed tour exposed as `window.prcTour`. It prints the paths and the symbol, edge and step counts. Layout: `prc.presentation.map_layout`; page: `prc.presentation.render_map` with its CSS and JS in `map_assets/`. `--source` also accepts a GitHub PR URL.
+Install `ffmpeg` and `ffprobe` with your system package manager if `doctor` reports them missing.
+Missing voice backends do not prevent a silent render with `--voice none`.
 
-## Contract map
+## Render the offline example
 
-| Contract | Code |
-|---|---|
-| Code Comparison Identity, separate per-check Verification Evidence Identity and eligibility | `model.py`, `verification.py`, `snapshot.build_basis` |
-| Source Basis, Semantic Input Manifest, Source Snapshot; extra context ⇒ new snapshot | `snapshot.py` |
-| Timed capture, drift reread, ≤3 attempts, unknown consistency | `capture.py` |
-| Complete Git-tree inventory with explicit opaque surfaces | `inventory.py`, `gitutil.py` |
-| Untrusted generator/validator, deterministic checks, model-assessed basis, scope witnesses | `controller.py`, `validation.py`, `comprehension.py` |
-| Many-to-many coverage ledger and independent closure falsification | `coverage.py` |
-| Inert presentation, semantic-operator checks, URL policy, output allowlists | `presentation/` |
-| PublishedViewIdentity, atomic canonical publication, CAS decisions | `pipeline.render_view`, `store.py` |
-| Freshness reconciliation with finite deadline | `freshness.py` |
-| Solo evaluation protocol (assignment, scoring, fallback, PCG64 bootstrap, scenarios) | `evaluation/` |
+This example uses a hand-authored test board and a local fixture. It does not read GitHub.
 
-Semantics are recomputed for every snapshot; no cross-snapshot semantic reuse exists.
+```sh
+uv run prc board check tests/data/boards/shop.json --source fixture:shop
+uv run prc explain --source fixture:shop --board tests/data/boards/shop.json --voice none --out "$PWD/artifacts/explain"
+```
 
-## Evaluation input format
+The CLI prints the output folder and file paths as JSON.
+The silent video still needs Chromium and ffmpeg.
+Fixture output demonstrates the renderer. It is not evidence about a live PR.
 
-`eval-analyze` reads `{"pairs": [{"pair_id", "product": R, "baseline": R}]}` with exactly 12 pairs, where `R` is `{"snapshot_id", "state": "scored"|"unknown", "item_scores": [mc, short, short], "aborted", "confidences", "elapsed_seconds", "censored"}`. `tests/data/synthetic_pairs.json` is synthetic test input, not pilot results. No pilot has been run.
+## Five outputs from one board
 
-## Verify
+With a valid board and the rendering dependencies available, `explain` writes these outputs.
+
+| Output | File | Purpose |
+|---|---|---|
+| Interactive map | `map.html` | Browse changed symbols, calls, tests, and diffs. |
+| Explainer video | `video.mp4` | Watch the board with narration or silent captions. |
+| Written walkthrough | `doc.html` | Read the same board and follow code receipts. |
+| PR card | `card.png` | View the headline and computed map statistics. |
+| PR comment draft | `comment.md` | Review text and a computed Mermaid diagram before posting. |
+
+The folder also contains `map.json`, the checked `board.json`, and `run.json`.
+`run.json` records the map source, board check, voice backend, timings, and layout warnings.
+Output folders include the PR identity and the first 12 characters of the captured head SHA.
+Each successful rerun replaces the complete generated folder. A boardless rerun removes earlier video and walkthrough files.
+Handled rendering failures leave the prior successful folder intact. Treat that folder as generated output, not a place for manual files.
+Publication uses a short lock and staged directory replacement with rollback. A process kill during replacement can leave a recovery backup and lock.
+Inspect those paths before restoring a backup or removing a lock. Publication does not guarantee uninterrupted reads during replacement.
+A card-render failure can leave `card.png` absent. Inspect the printed `card` value and `run.json` warnings.
+
+prc writes local files. It does not post comments, upload videos, or publish a repository.
+
+## Your agent writes the board
+
+`explain` does not call an LLM or write the story for you.
+Your coding agent reads the map and diff, selects evidence, and writes `board.json`.
+The packaged [prc-explain skill](src/prc/skill/SKILL.md) describes that workflow.
+
+Install the instructions for your agent with one of these commands.
+The installer asks before writing to its default destination.
+
+```sh
+uv run prc skill install claude
+uv run prc skill install codex
+```
+
+Claude's default destination is `~/.claude/skills/prc-explain/SKILL.md`.
+Codex's default destination is an added section in the current directory's `AGENTS.md`.
+`--dest` selects a different destination folder.
+The agent has its own model and authentication requirements. prc itself needs no model API key.
+
+For a real PR, first acquire the map without a board.
+
+```sh
+uv run prc explain --source https://github.com/komaksym/linkedin-mdp/pull/12 --voice none
+uv run prc board guide
+```
+
+Use the printed `map` path for the board tools.
+In the following commands, `map.json` and `board.json` are your local files.
+
+```sh
+uv run prc board show --map map.json
+uv run prc board find --map map.json "date_added"
+uv run prc board check board.json --map map.json
+uv run prc board coverage board.json --map map.json
+uv run prc explain --source https://github.com/komaksym/linkedin-mdp/pull/12 --map map.json --board board.json --voice none --out "$PWD/artifacts/explain"
+```
+
+`--map` uses a stored capture and skips live acquisition. It does not establish that the PR is still current.
+Its run manifest reports `map_source: stored` and a null `live_head_sha`. The captured SHA remains in `stored_head_sha`.
+For full-file highlighting offline, `--git-dir` can supply a bare repository containing the captured base and head commits.
+Without those blobs, the renderer uses the stored diff for highlighting.
+
+## What the checker proves
+
+prc computes symbols, call relationships, diff rows, and statistics from captured code and provider data.
+The parser supports Python, JavaScript, TypeScript, and TSX. Static call analysis can miss dynamic calls or use name-only matches.
+A missing direct test link does not prove that a function has no test coverage.
+
+The agent authors the scene order, narration, titles, labels, notes, and interpretation of behavior.
+`board check` checks cited lines, exact substrings, supported symbols and edges, cue references, and explicit numeric assertions.
+A failed board check stops the board render.
+
+These checks do not prove that the prose is true.
+Titles, subtitles, and notes can contain unchecked claims. A correct citation can still support a wrong interpretation.
+Review the narration against the code and inspect the rendered frames.
+`board coverage` identifies omitted changed files and symbols. Coverage is not proof that the story explains them correctly.
+
+## Map-only fallback
+
+Without a board, `explain` writes the map, comment draft, and run metadata.
+It attempts the card, but does not write a video or walkthrough.
+Use `--voice none` to avoid voice backend selection for this mode.
+
+For a map that needs no video or voice dependencies, use the existing `map` command.
+
+```sh
+uv run prc map --source fixture:shop
+uv run prc map --source https://github.com/komaksym/linkedin-mdp/pull/12
+```
+
+`map` writes `index.html` and `map.json` under `artifacts/maps/` and prints their paths.
+`map --video` adds the older, silent `tour.mp4` and a map screenshot `card.png`.
+That tour needs the video dependencies. It is separate from the board-based explainer.
+
+## Voice choices and downloads
+
+`--voice auto` selects an available backend in this order: Kokoro, macOS `say`, then `none`.
+Availability does not guarantee that synthesis succeeds.
+Choose `--voice none` explicitly for silent output and estimated timing without Kokoro imports.
+`--voice say` uses `/usr/bin/say` on macOS and ffmpeg for audio conversion.
+
+Kokoro needs the optional `voice` extra and Python 3.12 with this package's Python requirement.
+Installing that extra brings PyTorch and spaCy. First use can download `en_core_web_sm` and Kokoro weights.
+Review those downloads before choosing voice installation.
+To keep the video extra when installing voice, use `uv sync --extra video --extra voice`.
+Kokoro also needs the eSpeak phonemizer runtime. The backend currently defaults to Homebrew paths on macOS.
+Set `ESPEAK_DATA_PATH` and `PHONEMIZER_ESPEAK_LIBRARY` for a different installation.
+
+## Evaluation and release gates
+
+The [current scoreboard](eval/runs/2026-10-06-full/scoreboard.md) records checks and video artifacts.
+The final saved grades contain 480 answers across C1 through C5.
+C1 card scored 20.8%, C2 comment 25.0%, C3 video 46.9%, C4 doc 69.8%, and C5 map 17.7% correct.
+There were 44 wrong answers. These results fail the frozen release targets.
+The frozen C0 baseline scored 32.3% correct. Its author also read and graded it, so independent validation remains required.
+
+Release remains blocked until the [evaluation requirements](docs/mvp/EVAL.md) pass and the [human session](eval/human/2026-10-07.md) is complete.
+The human review must assess correctness and usefulness, including the narration and muted video.
+The user must choose a license and repository name, review private content and history, and approve each publishing action.
+The [Stage 9 plan](docs/mvp/PLAN.md#stage-9-human-session-readme-launch-drafts) defines those gates.
+The [launch thread](docs/launch/TWEET.md) is an unpublished draft.
+
+## Other commands and verification
+
+`brief` computes a text brief. `review`, `status`, and `decide` retain the earlier review and freshness workflow.
+`eval-analyze` handles the earlier paired evaluation format, separate from the MVP comprehension scoreboard.
+Run `uv run prc --help` and a command's `--help` for its arguments.
+
+The repository verification command is:
 
 ```sh
 uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest && uv build
 ```
 
-The E2E test (`tests/test_e2e_cli.py`) drives the `prc` entry point through review, status, decide, a provider change, a new revision, a refused stale decision and a byte-identical rerun in a fresh store. It leaves its artifact in `artifacts/e2e/`.
+`tests/test_e2e_explain.py` drives the CLI with `fixture:shop` and `--voice none`.
+Successful video tests copy their output under `artifacts/e2e/explain/`.
+They skip when ffmpeg or Chromium is unavailable. A skipped test does not verify a rendered video.
 
-## Dependencies
-
-`numpy` is the only production dependency: the evaluation protocol fixes the bootstrap generator as PCG64 with seed 12024.
+To verify the release package without unrelated local experiments, run `bash scripts/verify-release.sh`.
+It saves check logs, E2E output, a clean wheel install, and CLI media under `artifacts/release/verify/`.

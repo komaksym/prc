@@ -2,7 +2,7 @@
 
 ## Summary
 
-prc will turn one pull request into five outputs: a map, a narrated video, a written walkthrough, a PR card and a PR comment with a diagram. The user's own coding agent writes the story, and prc checks every fact in it. The stages below take the working prototypes to an installable tool. Each stage ends in a check that you run and an output file that you look at. The last stage scores the tool on the 12 open `komaksym/linkedin-mdp` PRs with the evaluation in `EVAL.md`.
+prc will turn one pull request into five outputs: a map, a narrated video, a written walkthrough, a PR card and a PR comment with a diagram. The user's own coding agent writes the story, and prc checks cited code and computed facts in it. The stages below take the working prototypes to an installable tool. Each stage ends in a check that you run and an output file that you look at. The last stage scores the tool on the 12 open `komaksym/linkedin-mdp` PRs with the evaluation in `EVAL.md`.
 
 Read `START-HERE.md` and `DECISIONS.md` first. This plan does not repeat their reasons.
 
@@ -175,7 +175,7 @@ Done when: `doc.html` exists for mdp12 and mdp17b, the tests pass, and you looke
 
 **Card (`card.png`, 1200x630 at 2x).** The `card.png` from `map --video` is only a screenshot of the map page at time 0 (`map_video.py` lines 122 and 139 to 140). It has no headline, stats or lists. Build a new `card.html` template and screenshot it at 1200x630, scale 2, with the same Chromium code as `map_video`. Keep the map page's colours and fonts. Use these parts in this order:
 
-1. the headline, which is the board's title-scene sentence, or the PR title when there is no board;
+1. the headline, which is the board's resulting-behaviour summary (`outro.l1`), then its title-scene sentence, then the PR title;
 2. the stats;
 3. look-first, the first 3 tour entry symbols with their files;
 4. risky surfaces, by name;

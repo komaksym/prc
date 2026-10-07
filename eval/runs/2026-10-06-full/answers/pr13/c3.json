@@ -1,0 +1,42 @@
+{
+  "pr": 13,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "For the owner of the private inbox, the report now plans DM actions by explicit rules instead of leaving rows unknown: an old verified outbound message still earns a planned follow-up (frame_02: \"A verified outbound message of that age still earns a follow-up.\"), a newer inbound message after the last outbound queues a reply (frame_06: \"A newer inbound message after the last outbound queues a reply.\"), anonymous/ambiguous rows follow a time-scoped rule (frame_01: \"Anonymous rows nearby follow a time-scoped rule.\"), and recent ambiguous history withholds the action (frames 03-05: \"Recent ambiguous history withholds the action, and the owner still writes every word.\"). It is for the owner alone: the packet shows one PERSON INBOX and the chip \"owner sends everything\"; no other party appears."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL - the packet names no function. It shows only the file src/linkedin_mdp_mcp/dm_actions.py with lines 500, 505 and 511 (receipts also cite dm_actions.py:471, dm_actions.py:505, dm_actions.py:508), and frame_11's caption \"Changed functions carry the planning logic.\" with no function names shown."
+    },
+    {
+      "id": "q3",
+      "answer": "The new rule is the time-scoped condition on line 505 of src/linkedin_mdp_mcp/dm_actions.py: \"if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):\" - a follow-up is planned only when the latest outbound is at least 72 hours old and no inbound message is newer than it. The reason the code records (line 511) is: report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"}) - the quoted reason string is \"message_history_ambiguous_or_action_not_due\"."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "private-dm-actions.md - documentation; receipt \"private-dm-actions.md:3\" in frame_01 (and in frame_02's footer).",
+        "e2e_private_dm_actions.py - end-to-end tests at e2e_private_dm_actions.py:130, e2e_private_dm_actions.py:131 and e2e_private_dm_actions.py:134 (frame_10).",
+        "Nothing else is named: frame_00 gives only the totals \"+1403 -3 . 15 files\", so the remaining files are not shown in the packet."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None shown in the packet. The only surfaces visible are the planning logic in src/linkedin_mdp_mcp/dm_actions.py (lines 500, 505, 511), a doc receipt private-dm-actions.md:3, and e2e tests in e2e_private_dm_actions.py. No CI, dependency, auth, schema, secret, or external-call change appears in any frame."
+    },
+    {
+      "id": "q6",
+      "answer": "Follow-up, reply, and invitation-note separation. Frame_10 lists three passing tests - ok verified_outbound_followup (e2e_private_dm_actions.py:130), ok verified_inbound_reply (e2e_private_dm_actions.py:131), ok invitation_note_not_dm (e2e_private_dm_actions.py:134) - with the caption \"New tests pin follow-up, reply, and invitation-note separation.\""
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the diff in src/linkedin_mdp_mcp/dm_actions.py: frames 06-09 head that file \"The change, line for line\" and quote lines 500, 505 and 511 there, and the receipts point at dm_actions.py:471, dm_actions.py:505, dm_actions.py:508 and dm_actions.py:511 (frame_01) / dm_actions.py:471, dm_actions.py:508, dm_actions.py:508 and dm_actions.py:511 (frame_03). The packet names no specific function to start from (frame_11 says only \"Changed functions carry the planning logic.\")."
+    },
+    {
+      "id": "q8",
+      "answer": "False. Nothing in the packet shows a message send or a database write during report generation. The only write shown is to the in-memory report: report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"}). The captions agree - \"Recent ambiguous history withholds the action, and the owner still writes every word.\" with the chip \"owner sends everything\" - and the title is \"feat(report): plan DM actions\" (planning, not sending)."
+    }
+  ]
+}

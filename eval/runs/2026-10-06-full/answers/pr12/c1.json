@@ -1,0 +1,41 @@
+{
+  "pr": 12,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The card says the PR \"adds a date to each row of the invitation report\", so a reviewer of the report sees a date added to every row. Who the report is for is not shown on the card: CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "\"build_invitation_shortlist\" — it is the first entry under \"LOOK HERE FIRST\", in src/linkedin_mdp_mcp/invitation_shor...; the other changed symbols listed are \"_date_added\" and \"_make_markdown\"."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The card shows no check that rejects a timestamp and no reason recorded for a future timestamp; it only names \"_date_added\" and \"_make_markdown\" and gives counts (12 files, 8 symbols changed, 5 call sites, 2 tests touched, 1/1 CI passed, 2 no direct test)."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/invitation_shor... (the only path shown; truncated in the card, tied to build_invitation_shortlist, _date_added and _make_markdown)",
+        "CANNOT TELL for the rest: the card reports 12 files changed and 2 tests touched but names no other file or area."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The card's \"RISKY SURFACES\" section says \"None.\""
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card says \"2 tests touched\" and \"No direct test: _date_added, _make_markdown\"; it does not describe which behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "With \"build_invitation_shortlist\", the first entry under \"LOOK HERE FIRST\" in src/linkedin_mdp_mcp/invitation_shor..., then \"_date_added\" and \"_make_markdown\"."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card does not state whether adding date_added can change shortlist membership or ranking."
+    }
+  ]
+}

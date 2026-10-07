@@ -1,0 +1,43 @@
+{
+  "pr": 15,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The comment title says: the owner juggled two separate private action reports. The packet does not show the exact before/after behaviour, only that the change concerns a combined action report for that owner, via the changed symbols 'combine_action_reports', 'scripts/build_combined_action_report.py' and 'scripts/publish_combined_action_report.py'."
+    },
+    {
+      "id": "q2",
+      "answer": "'combine_action_reports' in 'src/linkedin_mdp_mcp/combined_action_report.py'. The comment lists it first under 'Look here first'."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet never mentions OAuth or a document request, and it does not say what the publication path checks before them. The only related symbol shown is 'validate_report_text' in 'src/linkedin_mdp_mcp/google_doc_report.py', listed under 'Not covered by tests', with no description of when or what it validates."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "scripts/build_combined_action_report.py",
+        "scripts/publish_combined_action_report.py",
+        "tests/e2e_combined_action_report.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls. Under 'Risky surfaces and description vs diff' the comment lists 'scripts/publish_combined_action_report.py': external calls and 'tests/e2e_combined_action_report.py': external calls. It also reports 'Files 14, symbols 41, CI 1/1'."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The packet shows only that 'tests/e2e_combined_action_report.py' exists and is listed under 'Risky surfaces and description vs diff' with 'external calls'. It does not state what behaviour the tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the 'Look here first' list: 'combine_action_reports' in 'src/linkedin_mdp_mcp/combined_action_report.py', then 'GoogleDocPublisher.publish_text' in 'src/linkedin_mdp_mcp/google_doc_report.py', then 'main' in 'scripts/build_combined_action_report.py'."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The packet does not say whether the combiner fetches fresh LinkedIn data. No fetch-related symbol appears in the shown changed symbols ('main', '_Parser', '_private_file', 'CombinedReportError', 'combine_action_reports', '_object', '_json_contract', '_rows', '_counts', '_profile', 'cli_case', 'dm')."
+    }
+  ]
+}

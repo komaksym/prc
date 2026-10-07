@@ -100,8 +100,11 @@ def compute_stats(m: dict[str, Any], brief: Any = None) -> CardStats:
 
 
 def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
-    """The board's title-scene sentence, or the PR title when there is no board."""
+    """Prefer the final change summary, then the introduction or PR title."""
     if board is not None:
+        for scene in board.get("scenes", []):
+            if scene.get("type") == "outro" and scene.get("l1"):
+                return str(scene["l1"])
         for scene in board.get("scenes", []):
             if scene.get("type") == "title" and scene.get("say"):
                 return str(scene["say"][0])

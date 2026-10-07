@@ -1,3 +1,72 @@
+# Release completion, 2026-10-07
+
+## Full release audit, evening continuation
+
+### Summary
+
+Recheck the existing release candidate through its installed CLI. Audit acceptance and package correctness independently. Fix confirmed defects before publication. Keep frozen questions and targets unchanged. Human acceptance and D21 publishing decisions remain required.
+
+### Milestones
+
+- [x] F1. Read project authority and capture the current working-tree baseline.
+- [x] F2. Run the isolated release verifier and audit acceptance evidence in parallel.
+- [ ] F3. Add regressions for confirmed defects, then fix and check each unit.
+- [ ] F4. Inspect installed-wheel screenshots and media, and obtain independent review.
+- [ ] F5. Record a precise release status and the remaining operator gates.
+
+Throughput checkpoint. The parent owns installed-package verification and integration. Two independent readers assess acceptance and distribution. Readers do not edit shared files. Further work follows their concrete findings. Audit evidence goes to `.audit/release-full-out.tsv`.
+
+The supplied handoff adds unfinished packet generation to the scope. Its earlier design chose self-contained reader inputs. The worker implements that design in `/private/tmp/prc-packet-work-20261007`, then the parent reviews and integrates it. New payloads exclude answer keys, raw HTML, maps, and videos. Frozen evaluation files remain unchanged.
+
+The current verifier passed 495 tests, then failed while copying E2E files over read-only objects from an earlier attempt. A regression reproduces overwritten run logs. Each invocation now gets a fresh proof directory. `latest-success.txt` is written only after installed-wheel verification succeeds.
+
+The deterministic grade replay records 275 disagreements across 410 non-free-text answers. This does not establish 275 wrong human-style grades. Prose answers and mechanical grading follow different rules. New readers must use canonical answer shapes. Two location grades contradict the script even without normalization. The frozen verdicts remain historical evidence, not a clean release measurement.
+
+## Summary
+
+Prepare a reproducible release candidate for `prc explain`. Preserve existing product fixes and unrelated local experiments. Public publishing remains gated by D21 and the human evaluation in `docs/mvp/EVAL.md`.
+
+## Release predicate
+
+The release source archive contains only the package, build metadata, and public usage documentation. The wheel installs into a clean environment and produces the offline map, card, comment, video, and walkthrough through the real CLI. The isolated release checkout passes lint, format, strict typecheck, tests, and build. Browser screenshots prove the map and walkthrough render. The evaluation scoreboard reports actual results and all unmet targets. Public release additionally requires every frozen EVAL.md target and the human acceptance gates to pass. An independent reviewer checks the final changes and decision trail.
+
+## Milestones
+
+- [x] R1. Audit current implementation, baseline checks, frozen evaluation evidence, and distribution contents.
+- [x] R2. Add a failing source-distribution check before changing build configuration. Restrict archive contents and verify wheel assets.
+- [x] R3. Complete the evaluation scoreboard and human review packet without changing frozen targets or questions.
+- [x] R4. Update explain-first usage and prepare launch drafts with accurate release limitations.
+- [x] R5. Run the full verification command in an isolated checkout of the release files. Install the wheel, drive the CLI, inspect video frames, and save browser screenshots.
+- [ ] R6. Obtain independent review, resolve confirmed defects, and record remaining operator decisions.
+
+## Baseline and throughput checkpoint
+
+Measured at HEAD `e2477d2` with existing dirty product fixes. The root verification command fails on untracked `jobqueue/`, `tests/test_jobqueue.py`, `analyzer.py`, and `cli.py`. These files are outside the prc package. The built source archive includes those experiments and `.claude/worktrees/`. Keep unrelated files unchanged. Verify the release in an isolated tracked-file copy and check the archive boundary explicitly.
+
+Parent owns packaging tests, build configuration, and runtime checks. Parallel read-only agents own evaluation evidence and CLI architecture. After those findings, delegate documentation or evidence completion only across disjoint file sets. Historical records show repeated product fixes but do not prove three consecutive scored fix rounds. Preserve targets. Reconcile grades before any further tuning. Rigor is high because archive publication exposes files and the product makes code-grounding claims.
+
+## Current findings and next units
+
+The final saved grades contain 480 verdicts. C1 is 20/96, C2 is 24/96, C3 is 45/96, C4 is 67/96, and C5 is 17/96. There are 44 wrong answers. All four absolute targets fail. Only C4 meets the required improvement over the frozen C0 baseline. The existing scoreboard hides these results because it reads a missing aggregate field.
+
+The new stored-map E2E fails without a local git cache. A missing cache becomes the current directory, which the highlighter then treats as a git repository. Preserve the missing cache path to select the existing hunk fallback. Send fallback warnings to stderr so CLI JSON remains valid. Classify stored input directly from the provided map path.
+
+Complete the scoreboard regression and renderer regressions first. Then prepare explain-first documentation and a complete blind human review sheet. Produce audible human samples separately from the frozen silent evaluation outputs. Run the full checks after integrating these units and inspect the installed wheel in a background browser. Independent review remains mandatory.
+
+## Continuation, 2026-10-07
+
+The next run finishes R5 and R6 and investigates every remaining automatic acceptance gap.
+Use the current working files as the baseline. Preserve unrelated experiments.
+Parent runs the isolated package verifier. Independent readers audit acceptance and distribution.
+Save new evidence separately from the frozen scored run. Test confirmed defects before fixing them.
+The release predicate stays unchanged. Human responses cannot be supplied by an agent.
+
+## Operator gates
+
+The user must choose the license and public repository name. D21 requires explicit approval before pushing, PyPI publication, or promotional posts. The human session and grader agreement remain measured requirements. Do not claim release readiness while those gates or automatic targets fail.
+
+---
+
 > **Current work (2026-10-06):** the end-to-end MVP. Start at `START-HERE.md`; the plan is `docs/mvp/PLAN.md`. The phases below are history.
 
 # PLANS — hardened GitHub PR comprehension MVP

@@ -1,0 +1,46 @@
+{
+  "pr": 5,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet's headline says `The owner had no private morning report.` and the change centres on a Google Doc report (`GoogleDocPublisher`, `GoogleDocConfig.from_env` in `src/linkedin_mdp_mcp/google_doc_report.py`, run from `scripts/report_connections_doc.py`, with `.github/workflows/morning-report.yml`). So the owner of the connection reports gets a private morning report; the packet names no other recipients. Any further behaviour detail is not shown (CANNOT TELL)."
+    },
+    {
+      "id": "q2",
+      "answer": "`GoogleDocPublisher` in `src/linkedin_mdp_mcp/google_doc_report.py` - it is one of the three 'Look here first' items and the only class among them (`run` in `scripts/report_connections_doc.py` and `GoogleDocConfig.from_env` are the others)."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet contains no code, request/response text, or provider message strings; the only related symbol shown is `snapshot` (`_SnapshotStage.snapshot` in `scripts/report_connections_doc.py`), and `_is_revision_conflict` in `src/linkedin_mdp_mcp/google_doc_report.py` is only listed as not covered by tests."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        ".github/workflows/morning-report.yml (CI workflow)",
+        ".github/workflows/report-tests.yml (CI workflow)",
+        ".github/workflows/sync-connections.yml (CI workflow)",
+        "docs/google-docs-report.md (external calls)",
+        "scripts/report_connections_doc.py (external calls)",
+        "tests/e2e_doc_report.py (external calls)",
+        "src/linkedin_mdp_mcp/client.py (not covered by tests: LinkedInAPIError.__init__, LinkedInMDPClient._get_paged, LinkedInMDPClient.changelog)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI (`.github/workflows/morning-report.yml`, `.github/workflows/report-tests.yml`, `.github/workflows/sync-connections.yml`, all labelled 'CI workflow') and external calls (`docs/google-docs-report.md`, `scripts/report_connections_doc.py`, `src/linkedin_mdp_mcp/google_doc_report.py`, `tests/e2e_doc_report.py`). The packet lists no dependency, auth, schema, or secrets changes; dependencies/auth/secrets/schema are CANNOT TELL."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The packet only lists symbols 'Not covered by tests' (`_SnapshotStage`, `_SnapshotStage.__init__`, `_SnapshotStage.snapshot`, `main` in `scripts/report_connections_doc.py`; `GoogleDocConfig`, `GoogleDocPublisher.*`, `ReportCounts`, `ReportResult`, `render_report`, etc. in `src/linkedin_mdp_mcp/google_doc_report.py`) and flags `tests/e2e_doc_report.py` under external calls; it never states what behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "With the 'Look here first' section: `run` in `scripts/report_connections_doc.py`; `GoogleDocConfig.from_env` in `src/linkedin_mdp_mcp/google_doc_report.py`; `GoogleDocPublisher` in `src/linkedin_mdp_mcp/google_doc_report.py`."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The packet does not state whether this run activates reporting, collects live data, or changes schema; it only labels three `.github/workflows/*` files 'CI workflow' and four files 'external calls'."
+    }
+  ]
+}

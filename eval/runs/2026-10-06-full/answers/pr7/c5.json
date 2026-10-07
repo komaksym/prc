@@ -1,0 +1,14 @@
+{
+  "pr": 7,
+  "condition": "c5",
+  "answers": [
+    {"id": "q1", "answer": "Outbound invitation history is reconciled for the LinkedIn account owner."},
+    {"id": "q2", "answer": "CANNOT TELL"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": "Besides the main source module, the packet shows changes to src/linkedin_mdp_mcp/client.py, scripts/verify_invitation_sync.py, scripts/sync_invitations.py, tests, sync-invitations.yml, PLANS.md, README.md, invitation_change_summary.md, invitation_eligibility_acceptance.md, invitation_production_baseline.json, invitation_sync_verification.json, analysis.md, infographic.png, 01-technical-system.md, source.md, and structured-content.md."},
+    {"id": "q5", "answer": "CI and external-call related code are touched."},
+    {"id": "q6", "answer": "The new tests pin complete multi-page handling, complete-page handling, empty-complete handling, incomplete/error handling, manual-command behavior, and truncation behavior."},
+    {"id": "q7", "answer": "Start with src/linkedin_mdp_mcp/invitation_sync.py."},
+    {"id": "q8", "answer": "false"}
+  ]
+}

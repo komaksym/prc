@@ -1,0 +1,14 @@
+{
+  "pr": 8,
+  "condition": "c5",
+  "answers": [
+    {"id": "q1", "answer": "The private LinkedIn inbox records message evidence for the inbox owner."},
+    {"id": "q2", "answer": "CANNOT TELL"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": "Besides src/linkedin_mdp_mcp/inbox_sync.py, the map shows changes in diagnostics/verify_inbox_live.py, scripts/sync_inbox.py, src/linkedin_mdp_mcp/client.py, tests, PLANS.md, and several evidence/review artifacts."},
+    {"id": "q5", "answer": "CANNOT TELL"},
+    {"id": "q6", "answer": "CANNOT TELL"},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/inbox_sync.py"},
+    {"id": "q8", "answer": "CANNOT TELL"}
+  ]
+}

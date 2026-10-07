@@ -1,0 +1,67 @@
+[
+  {
+    "label": "scene00_end",
+    "t": 8.36,
+    "width": 800
+  },
+  {
+    "label": "scene01_end",
+    "t": 16.79,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 19.45,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 21.24,
+    "width": 800
+  },
+  {
+    "label": "scene02_cue",
+    "t": 24.34,
+    "width": 800
+  },
+  {
+    "label": "scene02_end",
+    "t": 26.91,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 31.29,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 34.59,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 40.42,
+    "width": 800
+  },
+  {
+    "label": "scene03_end",
+    "t": 42.06,
+    "width": 800
+  },
+  {
+    "label": "scene04_end",
+    "t": 48.0,
+    "width": 800
+  },
+  {
+    "label": "scene05_end",
+    "t": 55.17,
+    "width": 800
+  },
+  {
+    "label": "scene06_end",
+    "t": 60.26,
+    "width": 800
+  }
+]

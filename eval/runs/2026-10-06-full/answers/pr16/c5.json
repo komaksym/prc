@@ -1,0 +1,38 @@
+{
+  "pr": 16,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "Besides src/linkedin_mdp_mcp, the map shows changes in scripts/sync_actual_actions.py, tests/e2e_actual_action_sync.py, tests/test_actual_action_sync_e2e.py, PLANS.md, README.md, actual-action-sync-e2e-evidence.json, actual-action-sync.md, analysis.md, and infographic.png."
+    },
+    {
+      "id": "q5",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "Start with src/linkedin_mdp_mcp, which has 20 added and 3 modified files and sits at the center of the changed-file flow."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

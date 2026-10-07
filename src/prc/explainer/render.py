@@ -304,7 +304,7 @@ def render(
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
-        page.goto(player.as_uri())
+        page.goto(player.resolve().as_uri())
         page.wait_for_function("window.ready === true", timeout=15000)
         if errors:
             browser.close()

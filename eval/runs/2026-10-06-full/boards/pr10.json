@@ -1,0 +1,339 @@
+{
+  "name": "pr10",
+  "scenes": [
+    {
+      "kicker": "Open pull request",
+      "say": [
+        "The invitation report ignored history outside the CRM.",
+        "This change counts every outgoing invitation before ranking."
+      ],
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "provider invitations"
+        },
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "CRM sent facts"
+        },
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "Supabase invitation events"
+        },
+        {
+          "line": "artifacts/invitation-shortlist-e2e-evidence.json:11",
+          "match": "CRM-only policy permitted for an all-history report"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1024",
+          "match": "company_counts[employer.company_id] += 1"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1027",
+          "match": "\"profile_url\": profile_url,"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "who"
+          ],
+          "step": 0.4
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "cap"
+          ],
+          "step": 0.4
+        }
+      ],
+      "groups": [
+        {
+          "col": 0,
+          "ground": "profile_url",
+          "id": "who",
+          "items": [
+            {
+              "ground": "provider invitations",
+              "id": "p",
+              "text": "provider"
+            },
+            {
+              "ground": "CRM sent facts",
+              "id": "c",
+              "text": "CRM"
+            },
+            {
+              "ground": "Supabase invitation events",
+              "id": "s",
+              "text": "Supabase"
+            }
+          ],
+          "row": true,
+          "sub": "three sources, one person",
+          "title": "outgoing history"
+        },
+        {
+          "col": 1,
+          "ground": "company_counts",
+          "id": "cap",
+          "items": [
+            {
+              "ground": "company_counts",
+              "id": "u",
+              "text": "used"
+            }
+          ],
+          "row": true,
+          "sub": "a narrower slice counted",
+          "title": "company cap"
+        }
+      ],
+      "say": [
+        "One person appears across provider, CRM, and event rows.",
+        "The scope must read all history."
+      ],
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "grouped by normalized exact profile identity"
+        },
+        {
+          "line": "docs/invitation-shortlist.md:52",
+          "match": "counts each person once"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1024",
+          "match": "company_counts[employer.company_id] += 1"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1027",
+          "match": "\"profile_url\": profile_url,"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1050",
+          "match": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+        }
+      ],
+      "cues": [
+        {
+          "at": "counts once",
+          "do": "fly",
+          "from": "p",
+          "to": "u"
+        },
+        {
+          "at": "recorded history",
+          "do": "tone",
+          "ids": [
+            "u"
+          ],
+          "tone": "good"
+        },
+        {
+          "at": "mapped latest employer",
+          "do": "note",
+          "id": "cap",
+          "text": "one count per person"
+        }
+      ],
+      "groups": [
+        {
+          "col": 0,
+          "ground": "profile_url",
+          "id": "who",
+          "items": [
+            {
+              "ground": "provider invitations",
+              "id": "p",
+              "text": "provider"
+            },
+            {
+              "ground": "CRM sent facts",
+              "id": "c",
+              "text": "CRM"
+            },
+            {
+              "ground": "Supabase invitation events",
+              "id": "s",
+              "text": "Supabase"
+            }
+          ],
+          "row": true,
+          "sub": "three sources, one person",
+          "title": "outgoing history"
+        },
+        {
+          "col": 1,
+          "ground": "company_counts",
+          "id": "cap",
+          "items": [
+            {
+              "ground": "company_counts",
+              "id": "u",
+              "text": "used"
+            }
+          ],
+          "row": true,
+          "sub": "every source counts",
+          "title": "company cap"
+        }
+      ],
+      "say": [
+        "Each recorded person counts once against the mapped latest employer.",
+        "Slots fall as recorded history rises, down to zero."
+      ],
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1024",
+          "match": "company_counts[employer.company_id] += 1"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1046",
+          "match": "status = \"withheld_current_employer_assignments\""
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1050",
+          "match": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1054",
+          "match": "if slots[candidate_row.company_id] <= 0:"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1056",
+          "match": "selected.append(candidate_row)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_shortlist.py:1058",
+          "match": "if len(selected) == 25:"
+        }
+      ],
+      "cues": [
+        {
+          "at": "mapped company count",
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": "withholds the shortlist",
+          "do": "note",
+          "line": "1046",
+          "text": "queue blocks every slot"
+        },
+        {
+          "at": "rank order",
+          "do": "note",
+          "line": "1050",
+          "text": "cap minus recorded history"
+        }
+      ],
+      "file": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "label": "The change, line for line",
+      "lines": [
+        "1024",
+        "1046",
+        "1050",
+        "1054",
+        "1056",
+        "1057",
+        "1058"
+      ],
+      "say": [
+        "Each recorded person adds one to their mapped company count.",
+        "Unresolved history withholds the shortlist instead of guessing.",
+        "Remaining slots pay out in rank order up to the list limit."
+      ],
+      "type": "diff"
+    },
+    {
+      "big": "{tests_added}",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ],
+      "items": [
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1068",
+          "text": "test_present_employer_counts_undated_all_history_once_and_keeps_audit_pointers"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1092",
+          "text": "test_current_employer_conflict_across_canonical_profile_keys_withholds_all"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1107",
+          "text": "test_candidate_company_conflict_with_current_employer_is_withheld"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1115",
+          "text": "test_unknown_historical_identity_or_employer_globally_withholds_capacity"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:1124",
+          "text": "test_read_only_report_has_no_recommendation_event_plan"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "say": [
+        "New tests pin all-history capacity, conflicts, and the read-only report."
+      ],
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "{tests_added}"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "{changed}"
+        }
+      ],
+      "say": [
+        "New tests guard the shortlist pipeline.",
+        "Changed functions carry the capacity accounting."
+      ],
+      "type": "stats"
+    },
+    {
+      "l1": "All invitation history counts once per person against the mapped latest employer.",
+      "l2": "Start review at build_invitation_shortlist in invitation_shortlist.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "type": "outro"
+    }
+  ]
+}

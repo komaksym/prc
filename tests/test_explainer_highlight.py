@@ -175,10 +175,12 @@ def test_hunk_only() -> None:
                         "text": ln["text"].expandtabs(4).rstrip(),
                     }
                 )
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
+    out = io.StringIO()
+    err = io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
         H.attach_tokens(rows, f["path"], 0, None, m["head_sha"], m["base_sha"], f["hunks"][:1])
-    assert "hunk" in buf.getvalue().lower()
+    assert out.getvalue() == ""
+    assert "hunk" in err.getvalue().lower()
     for r in rows:
         if r.get("gap"):
             assert "tokens" not in r

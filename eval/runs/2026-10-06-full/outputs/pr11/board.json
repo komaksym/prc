@@ -1,0 +1,686 @@
+{
+  "duration": 59.13943661971831,
+  "header": "<b>linkedin-mdp #11</b> \u00b7 komaksym",
+  "name": "pr11",
+  "scenes": [
+    {
+      "end": 8.762676056338028,
+      "footer": "base ea23445  \u2192  head 306ff5a",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+259</span> <span class=\"del\">\u22121</span> \u00b7 12 files \u00b7 komaksym/linkedin-mdp#11",
+      "say": [
+        "The private collector dropped prospect timestamps.",
+        "This change fetches the existing created_at column."
+      ],
+      "sentences": [
+        {
+          "dur": 3.5211267605633805,
+          "off": 3.5211267605633805,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The private collector dropped prospect timestamps."
+        },
+        {
+          "dur": 3.591549295774648,
+          "off": 3.591549295774648,
+          "on": 0.0,
+          "start": 4.27112676056338,
+          "text": "This change fetches the existing created_at column."
+        }
+      ],
+      "start": 0.0,
+      "title": "fix(collector): fetch prospect timestamps",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "diagnostics/action-report-private-source-20261002/collect_private_source.py:-19",
+          "match": "attributes\","
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "i",
+            "a"
+          ],
+          "step": 0.4,
+          "t": 9.649295774647888
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "note",
+          "id": "row",
+          "t": 15.498591549295774,
+          "text": "no created_at fetched",
+          "tone": "bad"
+        }
+      ],
+      "end": 20.018309859154925,
+      "footer": "receipts   collect_private_source.py:19 (old)",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "attributes",
+          "id": "row",
+          "items": [
+            {
+              "ground": "id",
+              "id": "i",
+              "text": "id"
+            },
+            {
+              "ground": "attributes",
+              "id": "a",
+              "text": "attrs"
+            }
+          ],
+          "row": true,
+          "sub": "collector projection",
+          "title": "prospect row"
+        }
+      ],
+      "hold": 2,
+      "i": 1,
+      "say": [
+        "The collector fetched each prospect row without its timestamp.",
+        "The projection left out the created_at column."
+      ],
+      "sentences": [
+        {
+          "dur": 4.366197183098592,
+          "off": 4.366197183098592,
+          "on": 0.0,
+          "start": 9.212676056338028,
+          "text": "The collector fetched each prospect row without its timestamp."
+        },
+        {
+          "dur": 3.23943661971831,
+          "off": 3.23943661971831,
+          "on": 0.0,
+          "start": 13.878873239436619,
+          "text": "The projection left out the created_at column."
+        }
+      ],
+      "start": 8.762676056338028,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "diagnostics/action-report-private-source-20261002/collect_private_source.py:19",
+          "match": "attributes,created_at"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "i",
+            "a",
+            "c"
+          ],
+          "step": 0.4,
+          "t": 20.80633802816901
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "tone",
+          "id": "c",
+          "t": 26.12042253521126,
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.7
+          ],
+          "do": "note",
+          "id": "c",
+          "t": 26.90915492957746,
+          "text": "provider value kept",
+          "tone": "good"
+        }
+      ],
+      "end": 30.992253521126752,
+      "footer": "receipts   collect_private_source.py:19",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "created_at",
+          "id": "row",
+          "items": [
+            {
+              "ground": "id",
+              "id": "i",
+              "text": "id"
+            },
+            {
+              "ground": "attributes",
+              "id": "a",
+              "text": "attrs"
+            },
+            {
+              "id": "c",
+              "text": "created_at"
+            }
+          ],
+          "row": true,
+          "sub": "collector projection",
+          "title": "prospect row"
+        }
+      ],
+      "hold": 2,
+      "i": 2,
+      "say": [
+        "Now the same projection asks for created_at too.",
+        "Each encrypted row keeps the provider timestamp exactly."
+      ],
+      "sentences": [
+        {
+          "dur": 3.3802816901408455,
+          "off": 3.3802816901408455,
+          "on": 0.0,
+          "start": 20.468309859154925,
+          "text": "Now the same projection asks for created_at too."
+        },
+        {
+          "dur": 3.943661971830986,
+          "off": 3.943661971830986,
+          "on": 0.0,
+          "start": 24.14859154929577,
+          "text": "Each encrypted row keeps the provider timestamp exactly."
+        }
+      ],
+      "start": 20.018309859154925,
+      "type": "groups"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1,
+          "t": 34.911267605633796
+        }
+      ],
+      "cut": 0,
+      "end": 38.34647887323943,
+      "file": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+      "footer": "receipts   4 lines quoted verbatim from the diff of collect_private_source.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        "18",
+        "-19",
+        "19",
+        "20"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 18,
+          "op": " ",
+          "ref": "18",
+          "step": 0,
+          "text": "TABLE_COLUMNS = {",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "TABLE_COLUMNS"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "{"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 19,
+          "op": "-",
+          "pair": "19",
+          "ref": "-19",
+          "step": 1,
+          "text": "    \"prospects\": \"id,lead_id,linkedin_url,attributes\",",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "prospects"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "id"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "lead_id"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "linkedin_url"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "attributes"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 19,
+          "op": "+",
+          "pair": "-19",
+          "ref": "19",
+          "step": 1,
+          "text": "    \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\",",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "prospects"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "id"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "lead_id"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "linkedin_url"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "attributes"
+            },
+            {
+              "chg": true,
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "chg": true,
+              "cls": "s",
+              "text": "created_at"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            }
+          ]
+        },
+        {
+          "breaks": [
+            17
+          ],
+          "hang": 8,
+          "num": 20,
+          "op": " ",
+          "ref": "20",
+          "step": 0,
+          "text": "    \"events\": \"id,prospect_id,source,event_type,external_key,occurred_at,payload,created_at\",",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "events"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "id"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "prospect_id"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "source"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "event_type"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "external_key"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "occurred_at"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "payload"
+            },
+            {
+              "cls": "s",
+              "text": ","
+            },
+            {
+              "cls": "s",
+              "text": "created_at"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            }
+          ]
+        }
+      ],
+      "say": [
+        "One column joins the prospect projection.",
+        "The events line stays exactly as it was."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 31.44225352112675,
+          "text": "One column joins the prospect projection."
+        },
+        {
+          "dur": 2.8169014084507045,
+          "off": 2.8169014084507045,
+          "on": 0.0,
+          "start": 34.629577464788724,
+          "text": "The events line stays exactly as it was."
+        }
+      ],
+      "start": 30.992253521126752,
+      "type": "diff"
+    },
+    {
+      "big": "",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 39.12042253521126
+        }
+      ],
+      "end": 49.95422535211267,
+      "footer": "",
+      "hold": 2,
+      "i": 4,
+      "items": [
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:116",
+          "text": "prospect_created_at_exact_across_pages"
+        },
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:117",
+          "text": "missing_created_at"
+        },
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:63",
+          "text": "2025-01-02T03:04:05.123456+00:00"
+        }
+      ],
+      "label": "synthetic evidence",
+      "mark": "\u2713",
+      "more": null,
+      "say": [
+        "A synthetic end to end test pins the behavior.",
+        "Exact timestamps survive paging, and a missing value stays missing."
+      ],
+      "sentences": [
+        {
+          "dur": 3.23943661971831,
+          "off": 3.23943661971831,
+          "on": 0.0,
+          "start": 38.79647887323943,
+          "text": "A synthetic end to end test pins the behavior."
+        },
+        {
+          "dur": 4.71830985915493,
+          "off": 4.71830985915493,
+          "on": 0.0,
+          "start": 42.33591549295774,
+          "text": "Exact timestamps survive paging, and a missing value stays missing."
+        }
+      ],
+      "start": 38.34647887323943,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            0,
+            0.0
+          ],
+          "do": "l1",
+          "t": 50.404225352112675
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2",
+          "t": 52.16478873239436
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd",
+          "t": 53.573239436619716
+        }
+      ],
+      "end": 59.13943661971831,
+      "fine": "prc explain renders this board; prc posted nothing",
+      "footer": "",
+      "i": 5,
+      "l1": "Prospect rows now carry their creation timestamps.",
+      "l2": "Start at TABLE_COLUMNS in collect_private_source.py.",
+      "nocap": true,
+      "say": [
+        "Prospect rows now carry their creation timestamps.",
+        "Start at the projection map in collect_private_source.py."
+      ],
+      "sentences": [
+        {
+          "dur": 3.5211267605633805,
+          "off": 3.5211267605633805,
+          "on": 0.0,
+          "start": 50.404225352112675,
+          "text": "Prospect rows now carry their creation timestamps."
+        },
+        {
+          "dur": 4.014084507042254,
+          "off": 4.014084507042254,
+          "on": 0.0,
+          "start": 54.225352112676056,
+          "text": "Start at the projection map in collect_private_source.py."
+        }
+      ],
+      "start": 49.95422535211267,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/11"
+    }
+  ]
+}

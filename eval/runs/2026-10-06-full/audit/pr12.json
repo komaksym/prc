@@ -1,0 +1,19 @@
+{
+  "pr": 12,
+  "findings": [
+    {
+      "code": "src/linkedin_mdp_mcp/invitation_shortlist.py:467-469: `if value is None: provenance[\"reason\"] = \"missing\"` returns date_added None; tests/e2e_invitation_shortlist.py:693: `(None, \"missing\")` parametrized case stays unknown.",
+      "output": "board say scene 1",
+      "statement": "Each prospect row in the database has a creation time."
+    }
+  ],
+  "verdicts": [
+    {
+      "statement": "Each prospect row matched here contributes its creation time.",
+      "output": "board.json scene 1 (i=1), say — also doc.html Scene 2 of 6",
+      "verdict": "confirmed",
+      "evidence": "src/linkedin_mdp_mcp/invitation_shortlist.py:466-469 `if value is None: provenance[\"reason\"] = \"missing\"; return {\"date_added\": None, ...}` (likewise :470-477 invalid/future). tests/e2e_invitation_shortlist.py:693 `(None, \"missing\")` and :719-730 pop created_at and assert date_added is None with reason missing — a matched row with no creation time contributes no time.",
+      "suggested_fix": "Each prospect row matched here supplies its creation time, or unknown when missing."
+    }
+  ]
+}

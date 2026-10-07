@@ -1,7 +1,8 @@
 [project]
 name = "prc"
 version = "0.1.0"
-description = "Hardened GitHub PR comprehension MVP"
+description = "Local pull request maps and checked explainers"
+readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26",
@@ -17,7 +18,7 @@ prc = "prc.cli:main"
 
 [project.optional-dependencies]
 video = [
-    "playwright>=1.55",
+    "playwright>=1.55,<1.63",
 ]
 voice = [
     "kokoro==0.9.4; python_version < '3.13'",
@@ -39,10 +40,13 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/prc"]
 
+[tool.hatch.build.targets.sdist]
+only-include = ["src/prc", "pyproject.toml", "README.md", "uv.lock", ".python-version"]
+
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
-exclude = ["tests/data/", ".claude/"]
+extend-exclude = ["tests/data/", ".claude/"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]

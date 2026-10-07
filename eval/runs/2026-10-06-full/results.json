@@ -1,0 +1,498 @@
+{
+  "comprehension": {
+    "pr10": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: correct\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: correct\nq6: NEEDS_HUMAN\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: cannot_tell\nq8: cannot_tell"
+    },
+    "pr11": {
+      "c1": "q1: NEEDS_HUMAN\nq2: wrong\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: wrong\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: correct\nq4: cannot_tell\nq5: cannot_tell\nq6: cannot_tell\nq7: partial\nq8: cannot_tell",
+      "c4": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: correct\nq5: cannot_tell\nq6: wrong\nq7: partial\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell"
+    },
+    "pr12": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: wrong\nq7: correct\nq8: correct",
+      "c3": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: cannot_tell\nq5: cannot_tell\nq6: wrong\nq7: correct\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: cannot_tell\nq6: wrong\nq7: partial\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: correct"
+    },
+    "pr13": {
+      "c1": "q1: NEEDS_HUMAN\nq2: wrong\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: wrong\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: wrong\nq4: cannot_tell\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: partial\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: wrong\nq4: partial\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: wrong\nq5: correct\nq6: cannot_tell\nq7: cannot_tell\nq8: cannot_tell"
+    },
+    "pr14": {
+      "c1": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: correct\nq4: cannot_tell\nq5: cannot_tell\nq6: correct\nq7: partial\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: cannot_tell\nq6: cannot_tell\nq7: partial\nq8: cannot_tell",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell"
+    },
+    "pr15": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: cannot_tell\nq5: wrong\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: wrong\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: wrong\nq4: partial\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: partial\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: wrong\nq4: partial\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: wrong\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: cannot_tell\nq8: cannot_tell"
+    },
+    "pr16": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: cannot_tell\nq5: wrong\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: wrong\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: correct\nq4: wrong\nq5: cannot_tell\nq6: correct\nq7: partial\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: cannot_tell\nq6: wrong\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: wrong\nq5: cannot_tell\nq6: wrong\nq7: cannot_tell\nq8: cannot_tell"
+    },
+    "pr17": {
+      "c1": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: partial\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: cannot_tell\nq5: correct\nq6: cannot_tell\nq7: partial\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: wrong\nq7: cannot_tell\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: wrong\nq4: partial\nq5: correct\nq6: wrong\nq7: partial\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: correct\nq3: wrong\nq4: partial\nq5: correct\nq6: wrong\nq7: partial\nq8: correct"
+    },
+    "pr19": {
+      "c1": "q1: NEEDS_HUMAN\nq2: wrong\nq3: cannot_tell\nq4: cannot_tell\nq5: wrong\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: wrong\nq3: cannot_tell\nq4: partial\nq5: wrong\nq6: cannot_tell\nq7: wrong\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: wrong\nq4: wrong\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: partial\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: wrong\nq4: partial\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: wrong\nq5: cannot_tell\nq6: NEEDS_HUMAN\nq7: cannot_tell\nq8: cannot_tell"
+    },
+    "pr5": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: correct\nq6: NEEDS_HUMAN\nq7: correct\nq8: cannot_tell",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: correct\nq6: NEEDS_HUMAN\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell"
+    },
+    "pr7": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: correct\nq7: correct\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: correct\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell"
+    },
+    "pr8": {
+      "c1": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c2": "q1: NEEDS_HUMAN\nq2: correct\nq3: cannot_tell\nq4: partial\nq5: correct\nq6: cannot_tell\nq7: correct\nq8: cannot_tell",
+      "c3": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: cannot_tell\nq6: correct\nq7: correct\nq8: correct",
+      "c4": "q1: NEEDS_HUMAN\nq2: correct\nq3: correct\nq4: partial\nq5: correct\nq6: correct\nq7: correct\nq8: correct",
+      "c5": "q1: NEEDS_HUMAN\nq2: cannot_tell\nq3: cannot_tell\nq4: partial\nq5: cannot_tell\nq6: cannot_tell\nq7: cannot_tell\nq8: cannot_tell"
+    }
+  },
+  "gates": {
+    "pr10": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "20 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "7 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "41 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "60.8s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr11": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "6 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "9 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "16 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "59.1s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr12": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "11 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "24 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "8 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "30 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "65.4s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr13": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "14 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "3 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "26 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "62.5s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr14": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "9 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "13 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "20 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "65.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr15": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "9 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "19 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "55.5s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr16": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "10 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "19 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "51.7s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr17": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "33 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "8 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "64 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "89.7s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr19": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "20 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "7 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "35 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "49.5s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr5": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "12 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "22 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "56.1s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr7": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "12 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "6 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "22 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "56.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr8": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "12 receipt links with sha",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "22 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "50.0s 1920x1080 30fps",
+        "pass": true
+      }
+    }
+  }
+}

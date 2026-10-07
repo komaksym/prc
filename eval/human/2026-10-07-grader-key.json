@@ -1,0 +1,798 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "stage": "Stage9",
+  "run": "eval/runs/2026-10-06-full",
+  "contract": "docs/mvp/EVAL.md#e-human-session-the-user-about-30-minutes",
+  "human_session": {
+    "completed": false,
+    "respondent": null,
+    "started_at": null,
+    "finished_at": null,
+    "grader_agreement_count": null,
+    "would_use_count": null
+  },
+  "sampling": {
+    "seed": "stage9-human-2026-10-07",
+    "algorithm": "Sort ascending by SHA-256 hex digest of UTF-8 seed + \":\" + kind + \":\" + selection_id. Take the first N. No replacement.",
+    "answer_kind": "answer",
+    "answer_selection_id": "<reviewer filename>:pr<pr>:<condition>:<question>",
+    "answer_population": 480,
+    "answer_count": 10,
+    "audit_kind": "audit",
+    "audit_selection_id": "<audit filename>:verdicts:<zero-based index>",
+    "audit_population": 17,
+    "audit_population_by_verdict": {
+      "confirmed": 6,
+      "rejected": 11
+    },
+    "audit_selection": "Take first 3 confirmed and first 2 rejected by digest, then sort the combined five by digest. Pair findings and verdicts by source-array index. Preserve both quotations when they differ.",
+    "audit_count": 5
+  },
+  "audit_status": "historical_requires_refreshed_audit",
+  "outputs": [
+    {
+      "pr": 12,
+      "size": "small",
+      "directory": "eval/runs/2026-10-06-full/outputs/pr12",
+      "head_sha": "0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7",
+      "base_sha": "9b8662189a592a85adc76d7691b42e553989e03b",
+      "duration_seconds_measured": 65.43,
+      "duration_measurement": "ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate -of json <video.mp4>",
+      "duration_seconds_manifest": 65.43,
+      "duration_seconds_board": 65.42957746478875,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "65.430000"
+        }
+      },
+      "audio_status": "silent_placeholder_requires_audible_render",
+      "max_volume_db": -91.0,
+      "volume_measurement": "ffmpeg -hide_banner -i <video.mp4> -af volumedetect -vn -sn -dn -f null -",
+      "muted_check": null,
+      "audible_check": null,
+      "human_scores": {
+        "video": null,
+        "doc": null,
+        "map": null,
+        "comment": null,
+        "card": null
+      },
+      "wrong_statements": null,
+      "most_useful": null,
+      "least_useful": null,
+      "would_use": null,
+      "reason": null
+    },
+    {
+      "pr": 16,
+      "size": "medium",
+      "directory": "eval/runs/2026-10-06-full/outputs/pr16",
+      "head_sha": "df74ac34650a049fd1feb4a081adb3ace5f3e0cf",
+      "base_sha": "f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439",
+      "duration_seconds_measured": 51.725,
+      "duration_measurement": "ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate -of json <video.mp4>",
+      "duration_seconds_manifest": 51.72,
+      "duration_seconds_board": 51.72464788732396,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "51.725000"
+        }
+      },
+      "audio_status": "silent_placeholder_requires_audible_render",
+      "max_volume_db": -91.0,
+      "volume_measurement": "ffmpeg -hide_banner -i <video.mp4> -af volumedetect -vn -sn -dn -f null -",
+      "muted_check": null,
+      "audible_check": null,
+      "human_scores": {
+        "video": null,
+        "doc": null,
+        "map": null,
+        "comment": null,
+        "card": null
+      },
+      "wrong_statements": null,
+      "most_useful": null,
+      "least_useful": null,
+      "would_use": null,
+      "reason": null
+    },
+    {
+      "pr": 19,
+      "size": "large",
+      "directory": "eval/runs/2026-10-06-full/outputs/pr19",
+      "head_sha": "5ec569d6f35a198021164a09b1769e8bda052ede",
+      "base_sha": "1253403c22cb8d21471ab322a841a4a9efc772bd",
+      "duration_seconds_measured": 49.542,
+      "duration_measurement": "ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name,width,height,r_frame_rate -of json <video.mp4>",
+      "duration_seconds_manifest": 49.54,
+      "duration_seconds_board": 49.54154929577465,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "side_data_list": [
+              {}
+            ]
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "r_frame_rate": "0/0"
+          }
+        ],
+        "format": {
+          "duration": "49.542000"
+        }
+      },
+      "audio_status": "silent_placeholder_requires_audible_render",
+      "max_volume_db": -91.0,
+      "volume_measurement": "ffmpeg -hide_banner -i <video.mp4> -af volumedetect -vn -sn -dn -f null -",
+      "muted_check": null,
+      "audible_check": null,
+      "human_scores": {
+        "video": null,
+        "doc": null,
+        "map": null,
+        "comment": null,
+        "card": null
+      },
+      "wrong_statements": null,
+      "most_useful": null,
+      "least_useful": null,
+      "would_use": null,
+      "reason": null
+    }
+  ],
+  "answers": [
+    {
+      "id": "G01",
+      "selection_id": "reviewer-c.json:pr16:c3:q1",
+      "selection_sha256": "00469aea6e09b4fe9737530e96c9947a09a5c0bcd9e2632cce283d0ea3760d0b",
+      "pr": 16,
+      "condition": "c3",
+      "question_id": "q1",
+      "answer": "The sync's default behaviour becomes non-recording: without the new apply flag, a run reads the three strict provider snapshots and the consent changelog, stages actual LinkedIn activity into a duplicate-safe batch, and returns a dry run with no writes (ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched)). Recording the activity to the store happens only with the explicit apply opt-in. This affects the owner of the private reports, i.e. the account the sync runs for (account_profile_url, account_member_urn); the packet does not name that owner further.",
+      "question": {
+        "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+        "evidence": [
+          "src/linkedin_mdp_mcp/actual_action_sync.py:199",
+          "docs/actual-action-sync.md:3"
+        ],
+        "id": "q1",
+        "key": "The owner gets one sync that stages invitation, connection, inbox and bounded changelog evidence and persists duplicate-safe observed action events only with explicit --apply; dry-run stays the default.",
+        "key_facts": [
+          "stages complete evidence before one duplicate-safe optional event batch",
+          "retains explicit dry-run, replay and uncertain-write behaviour",
+          "uncertain inbox evidence never becomes verified DMs"
+        ],
+        "type": "free"
+      },
+      "question_source": "eval/questions/pr16.json",
+      "question_head_sha": "df74ac34650a049fd1feb4a081adb3ace5f3e0cf",
+      "code_evidence": [
+        {
+          "location": "src/linkedin_mdp_mcp/actual_action_sync.py:199",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/df74ac34650a049fd1feb4a081adb3ace5f3e0cf/src/linkedin_mdp_mcp/actual_action_sync.py#L199",
+          "head_sha": "df74ac34650a049fd1feb4a081adb3ace5f3e0cf",
+          "excerpt_start": 197,
+          "excerpt_end": 207,
+          "excerpt": "197: \n198: \n199: async def sync_actual_actions(linkedin: Any, supabase: Any, *, account_profile_url: str, account_member_urn: str, apply: bool = False, sources: ActualActionSources | None = None) -> ActualActionSyncSummary:\n200:     \"\"\"Stage and validate sources, plan known identities, and optionally insert once.\"\"\"\n201:     if type(apply) is not bool:\n202:         raise ActualSyncError(\"apply_flag_invalid\")\n203:     if not isinstance(account_profile_url, str) or normalize_profile_url(account_profile_url) != account_profile_url or not isinstance(account_member_urn, str) or not account_member_urn.startswith(\"urn:li:person:\") or not account_member_urn.removeprefix(\"urn:li:person:\"):\n204:         raise ActualSyncError(\"account_invalid\")\n205:     if sources is None:\n206:         try:\n207:             sources = await acquire_actual_action_sources(linkedin)"
+        },
+        {
+          "location": "docs/actual-action-sync.md:3",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/df74ac34650a049fd1feb4a081adb3ace5f3e0cf/docs/actual-action-sync.md#L3",
+          "head_sha": "df74ac34650a049fd1feb4a081adb3ace5f3e0cf",
+          "excerpt_start": 1,
+          "excerpt_end": 11,
+          "excerpt": "1: # Independent actual-action sync\n2: \n3: `scripts/sync_actual_actions.py` stages current raw/export INVITATIONS, CONNECTIONS, and INBOX snapshots plus a bounded 28-day consent changelog before any Supabase lookup or write. Its strict reader records local acquisition times; these are observation times, not provider generation timestamps. A global coverage or shape failure aborts without store access. Scoped DM uncertainty withholds that action while unrelated verified actions may proceed.\n4: \n5: Run dry by default with an explicit account identity:\n6: \n7: ```sh\n8: python scripts/sync_actual_actions.py \\\n9:   --account-profile-url 'https://www.linkedin.com/in/example' \\\n10:   --account-member-urn 'urn:li:person:example' \\\n11:   --output-dir /private/secure/new-sync-output"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr16/c3.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-c.json",
+      "source_pointer": "/grades/56",
+      "reviewer": "C",
+      "verdict": "partial",
+      "reviewer_reason": "Correctly explains staging, dry-run default, and apply-gated writes, but omits replay and uncertain-DM safeguards.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G02",
+      "selection_id": "reviewer-a.json:pr7:c1:q8",
+      "selection_sha256": "0050b100fdf49a686f5cd80ff2110bce5185ec96fcef6d50d727c9c4bacf0c75",
+      "pr": 7,
+      "condition": "c1",
+      "question_id": "q8",
+      "answer": "CANNOT TELL. The card lists '.github/workflows/sync-invit…' under RISKY SURFACES with the label 'CI workflow', but it does not show the workflow's triggers or any gate.",
+      "question": {
+        "ask": "True or false: the new workflow runs automatically on every push without any gate.",
+        "evidence": [
+          ".github/workflows/sync-invitations.yml:4"
+        ],
+        "id": "q8",
+        "key": "false",
+        "type": "bool"
+      },
+      "question_source": "eval/questions/pr7.json",
+      "question_head_sha": "1f2f010c57e12cb3fa58f83fdcd5b46b37349cc4",
+      "code_evidence": [
+        {
+          "location": ".github/workflows/sync-invitations.yml:4",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/1f2f010c57e12cb3fa58f83fdcd5b46b37349cc4/.github/workflows/sync-invitations.yml#L4",
+          "head_sha": "1f2f010c57e12cb3fa58f83fdcd5b46b37349cc4",
+          "excerpt_start": 2,
+          "excerpt_end": 12,
+          "excerpt": "2: \n3: on:\n4:   workflow_dispatch:\n5: \n6: permissions:\n7:   contents: read\n8: \n9: jobs:\n10:   sync-invitations:\n11:     if: github.ref == 'refs/heads/main' && vars.INVITATIONS_RECONCILIATION_ENABLED == 'true'\n12:     runs-on: ubuntu-latest"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr7/c1.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-a.json",
+      "source_pointer": "/grades/47",
+      "reviewer": "A",
+      "verdict": "cannot_tell",
+      "reviewer_reason": "The answer reports insufficient evidence instead of supplying the keyed fact.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G03",
+      "selection_id": "reviewer-a.json:pr8:c2:q7",
+      "selection_sha256": "005c308d2b019be7d4c9b67e5803b358977c912b93ac39ecdff76493aac25308",
+      "pr": 8,
+      "condition": "c2",
+      "question_id": "q7",
+      "answer": "Start with `reconcile_inbox` in `src/linkedin_mdp_mcp/inbox_sync.py`; the packet also lists `LinkedInMDPClient` in `src/linkedin_mdp_mcp/client.py` and `run` in `scripts/sync_inbox.py` under \"Look here first\".",
+      "question": {
+        "ask": "Where should a reviewer start reading?",
+        "evidence": [
+          "src/linkedin_mdp_mcp/inbox_sync.py:311"
+        ],
+        "id": "q7",
+        "key": "src/linkedin_mdp_mcp/inbox_sync.py :: reconcile_inbox",
+        "type": "location"
+      },
+      "question_source": "eval/questions/pr8.json",
+      "question_head_sha": "dc3f451dd61aa01394d5f5f121c9fa2affeb0299",
+      "code_evidence": [
+        {
+          "location": "src/linkedin_mdp_mcp/inbox_sync.py:311",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/dc3f451dd61aa01394d5f5f121c9fa2affeb0299/src/linkedin_mdp_mcp/inbox_sync.py#L311",
+          "head_sha": "dc3f451dd61aa01394d5f5f121c9fa2affeb0299",
+          "excerpt_start": 309,
+          "excerpt_end": 319,
+          "excerpt": "309: \n310: \n311: async def reconcile_inbox(\n312:     linkedin: Any,\n313:     supabase: Any,\n314:     *,\n315:     account_profile_url: str,\n316:     observed_at: datetime | None = None,\n317:     dry_run: bool = True,\n318: ) -> InboxSyncSummary:\n319:     \"\"\"Validate a complete INBOX snapshot, plan evidence, then optionally apply it.\"\"\""
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr8/c2.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-a.json",
+      "source_pointer": "/grades/94",
+      "reviewer": "A",
+      "verdict": "correct",
+      "reviewer_reason": "Starts at the keyed source location.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G04",
+      "selection_id": "reviewer-c.json:pr19:c1:q2",
+      "selection_sha256": "00caf78863de8c224db7e6e9c696ad68d8391f7ae9a9613995b5cd4da10e7f76",
+      "pr": 19,
+      "condition": "c1",
+      "question_id": "q2",
+      "answer": "classify_dm_evidence",
+      "question": {
+        "ask": "Which function carries the main change?",
+        "evidence": [
+          "src/linkedin_mdp_mcp/dm_doc_report.py:46"
+        ],
+        "id": "q2",
+        "key": "build_dm_doc_bodies",
+        "type": "exact"
+      },
+      "question_source": "eval/questions/pr19.json",
+      "question_head_sha": "5ec569d6f35a198021164a09b1769e8bda052ede",
+      "code_evidence": [
+        {
+          "location": "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/5ec569d6f35a198021164a09b1769e8bda052ede/src/linkedin_mdp_mcp/dm_doc_report.py#L46",
+          "head_sha": "5ec569d6f35a198021164a09b1769e8bda052ede",
+          "excerpt_start": 44,
+          "excerpt_end": 54,
+          "excerpt": "44: \n45: \n46: def build_dm_doc_bodies(actions_value: Any, retained_value: Any, *, now: datetime) -> DmDocBodies:\n47:     \"\"\"Validate both private inputs before rendering either Google Doc body.\"\"\"\n48:     if now.tzinfo is None or now.utcoffset() is None:\n49:         raise DmDocReportError(\"clock_timezone_invalid\")\n50:     actions = _actions(actions_value)\n51:     retained_rows, publication_status = _retained_evidence(retained_value, actions)\n52:     first_dm = _render_first_dm(actions, retained_rows, publication_status, now)\n53:     follow_up = _render_follow_up(actions, now)\n54:     if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)):"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr19/c1.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-c.json",
+      "source_pointer": "/grades/121",
+      "reviewer": "C",
+      "verdict": "wrong",
+      "reviewer_reason": "Names classify_dm_evidence. The keyed main function is build_dm_doc_bodies.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G05",
+      "selection_id": "reviewer-a.json:pr5:c3:q7",
+      "selection_sha256": "02e1de5d28d5c4d641b89e964ad4ae2ccacd7a89c818ae3856098eeaaffb17c9",
+      "pr": 5,
+      "condition": "c3",
+      "question_id": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py — the packet’s “The change, line for line” scene shows the diff of client.py (“5 lines quoted verbatim from the diff of client.py”).",
+      "question": {
+        "ask": "Where should a reviewer start reading?",
+        "evidence": [
+          "src/linkedin_mdp_mcp/google_doc_report.py:113"
+        ],
+        "id": "q7",
+        "key": "src/linkedin_mdp_mcp/google_doc_report.py :: GoogleDocPublisher",
+        "type": "location"
+      },
+      "question_source": "eval/questions/pr5.json",
+      "question_head_sha": "5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe",
+      "code_evidence": [
+        {
+          "location": "src/linkedin_mdp_mcp/google_doc_report.py:113",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe/src/linkedin_mdp_mcp/google_doc_report.py#L113",
+          "head_sha": "5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe",
+          "excerpt_start": 111,
+          "excerpt_end": 121,
+          "excerpt": "111: \n112: \n113: class GoogleDocPublisher:\n114:     \"\"\"Refresh OAuth and safely replace only the marked report paragraphs.\"\"\"\n115: \n116:     def __init__(self, config: GoogleDocConfig, *, http: httpx.AsyncClient | None = None) -> None:\n117:         \"\"\"Initialize an HTTPS-only publisher with redirects disabled.\"\"\"\n118:         self.config = config\n119:         self._owns_http = http is None\n120:         self.http = http or httpx.AsyncClient(timeout=30, follow_redirects=False)\n121: "
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr5/c3.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-a.json",
+      "source_pointer": "/grades/22",
+      "reviewer": "A",
+      "verdict": "wrong",
+      "reviewer_reason": "Directs the reviewer to another entry point instead of GoogleDocPublisher.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G06",
+      "selection_id": "reviewer-b.json:pr12:c2:q7",
+      "selection_sha256": "05137242d3b89cf04ab750f9eaa04b5836682c5e426b5925617f127353e9d05b",
+      "pr": 12,
+      "condition": "c2",
+      "question_id": "q7",
+      "answer": "\"Look here first\" lists, in order, `build_invitation_shortlist`, `_date_added`, and `_make_markdown`, all in `src/linkedin_mdp_mcp/invitation_shortlist.py`. Start with `build_invitation_shortlist`, then read `_date_added` (the added helper) and `_make_markdown` in the same file.",
+      "question": {
+        "ask": "Where should a reviewer start reading?",
+        "evidence": [
+          "src/linkedin_mdp_mcp/invitation_shortlist.py:441"
+        ],
+        "id": "q7",
+        "key": "src/linkedin_mdp_mcp/invitation_shortlist.py :: _date_added",
+        "type": "location"
+      },
+      "question_source": "eval/questions/pr12.json",
+      "question_head_sha": "0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7",
+      "code_evidence": [
+        {
+          "location": "src/linkedin_mdp_mcp/invitation_shortlist.py:441",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7/src/linkedin_mdp_mcp/invitation_shortlist.py#L441",
+          "head_sha": "0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7",
+          "excerpt_start": 439,
+          "excerpt_end": 449,
+          "excerpt": "439: \n440: \n441: def _date_added(\n442:     profile_url: str,\n443:     prospects: Sequence[Mapping[str, Any]],\n444:     now: datetime,\n445: ) -> dict[str, Any]:\n446:     \"\"\"Enrich one report row from a unique exact-profile prospect creation timestamp.\"\"\"\n447:     canonical_url = normalize_profile_url(profile_url)\n448:     matches = [\n449:         (index, row)"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr12/c2.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-b.json",
+      "source_pointer": "/grades/54",
+      "reviewer": "B",
+      "verdict": "partial",
+      "reviewer_reason": "It points into the relevant code area, but not to the keyed reviewer start location.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G07",
+      "selection_id": "reviewer-b.json:pr13:c4:q6",
+      "selection_sha256": "0531a44bef8e0a606fd33c2f49c58add8bfb264e4179fe5560d0e968e2cd8c99",
+      "pr": 13,
+      "condition": "c4",
+      "question_id": "q6",
+      "answer": "'New tests pin follow-up, reply, and invitation-note separation': 'verified_outbound_followup' (tests/e2e_private_dm_actions.py:130), 'verified_inbound_reply' (tests/e2e_private_dm_actions.py:131) and 'invitation_note_not_dm' (tests/e2e_private_dm_actions.py:134).",
+      "question": {
+        "ask": "Which behaviour do the new tests pin?",
+        "evidence": [
+          "tests/e2e_private_dm_actions.py:133"
+        ],
+        "id": "q6",
+        "key": "Invitation notes never become verified DMs, while a verified outbound DM 72 hours old with no later inbound yields exactly one follow-up.",
+        "type": "name_or_free"
+      },
+      "question_source": "eval/questions/pr13.json",
+      "question_head_sha": "f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439",
+      "code_evidence": [
+        {
+          "location": "tests/e2e_private_dm_actions.py:133",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439/tests/e2e_private_dm_actions.py#L133",
+          "head_sha": "f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439",
+          "excerpt_start": 131,
+          "excerpt_end": 141,
+          "excerpt": "131:     check(\"verified_inbound_reply\", len(report([outbound, incoming], [activity(outbound), activity(incoming, inbound=True, activity_id=\"activity-2\")])[\"reply\"]) == 1)\n132:     note = activity(outbound)\n133:     note[\"activity\"][\"extensionContent\"] = {\"contentRecordMap\": {\"InvitationMessageContent\": {\"text\": outbound[\"CONTENT\"]}}}\n134:     check(\"invitation_note_not_dm\", not report([outbound], [note])[\"follow_up\"])\n135:     check(\"valid_note_allows_first_dm\", len(report([outbound], [note])[\"first_dm\"]) == 1)\n136:     malformed_note = deepcopy(note)\n137:     malformed_note[\"activity\"][\"content\"] = []\n138:     malformed_result = report([outbound], [malformed_note])\n139:     check(\"malformed_invitation_note_withheld\", not any(malformed_result[key] for key in (\"reply\", \"follow_up\", \"first_dm\")) and malformed_result[\"withheld\"])\n140:     distinct_dm = activity(outbound, activity_id=\"activity-2\")\n141:     check(\"note_dm_same_row_note_first\", not report([outbound], [note, distinct_dm])[\"follow_up\"])"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr13/c4.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-b.json",
+      "source_pointer": "/grades/109",
+      "reviewer": "B",
+      "verdict": "correct",
+      "reviewer_reason": "Its test-behavior description semantically matches the keyed behavior.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G08",
+      "selection_id": "reviewer-c.json:pr15:c4:q1",
+      "selection_sha256": "054ef755db490431777229d8b8e17fcc6a119c6a2d6629ae95b8b7b7c4aff816",
+      "pr": 15,
+      "condition": "c4",
+      "question_id": "q1",
+      "answer": "Before, the owner juggled two separate private action reports (\"The owner juggled two separate private action reports.\"); the change \"combines them into one guarded document\" - one report that \"composes invitation and DM outputs offline\" (outro). It is \"one private owner report\", so the new behaviour is for the private report owner only (\"Google-only publication\" behind the publish gate).",
+      "question": {
+        "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+        "evidence": [
+          "docs/combined-action-report.md:3",
+          "src/linkedin_mdp_mcp/combined_action_report.py:150"
+        ],
+        "id": "q1",
+        "key": "The owner gets one combined document with invitation recommendations, researched first-DM drafts and manual reminders composed from real upstream planner outputs, publishable to Google Docs through a safeguarded command.",
+        "key_facts": [
+          "composes real upstream planner outputs while preserving evidence, uncertainty and withheld states",
+          "publishes prepared text through a Google-only command with marker and revision safeguards",
+          "offline composition only; no LinkedIn requests, Supabase writes or outreach sends"
+        ],
+        "type": "free"
+      },
+      "question_source": "eval/questions/pr15.json",
+      "question_head_sha": "1b183458ae48f7a575ae92d8f310009671767553",
+      "code_evidence": [
+        {
+          "location": "docs/combined-action-report.md:3",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/1b183458ae48f7a575ae92d8f310009671767553/docs/combined-action-report.md#L3",
+          "head_sha": "1b183458ae48f7a575ae92d8f310009671767553",
+          "excerpt_start": 1,
+          "excerpt_end": 11,
+          "excerpt": "1: # Combined private action report\n2: \n3: The offline combiner reads the existing `invitation-shortlist.json` and `private-dm-actions.json` outputs. It never acquires new source data or changes either upstream decision. The invitation envelope must use schema version 1 and `ready` or `withheld_current_employer_assignments`; the DM planner currently writes direct `reply`, `follow_up`, `first_dm`, `withheld`, and `coverage` fields without a version envelope.\n4: \n5: The report keeps invitations, owner-written reply and follow-up reminders, saved researched first-DM drafts, source pointers, date-added provenance, priority factors, source citations, company-cap evidence, exclusions, unknowns, and withheld research separate. Coverage reasons, withheld DM rows, a withheld invitation shortlist, or nonzero invitation withheld counts make the combined status `partial`. Empty action queues are meaningful only for sections whose coverage is complete. An invitation shortlist is capped at 25 distinct exact profiles. A profile cannot appear in conflicting DM action or withheld queues. An empty verified message body is shown as attachment-only with a prompt to inspect its source pointers; the report writes no reply or follow-up text.\n6: \n7: Run `scripts/build_combined_action_report.py --invitations <private-json> --dm-actions <private-json> --output-dir <new-dir>`. Both inputs must be regular files private to the owner. The new directory has mode 0700 and contains mode-0600 `combined-action-report.json` and `combined-action-report.txt`. Standard output contains a fixed status line. Unsupported versions, malformed queues, uncited known factors or first-DM drafts, nonfinite numbers, and unsafe text fail before output creation.\n8: \n9: For the existing restricted Google Doc, run `scripts/publish_combined_action_report.py --report <combined-action-report.txt>`. It reads only the prepared report. The Google publisher rejects empty or whitespace-only reports, embedded marker tokens, unsafe controls, unpaired surrogates, and bidi overrides or isolates before OAuth. It verifies an editable owner-only document and the marker pair, then changes only the managed region with a revision precondition. It retries one revision conflict after fresh privacy and document preflight. Publication requires configured Google OAuth and document ID. No LinkedIn or Supabase client is imported by either command; sending remains manual.\n10: \n11: The synthetic end-to-end harness in `tests/e2e_combined_action_report.py` exercises the offline CLI and mocked Google HTTP boundary. Its evidence artifact records fixed scenario verdicts only. It does not prove fresh live source acquisition or live OAuth delivery."
+        },
+        {
+          "location": "src/linkedin_mdp_mcp/combined_action_report.py:150",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/1b183458ae48f7a575ae92d8f310009671767553/src/linkedin_mdp_mcp/combined_action_report.py#L150",
+          "head_sha": "1b183458ae48f7a575ae92d8f310009671767553",
+          "excerpt_start": 148,
+          "excerpt_end": 158,
+          "excerpt": "148: \n149: \n150: def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:\n151:     \"\"\"Validate actual upstream envelopes and render one private owner action report.\"\"\"\n152:     inv = _object(invitations)\n153:     dm = _object(dm_actions)\n154:     _json_contract(inv)\n155:     _json_contract(dm)\n156:     if inv.get(\"schema_version\") != 1 or inv.get(\"cap_scope\") != \"all_history\" or inv.get(\"status\") not in {\"ready\", \"withheld_current_employer_assignments\"}:\n157:         raise CombinedReportError(\"invitation_contract_invalid\")\n158:     if \"schema_version\" in dm:"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr15/c4.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-c.json",
+      "source_pointer": "/grades/24",
+      "reviewer": "C",
+      "verdict": "partial",
+      "reviewer_reason": "Captures one guarded owner report and offline composition, but omits material provenance and revision-safety details.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G09",
+      "selection_id": "reviewer-b.json:pr13:c1:q3",
+      "selection_sha256": "0601ca131de61ba497f2f0b7a9c7dd1228ad6e962f2cb05e1e2a5dbaba441a0d",
+      "pr": 13,
+      "condition": "c1",
+      "question_id": "q3",
+      "answer": "CANNOT TELL. The packet contains only the PR card (title, counts, hotspot names, risky surfaces line). It shows no code, so it shows no new rule and no reason the code records.",
+      "question": {
+        "ask": "What new rule decides a follow-up action? Quote the reason the code records.",
+        "evidence": [
+          "src/linkedin_mdp_mcp/dm_actions.py:508"
+        ],
+        "id": "q3",
+        "key": "verified outbound DM at least 72 hours old with no later observed inbound",
+        "type": "exact_code"
+      },
+      "question_source": "eval/questions/pr13.json",
+      "question_head_sha": "f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439",
+      "code_evidence": [
+        {
+          "location": "src/linkedin_mdp_mcp/dm_actions.py:508",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439/src/linkedin_mdp_mcp/dm_actions.py#L508",
+          "head_sha": "f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439",
+          "excerpt_start": 506,
+          "excerpt_end": 516,
+          "excerpt": "506:             blocking = any(item.occurred_at is None or item.occurred_at >= latest_out.occurred_at for item in unknown)\n507:             if not blocking:\n508:                 report[\"follow_up\"].append({**common, \"reason\": \"verified outbound DM at least 72 hours old with no later observed inbound\", \"message_at\": latest_out.occurred_at.isoformat(), \"elapsed_hours\": int((now - latest_out.occurred_at).total_seconds() // 3600), \"message\": latest_out.content, \"source_refs\": [latest_out.inbox_ref, latest_out.changelog_ref], \"action\": \"Owner writes follow-up\", \"read_state\": \"unknown\"})\n509:                 continue\n510:         if messages or unknown:\n511:             report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"})\n512:             continue\n513:         if connection_reasons:\n514:             report[\"withheld\"].append({**common, \"reason\": \"source_coverage_incomplete\"})\n515:             continue\n516:         connection_matches = connections_by_profile.get(profile, [])"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr13/c1.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-b.json",
+      "source_pointer": "/grades/82",
+      "reviewer": "B",
+      "verdict": "cannot_tell",
+      "reviewer_reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact.",
+      "human_grade": null,
+      "human_reason": null
+    },
+    {
+      "id": "G10",
+      "selection_id": "reviewer-a.json:pr5:c4:q6",
+      "selection_sha256": "0610c12091b08656603682d9e6fb518602a867a6b12abfdc1785a7b58bf81334",
+      "pr": 5,
+      "condition": "c4",
+      "question_id": "q6",
+      "answer": "The packet counts '0 new tests' (stats card 'new tests' = '0'). The only test-side item is the scenario 'exhaustion_domain' at tests/e2e_doc_report.py:141 (marked 'ok'), which 'exercises exhaustion handling' - pinning that later-page terminal message cases (the provider messages 'No data found for this domain and memberId' / 'No data found for this memberId') 'complete with rows retained'. Scene 6: 'A scenario script guards the report pipeline.'",
+      "question": {
+        "ask": "Which behaviour do the new tests pin?",
+        "evidence": [
+          "tests/e2e_doc_report.py:141"
+        ],
+        "id": "q6",
+        "key": "The 32-scenario matrix pins snapshot-exhaustion handling: the exact terminal no-data message completes with rows retained, while first-page or unrecognized 404s still block.",
+        "type": "name_or_free"
+      },
+      "question_source": "eval/questions/pr5.json",
+      "question_head_sha": "5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe",
+      "code_evidence": [
+        {
+          "location": "tests/e2e_doc_report.py:141",
+          "url": "https://github.com/komaksym/linkedin-mdp/blob/5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe/tests/e2e_doc_report.py#L141",
+          "head_sha": "5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe",
+          "excerpt_start": 139,
+          "excerpt_end": 149,
+          "excerpt": "139:         self.provider_calls += 1\n140:         exhaustion = {\n141:             \"exhaustion_domain\": \"No data found for this domain and memberId.\",\n142:             \"exhaustion_member\": \"No data found for this memberId.\",\n143:             \"exhaustion_domain_no_period\": \"No data found for this domain and memberId\",\n144:             \"exhaustion_member_no_period\": \"No data found for this memberId\",\n145:         }\n146:         if self.scenario in exhaustion and self.provider_calls == 3:\n147:             return httpx.Response(404, json={\"message\": exhaustion[self.scenario]})\n148:         if self.scenario == \"first_page_exhaustion\":\n149:             return httpx.Response(404, json={\"message\": exhaustion[\"exhaustion_domain\"]})"
+        }
+      ],
+      "answer_source": "eval/runs/2026-10-06-full/answers/pr5/c4.json",
+      "source": "eval/runs/2026-10-06-full/grades/reviewer-a.json",
+      "source_pointer": "/grades/29",
+      "reviewer": "A",
+      "verdict": "partial",
+      "reviewer_reason": "Captures part of the tested behavior but omits a material keyed case.",
+      "human_grade": null,
+      "human_reason": null
+    }
+  ],
+  "audit_findings": [
+    {
+      "id": "A01",
+      "selection_id": "pr7.json:verdicts:0",
+      "selection_sha256": "06cc6375b068b1ce3f2e48d94645161668faa7d5768d159e7a93a0bc713994a7",
+      "pr": 7,
+      "historical": true,
+      "requires_refreshed_audit": true,
+      "source": "eval/runs/2026-10-06-full/audit/pr7.json",
+      "finding_source_pointer": "/findings/0",
+      "source_pointer": "/verdicts/0",
+      "finding": {
+        "code": ".github/workflows/sync-invitations.yml:11: `if: github.ref == 'refs/heads/main' && vars.INVITATIONS_RECONCILIATION_ENABLED == 'true'` — the gate is a branch condition AND the variable, not one variable alone.",
+        "output": "board say scenes 1-2",
+        "statement": "A manual workflow stays gated behind one variable. / The manual workflow still waits for the opt-in variable."
+      },
+      "verified_statement": "A manual workflow stays gated behind main branch plus one variable. / The manual workflow still waits for main branch plus the opt-in variable.",
+      "verified_output": "outputs/pr7/board.json scenes 1-2; doc.html:186,198",
+      "verdict": "rejected",
+      "verifier_evidence": ".github/workflows/sync-invitations.yml:4 (head) on: workflow_dispatch: and :11 if: github.ref == 'refs/heads/main' && vars.INVITATIONS_RECONCILIATION_ENABLED == 'true' - the current wording names both gates.",
+      "verifier_record": {
+        "statement": "A manual workflow stays gated behind main branch plus one variable. / The manual workflow still waits for main branch plus the opt-in variable.",
+        "output": "outputs/pr7/board.json scenes 1-2; doc.html:186,198",
+        "verdict": "rejected",
+        "evidence": ".github/workflows/sync-invitations.yml:4 (head) on: workflow_dispatch: and :11 if: github.ref == 'refs/heads/main' && vars.INVITATIONS_RECONCILIATION_ENABLED == 'true' - the current wording names both gates."
+      },
+      "human_agreement": null,
+      "human_reason": null
+    },
+    {
+      "id": "A02",
+      "selection_id": "pr16.json:verdicts:1",
+      "selection_sha256": "07c01b8350150c0952f190bde331647dc28d6fa04b1ef0d66ee8840a9d9a1208",
+      "pr": 16,
+      "historical": true,
+      "requires_refreshed_audit": true,
+      "source": "eval/runs/2026-10-06-full/audit/pr16.json",
+      "finding_source_pointer": "/findings/1",
+      "source_pointer": "/verdicts/1",
+      "finding": {
+        "code": "src/linkedin_mdp_mcp/actual_action_sync.py:199 — `async def sync_actual_actions(...)` stages evidence and gates the single event batch on `if not apply:` (:238); comment steers only to invitation_sync helpers",
+        "output": "comment.md Look here first",
+        "statement": "Look here first: `reconcile_invitations`, `_complete_rows`, `InvitationSyncError` in `src/linkedin_mdp_mcp/invitation_sync.py` (omits sync_actual_actions, the function carrying the change)."
+      },
+      "verified_statement": "Look here first: `sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py`; `run` in `scripts/sync_actual_actions.py`; `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`.",
+      "verified_output": "comment.md:60-62 'Look here first' + card.html look-first list",
+      "verdict": "rejected",
+      "verifier_evidence": "The finding's quoted list ('reconcile_invitations', '_complete_rows', 'InvitationSyncError' only) no longer appears in the current output. The current list names the change's carrier: src/linkedin_mdp_mcp/actual_action_sync.py:199 'async def sync_actual_actions(...)' stages sources, validates, and gates the single event batch on :238 'if not apply:'; scripts/sync_actual_actions.py:70 'async def run(...)' calls it at :80. Current text is accurate.",
+      "verifier_record": {
+        "statement": "Look here first: `sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py`; `run` in `scripts/sync_actual_actions.py`; `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`.",
+        "output": "comment.md:60-62 'Look here first' + card.html look-first list",
+        "verdict": "rejected",
+        "evidence": "The finding's quoted list ('reconcile_invitations', '_complete_rows', 'InvitationSyncError' only) no longer appears in the current output. The current list names the change's carrier: src/linkedin_mdp_mcp/actual_action_sync.py:199 'async def sync_actual_actions(...)' stages sources, validates, and gates the single event batch on :238 'if not apply:'; scripts/sync_actual_actions.py:70 'async def run(...)' calls it at :80. Current text is accurate.",
+        "suggested_fix": ""
+      },
+      "human_agreement": null,
+      "human_reason": null
+    },
+    {
+      "id": "A03",
+      "selection_id": "pr15.json:verdicts:0",
+      "selection_sha256": "157ba104fd733cf27a23a26711d831c8ba1cb2785949c4101ea08599b000ad02",
+      "pr": 15,
+      "historical": true,
+      "requires_refreshed_audit": true,
+      "source": "eval/runs/2026-10-06-full/audit/pr15.json",
+      "finding_source_pointer": "/findings/0",
+      "source_pointer": "/verdicts/0",
+      "finding": {
+        "code": "scripts/publish_combined_action_report.py:33-34 — `text = validate_report_text(...)` then `GoogleDocPublisher(GoogleDocConfig.from_env())`, followed by OAuth token fetch and Google Docs API region replacement with one revision-conflict retry (src/linkedin_mdp_mcp/google_doc_report.py:publish_text); the comment itself lists `GoogleDocPublisher.publish` under Not covered by tests",
+        "output": "comment.md Risky surfaces and description vs diff + card.html Risky surfaces",
+        "statement": "No risky surfaces."
+      },
+      "verified_statement": "No risky surfaces.",
+      "verified_output": "comment.md:82 'Risky surfaces and description vs diff' + card.html:92 risky list ('None.')",
+      "verdict": "confirmed",
+      "verifier_evidence": "scripts/publish_combined_action_report.py:33-36 (new file, +56): 'text = validate_report_text(...)', 'publisher = GoogleDocPublisher(GoogleDocConfig.from_env())', 'await publisher.publish_text(text)'. That path fetches an OAuth token from https://oauth2.googleapis.com/token and writes the Docs API (src/linkedin_mdp_mcp/google_doc_report.py:17 TOKEN_URL; :160-173 publish_text with 'for attempt in range(2)' and insertText/deleteContentRange). The output's own map.json/map.html brief marks scripts/publish_combined_action_report.py sensitive='external calls', and prc counts external calls as a risky surface (src/prc/brief.py:199 calls_external, :609 assigns the reason; docs/mvp/EVAL.md:74). The comment itself lists 'GoogleDocPublisher.publish' (comment.md:106) as untested.",
+      "verifier_record": {
+        "statement": "No risky surfaces.",
+        "output": "comment.md:82 'Risky surfaces and description vs diff' + card.html:92 risky list ('None.')",
+        "verdict": "confirmed",
+        "evidence": "scripts/publish_combined_action_report.py:33-36 (new file, +56): 'text = validate_report_text(...)', 'publisher = GoogleDocPublisher(GoogleDocConfig.from_env())', 'await publisher.publish_text(text)'. That path fetches an OAuth token from https://oauth2.googleapis.com/token and writes the Docs API (src/linkedin_mdp_mcp/google_doc_report.py:17 TOKEN_URL; :160-173 publish_text with 'for attempt in range(2)' and insertText/deleteContentRange). The output's own map.json/map.html brief marks scripts/publish_combined_action_report.py sensitive='external calls', and prc counts external calls as a risky surface (src/prc/brief.py:199 calls_external, :609 assigns the reason; docs/mvp/EVAL.md:74). The comment itself lists 'GoogleDocPublisher.publish' (comment.md:106) as untested.",
+        "suggested_fix": "comment.md: replace 'No risky surfaces.' with '- `scripts/publish_combined_action_report.py`: external calls' (the renderer then omits the follow-on 'Everything the description names...' line); card.html: replace the 'None.' reason with the same path/reason entry."
+      },
+      "human_agreement": null,
+      "human_reason": null
+    },
+    {
+      "id": "A04",
+      "selection_id": "pr10.json:verdicts:1",
+      "selection_sha256": "64ad340ce0fcbfb41cc1c4b63cbace7bbbf39f6a05c63e5ccf1b6ff1f2aa221f",
+      "pr": 10,
+      "historical": true,
+      "requires_refreshed_audit": true,
+      "source": "eval/runs/2026-10-06-full/audit/pr10.json",
+      "finding_source_pointer": "/findings/1",
+      "source_pointer": "/verdicts/1",
+      "finding": {
+        "code": "src/linkedin_mdp_mcp/invitation_shortlist.py:1025-1033: cap_evidence_by_company extends one entry per evidence row (multiple entries per person); tests/e2e_invitation_shortlist.py:373: `test_distinct_history_rows_without_event_ids_keep_distinct_bindings` — repeated sends without event IDs remain separate cap events by source pointer.",
+        "output": "board say scene 2",
+        "statement": "Every source now counts once against the mapped latest employer."
+      },
+      "verified_statement": "Each event record counts once against the mapped latest employer.",
+      "verified_output": "board.json scene 2 (i=2), say — also doc.html Scene 3 of 7",
+      "verdict": "confirmed",
+      "verifier_evidence": "src/linkedin_mdp_mcp/invitation_shortlist.py:1009 `for profile_url, evidence_rows in history_by_profile.items():` and :1024 `company_counts[employer.company_id] += 1` — one count per person, not per event record; :1025-1033 only extends audit entries. tests/e2e_invitation_shortlist.py:1080-1089 three evidence rows for one profile leave recorded == 1 (\"evidence count once at latest employer with source audit retained\"). docs/invitation-shortlist.md:52 (cited receipt) \"counts each person once against their mapped latest-known employer\".",
+      "verifier_record": {
+        "statement": "Each event record counts once against the mapped latest employer.",
+        "output": "board.json scene 2 (i=2), say — also doc.html Scene 3 of 7",
+        "verdict": "confirmed",
+        "evidence": "src/linkedin_mdp_mcp/invitation_shortlist.py:1009 `for profile_url, evidence_rows in history_by_profile.items():` and :1024 `company_counts[employer.company_id] += 1` — one count per person, not per event record; :1025-1033 only extends audit entries. tests/e2e_invitation_shortlist.py:1080-1089 three evidence rows for one profile leave recorded == 1 (\"evidence count once at latest employer with source audit retained\"). docs/invitation-shortlist.md:52 (cited receipt) \"counts each person once against their mapped latest-known employer\".",
+        "suggested_fix": "Each person's history counts once against the mapped latest employer."
+      },
+      "human_agreement": null,
+      "human_reason": null
+    },
+    {
+      "id": "A05",
+      "selection_id": "pr19.json:verdicts:0",
+      "selection_sha256": "68fdb1765cd424d1e4ef08a43645c46798a126a0e985819f3e484f930643e8c6",
+      "pr": 19,
+      "historical": true,
+      "requires_refreshed_audit": true,
+      "source": "eval/runs/2026-10-06-full/audit/pr19.json",
+      "finding_source_pointer": "/findings/0",
+      "source_pointer": "/verdicts/0",
+      "finding": {
+        "code": "scripts/report_connections_doc.py:66 — `await publisher.publish(result)` publishes the connections COMPLETE/BLOCKED/FAILED report to its own Google Doc via the Private Morning Report workflow (.github/workflows/morning-report.yml:36-46), alongside the two DM-doc publishes in scripts/publish_private_dm_docs.py:121-122",
+        "output": "board spoken text scene 0 + doc.html scene 1 title + card.html headline",
+        "statement": "This change publishes two to Google Docs."
+      },
+      "verified_statement": "This change publishes two to Google Docs.",
+      "verified_output": "board.json scene 0 say[1] + doc.html:179 (the card.html headline renders only say[0], 'The owner had no private DM reports.')",
+      "verdict": "confirmed",
+      "verifier_evidence": "The change adds three publishes to three distinct docs. scripts/publish_private_dm_docs.py:121-122 'await first.publish_text(bodies.first_dm)' / 'await follow.publish_text(bodies.follow_up)' use GOOGLE_FIRST_DM_REPORT_DOCUMENT_ID / GOOGLE_FOLLOW_UP_REPORT_DOCUMENT_ID (:24-25); scripts/report_connections_doc.py:66 'await publisher.publish(result)' uses GOOGLE_REPORT_DOCUMENT_ID (src/linkedin_mdp_mcp/google_doc_report.py:36) and is run by the added .github/workflows/morning-report.yml:36-46 'Update private Google Doc'. All these files are absent at base 1253403 (git ls-tree empty), so this PR adds the third publish.",
+      "verifier_record": {
+        "statement": "This change publishes two to Google Docs.",
+        "output": "board.json scene 0 say[1] + doc.html:179 (the card.html headline renders only say[0], 'The owner had no private DM reports.')",
+        "verdict": "confirmed",
+        "evidence": "The change adds three publishes to three distinct docs. scripts/publish_private_dm_docs.py:121-122 'await first.publish_text(bodies.first_dm)' / 'await follow.publish_text(bodies.follow_up)' use GOOGLE_FIRST_DM_REPORT_DOCUMENT_ID / GOOGLE_FOLLOW_UP_REPORT_DOCUMENT_ID (:24-25); scripts/report_connections_doc.py:66 'await publisher.publish(result)' uses GOOGLE_REPORT_DOCUMENT_ID (src/linkedin_mdp_mcp/google_doc_report.py:36) and is run by the added .github/workflows/morning-report.yml:36-46 'Update private Google Doc'. All these files are absent at base 1253403 (git ls-tree empty), so this PR adds the third publish.",
+        "suggested_fix": "This change publishes three reports to Google Docs."
+      },
+      "human_agreement": null,
+      "human_reason": null
+    }
+  ],
+  "source_sha256": {
+    "docs/mvp/EVAL.md": "50838169d5fbfd5c9a2081cdee5b32361c2d3bb631a49d9ec27f56ab27f7c8bf",
+    "eval/questions/pr12.json": "1530f5ab46193ed830f044cf48abc1844ec48d399896e22e84677fe7b06abb48",
+    "eval/questions/pr13.json": "25942cb7de2dd11a608e62b3592a0aa2303f7d0a08e9ebddf3596a860920ba8c",
+    "eval/questions/pr15.json": "a7e06366e7de066a39ef8b082125a9075b9ab0e04314b30a0303d63ab4e23f20",
+    "eval/questions/pr16.json": "a0378f5be6d273d420f5d58a720c66fedec178bcc9cff1f3d5bc2bc65982369f",
+    "eval/questions/pr19.json": "abee836e8b39e51ccd2aa98cdfb55a5fcc5da818ef300a053afddc78cb732295",
+    "eval/questions/pr5.json": "fa2ff0a4a97f84016393b9e00c412949c96a8c24d082df3f704552d79753ad6e",
+    "eval/questions/pr7.json": "b25490db23eeb427621a3e5f5c141991b4806bdd6076b72742db9bef6a3cf4bf",
+    "eval/questions/pr8.json": "b53ba764e222cdaae2bd0e88babdbbaab0ec47d6be2e7b097b1b5fd48c7676bc",
+    "eval/runs/2026-10-06-full/answers/pr12/c2.json": "1a6ea3492f48a8e452b31df364331d4b4e0e4158d49853a1cd20cd4bb5b9a9f7",
+    "eval/runs/2026-10-06-full/answers/pr13/c1.json": "7d2064f465b6bfc4742fad5ce7961308b089ad0a5868c0c673deff6af4288025",
+    "eval/runs/2026-10-06-full/answers/pr13/c4.json": "13110622bd4cf8b6e73966bc0b048cb4d666e200680d561a375a95944e7cb2e9",
+    "eval/runs/2026-10-06-full/answers/pr15/c4.json": "c076a06de3ae1ff334f670907266b40d9e1c0069df9a89202ac596c87f3acb6d",
+    "eval/runs/2026-10-06-full/answers/pr16/c3.json": "792c6236a9df7cde2753ae38c9eb44b9226bdd95e9e37b3a5f667c29f2d2bab7",
+    "eval/runs/2026-10-06-full/answers/pr19/c1.json": "659bb9ad44f8015c8431d3e595c7aaa052c77aad1984da2fe030fcb01016aad4",
+    "eval/runs/2026-10-06-full/answers/pr5/c3.json": "48eccba6744df09346b070012e9fe211730a0e2ddf703cbdfae2294656835fe5",
+    "eval/runs/2026-10-06-full/answers/pr5/c4.json": "532c08a8f74a4e172f0b1fe779c0b824a63ac759893e47d43081ff3e2cb51a7f",
+    "eval/runs/2026-10-06-full/answers/pr7/c1.json": "7ca0b815a8cc82408970d6257e5a2d75f574aadef2a0dc7c0e63cc4b7a1052e8",
+    "eval/runs/2026-10-06-full/answers/pr8/c2.json": "a30e7bc64cd84423a2daf5eceb3e010e922a6247f2151cfee223ca228415fc20",
+    "eval/runs/2026-10-06-full/audit/pr10.json": "ba084b3de799212de1fe2b035c94609b1edae3d54106c62f77c72b1fbf265f28",
+    "eval/runs/2026-10-06-full/audit/pr11.json": "660887376e57f4ed716d74891dc35ce741e8d19de3fe99da3316b099ad1f0d37",
+    "eval/runs/2026-10-06-full/audit/pr12.json": "844b2fd004f2f2d795cb01b0c7dcb05073985269d74001b2cbe18608d4084719",
+    "eval/runs/2026-10-06-full/audit/pr13.json": "8056c85db0df7073a4776c0b9a74d98f7111249c3e01271e1c7ae818e9475c29",
+    "eval/runs/2026-10-06-full/audit/pr14.json": "858293df0b1e7916e90d4792b1d6e66427f4da7ec39ccd09af5d1791ef10310c",
+    "eval/runs/2026-10-06-full/audit/pr15.json": "0071c6ae288ae1b65ad0aeff018ced4ab9e70577f6d9f66207f4904cf7614c3c",
+    "eval/runs/2026-10-06-full/audit/pr16.json": "73e34ed46b24dad37800ba6ebc99fb33c0abd1631741eca8b716cd11912d2b96",
+    "eval/runs/2026-10-06-full/audit/pr17.json": "57f80d1cacf39edbf0854fee45e76f35ce76379b268d283f075e35f1bba6ea40",
+    "eval/runs/2026-10-06-full/audit/pr19.json": "7cc6edda351ee56a32ba8fe68df5dc14afd4fbe861dac6be8255d30f26b26b24",
+    "eval/runs/2026-10-06-full/audit/pr5.json": "3daacfb6797d7f2e39ba69950ea0731e6b4fa9e38047ef4df489026672812c94",
+    "eval/runs/2026-10-06-full/audit/pr7.json": "1852c6e19f7745f9358475c6924ab2b37eb9216deaaea533a4c5a814d5a0daed",
+    "eval/runs/2026-10-06-full/audit/pr8.json": "930073eccc74f0d613303e9ba8206ef876fd3ee5aca532fc55bf70451c69b830",
+    "eval/runs/2026-10-06-full/grades/reviewer-a.json": "b0fdbfc0e57e3cfccec6dd5302d003962cf261161eb8ef39018a65edc06c501b",
+    "eval/runs/2026-10-06-full/grades/reviewer-b.json": "03a7d8b6e27d6f1b7088bdedcf913c0dd2ae09e49eb19fc87f1a991128424884",
+    "eval/runs/2026-10-06-full/grades/reviewer-c.json": "af42b03e28cebdfa2dfe6a567762f800a16b6d56db47cb71ba24612246e2f31b",
+    "eval/runs/2026-10-06-full/outputs/pr12/board.json": "fc81ee228d416c7b78a3e591993e11f2537179aeaf183d24e06038daeb967ef5",
+    "eval/runs/2026-10-06-full/outputs/pr12/map.json": "1f1a63144621606058ca5d86f9261403ce78ad4879ef49efe82a6e5d3b78e1d2",
+    "eval/runs/2026-10-06-full/outputs/pr12/narration.wav": "22abd10abd3607ee57ae860cb70d2b3698448d4fda2ff6de0f3b5a51fb2a8b5e",
+    "eval/runs/2026-10-06-full/outputs/pr12/run.json": "1953fb36d748194b93c0bc7cde944efa71ec53342b4089de6f3ea843d1d5a6e8",
+    "eval/runs/2026-10-06-full/outputs/pr12/video.mp4": "54b4ad8459cf70cbd3b57912ae4ddc17c25350a73b79e078e11167799d456f0e",
+    "eval/runs/2026-10-06-full/outputs/pr16/board.json": "7f71c988fff3d2ed09ec80fa0c65ee6c888c81260f5a481a1852d83ed974642d",
+    "eval/runs/2026-10-06-full/outputs/pr16/map.json": "157c42698ac4d18d0f888abe2c3894e9da42667a3b29a989e2e636fb96928e6e",
+    "eval/runs/2026-10-06-full/outputs/pr16/narration.wav": "6c58a90d21b719b0ec2c4337c0592c9c6fdb1a803bd7ae9cfda0a363c8318038",
+    "eval/runs/2026-10-06-full/outputs/pr16/run.json": "8fb61bb863619b5abdd78bd4141c3d3a34b8f7dc37027e5c3f97e6fd82389509",
+    "eval/runs/2026-10-06-full/outputs/pr16/video.mp4": "5127b6150fd1a54383ed500210e98c7a9605dc72da5b2852892a764ef5cd41e4",
+    "eval/runs/2026-10-06-full/outputs/pr19/board.json": "09720f313922fbbd725069872fe094b21dfbcc63963c83cea7abe9413e32b802",
+    "eval/runs/2026-10-06-full/outputs/pr19/map.json": "5b9984d96708ce099d6903ff7541c70f10a986817156a720349d7d768d3cd16d",
+    "eval/runs/2026-10-06-full/outputs/pr19/narration.wav": "36d08bb24ef5da851fa475bdc7a1b66eb7698f4933914f11d8c596cbead27d95",
+    "eval/runs/2026-10-06-full/outputs/pr19/run.json": "5fb92a76b0aeb8baf7857f69941ba2d07d958f89e1a6a81eb5d8951ebf27db14",
+    "eval/runs/2026-10-06-full/outputs/pr19/video.mp4": "931f24dc9b63d301d0448f6b50bb59b76eb54844b41cf4ce69a93e0100c7bd57"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "pr": 12,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private invitation shortlist report adds a visible date-added value for reviewers of that report."
+    },
+    {
+      "id": "q2",
+      "answer": "_date_added in p_mcp/invitation_shortlist.py"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "PLANS.md; PR10-present-employer-e2e-matrix.md; invitation-shortlist-e2e-evidence.json; invitation-shortlist.md; analysis.md; infographic.png; 01-infographic-date-added.md; source.md; structured-content.md; invitation-shortlist E2E test files."
+    },
+    {
+      "id": "q5",
+      "answer": "None. The packet shows 0 risky surfaces."
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests pin date-added behavior, including valid, invalid, and missing date cases, plus the invitation-shortlist E2E behavior."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with _date_added and its call site in p_mcp/invitation_shortlist.py."
+    },
+    {
+      "id": "q8",
+      "answer": "False."
+    }
+  ]
+}

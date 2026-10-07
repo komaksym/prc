@@ -1,0 +1,45 @@
+{
+  "pr": 7,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL. The packet shows only the card headline 'The owner had no durable invitation history'. It does not show the resulting behaviour change or who is affected."
+    },
+    {
+      "id": "q2",
+      "answer": "The card does not label one function as the main change. LOOK HERE FIRST lists, in order: 'reconcile_invitations' (src/linkedin_mdp_mcp/invitation_sync…), 'plan_invitation_events' (src/linkedin_mdp_mcp/invitation_sync…), and 'main' (scripts/sync_invitations.py). The top-ranked function is 'reconcile_invitations'."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet shows no opt-in gate and no manual workflow input. The card only lists '.github/workflows/sync-invit…' under RISKY SURFACES with the label 'CI workflow'."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        ".github/workflows/sync-invit… (CI workflow)",
+        "artifacts/invitation_sync_ve… (external calls)",
+        "scripts/sync_invitations.py (external calls)",
+        "scripts/verify_invitation_sy… (external calls)",
+        "src/linkedin_mdp_mcp/invitat… (external calls)",
+        "Names are truncated on the card as shown; the card reports 17 files changed in total."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI and external calls. The card labels '.github/workflows/sync-invit…' as 'CI workflow' and labels 'artifacts/invitation_sync_ve…', 'scripts/sync_invitations.py', 'scripts/verify_invitation_sy…', and 'src/linkedin_mdp_mcp/invitat…' as 'external calls'. No dependencies, auth, schema, or secrets surface is shown on the card."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card gives only the counts '1 tests touched' and '12 no direct test' and the clipped line 'No direct test: main.main.LinkedInMDPClient. get paged'. It does not show what the tests assert."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the card's LOOK HERE FIRST items, in order: 'reconcile_invitations' (src/linkedin_mdp_mcp/invitation_sync…), 'plan_invitation_events' (src/linkedin_mdp_mcp/invitation_sync…), and 'main' (scripts/sync_invitations.py)."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card lists '.github/workflows/sync-invit…' under RISKY SURFACES with the label 'CI workflow', but it does not show the workflow's triggers or any gate."
+    }
+  ]
+}

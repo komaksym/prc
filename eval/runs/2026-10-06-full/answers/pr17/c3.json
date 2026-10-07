@@ -1,0 +1,42 @@
+{
+  "pr": 17,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Before this change the shortlist checked only one company per person: the diff removes `if slots[candidate_row.company_id] <= 0:` (old line 1018, tagged 'one company'), and the frames say 'Before this change, A had one employer on record, say co-a, so only co-a's limit was checked' and 'Nothing stopped A, and co-b's people got a fourth invitation.' Now the check covers every company the person works at: `if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):` and the new loop takes a slot at each employer (`slots[company_id] -= 1`, tagged '1 slot at each employer'). The people affected are candidates with more than one current employer - the title card says 'It's about people with two jobs at once', and the diagram shows 'PERSON A / two current jobs' who 'works at both co-a and co-b'. For a reviewer of the private invitation report this means such a person is left off the shortlist when any company they work at has no free slot ('co-b is full, so A is not invited'), instead of still being added; when both companies have room, the person is invited once and uses a slot at each ('When both companies have room, A is invited once and uses a slot at each', 'That leaves two at co-a and two at co-b'). A later slide adds: 'If anyone's employer data is empty, unknown, partial or conflicting, no one is invited.'"
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL - no class name appears anywhere in the packet. The change is shown only at module level: the diff slide is headed 'src/linkedin_mdp_mcp/invitation_shortlist.py' and shows lines inside `for candidate_row in eligible:` (new lines 1030-1035, removed old lines 1018 and 1021), using `eligible`, `candidate_row`, `slots`, `selected` and `employers[candidate_row.profile_url].assignments`."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL - the packet never shows a class or type named CurrentEmployer, nor any field of it. The only field-level change it shows is in src/linkedin_mdp_mcp/invitation_shortlist.py: the removed lines used a single company id on the candidate row, `if slots[candidate_row.company_id] <= 0:` and `slots[candidate_row.company_id] -= 1` (old lines 1018 and 1021), and the added lines use a per-person collection of company ids, `employers[candidate_row.profile_url].assignments` (new lines 1031, 1034, 1035)."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_invitation_shortlist.py - named only in the receipts lines: e2e_invitation_shortlist.py:1064, e2e_invitation_shortlist.py:1059, e2e_invitation_shortlist.py:1061 (the 'needs a free slot at every company' scene) and e2e_invitation_shortlist.py:1066, e2e_invitation_shortlist.py:1067, e2e_invitation_shortlist.py:1065 (the 'invited once, uses a slot at each' scene)",
+        "test_invitation_shortlist_e2e.py - named in the receipts line as test_invitation_shortlist_e2e.py:89 (the earlier, pre-change scenes)",
+        "No other file or area is named in the packet: the diff slide quotes only 'src/linkedin_mdp_mcp/invitation_shortlist.py', while the title card reports '+219 -39 - 11 files', so the packet does not show what the remaining files are."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None shown. The packet contains no CI, dependency, auth, schema, secret or external-call material; the only change it displays is in-memory slot bookkeeping in src/linkedin_mdp_mcp/invitation_shortlist.py (reads of a `slots` mapping, `selected.append(candidate_row)`, and `slots[company_id] -= 1`) plus test receipts. The title card says 11 files while the packet quotes one diff hunk, so the packet cannot by itself rule out other files, but no risky surface appears anywhere in it."
+    },
+    {
+      "id": "q6",
+      "answer": "The new e2e receipts pin two behaviours for a person with two current employers. (1) The person is not selected when any company they work at has no free slot: the scene 'Now A needs a free slot at every company A works at' ends with 'co-b is full, so A is not invited', with receipts invitation_shortlist.py:1031 and e2e_invitation_shortlist.py:1064, 1059, 1061. (2) The person is selected once and consumes a slot at each employer when both have room: 'When both companies have room, A is invited once and uses a slot at each' and 'That leaves two at co-a and two at co-b', with receipts invitation_shortlist.py:1035 and e2e_invitation_shortlist.py:1066, 1067, 1065. The packet cites test code by file and line only; it does not quote the test bodies."
+    },
+    {
+      "id": "q7",
+      "answer": "At the diff slide, 'The change, line for line', in src/linkedin_mdp_mcp/invitation_shortlist.py: the hunk inside `for candidate_row in eligible:` where old line 1018 (`if slots[candidate_row.company_id] <= 0:`) and old line 1021 (`slots[candidate_row.company_id] -= 1`) are replaced by new line 1031 (`if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):`) and new lines 1034-1035 (`for company_id in employers[candidate_row.profile_url].assignments:` / `slots[company_id] -= 1`). The receipts single out invitation_shortlist.py:1031 and invitation_shortlist.py:1035 for the two new behaviours, and invitation_shortlist.py:1038 with invitation_shortlist.py:73 (old) for the earlier scenes."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The packet shows only candidate selection and in-memory slot counting (`slots[company_id] -= 1`, against a `slots` mapping) in src/linkedin_mdp_mcp/invitation_shortlist.py, with no code that sends invitations or writes to a database; the title card describes the change as 'feat(report): count every present employer', and the last slide's 'no one is invited' describes the shortlist outcome, not an invitation being sent."
+    }
+  ]
+}

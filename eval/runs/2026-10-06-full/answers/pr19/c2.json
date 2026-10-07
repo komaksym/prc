@@ -1,0 +1,14 @@
+{
+  "pr": 19,
+  "condition": "c2",
+  "answers": [
+    {"id": "q1", "answer": "CANNOT TELL"},
+    {"id": "q2", "answer": "CANNOT TELL"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": "The packet shows changes across CI workflows, PLANS.md, an E2E evidence artifact, diagnostics, docs, scripts, source modules, and E2E tests. It reports 62 changed files total."},
+    {"id": "q5", "answer": "It touches CI workflows and multiple external-call surfaces."},
+    {"id": "q6", "answer": "CANNOT TELL"},
+    {"id": "q7", "answer": "Start with build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shortlist.py, then classify_dm_evidence in src/linkedin_mdp_mcp/dm_actions.py, then run in scripts/report_connections_doc.py."},
+    {"id": "q8", "answer": "CANNOT TELL"}
+  ]
+}

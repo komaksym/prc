@@ -1,0 +1,14 @@
+{
+  "pr": 10,
+  "condition": "c5",
+  "answers": [
+    {"id": "q1", "answer": "The private invitation report now plans invitations from complete history."},
+    {"id": "q2", "answer": "CANNOT TELL"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": "Besides the main source module, the packet shows changes in scripts/build_invitation_shortlist.py, tests/e2e_invitation_shortlist.py, tests/test_invitation_shortlist_e2e.py, PLANS.md, PR10-present-employer-e2e-matrix.md, invitation-shortlist-e2e-evidence.json, action-report-contract.md, and invitation-shortlist.md."},
+    {"id": "q5", "answer": "none"},
+    {"id": "q6", "answer": "CANNOT TELL"},
+    {"id": "q7", "answer": "scripts/build_invitation_shortlist.py"},
+    {"id": "q8", "answer": "CANNOT TELL"}
+  ]
+}

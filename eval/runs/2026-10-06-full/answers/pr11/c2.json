@@ -1,0 +1,14 @@
+{
+  "pr": 11,
+  "condition": "c2",
+  "answers": [
+    {"id": "q1", "answer": "CANNOT TELL beyond the title. The packet's only related text is the title 'The private collector dropped prospect timestamps.' It does not state what behaviour changes for the owner of the private reports or who else is affected."},
+    {"id": "q2", "answer": "CANNOT TELL which single function carries the main change. Under 'Look here first' the packet lists `exercise`, `main` and `main.synthetic_export`, all in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`, and its mermaid graph shows `main` -> `exercise` and `synthetic_export` -> `exercise`, with all six symbols marked as added."},
+    {"id": "q3", "answer": "CANNOT TELL. The packet contains no SQL or column list for prospects; the only related text is the title 'The private collector dropped prospect timestamps.'"},
+    {"id": "q4", "answer": ["diagnostics/action-report-private-source-20261002/e2e_private_source.py", "areas/symbols in that file: `exercise`, `database`, `provider`, `synthetic_export`, `failing_export`, `main`", "CANNOT TELL for any other file names: the comment reports 'Files 12, symbols 6, CI 1/1' but names no other file"]},
+    {"id": "q5", "answer": "External calls. The comment's 'Risky surfaces and description vs diff' section says: `diagnostics/action-report-private-source-20261002/e2e_private_source.py`: external calls."},
+    {"id": "q6", "answer": "CANNOT TELL. The packet does not describe any new tests or what they pin. It only lists, under 'Not covered by tests': `exercise`, `exercise.database`, `exercise.provider`, `main`, `main.failing_export`, `main.synthetic_export` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`."},
+    {"id": "q7", "answer": "Start with the comment's 'Look here first' section: `exercise`, `main` and `main.synthetic_export` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`."},
+    {"id": "q8", "answer": "CANNOT TELL. The packet shows no code or description about `created_at` or a fallback to the collection time, so it neither confirms nor denies this."}
+  ]
+}

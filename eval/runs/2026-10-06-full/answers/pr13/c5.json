@@ -1,0 +1,38 @@
+{
+  "pr": 13,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "scripts/build_private_dm_actions.py, tests, PLANS.md, dm-uncertainty-scope=e2e-evidence.json, private-dm-actions=e2e-evidence.json, infographic.png, 01-infographic-private-dm-actions.md, source.md, structured-content.md, and an action-report-contract… file."
+    },
+    {
+      "id": "q5",
+      "answer": "None. The packet shows 0 risky surfaces."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/dm_actions.py"
+    },
+    {
+      "id": "q8",
+      "answer": "False"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "pr": 14,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "collect_source"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "Besides the main collector module, the packet shows changes in src/linkedin_mdp_mcp/client.py, e2e_private_source.py, and supporting files including PLANS.md, README.md, e2e-evidence.json, private-action-source.yml, analysis.md, infographic.png, 01-infographic-source-changelog.md, source.md, and structured-content.md."
+    },
+    {
+      "id": "q5",
+      "answer": "CI is touched via private-action-source.yml. The packet does not show dependency, auth, schema, secrets, or external-call changes."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "Start with collect_source in e2e/collect_private_source.py, the largest modified symbol shown in the PR map."
+    },
+    {
+      "id": "q8",
+      "answer": "False"
+    }
+  ]
+}

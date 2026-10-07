@@ -1,0 +1,1061 @@
+{
+  "duration": 55.52746478873241,
+  "header": "<b>linkedin-mdp #15</b> \u00b7 komaksym",
+  "name": "pr15",
+  "scenes": [
+    {
+      "end": 9.114788732394366,
+      "footer": "base f59b09a  \u2192  head 1b18345",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+881</span> <span class=\"del\">\u22122</span> \u00b7 14 files \u00b7 komaksym/linkedin-mdp#15",
+      "say": [
+        "The owner juggled two separate private action reports.",
+        "This change combines them into one guarded document."
+      ],
+      "sentences": [
+        {
+          "dur": 3.802816901408451,
+          "off": 3.802816901408451,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The owner juggled two separate private action reports."
+        },
+        {
+          "dur": 3.6619718309859155,
+          "off": 3.6619718309859155,
+          "on": 0.0,
+          "start": 4.552816901408451,
+          "text": "This change combines them into one guarded document."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(report): combine actions",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/combined-action-report.md:3",
+          "match": "invitation-shortlist.json"
+        },
+        {
+          "line": "docs/combined-action-report.md:3",
+          "match": "private-dm-actions.json"
+        }
+      ],
+      "cues": [
+        {
+          "at": "planner outputs",
+          "do": "show",
+          "ids": [
+            "inv"
+          ],
+          "t": 10.409859154929578
+        },
+        {
+          "at": "one report",
+          "do": "show",
+          "ids": [
+            "dm"
+          ],
+          "t": 15.357746478873239
+        }
+      ],
+      "end": 17.03239436619718,
+      "footer": "receipts   combined-action-report.md:3  \u00b7  combined-action-report.md:3",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "invitation-shortlist.json",
+          "id": "inv",
+          "items": [
+            {
+              "ground": "invitation-shortlist.json",
+              "id": "i",
+              "text": "invitation-shortlist.json"
+            }
+          ],
+          "row": true,
+          "sub": "upstream planner output",
+          "title": "invitation shortlist"
+        },
+        {
+          "col": 1,
+          "ground": "private-dm-actions.json",
+          "id": "dm",
+          "items": [
+            {
+              "ground": "private-dm-actions.json",
+              "id": "d",
+              "text": "private-dm-actions.json"
+            }
+          ],
+          "row": true,
+          "sub": "upstream planner output",
+          "title": "dm actions"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "Two private planner outputs sit apart today.",
+        "Invitations and drafts never form one report."
+      ],
+      "sentences": [
+        {
+          "dur": 3.098591549295775,
+          "off": 3.098591549295775,
+          "on": 0.0,
+          "start": 9.564788732394366,
+          "text": "Two private planner outputs sit apart today."
+        },
+        {
+          "dur": 3.1690140845070425,
+          "off": 3.1690140845070425,
+          "on": 0.0,
+          "start": 12.96338028169014,
+          "text": "Invitations and drafts never form one report."
+        }
+      ],
+      "start": 9.114788732394366,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/combined_action_report.py:181",
+          "match": "Private LinkedIn action report"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/combined_action_report.py:181",
+          "match": "Status: {status}"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/combined_action_report.py:228",
+          "match": "validate_report_text"
+        }
+      ],
+      "cues": [
+        {
+          "at": "one private owner report",
+          "do": "show",
+          "ids": [
+            "rep"
+          ],
+          "t": 19.665492957746476
+        },
+        {
+          "at": "validation gate",
+          "do": "show",
+          "ids": [
+            "gate"
+          ],
+          "t": 25.03591549295774
+        }
+      ],
+      "end": 27.062676056338024,
+      "footer": "receipts   combined_action_report.py:181  \u00b7  combined_action_report.py:181  \u00b7  combined_action_report.py:228",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "Private LinkedIn action report",
+          "id": "rep",
+          "items": [
+            {
+              "ground": "Status: {status}",
+              "id": "r",
+              "text": "Status: {status}"
+            }
+          ],
+          "row": true,
+          "sub": "offline composition only",
+          "title": "combined report"
+        },
+        {
+          "col": 1,
+          "ground": "validate_report_text",
+          "id": "gate",
+          "items": [
+            {
+              "ground": "validate_report_text",
+              "id": "g",
+              "text": "validate_report_text"
+            }
+          ],
+          "row": true,
+          "sub": "Google-only publication",
+          "title": "publish gate"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "combine_action_reports renders one private owner report.",
+        "The Google command publishes that text after a validation gate."
+      ],
+      "sentences": [
+        {
+          "dur": 3.943661971830986,
+          "off": 3.943661971830986,
+          "on": 0.0,
+          "start": 17.48239436619718,
+          "text": "combine_action_reports renders one private owner report."
+        },
+        {
+          "dur": 4.436619718309859,
+          "off": 4.436619718309859,
+          "on": 0.0,
+          "start": 21.726056338028165,
+          "text": "The Google command publishes that text after a validation gate."
+        }
+      ],
+      "start": 17.03239436619718,
+      "type": "groups"
+    },
+    {
+      "cues": [
+        {
+          "at": "upstream envelopes",
+          "do": "step",
+          "n": 1,
+          "t": 29.484507042253515
+        },
+        {
+          "at": "keeps the report partial",
+          "do": "note",
+          "line": "180",
+          "t": 35.13661971830985,
+          "text": "partial unless complete"
+        }
+      ],
+      "cut": 0,
+      "end": 37.797183098591546,
+      "file": "src/linkedin_mdp_mcp/combined_action_report.py",
+      "footer": "receipts   4 lines quoted verbatim from the diff of combined_action_report.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        "150",
+        "156",
+        "180",
+        "228"
+      ],
+      "rows": [
+        {
+          "breaks": [
+            20
+          ],
+          "hang": 4,
+          "num": 150,
+          "op": "+",
+          "ref": "150",
+          "step": 1,
+          "text": "def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "def"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "combine_action_reports"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "invitations"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Any"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "dm_actions"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Any"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "-"
+            },
+            {
+              "cls": "k",
+              "text": ">"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "dict"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "str"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Any"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            32,
+            57
+          ],
+          "hang": 8,
+          "num": 156,
+          "op": "+",
+          "ref": "156",
+          "step": 1,
+          "text": "    if inv.get(\"schema_version\") != 1 or inv.get(\"cap_scope\") != \"all_history\" or inv.get(\"status\") not in {\"ready\", \"withheld_current_employer_assignments\"}:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "inv"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "get"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "schema_version"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "!"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "1"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "inv"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "get"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "cap_scope"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "!"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "all_history"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "inv"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "get"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "status"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "not"
+            },
+            {
+              "cls": "k",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "{"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "ready"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "withheld_current_employer_assignments"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "}"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            33
+          ],
+          "hang": 8,
+          "num": 180,
+          "op": "+",
+          "ref": "180",
+          "step": 1,
+          "text": "    status = \"partial\" if inv.get(\"status\") != \"ready\" or reasons or withheld or any(withheld_counts.values()) else \"complete\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "status"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "partial"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "inv"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "get"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "status"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "!"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "ready"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "reasons"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "withheld"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "any"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "withheld_counts"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "values"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "else"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "complete"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 228,
+          "op": "+",
+          "ref": "228",
+          "step": 1,
+          "text": "    text = validate_report_text(\"\\n\".join(lines))",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "text"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "validate_report_text"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\\"
+            },
+            {
+              "cls": "s",
+              "text": "n"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "join"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "lines"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "The combiner validates both upstream envelopes before composing any text.",
+        "Anything withheld or uncovered keeps the report partial."
+      ],
+      "sentences": [
+        {
+          "dur": 5.140845070422536,
+          "off": 5.140845070422536,
+          "on": 0.0,
+          "start": 27.512676056338023,
+          "text": "The combiner validates both upstream envelopes before composing any text."
+        },
+        {
+          "dur": 3.943661971830986,
+          "off": 3.943661971830986,
+          "on": 0.0,
+          "start": 32.953521126760556,
+          "text": "Anything withheld or uncovered keeps the report partial."
+        }
+      ],
+      "start": 27.062676056338024,
+      "type": "diff"
+    },
+    {
+      "big": "1",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 38.69084507042253
+        }
+      ],
+      "end": 43.58380281690141,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_combined_action_report.py:125",
+          "text": "all_sections_complete"
+        },
+        {
+          "cite": "tests/e2e_combined_action_report.py:143",
+          "text": "empty_message_text_preserves_sources"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": null,
+      "say": [
+        "New tests pin complete composition across real upstream shapes."
+      ],
+      "sentences": [
+        {
+          "dur": 4.436619718309859,
+          "off": 4.436619718309859,
+          "on": 0.0,
+          "start": 38.24718309859155,
+          "text": "New tests pin complete composition across real upstream shapes."
+        }
+      ],
+      "start": 37.797183098591546,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "1"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "26"
+        }
+      ],
+      "end": 51.29014084507043,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "New tests guard the combined report pipeline.",
+        "Changed functions carry the compose path."
+      ],
+      "sentences": [
+        {
+          "dur": 3.1690140845070425,
+          "off": 3.1690140845070425,
+          "on": 0.0,
+          "start": 44.033802816901414,
+          "text": "New tests guard the combined report pipeline."
+        },
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 47.50281690140846,
+          "text": "Changed functions carry the compose path."
+        }
+      ],
+      "start": 43.58380281690141,
+      "type": "stats"
+    },
+    {
+      "end": 55.52746478873241,
+      "footer": "",
+      "i": 6,
+      "l1": "One combined report composes invitation and DM outputs offline.",
+      "l2": "Start review at combine_action_reports in combined_action_report.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 51.740140845070435,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 51.29014084507043,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/15"
+    }
+  ]
+}

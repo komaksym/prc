@@ -31,7 +31,9 @@ eval/
 scripts/eval/                     the harness (tracked)
 ```
 
-Add `eval/runs/*/outputs/**/*.mp4` and `eval/runs/*/packets/**/*.png` to `.gitignore`. Keep everything else in git, so you can compare runs.
+Keep generated MP4 and WAV files under `eval/runs/*/outputs/` out of Git.
+Keep PNG packet frames out of Git.
+Track the remaining evaluation files so runs can be compared.
 
 The harness prepares packets and grades answers. Agents read packets and write answers. Any agent runtime can then do the agent steps, and the scripts stay deterministic.
 
@@ -89,11 +91,15 @@ Each answer key has `evidence`: the `path:line` lines that prove it. A second ag
 | C4 doc | the text of `doc.html`, plus screenshots at 800 px wide | the walkthrough |
 | C5 map | a screenshot of the first screen at 1280x800 | the map's first impression |
 
-One fresh reader agent (sonnet) gets one packet. Its prompt says this:
+One fresh reader agent (sonnet) gets one materialized packet. `scripts/eval/packets.py` writes each viewing condition into the packet folder and records SHA-256 hashes for its source and payload files. The prompt contains question IDs, types, and asks. It excludes answer keys and evidence.
 
-- Use only these files.
-- Quote code exactly.
-- Answer `CANNOT TELL` when the files do not show the answer.
+- C1 contains the card resized to 800 pixels wide.
+- C2 contains the comment text.
+- C3 contains up to 30 actual video frames resized to 800 pixels wide. It uses recorded scene and cue times.
+- C4 contains visible document text and screenshots at 800 pixels wide.
+- C5 contains the first map viewport at 1280 by 800 pixels.
+
+Readers use only the packet files. They return the answer shape requested by each question type. They quote code exactly and answer `CANNOT TELL` only when the packet does not show the answer.
 
 A reader never sees two conditions of the same PR. Run the 4 pilot PRs (11, 12, 17, 19) on all conditions first, then the other 8.
 

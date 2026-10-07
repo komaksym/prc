@@ -1,0 +1,43 @@
+{
+  "pr": 14,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The title says: \"This pull request makes the private source collector gather LinkedIn's member changelog.\" So the private source collector now gathers LinkedIn's member changelog. The packet does not name the owner of the private source bundle or say for whom, so that part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL. The packet never states which function carries the main change. It lists three \"Look here first\" locations (`LinkedInMDPClient._get_paged` in `src/linkedin_mdp_mcp/client.py`, `collect_sources` in `diagnostics/action-report-private-source-20261002/collect_private_source.py`, `main` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`) and marks 7 symbols as changed: `provider`, `collect_sources`, `main`, `changelog`, `_get_paged`, `_next_link` modified and `seeded_provider` added."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet shows no old pagination behaviour and no new rejection. It only names `LinkedInMDPClient._get_paged` and `LinkedInMDPClient._next_link` in `src/linkedin_mdp_mcp/client.py` as modified symbols and as \"Not covered by tests\"."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "`src/linkedin_mdp_mcp/client.py` (LinkedInMDPClient `_get_paged`, `_next_link`, `changelog`)",
+        "`diagnostics/action-report-private-source-20261002/e2e_private_source.py` (`main`, `exercise.provider`, `main.seeded_provider`)",
+        "`diagnostics/source-refresh-proposal-20261002/private-action-source.yml` (flagged under \"Risky surfaces and description vs diff\")",
+        "The packet does not name the other changed files: it reports only \"Files 13, symbols 7, CI 1/1.\""
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls. The \"Risky surfaces and description vs diff\" section tags all three named files with \"external calls\": `diagnostics/action-report-private-source-20261002/collect_private_source.py`, `diagnostics/action-report-private-source-20261002/e2e_private_source.py`, and `diagnostics/source-refresh-proposal-20261002/private-action-source.yml`. The packet shows no dependencies, auth, schema, or secrets flags."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The packet says nothing about new tests. Its only test-related section is \"Not covered by tests\", which names `collect_sources`, `exercise.provider`, `main`, `main.seeded_provider`, `LinkedInMDPClient._get_paged`, `LinkedInMDPClient._next_link`, and `LinkedInMDPClient.changelog` as not covered."
+    },
+    {
+      "id": "q7",
+      "answer": "With the \"Look here first\" list: (1) `LinkedInMDPClient._get_paged` in `src/linkedin_mdp_mcp/client.py`, (2) `collect_sources` in `diagnostics/action-report-private-source-20261002/collect_private_source.py`, (3) `main` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The packet does not state whether the PR performs live source acquisition against real services. It flags \"external calls\" for `collect_private_source.py`, `e2e_private_source.py`, and `private-action-source.yml`, and the diagram shows an added `seeded_provider` node, but no statement about live acquisition is shown."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "pr": 15,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Two private planner outputs (the 'INVITATION SHORTLIST' / 'invitation-shortlist.json' planner output and a second upstream planner output) 'sit apart today'; the packet's caption says 'combine_action_reports renders one private owner report.' and 'The Google command publishes that text after a validation gate.' So the behavior change is that the owner of those private reports gets one combined owner report composed from the upstream envelopes instead of two outputs sitting apart, and the combined text is published only through the Google command's validation gate. The beneficiary is that private owner of the reports."
+    },
+    {
+      "id": "q2",
+      "answer": "`def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:`, defined at line 150 of src/linkedin_mdp_mcp/combined_action_report.py. The packet's scene title is 'combine_action_reports renders one private owner report.' and the closing scene says 'Changed functions carry the compose path.'"
+    },
+    {
+      "id": "q3",
+      "answer": "It puts the composed text through the 'PUBLISH GATE / Google-only publication' function `validate_report_text`: the quoted line is `text = validate_report_text(\"\\n\".join(lines))` (line 228), and the caption says 'The Google command publishes that text after a validation gate.' The packet shows no OAuth or document request, and does not show what (if anything) the gate checks in detail."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_combined_action_report.py - the new tests 'all_sections_complete' (e2e_combined_action_report.py:125) and 'empty_message_text_preserves_sources' (e2e_combined_action_report.py:143).",
+        "combined-action-report.md - the receipt line cites combined-action-report.md:3 (shown as 'receipts combined-action-report.md:3' next to 'combined-action-report.md:3').",
+        "The Google publication command - shown only as the 'PUBLISH GATE / Google-only publication' card; the packet does not give its file path.",
+        "The PR header states '14 files' changed in total; the packet names only the items above."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "A schema-compatibility gate on the upstream envelope: the combiner requires `inv.get(\"schema_version\") != 1` to be false, together with `inv.get(\"cap_scope\") != \"all_history\"` and `inv.get(\"status\") not in {\"ready\", \"withheld_current_employer_assignments\"}` (line 156). Otherwise the change is 'offline composition only'; the only outward path shown is the Google publication behind `validate_report_text`. The packet shows no CI, dependency, secrets, or auth change."
+    },
+    {
+      "id": "q6",
+      "answer": "The packet states 'New tests pin complete composition across real upstream shapes.' and lists two new tests: 'ok all_sections_complete' (e2e_combined_action_report.py:125) and 'ok empty_message_text_preserves_sources' (e2e_combined_action_report.py:143). They pin the compose path's status result, `status = \"partial\" if inv.get(\"status\") != \"ready\" or reasons or withheld or any(withheld_counts.values()) else \"complete\"` (line 180): complete composition when nothing is withheld or uncovered, and that empty message text preserves sources."
+    },
+    {
+      "id": "q7",
+      "answer": "Start at src/linkedin_mdp_mcp/combined_action_report.py, at `def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:` (line 150). The 'The change, line for line' scene points at that file, and the receipt lines cite combined_action_report.py:181 and combined_action_report.py:228; the gates to read are the envelope validation at line 156, the status decision at line 180, and `text = validate_report_text(\"\\n\".join(lines))` at line 228."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The combined-report card says 'offline composition only', and the change scene says 'The combiner validates both upstream envelopes before composing any text.' No frame shows a fresh LinkedIn fetch when building the combined report."
+    }
+  ]
+}

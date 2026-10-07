@@ -1,0 +1,44 @@
+{
+  "pr": 15,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner of the private reports is the affected party. The card title says: \"The owner juggled two separate private action reports.\" The main changed function is combine_action_reports (src/linkedin_mdp_mcp/combined_action…), so the two separate private action reports are combined. The packet names no other person or audience."
+    },
+    {
+      "id": "q2",
+      "answer": "combine_action_reports — first entry under LOOK HERE FIRST, file src/linkedin_mdp_mcp/combined_action…"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL — the packet does not show what the new publication path checks before any OAuth or document request."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/google_doc_repo… (GoogleDocPublisher.publish_t…, under LOOK HERE FIRST)",
+        "scripts/build_combined_action_report… (main)",
+        "scripts/publish_combined_act… (under RISKY SURFACES, external calls)",
+        "tests/e2e_combined_action_re… (under RISKY SURFACES, external calls)",
+        "14 files in total are listed as changed (stats row); 2 tests touched"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "external calls — both RISKY SURFACES entries (scripts/publish_combined_act… and tests/e2e_combined_action_re…) carry the label \"external calls\". No CI, dependency, auth, schema, or secret surface is listed under RISKY SURFACES (the stats row separately shows \"1/1 CI passed\")."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL — the packet lists tests/e2e_combined_action_re… (external calls) and \"2 tests touched\", but it does not say which behaviour the tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the LOOK HERE FIRST list: 1) combine_action_reports in src/linkedin_mdp_mcp/combined_action…, 2) GoogleDocPublisher.publish_t… in src/linkedin_mdp_mcp/google_doc_repo…, 3) main in scripts/build_combined_action_report…"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL — the packet does not state whether the combiner fetches fresh LinkedIn data when building the combined report."
+    }
+  ]
+}

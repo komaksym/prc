@@ -1,0 +1,48 @@
+{
+  "pr": 5,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner had no private morning report; this change publishes one to Google Docs. 'The reporter updates one marked section in an owner-only doc.' The 'morning report' group (sub: 'owner-only Google Doc') marks '[BEGIN AUTOMATED REPORT]' inside the doc (ground: 'aggregate CONNECTIONS reconciliation counts'). The 'workflow' group runs 'daily at 06:17 UTC', but 'The schedule stays gated until the owner enables it, and operator notes stay intact.' Outro: 'Private morning reports publish to one marked Google Docs section.'"
+    },
+    {
+      "id": "q2",
+      "answer": "GoogleDocPublisher (src/linkedin_mdp_mcp/google_doc_report.py). Caption: 'GoogleDocPublisher replaces only the marked paragraphs.' Outro: 'Start review at GoogleDocPublisher in google_doc_report.py.' The receipt src/linkedin_mdp_mcp/google_doc_report.py#L113 matches 'class GoogleDocPublisher'. (The only quoted diff is in src/linkedin_mdp_mcp/client.py, for SNAPSHOT_EXHAUSTED_MESSAGES and an exception __init__.)"
+    },
+    {
+      "id": "q3",
+      "answer": "SNAPSHOT_EXHAUSTED_MESSAGES = frozenset({ with entries \"No data found for this domain and memberId\", and \"No data found for this memberId\", - i.e. the two provider messages 'No data found for this domain and memberId' and 'No data found for this memberId' (src/linkedin_mdp_mcp/client.py lines 14-16)."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py - quoted diff at L14-L16 (SNAPSHOT_EXHAUSTED_MESSAGES) and L21-L22 (exception __init__ docstring 'Keep the provider message available while preserving the public error text.')",
+        "tests/e2e_doc_report.py - scenario script; receipt tests/e2e_doc_report.py#L141 ('exhaustion_domain')",
+        "docs/google-docs-report.md - receipts at #L3 ('aggregate CONNECTIONS reconciliation counts') and #L41 ('daily at 06:17 UTC')",
+        ".github/workflows/morning-report.yml - config (changed file not shown)",
+        ".github/workflows/report-tests.yml - config (changed file not shown)",
+        ".github/workflows/sync-connections.yml - config (changed file not shown)",
+        "PLANS.md - docs (changed file not shown)",
+        "docs/images/google-doc-report.jpg - opaque (changed file not shown)",
+        "scripts/report_connections_doc.py - code (changed file not shown; changed symbols there include _SnapshotStage, _SnapshotStage.__init__, _SnapshotStage.snapshot, main, run)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI plus external calls with auth-adjacent config. Three workflow configs change: .github/workflows/morning-report.yml, .github/workflows/report-tests.yml, .github/workflows/sync-connections.yml. The new publisher makes Google Docs calls with token/env handling visible only as changed symbol names (GoogleDocPublisher._access_token, GoogleDocPublisher._request, GoogleDocPublisher._read_document, GoogleDocConfig.from_env). No dependency change and no schema change is shown."
+    },
+    {
+      "id": "q6",
+      "answer": "The packet counts '0 new tests' (stats card 'new tests' = '0'). The only test-side item is the scenario 'exhaustion_domain' at tests/e2e_doc_report.py:141 (marked 'ok'), which 'exercises exhaustion handling' - pinning that later-page terminal message cases (the provider messages 'No data found for this domain and memberId' / 'No data found for this memberId') 'complete with rows retained'. Scene 6: 'A scenario script guards the report pipeline.'"
+    },
+    {
+      "id": "q7",
+      "answer": "Start at GoogleDocPublisher in google_doc_report.py. The outro says 'Start review at GoogleDocPublisher in google_doc_report.py.', and receipts cite src/linkedin_mdp_mcp/google_doc_report.py#L113 ('class GoogleDocPublisher') and #L114 ('marked report paragraphs')."
+    },
+    {
+      "id": "q8",
+      "answer": "False. Reporting activates nothing on its own: the change publishes to 'one marked Google Docs section' while 'The schedule stays gated until the owner enables it'. No live data collection and no schema change appear anywhere in the packet; the only config changes shown are the three CI workflow files."
+    }
+  ]
+}

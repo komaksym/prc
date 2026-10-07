@@ -1,0 +1,53 @@
+{
+  "pr": 16,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet only speaks of 'the owner': scene 1 says 'The owner had no record of real LinkedIn activity.', and the outro says 'One sync stages LinkedIn evidence and applies only with apply.' So the shown behaviour change is that the owner (whose LinkedIn activity is synced) gains staged evidence that is written to the store only under the explicit apply opt-in; without apply the run is a dry run. The packet never mentions 'private reports' and names no other affected party, so that part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "sync_actual_actions, in src/linkedin_mdp_mcp/actual_action_sync.py. The diff scene quotes 'async def sync_actual_actions(linkedin: Any, supabase: Any, *, account_profile_url: str, account_member_urn: str, apply: bool = False, sources: ActualActionSources | None = None) -> ActualActionSyncSummary:' at line 199."
+    },
+    {
+      "id": "q3",
+      "answer": "New explicit behaviour (all quoted diff rows are '+' insertions): the default is 'apply: bool = False' (line 199) and line 238 'if not apply:' returns at line 239 'return ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched)', so 'Without apply the run returns a dry run with no writes'. With the flag, line 241 is 'inserted = await supabase.insert_events_ignore_duplicates(events) if events else 0' — 'Explicit apply inserts once while duplicates stay ignored'. Old default: the packet shows no removed ('-') lines and no prior write default, so CANNOT TELL; the only statement about the old state is 'The owner had no record of real LinkedIn activity.'"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "PLANS.md",
+        "README.md",
+        "artifacts/actual-action-sync-e2e-evidence.json",
+        "docs/actual-action-sync.md",
+        "infographic/actual-action-sync/analysis.md",
+        "infographic/actual-action-sync/infographic.png",
+        "infographic/actual-action-sync/prompts/01-infographic-actual-actions.md",
+        "infographic/actual-action-sync/source.md",
+        "infographic/actual-action-sync/structured-content.md",
+        "scripts/sync_actual_actions.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "tests/test_actual_action_sync_e2e.py",
+        "tests/e2e_actual_action_sync.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls: the sync reads the LinkedIn provider ('The sync reads three strict snapshots first. A changelog follows inside a bounded consent window.') and writes through the store client at line 241 ('inserted = await supabase.insert_events_ignore_duplicates(events) if events else 0'). The packet shows no CI, dependency, auth, schema, or secret changes."
+    },
+    {
+      "id": "q6",
+      "answer": "Dry-run staging with zero store posts: the list scene shows '1' 'new tests' with the item 'dry_run_zero_posts' cited to tests/e2e_actual_action_sync.py:168, under the line 'New tests pin dry-run staging with zero store posts.'"
+    },
+    {
+      "id": "q7",
+      "answer": "At sync_actual_actions in src/linkedin_mdp_mcp/actual_action_sync.py — the outro says 'Start review at sync_actual_actions in actual_action_sync.py.'; the diff shows that function from line 199, with the gate at lines 238-239 and the insert at line 241."
+    },
+    {
+      "id": "q8",
+      "answer": "False. Line 238 is 'if not apply:' and line 239 returns 'ActualActionSyncSummary(\"dry_run\", ...)'; the scenes say 'Without apply the run stays a dry run' and 'Without apply the run returns a dry run with no writes', and the new test 'dry_run_zero_posts' pins zero store posts. Events reach the store only with the explicit apply flag (line 241)."
+    }
+  ]
+}

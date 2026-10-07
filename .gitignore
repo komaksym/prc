@@ -9,4 +9,5 @@ prototypes/
 todo.md
 research_notes/
 eval/runs/*/outputs/**/*.mp4
+eval/runs/*/outputs/**/*.wav
 eval/runs/*/packets/**/*.png

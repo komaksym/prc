@@ -21,7 +21,7 @@ prc helps people understand pull requests that AI agents wrote. It parses the co
 | Path | What it is |
 |---|---|
 | `src/prc/` | The package. `cli.py` is the entry point. `changemap.py` and `codegraph.py` compute the map. `presentation/` renders it. `brief.py` computes CI, risk and mismatch facts. |
-| `tests/` | 320 tests. E2E tests leave their output in `artifacts/e2e/`. |
+| `tests/` | Unit, CLI, and browser tests. E2E tests leave their output in `artifacts/e2e/`. |
 | `docs/mvp/` | The MVP handoff: decisions, plan, evaluation, diff scene spec, log, and `evidence/` (screenshots and frames that prove each stage). |
 | `eval/corpus/` | `linkedin_mdp_open.json` holds the 12 open PRs. `public_agent_prs.json` holds 28 public agent-written PRs. |
 | `reports/` | Research behind the decisions: reviewer pain points, recent complaints, the video renderer options and the bakeoff. |
@@ -43,7 +43,11 @@ GITHUB_TOKEN="$(gh auth token)" uv run prc map --source https://github.com/komak
 cd /Users/koval/dev/prc/prototypes/explainer && .kvenv/bin/python build.py boards/mdp12.json ../mdp/maps/pr12/26ed8fadac86c489/map.json out/mdp12-new
 ```
 
-Chromium, ffmpeg, `say`, GitHub network calls and git commits need the sandbox off.
+Use `bash scripts/verify-release.sh` for the isolated release check.
+It preserves unrelated workspace experiments and saves installed-wheel artifacts under `artifacts/release/verify/`.
+The release check rejects skipped tests. It also saves browser screenshots.
+
+Chromium, ffmpeg, `say`, GitHub network calls and git commits can need broader sandbox permissions.
 
 ## Rules
 

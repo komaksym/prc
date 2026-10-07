@@ -1,0 +1,19 @@
+{
+  "pr": 5,
+  "condition": "c3",
+  "answers": [
+    {"id": "q1", "answer": "CANNOT TELL for the “owner” framing: the packet never mentions an owner or “connection reports”. What it does show as the behaviour change is: “Later-page terminal message cases complete with rows retained.” and “It keeps the provider message while the public error text stays stable.”"},
+    {"id": "q2", "answer": "CANNOT TELL. The packet shows the change inside src/linkedin_mdp_mcp/client.py, including “def __init__(self, status_code: int, message: str, service_error_code: int | None = None):” with a new docstring, but the class name is never shown (the diff elides the enclosing line)."},
+    {"id": "q3", "answer": "The new code adds “SNAPSHOT_EXHAUSTED_MESSAGES = frozenset({” containing “No data found for this domain and memberId”, and “No data found for this memberId”, (further lines elided as “...”). The packet does not single out one message as the normal snapshot completion; the scene receipts cite client.py:15. So the exact single message is CANNOT TELL; these two are the provider messages the new code adds."},
+    {"id": "q4", "answer": [
+      "google_doc_report.py — cited in the scene receipts at lines :113 and :114, alongside client.py:15 (the GoogleDocPublisher behaviour: “GoogleDocPublisher replaces only the marked paragraphs.”)",
+      "e2e_doc_report.py — cited at line :141 (“A scenario script exercises exhaustion handling.”, “ok exhaustion_domain”)",
+      "The publish path — “Changed functions carry the publish path.”",
+      "Tests — “0 new tests”"
+    ]},
+    {"id": "q5", "answer": "None of those surfaces is shown. The only code change in the packet is in src/linkedin_mdp_mcp/client.py (a new SNAPSHOT_EXHAUSTED_MESSAGES frozenset and an added __init__ docstring); no CI, dependency, auth, schema, secret, or external-call change appears."},
+    {"id": "q6", "answer": "The packet shows “0 new tests”; instead, “A scenario script exercises exhaustion handling.” (“ok exhaustion_domain”, e2e_doc_report.py:141). No new test is shown that pins behaviour."},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/client.py — the packet’s “The change, line for line” scene shows the diff of client.py (“5 lines quoted verbatim from the diff of client.py”)."},
+    {"id": "q8", "answer": "False. The packet shows no reporting activation, no live-data collection, and no schema change; it shows “0 new tests”, the client.py source change, and a scenario script (“A scenario script exercises exhaustion handling.”)."}
+  ]
+}

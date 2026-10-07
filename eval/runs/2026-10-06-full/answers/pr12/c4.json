@@ -1,0 +1,50 @@
+{
+  "pr": 12,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Behaviour change: the invitation report now adds a date to each row. The packet's scene 1 says: \"This pull request adds a date to each row of the invitation report.\" and \"It shows when the prospect was added.\" Scene 2 adds: \"Before this change, the report row showed none of it.\" and \"Now the report row carries that exact timestamp as date added.\" A matched prospect row supplies its creation time (\"created_at\"), or unknown when missing; bad values show as unknown. For whom: the reader/reviewer of that report sees the new date per row; the packet does not name any other user group."
+    },
+    {
+      "id": "q2",
+      "answer": "The new helper _date_added in src/linkedin_mdp_mcp/invitation_shortlist.py. The packet shows it through the diff scene's call site, line 1031: row.update(_date_added(row[\"profile_url\"], prospects, now)), plus its quoted lines 453 (if len(matches) != 1:) and 472-476; the helper's def line is not shown in the packet."
+    },
+    {
+      "id": "q3",
+      "answer": "To reject a future timestamp the new code checks if parsed > now: (line 475) and records provenance[\"reason\"] = \"future_timestamp\" (line 476). Other rejection paths shown: line 453 if len(matches) != 1: (not exactly one matching prospect row), and line 472 except (ShortlistInputError, OverflowError): which records provenance[\"reason\"] = \"invalid_timestamp\" (line 473) and returns {\"date_added\": None, \"date_added_source\": provenance} (line 474). Scene 3 lists the cases: (None, \"missing\"), (42, \"invalid_timestamp\"), (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"), (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"), (\"not-a-timestamp\", \"invalid_timestamp\"), (\"2026-09-30T14:12:13\", \"invalid_timestamp\"), (\"2026-10-03T00:00:00Z\", \"future_timestamp\")."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "PLANS.md",
+        "PR10-present-employer-e2e-matrix.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "docs/invitation-shortlist.md",
+        "infographic/prospect-date-added/analysis.md",
+        "infographic/prospect-date-added/infographic.png",
+        "infographic/prospect-date-added/prompts/01-infographic-date-added.md",
+        "infographic/prospect-date-added/source.md",
+        "infographic/prospect-date-added/structured-content.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The packet's changed-file list shows only the source module (src/linkedin_mdp_mcp/invitation_shortlist.py), tests (tests/e2e_invitation_shortlist.py with the new tests; tests/test_invitation_shortlist_e2e.py), docs (PLANS.md, PR10-present-employer-e2e-matrix.md, docs/invitation-shortlist.md and the infographic markdown files), one evidence JSON (artifacts/invitation-shortlist-e2e-evidence.json) and infographic/prospect-date-added/infographic.png. No CI, dependency, auth, schema, secret or external-call change is shown."
+    },
+    {
+      "id": "q6",
+      "answer": "Three new tests pin it down (scene 5): tests/e2e_invitation_shortlist.py:669 \"An exact URL alias may enrich output, but its source time cannot affect selection.\"; :703 \"Invalid values stay unknown and never leak their raw timestamp into output.\"; :720 \"A missing creation time is not inferred and cannot alter eligibility.\" Supporting assertions from the receipts: row[\"date_added\"] == created_at (L650), assert row[\"date_added\"] is None (L710), assert str(created_at) not in json.dumps(row) (L716), and the case table at L693-699 ((None, \"missing\"), (42, \"invalid_timestamp\"), (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"), (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"), (\"not-a-timestamp\", \"invalid_timestamp\"), (\"2026-09-30T14:12:13\", \"invalid_timestamp\"), (\"2026-10-03T00:00:00Z\", \"future_timestamp\")), with created_at = \"2026-09-30T14:12:13.123456+02:00\" (L621)."
+    },
+    {
+      "id": "q7",
+      "answer": "The packet contains no separate 'start here' statement; its only code walkthrough is scene 4, 'The change, line for line', so that is where to start: src/linkedin_mdp_mcp/invitation_shortlist.py, first receipt line 453 (if len(matches) != 1:), then 472-476 (except (ShortlistInputError, OverflowError): / provenance[\"reason\"] = \"invalid_timestamp\" / return {\"date_added\": None, \"date_added_source\": provenance} / if parsed > now: / provenance[\"reason\"] = \"future_timestamp\"), then the call site 1030-1031 (for row in rows_out: / row.update(_date_added(row[\"profile_url\"], prospects, now))). The behaviour tests to read next are in tests/e2e_invitation_shortlist.py at L669, L703 and L720."
+    },
+    {
+      "id": "q8",
+      "answer": "False. Adding date_added only enriches each selected output row; the new tests pin that this date information cannot affect selection or eligibility: \"An exact URL alias may enrich output, but its source time cannot affect selection.\" (tests/e2e_invitation_shortlist.py:669) and \"A missing creation time is not inferred and cannot alter eligibility.\" (:720). The diff also applies the date after selection: for row in rows_out: row.update(_date_added(row[\"profile_url\"], prospects, now)) (lines 1030-1031). The packet shows no membership or ranking effect."
+    }
+  ]
+}

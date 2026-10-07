@@ -1,0 +1,67 @@
+{
+  "pr": 8,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "For the owner of the private inbox. Before: 'The owner had no durable inbox evidence.' After: 'This change syncs private inbox messages.' \u2014 clean complete snapshots become planned message evidence ('LINKEDIN_MESSAGE_OBSERVED'), so the owner gains durable, validated inbox evidence. Writes stay off unless the caller opts in (dry run default)."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_inbox in src/linkedin_mdp_mcp/inbox_sync.py \u2014 the diff opens at 'async def reconcile_inbox(' (line 311), docstring: 'Validate a complete INBOX snapshot, plan evidence, then optionally apply it.' The outro also says 'Start review at reconcile_inbox in inbox_sync.py.'"
+    },
+    {
+      "id": "q3",
+      "answer": "Old default: CANNOT TELL \u2014 the packet quotes only added lines (every diff row carries the '+' marker; no removed/old write line is shown). New explicit behaviour shown: 'dry_run: bool = True,' (line 317) \u2014 'The sync command defaults to a dry run' and 'Writes stay off unless the caller opts in.' \u2014 with the write path guarded by 'if not dry_run:' (line 357), annotated 'writes only when applied'."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "docs/inbox-evidence.md",
+        "tests/e2e_inbox_sync.py",
+        "PLANS.md",
+        "artifacts/inbox-e2e-evidence.json",
+        "artifacts/inbox-red-green-evidence.json",
+        "artifacts/inbox-review-e2e-evidence.json",
+        "diagnostics/verify_inbox_live.py",
+        "docs/action-report-contract.md",
+        "infographic/inbox-evidence-slice/analysis.md",
+        "infographic/inbox-evidence-slice/infographic.png",
+        "infographic/inbox-evidence-slice/prompts/01-infographic-inbox-evidence.md",
+        "infographic/inbox-evidence-slice/source-inbox-evidence.md",
+        "infographic/inbox-evidence-slice/structured-content.md",
+        "infographic/inbox-review-repair/analysis.md",
+        "infographic/inbox-review-repair/infographic.png",
+        "infographic/inbox-review-repair/prompts/01-infographic-inbox-review-repair.md",
+        "infographic/inbox-review-repair/source-inbox-review-repair.md",
+        "infographic/inbox-review-repair/structured-content.md",
+        "infographic/unicode-profile-identity/analysis.md",
+        "infographic/unicode-profile-identity/infographic.png",
+        "infographic/unicode-profile-identity/prompts/01-infographic-unicode-profile-identity.md",
+        "infographic/unicode-profile-identity/source.md",
+        "infographic/unicode-profile-identity/structured-content.md",
+        "scripts/sync_inbox.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "tests/e2e_inbox_review.py",
+        "tests/test_inbox_review_e2e.py",
+        "tests/test_inbox_sync_e2e.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls: the reconcile path takes a provider snapshot from the private LinkedIn inbox \u2014 'snapshot = await linkedin.snapshot(\"INBOX\", max_pages=50, strict_elements=True)' (the inbox rows are 'one raw provider snapshot'). The packet shows no CI, dependency, schema, secrets, or auth changes."
+    },
+    {
+      "id": "q6",
+      "answer": "Two new tests in tests/e2e_inbox_sync.py: 'unicode_profile_identity_persisted' (line 115) and 'dry_run_writes_nothing' (line 298) \u2014 'New scenarios pin Unicode identity and dry-run defaults.'"
+    },
+    {
+      "id": "q7",
+      "answer": "Start at reconcile_inbox in src/linkedin_mdp_mcp/inbox_sync.py \u2014 the outro says 'Start review at reconcile_inbox in inbox_sync.py.' The diff scene begins there: 'async def reconcile_inbox(' (311), then 'dry_run: bool = True,' (317) and 'if not dry_run:' (357)."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The default is a dry run ('dry_run: bool = True,' line 317; 'The sync command defaults to a dry run.'), and the write happens only 'if not dry_run:' (line 357), annotated 'writes only when applied'; 'Writes stay off unless the caller opts in.' The test 'dry_run_writes_nothing' pins this."
+    }
+  ]
+}

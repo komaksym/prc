@@ -1,0 +1,44 @@
+{
+  "pr": 10,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The shortlist that the private invitation report plans from changes. The report now counts complete outgoing history (all three sources: provider, CRM, Supabase) instead of a narrower slice, so each recorded person counts once against the mapped latest employer, per-company capacity shrinks as recorded history rises, and when current-employer history is unresolved the report withholds the shortlist instead of guessing: status = \"withheld_current_employer_assignments\". Captions shown: \"This change counts every outgoing invitation before ranking.\", \"The scope must read all history.\", \"Each recorded person counts once against the mapped latest employer.\", \"Slots fall as recorded history rises, down to zero.\", \"Unresolved history withholds the shortlist instead of guessing.\" The report itself stays read-only. For whom: the reviewer/reader of the private invitation report (the deck shows a read-only report); the frames name no other affected role, so beyond that reviewer the audience is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL. The packet shows only the file src/linkedin_mdp_mcp/invitation_shortlist.py and the changed line numbers 1024, 1046, 1050, 1054-1058. No function name appears in any frame; the only mention of functions is the caption \"Changed functions carry the capacity accounting.\", whose frame (frame_11) shows no content."
+    },
+    {
+      "id": "q3",
+      "answer": "Capacity per company is the cap minus recorded history, floored at zero: slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}. Every recorded person adds one to their mapped company (company_counts[employer.company_id] += 1) and counts once against the mapped latest employer across all sources. A candidate whose company has no slots left is skipped (if slots[candidate_row.company_id] <= 0:), each selection spends one slot (slots[candidate_row.company_id] -= 1), and the list stops at if len(selected) == 25:. The deck labels it \"cap minus recorded history\" and \"one count per person\"."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_invitation_shortlist.py - 66 new tests, cited at :1068, :1092, :1107, :1115, :1124",
+        "invitation-shortlist.md - cited in the receipts footers as \"receipts invitation-shortlist.md:52\"",
+        "invitation-shortlist-e2e-evidence.json - cited as \"invitation-shortlist-e2e-evidence.json:11\"",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py is itself cited at :1024 and :1027 (the main source module)",
+        "beyond the shown receipts the packet says the PR totals 14 files but does not name the rest"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None shown. The packet shows no CI workflow, dependency, auth, schema, or secrets change; the only data read shown is outgoing history from three sources (provider, CRM, Supabase), and the change itself is counting and ranking in src/linkedin_mdp_mcp/invitation_shortlist.py. No new external call is shown, so whether one is added is CANNOT TELL from the packet."
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests pin all-history capacity, conflicts, and the read-only report. The five named passing tests are test_present_employer_counts_undated_all_history_once_and_keeps_audit_pointers (e2e_invitation_shortlist.py:1068), test_current_employer_conflict_across_canonical_profile_keys_withholds_all (:1092), test_candidate_company_conflict_with_current_employer_is_withheld (:1107), test_unknown_historical_identity_or_employer_globally_withholds_capacity (:1115), and test_read_only_report_has_no_recommendation_event_plan (:1124). The deck shows \"66 new tests\" plus \"+ 61 more\" and the caption \"New tests pin all-history capacity, conflicts, and the read-only report.\""
+    },
+    {
+      "id": "q7",
+      "answer": "The packet states no recommended start point. It shows the scene \"The change, line for line\" for src/linkedin_mdp_mcp/invitation_shortlist.py, lines 1024-1058, and receipts footers listing invitation-shortlist.md:52, invitation-shortlist.md:52, invitation_shortlist.py:1024 and invitation_shortlist.py:1027. On that evidence a reviewer would start at the slots dict in src/linkedin_mdp_mcp/invitation_shortlist.py line 1050 (slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}), with the docs receipt invitation-shortlist.md:52."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The deck lists the passing test test_read_only_report_has_no_recommendation_event_plan (e2e_invitation_shortlist.py:1124), so the read-only report has no recommendation event plan. The packet says nothing about a persistence key, so that half is CANNOT TELL; the recommendation-event-plan half is false."
+    }
+  ]
+}

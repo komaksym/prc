@@ -1,0 +1,42 @@
+{
+  "pr": 14,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The card shows only this summary: \"This pull request makes the private source collector gather LinkedIn's member changelog.\" The packet never identifies the owner of the private source bundle or says for whom the behaviour changes, so that part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "LinkedInMDPClient._get_paged (src/linkedin_mdp_mcp/client.py), the first entry under \"LOOK HERE FIRST\"."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The card shows no old pagination behaviour and no new rejection; pagination appears only in the symbol name LinkedInMDPClient._get_paged."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "diagnostics/action-report-private-so…",
+        "diagnostics/source-refresh-p…",
+        "diagnostics/action-report-pr…"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "external calls (the RISKY SURFACES entries for diagnostics/action-report-pr… and diagnostics/source-refresh-p… are each labelled \"external calls\")."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL (no new tests are shown): the card reports \"0 tests touched\" and \"No direct test: collect_sources, exercise.provider, main +4 more\", so it does not show any behaviour that new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the top \"LOOK HERE FIRST\" item: LinkedInMDPClient._get_paged in src/linkedin_mdp_mcp/client.py."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card labels diagnostics areas as \"external calls\" risky surfaces, but it never states whether the PR performs live source acquisition against real services."
+    }
+  ]
+}

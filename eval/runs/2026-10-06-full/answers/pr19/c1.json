@@ -1,0 +1,14 @@
+{
+  "pr": 19,
+  "condition": "c1",
+  "answers": [
+    {"id": "q1", "answer": "CANNOT TELL"},
+    {"id": "q2", "answer": "classify_dm_evidence"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": "The packet shows changes in src/linkedin_mdp_mcp/invitation_shor..., scripts/report_connections_doc.py, multiple .github/workflows CI files, PLANS.md, and artifacts/doc-report-e2e-evi...."},
+    {"id": "q5", "answer": "CI workflows and external calls."},
+    {"id": "q6", "answer": "CANNOT TELL"},
+    {"id": "q7", "answer": "Start with build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shor...."},
+    {"id": "q8", "answer": "CANNOT TELL"}
+  ]
+}

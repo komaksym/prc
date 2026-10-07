@@ -1,0 +1,31 @@
+{
+  "pr": 16,
+  "findings": [
+    {
+      "code": "src/linkedin_mdp_mcp/actual_action_sync.py:111-118 — `acquire_actual_action_sources` awaits live `linkedin.snapshot(...)` for three domains plus `linkedin.changelog(...)`; scripts/sync_actual_actions.py:78-80 builds `LinkedInMDPClient.from_env()` and `SupabaseClient.from_env()`, and --apply performs one duplicate-safe Supabase event insert",
+      "output": "comment.md Risky surfaces and description vs diff + card.html Risky surfaces",
+      "statement": "No risky surfaces."
+    },
+    {
+      "code": "src/linkedin_mdp_mcp/actual_action_sync.py:199 — `async def sync_actual_actions(...)` stages evidence and gates the single event batch on `if not apply:` (:238); comment steers only to invitation_sync helpers",
+      "output": "comment.md Look here first",
+      "statement": "Look here first: `reconcile_invitations`, `_complete_rows`, `InvitationSyncError` in `src/linkedin_mdp_mcp/invitation_sync.py` (omits sync_actual_actions, the function carrying the change)."
+    }
+  ],
+  "verdicts": [
+    {
+      "statement": "No risky surfaces.",
+      "output": "comment.md:66 'Risky surfaces and description vs diff' + card.html:92 risky list ('None.')",
+      "verdict": "confirmed",
+      "evidence": "scripts/sync_actual_actions.py:78-80 (new file): 'linkedin = LinkedInMDPClient.from_env()', 'supabase = SupabaseClient.from_env()', 'summary = await sync_actual_actions(..., apply=apply)'; src/linkedin_mdp_mcp/actual_action_sync.py:108-118 acquire_actual_action_sources awaits linkedin.snapshot(...) for INVITATIONS/CONNECTIONS/INBOX (:112) and linkedin.changelog(...) (:118), and :238 'if not apply:' gates :241 'await supabase.insert_events_ignore_duplicates(events)'. The output's own map.json/map.html brief marks 4 files sensitive='external calls' (scripts/sync_actual_actions.py, src/linkedin_mdp_mcp/actual_action_sync.py, src/linkedin_mdp_mcp/invitation_sync.py, tests/e2e_actual_action_sync.py); prc counts external calls as a risky surface (src/prc/brief.py:199, :609).",
+      "suggested_fix": "Replace 'No risky surfaces.' with the brief's external-call entries, e.g. '- `scripts/sync_actual_actions.py`: external calls' and '- `src/linkedin_mdp_mcp/actual_action_sync.py`: external calls' (card.html likewise)."
+    },
+    {
+      "statement": "Look here first: `sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py`; `run` in `scripts/sync_actual_actions.py`; `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`.",
+      "output": "comment.md:60-62 'Look here first' + card.html look-first list",
+      "verdict": "rejected",
+      "evidence": "The finding's quoted list ('reconcile_invitations', '_complete_rows', 'InvitationSyncError' only) no longer appears in the current output. The current list names the change's carrier: src/linkedin_mdp_mcp/actual_action_sync.py:199 'async def sync_actual_actions(...)' stages sources, validates, and gates the single event batch on :238 'if not apply:'; scripts/sync_actual_actions.py:70 'async def run(...)' calls it at :80. Current text is accurate.",
+      "suggested_fix": ""
+    }
+  ]
+}

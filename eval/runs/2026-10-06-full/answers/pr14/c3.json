@@ -1,0 +1,42 @@
+{
+  "pr": 14,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner of the private source bundle now receives the changelog inside the bundle. The packet shows the 'ENCRYPTED SOURCE BUNDLE' 'collected with no writes' with three chips, CONNECTIONS, INVITATIONS and INBOX ('Before, the bundle held three snapshots: connections, invitations and inbox.'). This PR adds a fourth chip 'changelog' tagged 'new in this PR' ('Now it also holds the changelog.'), and the closing card says 'The bundle now carries the changelog.' The packet names the owner of the private source bundle as the affected party; it names no other party."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL by name: no function is named anywhere in the packet - no 'def' line appears in any frame. What is shown is the location and content of the main change: 5 lines in the diff of src/linkedin_mdp_mcp/client.py - 217 'next_params = parse_qs(parsed.query, keep_blank_values=True)', 220 'for key, value in params.items():', 221 'expected = [str(value)]', plus added lines 218-219 - described as 'In the client, a changelog next link is compared with the request.'"
+    },
+    {
+      "id": "q3",
+      "answer": "The packet does not describe the old pagination behaviour in words. The only evidence of it: the new check appears as added lines 218-219 (marked with '+' in the diff of src/linkedin_mdp_mcp/client.py), and the narration says 'The collector now stops with an error' - so previously the collector did not stop when the provider's next page link added startTime. The new rejection is 'if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:' then 'raise LinkedInAPIError(0, \"changelog next link changed request scope\")'. The scene shows the caller request 'no startTime set' / 'count=50' and the 'NEXT LINK FROM PROVIDER' 'second page' adding 'startTime=1710000000', marked 'not in request'."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py - the code diff shown in 'The new scope check': lines 217, 220, 221 with added lines 218-219 (footer: 'receipts 5 lines quoted verbatim from the diff of client.py').",
+        "e2e_private_source.py - 'changelog checks in the end-to-end script' at lines 183, 187, 197 and 39.",
+        "The title frame reports '+261 -20 - 13 files', so the full PR changes 13 files; no other file or area is named in the packet (footers also cite receipts from collect_private_source.py:92 and e2e_private_source.py:72, :177, :179)."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "No CI, dependency, auth, schema or secrets surface appears anywhere in the packet. The only surface the shown change touches is the client's handling of the provider's next-page link (external calls / pagination) in src/linkedin_mdp_mcp/client.py ('NEXT LINK FROM PROVIDER') plus the end-to-end checks in e2e_private_source.py. The title frame says '+261 -20 - 13 files', so the packet shows only part of the diff; nothing beyond this is shown."
+    },
+    {
+      "id": "q6",
+      "answer": "The checks listed under 'changelog checks in the end-to-end script': 'changelog_complete_watermark' (e2e_private_source.py:183), 'changelog_valid_pagination_preserves_scope_and_events' (e2e_private_source.py:187), 'changelog_original_start_time_survives_pagination' (e2e_private_source.py:197), 'change_added_start_time' (e2e_private_source.py:39), 'plus more rejection cases for bad changelog pages'. Together they pin: a complete changelog watermark, valid pagination that preserves scope and events, the original start time surviving pagination, a start time added by paging (the scene shows 'not in request' then 'The collector now stops with an error.'), and more rejection cases for bad changelog pages."
+    },
+    {
+      "id": "q7",
+      "answer": "The packet gives no explicit reviewer instruction. The place it presents as the core is 'The new scope check' - start with the diff of src/linkedin_mdp_mcp/client.py, lines 217-221 with the added rejection at 218-219 (footer: 'receipts 5 lines quoted verbatim from the diff of client.py'). Then read the changelog checks in the end-to-end script e2e_private_source.py (lines 183, 187, 197, 39)."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL - the packet never states whether source acquisition or the end-to-end checks run against real services or use fixtures/mocks. It shows only the 'ENCRYPTED SOURCE BUNDLE' 'collected with no writes', the client scope check, and 'changelog checks in the end-to-end script'."
+    }
+  ]
+}

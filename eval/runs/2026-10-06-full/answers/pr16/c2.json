@@ -1,0 +1,44 @@
+{
+  "pr": 16,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL — the packet shows only the heading 'The owner had no record of real LinkedIn activity.'; it does not describe the behaviour change or for whom beyond that heading."
+    },
+    {
+      "id": "q2",
+      "answer": "`sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py` — the first entry under 'Look here first'; that section also names `run` in `scripts/sync_actual_actions.py` and `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL — the packet does not mention write defaults, flags, or any old versus new behaviour for writes."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/sync_actual_actions.py",
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "tests/e2e_actual_action_sync.py",
+        "The packet reports 15 files changed in total but names no other paths."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls — flagged for `scripts/sync_actual_actions.py`, `src/linkedin_mdp_mcp/actual_action_sync.py`, `src/linkedin_mdp_mcp/invitation_sync.py`, and `tests/e2e_actual_action_sync.py`."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL — the packet names `tests/e2e_actual_action_sync.py` (flagged for external calls) and lists changed symbols that are 'Not covered by tests', but it does not state which behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the 'Look here first' entries: `sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py`, `run` in `scripts/sync_actual_actions.py`, and `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL — the packet does not mention a store, persistence, or extra flags, so it cannot confirm or deny this."
+    }
+  ]
+}

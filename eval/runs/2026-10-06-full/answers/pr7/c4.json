@@ -1,0 +1,55 @@
+{
+  "pr": 7,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner gains durable invitation history: previously \"The owner had no durable invitation history.\" and \"Outbound invitation rows wait as raw provider history\"; now past outbound invitations are reconciled, and \"Matched rows become durable history events.\" The outro summarises it as \"Past outbound invitations gain durable history with the workflow gated.\" This is for the owner of the outbound invitations (the linkedin-mdp account owner, komaksym); the manual workflow side is unchanged, it \"stays gated\" / \"still gated\"."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_invitations in src/linkedin_mdp_mcp/invitation_sync.py, shown as line 170: \"async def reconcile_invitations(\"."
+    },
+    {
+      "id": "q3",
+      "answer": "The manual workflow .github/workflows/sync-invitations.yml keeps its workflow_dispatch trigger but is gated on the main branch plus the opt-in variable; line 11 matches \"INVITATIONS_RECONCILIATION_ENABLED == 'true'\"."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        ".github/workflows/sync-invitations.yml",
+        "tests/test_invitation_sync_e2e.py",
+        "PLANS.md",
+        "README.md",
+        "artifacts/invitation_change_summary.md",
+        "artifacts/invitation_eligibility_acceptance.md",
+        "artifacts/invitation_production_baseline.json",
+        "artifacts/invitation_sync_verification.json",
+        "infographic/invitation-history-reconciliation/analysis.md",
+        "infographic/invitation-history-reconciliation/infographic.png",
+        "infographic/invitation-history-reconciliation/prompts/01-technical-system.md",
+        "infographic/invitation-history-reconciliation/source.md",
+        "infographic/invitation-history-reconciliation/structured-content.md",
+        "scripts/sync_invitations.py",
+        "scripts/verify_invitation_sync.py",
+        "src/linkedin_mdp_mcp/client.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI and external calls. CI: the GitHub Actions workflow .github/workflows/sync-invitations.yml (workflow_dispatch plus the repo-variable gate \"INVITATIONS_RECONCILIATION_ENABLED == 'true'\"). External calls: the LinkedIn provider fetch \"snapshot = await linkedin.snapshot(\" / \"\"INVITATIONS\", max_pages=50, strict_elements=True\" and the Supabase write \"inserted = await supabase.insert_events_ignore_duplicates(plan.events)\". The packet shows no dependency, auth, schema, or secret changes."
+    },
+    {
+      "id": "q6",
+      "answer": "Multipage matching with dedupe and replay: \"New tests pin multipage matching with dedupe and replay.\" The named test is \"test_complete_multipage_history_is_matched_deduped_and_idempotent\" (tests/test_invitation_sync_e2e.py:111), part of \"6 new tests\" (\"+ 5 more\") that \"guard the invitation pipeline\"."
+    },
+    {
+      "id": "q7",
+      "answer": "Start at reconcile_invitations in src/linkedin_mdp_mcp/invitation_sync.py (line 170), per the outro: \"Start review at reconcile_invitations in invitation_sync.py.\" The diff lines quoted are 170, 176, 177, 178, 183 and 184."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The workflow is manual (workflow_dispatch:) and \"stays gated behind main branch plus one variable\"; it requires \"INVITATIONS_RECONCILIATION_ENABLED == 'true'\"."
+    }
+  ]
+}

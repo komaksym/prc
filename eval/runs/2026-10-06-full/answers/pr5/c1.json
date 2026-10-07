@@ -1,0 +1,45 @@
+{
+  "pr": 5,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The card title reads: \"The owner had no private morning report\". It names the owner of the connection reports as the affected person and says that before the change the owner had no private morning report. The packet shows no further behaviour detail and no other affected people."
+    },
+    {
+      "id": "q2",
+      "answer": "\"GoogleDocPublisher\" - listed under LOOK HERE FIRST, with module path shown as \"src/linkedin_mdp_mcp/google_doc_repo\u2026\" (truncated in the card). The card also lists \"GoogleDocConfig.from_env\" from the same module path."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL - the packet shows no provider message and no snapshot-completion text. The only snapshot-related text is the footer note \"No direct test: SnapshotState SnapshotState. init\"."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "\".github/workflows/morning-re\u2026\" (labelled \"CI workflow\")",
+        "\".github/workflows/report-tes\u2026\" (labelled \"CI workflow\")",
+        "\".github/workflows/sync-conne\u2026\" (labelled \"CI workflow\")",
+        "\"docs/google-docs-report.md\" (labelled \"external calls\")",
+        "\"scripts/report_connections_d\u2026\" (labelled \"external calls\")",
+        "\"scripts/report_connections_doc.py\" (the \"run\" entry under LOOK HERE FIRST)"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI and external calls: three CI workflows (\".github/workflows/morning-re\u2026\", \".github/workflows/report-tes\u2026\", \".github/workflows/sync-conne\u2026\", each labelled \"CI workflow\") and two \"external calls\" entries (\"docs/google-docs-report.md\", \"scripts/report_connections_d\u2026\"). The card shows no dependency, auth, schema or secrets surface."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL - the packet gives only counts and one footnote: \"1 tests touched\", \"1/1 CI passed\", \"27 no direct test\", and \"No direct test: SnapshotState SnapshotState. init\". No test name or asserted behaviour is shown."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the LOOK HERE FIRST list: \"run\" - \"scripts/report_connections_doc.py\"; then \"GoogleDocConfig.from_env\" - \"src/linkedin_mdp_mcp/google_doc_repo\u2026\"; then \"GoogleDocPublisher\" - \"src/linkedin_mdp_mcp/google_doc_repo\u2026\"."
+    },
+    {
+      "id": "q8",
+      "answer": "False - the card describes a code change (10 files, 40 symbols changed, 80 call sites, 1 tests touched, 1/1 CI passed). It lists no schema surface and nothing about activating reporting or collecting live data."
+    }
+  ]
+}

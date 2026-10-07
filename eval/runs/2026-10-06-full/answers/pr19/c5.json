@@ -1,0 +1,38 @@
+{
+  "pr": 19,
+  "condition": "c5",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "Besides src/linkedin_mdp_mcp, the map shows changes in diagnostics/verify_inbox_live.py, scripts, tests, morning-report.yml, report-tests.yml, sync-connections.yml, PLANS.md, analysis.md, infographic.png, 01-infographic-inbox-evidence.md, source-inbox-evidence.md, and structured-content.md."
+    },
+    {
+      "id": "q5",
+      "answer": "CI"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

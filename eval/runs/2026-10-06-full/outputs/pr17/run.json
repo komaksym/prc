@@ -1,0 +1,24 @@
+{
+  "board": "eval/runs/2026-10-06-full/boards/pr17.json",
+  "card": "/private/tmp/final/out-pr17/komaksym-linkedin-mdp-17-537a16de03f9/card.png",
+  "check": {
+    "changed": 4,
+    "covered": 1,
+    "passed": true,
+    "receipts": 64,
+    "tests_added": 7
+  },
+  "comment": "/private/tmp/final/out-pr17/komaksym-linkedin-mdp-17-537a16de03f9/comment.md",
+  "doc": "/private/tmp/final/out-pr17/komaksym-linkedin-mdp-17-537a16de03f9/doc.html",
+  "duration_seconds": 89.67,
+  "estimate_seconds": 83.8,
+  "fps": 30,
+  "layout_warnings": [],
+  "live_head_sha": "537a16de03f9fad8ffe0def188494037991b275a",
+  "map_source": "live",
+  "pr": "komaksym/linkedin-mdp#17",
+  "predicted_seconds": 89.67,
+  "source": "github",
+  "stored_head_sha": "537a16de03f9fad8ffe0def188494037991b275a",
+  "voice": "none"
+}

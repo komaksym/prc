@@ -1,0 +1,52 @@
+{
+  "pr": 15,
+  "condition": "c4",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Before, the owner juggled two separate private action reports (\"The owner juggled two separate private action reports.\"); the change \"combines them into one guarded document\" - one report that \"composes invitation and DM outputs offline\" (outro). It is \"one private owner report\", so the new behaviour is for the private report owner only (\"Google-only publication\" behind the publish gate)."
+    },
+    {
+      "id": "q2",
+      "answer": "`combine_action_reports` in `src/linkedin_mdp_mcp/combined_action_report.py` - line 150: `def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:`"
+    },
+    {
+      "id": "q3",
+      "answer": "It passes the composed text through the validation gate: `text = validate_report_text(\"\\n\".join(lines))` (src/linkedin_mdp_mcp/combined_action_report.py:228). Scene 3 shows the \"publish gate\" group, sub \"Google-only publication\", holding `validate_report_text`, and the walkthrough says \"The Google command publishes that text after a validation gate.\" The packet shows no OAuth step."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "docs/combined-action-report.md",
+        "tests/e2e_combined_action_report.py",
+        "tests/test_combined_action_report_e2e.py",
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "scripts/build_combined_action_report.py",
+        "scripts/publish_combined_action_report.py",
+        "artifacts/combined-action-report-e2e-evidence.json",
+        "PLANS.md",
+        "infographic/combined-action-report/analysis.md",
+        "infographic/combined-action-report/infographic.png",
+        "infographic/combined-action-report/prompts/01-infographic-combined-report.md",
+        "infographic/combined-action-report/source.md",
+        "infographic/combined-action-report/structured-content.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls: the publication path goes to Google (\"Google-only publication\", `validate_report_text`, `GoogleDocPublisher` in `src/linkedin_mdp_mcp/google_doc_report.py`, plus `scripts/publish_combined_action_report.py`). The combiner itself is \"offline composition only\". The packet shows no CI, dependency, schema, secrets, or auth surface."
+    },
+    {
+      "id": "q6",
+      "answer": "Composition of the combined report: \"New tests pin complete composition across real upstream shapes.\" The two named tests are `all_sections_complete` (tests/e2e_combined_action_report.py:125) and `empty_message_text_preserves_sources` (tests/e2e_combined_action_report.py:143)."
+    },
+    {
+      "id": "q7",
+      "answer": "The outro says: \"Start review at combine_action_reports in combined_action_report.py.\" So start at `combine_action_reports` in `src/linkedin_mdp_mcp/combined_action_report.py` (diff lines 150, 156, 180, 228)."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The combiner \"composes invitation and DM outputs offline\" (outro) from the upstream planner outputs `invitation-shortlist.json` and `private-dm-actions.json`; scene 3 labels it \"offline composition only\"."
+    }
+  ]
+}

@@ -1,0 +1,1376 @@
+{
+  "reviewer": "C",
+  "prs": [
+    15,
+    16,
+    17,
+    19
+  ],
+  "graded_at": "2026-10-06T23:25:01.271528+00:00",
+  "source": "final C1-C5 answer packets",
+  "grades": [
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "The owner of the private reports is the affected party. The card title says: \"The owner juggled two separate private action reports.\" The main changed function is combine_action_reports (src/linkedin_mdp_mcp/combined_action…), so the two separate private action reports are combined. The packet names no other person or audience.",
+      "verdict": "partial",
+      "reason": "Main combined-report behavior is right, but planner provenance, publication safeguards, and offline constraints are omitted."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "combine_action_reports — first entry under LOOK HERE FIRST, file src/linkedin_mdp_mcp/combined_action…",
+      "verdict": "correct",
+      "reason": "Names combine_action_reports, the keyed main function."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL — the packet does not show what the new publication path checks before any OAuth or document request.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly says the pre-OAuth validation cannot be determined."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/google_doc_repo… (GoogleDocPublisher.publish_t…, under LOOK HERE FIRST)",
+        "scripts/build_combined_action_report… (main)",
+        "scripts/publish_combined_act… (under RISKY SURFACES, external calls)",
+        "tests/e2e_combined_action_re… (under RISKY SURFACES, external calls)",
+        "14 files in total are listed as changed (stats row); 2 tests touched"
+      ],
+      "verdict": "partial",
+      "reason": "Names several real changed areas but omits multiple keyed files."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "external calls — both RISKY SURFACES entries (scripts/publish_combined_act… and tests/e2e_combined_action_re…) carry the label \"external calls\". No CI, dependency, auth, schema, or secret surface is listed under RISKY SURFACES (the stats row separately shows \"1/1 CI passed\").",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls as the risky surface."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL — the packet lists tests/e2e_combined_action_re… (external calls) and \"2 tests touched\", but it does not say which behaviour the tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly says the pinned behavior cannot be determined."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start with the LOOK HERE FIRST list: 1) combine_action_reports in src/linkedin_mdp_mcp/combined_action…, 2) GoogleDocPublisher.publish_t… in src/linkedin_mdp_mcp/google_doc_repo…, 3) main in scripts/build_combined_action_report…",
+      "verdict": "correct",
+      "reason": "Points first to combine_action_reports in the correct source module."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL — the packet does not state whether the combiner fetches fresh LinkedIn data when building the combined report.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly says fresh-fetch behavior cannot be determined."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "The comment title says: the owner juggled two separate private action reports. The packet does not show the exact before/after behaviour, only that the change concerns a combined action report for that owner, via the changed symbols 'combine_action_reports', 'scripts/build_combined_action_report.py' and 'scripts/publish_combined_action_report.py'.",
+      "verdict": "partial",
+      "reason": "Gets the combined-report direction and owner context, but omits material planner and publication details."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "'combine_action_reports' in 'src/linkedin_mdp_mcp/combined_action_report.py'. The comment lists it first under 'Look here first'.",
+      "verdict": "correct",
+      "reason": "Names combine_action_reports in the correct file."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL. The packet never mentions OAuth or a document request, and it does not say what the publication path checks before them. The only related symbol shown is 'validate_report_text' in 'src/linkedin_mdp_mcp/google_doc_report.py', listed under 'Not covered by tests', with no description of when or what it validates.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the pre-request validation."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "scripts/build_combined_action_report.py",
+        "scripts/publish_combined_action_report.py",
+        "tests/e2e_combined_action_report.py"
+      ],
+      "verdict": "partial",
+      "reason": "Lists four keyed changed files but omits the rest."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "External calls. Under 'Risky surfaces and description vs diff' the comment lists 'scripts/publish_combined_action_report.py': external calls and 'tests/e2e_combined_action_report.py': external calls. It also reports 'Files 14, symbols 41, CI 1/1'.",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "CANNOT TELL. The packet shows only that 'tests/e2e_combined_action_report.py' exists and is listed under 'Risky surfaces and description vs diff' with 'external calls'. It does not state what behaviour the tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the test behavior."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "Start with the 'Look here first' list: 'combine_action_reports' in 'src/linkedin_mdp_mcp/combined_action_report.py', then 'GoogleDocPublisher.publish_text' in 'src/linkedin_mdp_mcp/google_doc_report.py', then 'main' in 'scripts/build_combined_action_report.py'.",
+      "verdict": "correct",
+      "reason": "Starts at combine_action_reports in the correct module."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "CANNOT TELL. The packet does not say whether the combiner fetches fresh LinkedIn data. No fetch-related symbol appears in the shown changed symbols ('main', '_Parser', '_private_file', 'CombinedReportError', 'combine_action_reports', '_object', '_json_contract', '_rows', '_counts', '_profile', 'cli_case', 'dm').",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine whether fresh LinkedIn data is fetched."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "Two private planner outputs (the 'INVITATION SHORTLIST' / 'invitation-shortlist.json' planner output and a second upstream planner output) 'sit apart today'; the packet's caption says 'combine_action_reports renders one private owner report.' and 'The Google command publishes that text after a validation gate.' So the behavior change is that the owner of those private reports gets one combined owner report composed from the upstream envelopes instead of two outputs sitting apart, and the combined text is published only through the Google command's validation gate. The beneficiary is that private owner of the reports.",
+      "verdict": "partial",
+      "reason": "Captures one combined owner report, upstream planners, offline composition, and validation, but omits material evidence and revision safeguards."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "`def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:`, defined at line 150 of src/linkedin_mdp_mcp/combined_action_report.py. The packet's scene title is 'combine_action_reports renders one private owner report.' and the closing scene says 'Changed functions carry the compose path.'",
+      "verdict": "correct",
+      "reason": "Names combine_action_reports and its source location."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "It puts the composed text through the 'PUBLISH GATE / Google-only publication' function `validate_report_text`: the quoted line is `text = validate_report_text(\"\\n\".join(lines))` (line 228), and the caption says 'The Google command publishes that text after a validation gate.' The packet shows no OAuth or document request, and does not show what (if anything) the gate checks in detail.",
+      "verdict": "partial",
+      "reason": "Identifies validate_report_text as the gate, but cites the composition call rather than the keyed publication-path check."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "e2e_combined_action_report.py - the new tests 'all_sections_complete' (e2e_combined_action_report.py:125) and 'empty_message_text_preserves_sources' (e2e_combined_action_report.py:143).",
+        "combined-action-report.md - the receipt line cites combined-action-report.md:3 (shown as 'receipts combined-action-report.md:3' next to 'combined-action-report.md:3').",
+        "The Google publication command - shown only as the 'PUBLISH GATE / Google-only publication' card; the packet does not give its file path.",
+        "The PR header states '14 files' changed in total; the packet names only the items above."
+      ],
+      "verdict": "partial",
+      "reason": "Names real changed tests and docs but omits several keyed files."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "A schema-compatibility gate on the upstream envelope: the combiner requires `inv.get(\"schema_version\") != 1` to be false, together with `inv.get(\"cap_scope\") != \"all_history\"` and `inv.get(\"status\") not in {\"ready\", \"withheld_current_employer_assignments\"}` (line 156). Otherwise the change is 'offline composition only'; the only outward path shown is the Google publication behind `validate_report_text`. The packet shows no CI, dependency, secrets, or auth change.",
+      "verdict": "correct",
+      "reason": "Identifies the external-call publication surface while correctly separating offline composition."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "The packet states 'New tests pin complete composition across real upstream shapes.' and lists two new tests: 'ok all_sections_complete' (e2e_combined_action_report.py:125) and 'ok empty_message_text_preserves_sources' (e2e_combined_action_report.py:143). They pin the compose path's status result, `status = \"partial\" if inv.get(\"status\") != \"ready\" or reasons or withheld or any(withheld_counts.values()) else \"complete\"` (line 180): complete composition when nothing is withheld or uncovered, and that empty message text preserves sources.",
+      "verdict": "correct",
+      "reason": "Captures complete composition across real upstream shapes and source preservation."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "Start at src/linkedin_mdp_mcp/combined_action_report.py, at `def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:` (line 150). The 'The change, line for line' scene points at that file, and the receipt lines cite combined_action_report.py:181 and combined_action_report.py:228; the gates to read are the envelope validation at line 156, the status decision at line 180, and `text = validate_report_text(\"\\n\".join(lines))` at line 228.",
+      "verdict": "correct",
+      "reason": "Points to combine_action_reports in the keyed module."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False. The combined-report card says 'offline composition only', and the change scene says 'The combiner validates both upstream envelopes before composing any text.' No frame shows a fresh LinkedIn fetch when building the combined report.",
+      "verdict": "correct",
+      "reason": "Correctly says the combiner is offline and does not fetch fresh LinkedIn data."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "Before, the owner juggled two separate private action reports (\"The owner juggled two separate private action reports.\"); the change \"combines them into one guarded document\" - one report that \"composes invitation and DM outputs offline\" (outro). It is \"one private owner report\", so the new behaviour is for the private report owner only (\"Google-only publication\" behind the publish gate).",
+      "verdict": "partial",
+      "reason": "Captures one guarded owner report and offline composition, but omits material provenance and revision-safety details."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "`combine_action_reports` in `src/linkedin_mdp_mcp/combined_action_report.py` - line 150: `def combine_action_reports(invitations: Any, dm_actions: Any) -> dict[str, Any]:`",
+      "verdict": "correct",
+      "reason": "Names combine_action_reports in the correct file."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "It passes the composed text through the validation gate: `text = validate_report_text(\"\\n\".join(lines))` (src/linkedin_mdp_mcp/combined_action_report.py:228). Scene 3 shows the \"publish gate\" group, sub \"Google-only publication\", holding `validate_report_text`, and the walkthrough says \"The Google command publishes that text after a validation gate.\" The packet shows no OAuth step.",
+      "verdict": "partial",
+      "reason": "Identifies the validation gate but not the exact keyed publication-path check before OAuth/request work."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "docs/combined-action-report.md",
+        "tests/e2e_combined_action_report.py",
+        "tests/test_combined_action_report_e2e.py",
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "scripts/build_combined_action_report.py",
+        "scripts/publish_combined_action_report.py",
+        "artifacts/combined-action-report-e2e-evidence.json",
+        "PLANS.md",
+        "infographic/combined-action-report/analysis.md",
+        "infographic/combined-action-report/infographic.png",
+        "infographic/combined-action-report/prompts/01-infographic-combined-report.md",
+        "infographic/combined-action-report/source.md",
+        "infographic/combined-action-report/structured-content.md"
+      ],
+      "verdict": "correct",
+      "reason": "Includes every keyed changed file, plus additional real release artifacts."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "External calls: the publication path goes to Google (\"Google-only publication\", `validate_report_text`, `GoogleDocPublisher` in `src/linkedin_mdp_mcp/google_doc_report.py`, plus `scripts/publish_combined_action_report.py`). The combiner itself is \"offline composition only\". The packet shows no CI, dependency, schema, secrets, or auth surface.",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls through Google publication."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "Composition of the combined report: \"New tests pin complete composition across real upstream shapes.\" The two named tests are `all_sections_complete` (tests/e2e_combined_action_report.py:125) and `empty_message_text_preserves_sources` (tests/e2e_combined_action_report.py:143).",
+      "verdict": "correct",
+      "reason": "Names complete composition across real upstream shapes and the relevant tests."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "The outro says: \"Start review at combine_action_reports in combined_action_report.py.\" So start at `combine_action_reports` in `src/linkedin_mdp_mcp/combined_action_report.py` (diff lines 150, 156, 180, 228).",
+      "verdict": "correct",
+      "reason": "Starts at combine_action_reports in the correct source file."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. The combiner \"composes invitation and DM outputs offline\" (outro) from the upstream planner outputs `invitation-shortlist.json` and `private-dm-actions.json`; scene 3 labels it \"offline composition only\".",
+      "verdict": "correct",
+      "reason": "Correctly states that the combiner uses upstream outputs offline."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "Besides the main source module, the packet shows changes in scripts/build_combined_action_report.py, scripts/publish_combined_action_report.py, src/linkedin_mdp_mcp/google_doc_report.py, tests/e2e_combined_action_report.py, tests/test_combined_action_report_e2e.py, PLANS.md, combined-action-report-e2e-evidence.json, combined-action-report.md, analysis.md, infographic.png, 01-infographic-combined-report.md, source.md, and structured-content.md.",
+      "verdict": "correct",
+      "reason": "Lists all keyed non-main changed files, plus additional release artifacts."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "src/linkedin_mdp_mcp/combined_action_report.py",
+      "verdict": "partial",
+      "reason": "Names the correct source file but omits the combine_action_reports function."
+    },
+    {
+      "pr": 15,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "CANNOT TELL beyond the card headline. The card title reads: \"The owner had no record of real LinkedIn activity.\" The packet does not state the new behaviour or which other users are affected.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly says the behavior change cannot be determined beyond the headline."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "sync_actual_actions (first item under \"LOOK HERE FIRST\", shown as sync_actual_actions above src/linkedin_mdp_mcp/actual_action_s…).",
+      "verdict": "correct",
+      "reason": "Names sync_actual_actions, the keyed main function."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL. The card shows no old default or new explicit behaviour for writes.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine write-default behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "scripts/sync_actual_actions.py (the \"run\" entry under LOOK HERE FIRST)",
+        "scripts/sync_actual_actions.… (risky surface: external calls)",
+        "src/linkedin_mdp_mcp/actual_… (risky surface: external calls)",
+        "src/linkedin_mdp_mcp/invitat… (risky surface: external calls)",
+        "tests/e2e_actual_action_sync… (risky surface: external calls)"
+      ],
+      "verdict": "partial",
+      "reason": "Names several keyed changed areas but omits most keyed files."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "external calls. Every entry in the \"RISKY SURFACES\" panel is labelled \"external calls\": scripts/sync_actual_actions.…, src/linkedin_mdp_mcp/actual_…, src/linkedin_mdp_mcp/invitat…, tests/e2e_actual_action_sync…",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL. The card shows only that 2 tests were touched and that tests/e2e_actual_action_sync… is a risky surface (external calls); it does not describe what behaviour the new tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the pinned test behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start with the \"LOOK HERE FIRST\" list: sync_actual_actions in src/linkedin_mdp_mcp/actual_action_s…, then run in scripts/sync_actual_actions.py, then plan_verified_dm_events in src/linkedin_mdp_mcp/actual_action_s…",
+      "verdict": "correct",
+      "reason": "Starts at sync_actual_actions in the correct source module."
+    },
+    {
+      "pr": 16,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL. The card does not mention persisting events to a store, or any flags.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine persistence behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "CANNOT TELL — the packet shows only the heading 'The owner had no record of real LinkedIn activity.'; it does not describe the behaviour change or for whom beyond that heading.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the behavior change from the packet."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "`sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py` — the first entry under 'Look here first'; that section also names `run` in `scripts/sync_actual_actions.py` and `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`.",
+      "verdict": "correct",
+      "reason": "Names sync_actual_actions in the correct file."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL — the packet does not mention write defaults, flags, or any old versus new behaviour for writes.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the write default and flag behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "scripts/sync_actual_actions.py",
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "tests/e2e_actual_action_sync.py",
+        "The packet reports 15 files changed in total but names no other paths."
+      ],
+      "verdict": "partial",
+      "reason": "Names several keyed files but omits docs, evidence, README, PLANS, and test wrapper."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "External calls — flagged for `scripts/sync_actual_actions.py`, `src/linkedin_mdp_mcp/actual_action_sync.py`, `src/linkedin_mdp_mcp/invitation_sync.py`, and `tests/e2e_actual_action_sync.py`.",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "CANNOT TELL — the packet names `tests/e2e_actual_action_sync.py` (flagged for external calls) and lists changed symbols that are 'Not covered by tests', but it does not state which behaviour the new tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the pinned test behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "Start with the 'Look here first' entries: `sync_actual_actions` in `src/linkedin_mdp_mcp/actual_action_sync.py`, `run` in `scripts/sync_actual_actions.py`, and `plan_verified_dm_events` in `src/linkedin_mdp_mcp/actual_action_sync.py`.",
+      "verdict": "correct",
+      "reason": "Starts with sync_actual_actions in the correct module."
+    },
+    {
+      "pr": 16,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "CANNOT TELL — the packet does not mention a store, persistence, or extra flags, so it cannot confirm or deny this.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine store persistence or flags."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "The sync's default behaviour becomes non-recording: without the new apply flag, a run reads the three strict provider snapshots and the consent changelog, stages actual LinkedIn activity into a duplicate-safe batch, and returns a dry run with no writes (ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched)). Recording the activity to the store happens only with the explicit apply opt-in. This affects the owner of the private reports, i.e. the account the sync runs for (account_profile_url, account_member_urn); the packet does not name that owner further.",
+      "verdict": "partial",
+      "reason": "Correctly explains staging, dry-run default, and apply-gated writes, but omits replay and uncertain-DM safeguards."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "sync_actual_actions, in src/linkedin_mdp_mcp/actual_action_sync.py (line 199).",
+      "verdict": "correct",
+      "reason": "Names sync_actual_actions in the correct source file."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "Old default (shown only by implication; the diff quotes no old write line): a run persisted its events to the store on every run. New explicit behaviour: writes are opt-in. apply: bool = False is the new default; if not apply: returns ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched) with no writes, and only with apply does it run inserted = await supabase.insert_events_ignore_duplicates(events) if events else 0 (dedupe by source,key).",
+      "verdict": "wrong",
+      "reason": "Claims the old default persisted events on every run. The keyed change only establishes explicit dry-run unless apply is set."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "e2e_actual_action_sync.py — new test ok dry_run_zero_posts (e2e_actual_action_sync.py:168); shown as \"1 new tests\".",
+        "The PR header counts 15 files changed (+1211 −11 · 15 files · komaksym/linkedin-mdp#16); the packet does not enumerate the remaining files."
+      ],
+      "verdict": "partial",
+      "reason": "Names the E2E test but omits nearly all other keyed changed files."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "External calls: the sync reads LinkedIn provider snapshots (PROVIDER SNAPSHOTS, three domains) and a consent changelog (CONSENT CHANGELOG, 28-day window), and writes to the store via supabase.insert_events_ignore_duplicates. The packet shows no CI, dependency, auth, schema, or secrets change.",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls through provider reads and store writes."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "That a dry run stages events but posts zero rows to the store — the new test \"ok dry_run_zero_posts\" (e2e_actual_action_sync.py:168); caption: \"New tests pin dry-run staging with zero store posts.\"",
+      "verdict": "correct",
+      "reason": "Correctly names dry_run_zero_posts and its zero-write dry-run behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "At src/linkedin_mdp_mcp/actual_action_sync.py — the changed function async def sync_actual_actions(linkedin: Any, supabase: Any, *, account_profile_url: str, account_member_urn: str, apply: bool = False, sources: ActualActionSources | None = None) -> ActualActionSyncSummary (line 199), the new if not apply: dry-run return (lines 238–239), and the insert line inserted = await supabase.insert_events_ignore_duplicates( (line 241). The receipts point to actual_action_sync.py:199 · actual_action_sync.py:238 · actual_action_sync.py:239 (and :111 · :111 · :118 for the snapshot reads); the new test is e2e_actual_action_sync.py:168.",
+      "verdict": "correct",
+      "reason": "Points to sync_actual_actions in the keyed source file."
+    },
+    {
+      "pr": 16,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False. The new signature defaults to apply: bool = False, so a run without extra flags stays a dry run and does not persist; events are inserted only when apply is passed (supabase.insert_events_ignore_duplicates, dedupe by source,key).",
+      "verdict": "correct",
+      "reason": "Correctly says persistence requires explicit apply."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "The packet only speaks of 'the owner': scene 1 says 'The owner had no record of real LinkedIn activity.', and the outro says 'One sync stages LinkedIn evidence and applies only with apply.' So the shown behaviour change is that the owner (whose LinkedIn activity is synced) gains staged evidence that is written to the store only under the explicit apply opt-in; without apply the run is a dry run. The packet never mentions 'private reports' and names no other affected party, so that part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "Gets staged evidence and apply-gated writes for the owner, but omits replay and uncertain-evidence behavior."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "sync_actual_actions, in src/linkedin_mdp_mcp/actual_action_sync.py. The diff scene quotes 'async def sync_actual_actions(linkedin: Any, supabase: Any, *, account_profile_url: str, account_member_urn: str, apply: bool = False, sources: ActualActionSources | None = None) -> ActualActionSyncSummary:' at line 199.",
+      "verdict": "correct",
+      "reason": "Names sync_actual_actions in the correct file."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "New explicit behaviour (all quoted diff rows are '+' insertions): the default is 'apply: bool = False' (line 199) and line 238 'if not apply:' returns at line 239 'return ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched)', so 'Without apply the run returns a dry run with no writes'. With the flag, line 241 is 'inserted = await supabase.insert_events_ignore_duplicates(events) if events else 0' — 'Explicit apply inserts once while duplicates stay ignored'. Old default: the packet shows no removed ('-') lines and no prior write default, so CANNOT TELL; the only statement about the old state is 'The owner had no record of real LinkedIn activity.'",
+      "verdict": "partial",
+      "reason": "Correctly describes the new apply=False dry-run gate but cannot establish the old behavior requested."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "PLANS.md",
+        "README.md",
+        "artifacts/actual-action-sync-e2e-evidence.json",
+        "docs/actual-action-sync.md",
+        "infographic/actual-action-sync/analysis.md",
+        "infographic/actual-action-sync/infographic.png",
+        "infographic/actual-action-sync/prompts/01-infographic-actual-actions.md",
+        "infographic/actual-action-sync/source.md",
+        "infographic/actual-action-sync/structured-content.md",
+        "scripts/sync_actual_actions.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "tests/test_actual_action_sync_e2e.py",
+        "tests/e2e_actual_action_sync.py"
+      ],
+      "verdict": "correct",
+      "reason": "Includes every keyed changed file, plus additional release artifacts."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "External calls: the sync reads the LinkedIn provider ('The sync reads three strict snapshots first. A changelog follows inside a bounded consent window.') and writes through the store client at line 241 ('inserted = await supabase.insert_events_ignore_duplicates(events) if events else 0'). The packet shows no CI, dependency, auth, schema, or secret changes.",
+      "verdict": "correct",
+      "reason": "Correctly identifies external calls."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "Dry-run staging with zero store posts: the list scene shows '1' 'new tests' with the item 'dry_run_zero_posts' cited to tests/e2e_actual_action_sync.py:168, under the line 'New tests pin dry-run staging with zero store posts.'",
+      "verdict": "correct",
+      "reason": "Correctly identifies dry-run staging with zero store posts."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "At sync_actual_actions in src/linkedin_mdp_mcp/actual_action_sync.py — the outro says 'Start review at sync_actual_actions in actual_action_sync.py.'; the diff shows that function from line 199, with the gate at lines 238-239 and the insert at line 241.",
+      "verdict": "correct",
+      "reason": "Starts at sync_actual_actions in the correct file."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. Line 238 is 'if not apply:' and line 239 returns 'ActualActionSyncSummary(\"dry_run\", ...)'; the scenes say 'Without apply the run stays a dry run' and 'Without apply the run returns a dry run with no writes', and the new test 'dry_run_zero_posts' pins zero store posts. Events reach the store only with the explicit apply flag (line 241).",
+      "verdict": "correct",
+      "reason": "Correctly says the default does not persist and apply is required."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "Besides src/linkedin_mdp_mcp, the map shows changes in scripts/sync_actual_actions.py, tests/e2e_actual_action_sync.py, tests/test_actual_action_sync_e2e.py, PLANS.md, README.md, actual-action-sync-e2e-evidence.json, actual-action-sync.md, analysis.md, and infographic.png.",
+      "verdict": "partial",
+      "reason": "Names several keyed areas but omits specific source, docs, evidence, and infographic structured-content files."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "Start with src/linkedin_mdp_mcp, which has 20 added and 3 modified files and sits at the center of the changed-file flow.",
+      "verdict": "partial",
+      "reason": "Points only to the source directory, not sync_actual_actions in actual_action_sync.py."
+    },
+    {
+      "pr": 16,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "The card states: 'This pull request changes who makes the LinkedIn invitation shortlist.' So the behaviour that changes concerns the LinkedIn invitation shortlist: who makes it changes, and a reviewer of the invitation report will see a different shortlist. The card does not show for whom (no person or group beyond the LinkedIn invitation shortlist is named), so that part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "Correctly says shortlist membership changes, but omits multi-employer capacity accounting and withholding rules."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "CANNOT TELL. No class is shown as carrying the main change. The 'LOOK HERE FIRST' entries are 'build_invitation_shortlist', '_current_employers', and '_make_markdown', all at 'src/linkedin_mdp/mcp/invitation_shor…'. The only class-like name on the card is 'CurrentEmployer', which appears only in 'No direct test: CurrentEmployer, _current_employers, _make_markdown'.",
+      "verdict": "partial",
+      "reason": "Mentions CurrentEmployer as the only class-like symbol but still answers CANNOT TELL."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL. The card shows the names 'CurrentEmployer' and '_current_employers' but no field names; it never shows an old single-employer field or the new field.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the old and new CurrentEmployer fields."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "The card reports '11 files' changed in total but does not list them.",
+        "It reports '2 tests touched', so test files are another area that changes.",
+        "The only file path shown is 'src/linkedin_mdp/mcp/invitation_shor…' (truncated), the module holding 'build_invitation_shortlist', '_current_employers', and '_make_markdown'; no other specific files or areas are named, so those are CANNOT TELL."
+      ],
+      "verdict": "partial",
+      "reason": "Identifies tests as another changed area but cannot name the keyed files."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "None. The card has a 'RISKY SURFACES' section that reads 'None.'",
+      "verdict": "correct",
+      "reason": "Correctly reports no risky surface."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL. The card only reports '2 tests touched' and 'No direct test: CurrentEmployer, _current_employers, _make_markdown'; it does not say what behaviour the new tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the pinned test behavior."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start with 'build_invitation_shortlist' — it is the first entry under 'LOOK HERE FIRST', at 'src/linkedin_mdp/mcp/invitation_shor…' (path truncated on the card). The same section also lists '_current_employers' and '_make_markdown' at the same file.",
+      "verdict": "wrong",
+      "reason": "Directs the reviewer to build_invitation_shortlist. The keyed review start is _current_employers."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL. The card does not state whether the PR sends invitations or writes anything to a database. It only says the PR 'changes who makes the LinkedIn invitation shortlist' and lists 'Risky surfaces: None.'",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine sends or database writes."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "The packet shows only the headline claim: \"This pull request changes who makes the LinkedIn invitation shortlist.\" The listed changed symbols are `build_invitation_shortlist`, `_current_employers`, `CurrentEmployer` and `_make_markdown` (modified) plus `employer_set` (added), all under `src/linkedin_mdp_mcp/invitation_shortlist.py`. The packet does not describe what a reviewer of the private invitation report now sees, and it never names who is affected, so that part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "Captures shortlist behavior changing but omits the multi-employer capacity and withholding mechanics."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "`CurrentEmployer` — the only class-like symbol in the changed set; the comment places it in `src/linkedin_mdp_mcp/invitation_shortlist.py` (modified, and listed under \"Not covered by tests\"). All the other shown symbols are functions (`build_invitation_shortlist`, `_current_employers`, `_make_markdown`, the tests).",
+      "verdict": "correct",
+      "reason": "Correctly identifies CurrentEmployer."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL. The packet does not show the fields on `CurrentEmployer`. The closest things it shows are the modified symbol `_current_employers` and the added symbol `employer_set`; neither is named in the packet as a field.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot determine the CurrentEmployer fields."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "Tests: seven added test functions are listed (`test_conflicting_canonical_present_sets_are_not_unioned`, `test_identical_canonical_present_sets_merge_citations_only`, `test_invalid_present_sets_keep_global_withholding`, `test_legacy_employer_rows_reject_completeness_metadata`, `test_present_set_charges_each_company_once_and_keeps_flat_au`, `test_present_set_selection_requires_and_consumes_every_compa`, `test_present_set_membership_does_not_invent_primary_employer`); the packet does not show their file paths.",
+        "CI: the footer reports `CI 1/1`.",
+        "Nothing else is enumerated. The packet only reports `Files 11, symbols 13` and says `Showing 12 of 13 changed symbols. Full map: map.html`."
+      ],
+      "verdict": "partial",
+      "reason": "Lists real new test functions but omits the keyed docs, artifact, wrapper test, structured content, and PLANS files."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "None. The \"Risky surfaces and description vs diff\" section says: \"No risky surfaces.\" and \"Everything the description names is in the diff.\"",
+      "verdict": "correct",
+      "reason": "Correctly reports no risky surfaces."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "The new tests pin the present-set behaviour of the shortlist: conflicting canonical present sets are not unioned (`test_conflicting_canonical_present_sets_are_not_unioned`); identical canonical present sets merge citations only (`test_identical_canonical_present_sets_merge_citations_only`); invalid present sets keep global withholding (`test_invalid_present_sets_keep_global_withholding`); legacy employer rows reject completeness metadata (`test_legacy_employer_rows_reject_completeness_metadata`); a present set charges each company once and keeps the flat au… (`test_present_set_charges_each_company_once_and_keeps_flat_au`, truncated in the packet); present-set selection requires and consumes every compa… (`test_present_set_selection_requires_and_consumes_every_compa`, truncated in the packet); present-set membership does not invent a primary employer (`test_present_set_membership_does_not_invent_primary_employer`).",
+      "verdict": "correct",
+      "reason": "Semantically captures the new present-employer-set test behaviors, including every-company capacity."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "With the three items in the \"Look here first\" list, all in `src/linkedin_mdp_mcp/invitation_shortlist.py`: `build_invitation_shortlist`, then `_current_employers`, then `_make_markdown`.",
+      "verdict": "wrong",
+      "reason": "Directs the reviewer to build_invitation_shortlist first. The keyed start is _current_employers."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "False, as far as the packet shows. The comment describes only shortlist-building and markdown changes (`build_invitation_shortlist`, `_current_employers`, `CurrentEmployer`, `_make_markdown`, `employer_set`) plus tests, and its risky-surfaces section says \"No risky surfaces.\" It never mentions sending invitations or writing to a database.",
+      "verdict": "correct",
+      "reason": "Correctly says the PR does not send invitations or write the database."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "Before this change the shortlist checked only one company per person: the diff removes `if slots[candidate_row.company_id] <= 0:` (old line 1018, tagged 'one company'), and the frames say 'Before this change, A had one employer on record, say co-a, so only co-a's limit was checked' and 'Nothing stopped A, and co-b's people got a fourth invitation.' Now the check covers every company the person works at: `if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):` and the new loop takes a slot at each employer (`slots[company_id] -= 1`, tagged '1 slot at each employer'). The people affected are candidates with more than one current employer - the title card says 'It's about people with two jobs at once', and the diagram shows 'PERSON A / two current jobs' who 'works at both co-a and co-b'. For a reviewer of the private invitation report this means such a person is left off the shortlist when any company they work at has no free slot ('co-b is full, so A is not invited'), instead of still being added; when both companies have room, the person is invited once and uses a slot at each ('When both companies have room, A is invited once and uses a slot at each', 'That leaves two at co-a and two at co-b'). A later slide adds: 'If anyone's employer data is empty, unknown, partial or conflicting, no one is invited.'",
+      "verdict": "partial",
+      "reason": "Explains multi-employer selection and slot consumption well, including withholding, but omits preservation of identities, exclusions, ranking, and date_added."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "CANNOT TELL - no class name appears anywhere in the packet. The change is shown only at module level: the diff slide is headed 'src/linkedin_mdp_mcp/invitation_shortlist.py' and shows lines inside `for candidate_row in eligible:` (new lines 1030-1035, removed old lines 1018 and 1021), using `eligible`, `candidate_row`, `slots`, `selected` and `employers[candidate_row.profile_url].assignments`.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot identify the class."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "CANNOT TELL - the packet never shows a class or type named CurrentEmployer, nor any field of it. The only field-level change it shows is in src/linkedin_mdp_mcp/invitation_shortlist.py: the removed lines used a single company id on the candidate row, `if slots[candidate_row.company_id] <= 0:` and `slots[candidate_row.company_id] -= 1` (old lines 1018 and 1021), and the added lines use a per-person collection of company ids, `employers[candidate_row.profile_url].assignments` (new lines 1031, 1034, 1035).",
+      "verdict": "partial",
+      "reason": "Semantically identifies the old single company_id and new assignments collection, but does not give the keyed CurrentEmployer field declaration."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "e2e_invitation_shortlist.py - named only in the receipts lines: e2e_invitation_shortlist.py:1064, e2e_invitation_shortlist.py:1059, e2e_invitation_shortlist.py:1061 (the 'needs a free slot at every company' scene) and e2e_invitation_shortlist.py:1066, e2e_invitation_shortlist.py:1067, e2e_invitation_shortlist.py:1065 (the 'invited once, uses a slot at each' scene)",
+        "test_invitation_shortlist_e2e.py - named in the receipts line as test_invitation_shortlist_e2e.py:89 (the earlier, pre-change scenes)",
+        "No other file or area is named in the packet: the diff slide quotes only 'src/linkedin_mdp_mcp/invitation_shortlist.py', while the title card reports '+219 -39 - 11 files', so the packet does not show what the remaining files are."
+      ],
+      "verdict": "partial",
+      "reason": "Names both keyed test files but omits docs, evidence, structured content, and PLANS."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "None shown. The packet contains no CI, dependency, auth, schema, secret or external-call material; the only change it displays is in-memory slot bookkeeping in src/linkedin_mdp_mcp/invitation_shortlist.py (reads of a `slots` mapping, `selected.append(candidate_row)`, and `slots[company_id] -= 1`) plus test receipts. The title card says 11 files while the packet quotes one diff hunk, so the packet cannot by itself rule out other files, but no risky surface appears anywhere in it.",
+      "verdict": "correct",
+      "reason": "Correctly reports no risky surface."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "The new e2e receipts pin two behaviours for a person with two current employers. (1) The person is not selected when any company they work at has no free slot: the scene 'Now A needs a free slot at every company A works at' ends with 'co-b is full, so A is not invited', with receipts invitation_shortlist.py:1031 and e2e_invitation_shortlist.py:1064, 1059, 1061. (2) The person is selected once and consumes a slot at each employer when both have room: 'When both companies have room, A is invited once and uses a slot at each' and 'That leaves two at co-a and two at co-b', with receipts invitation_shortlist.py:1035 and e2e_invitation_shortlist.py:1066, 1067, 1065. The packet cites test code by file and line only; it does not quote the test bodies.",
+      "verdict": "correct",
+      "reason": "Correctly captures both every-company capacity blocking and per-employer slot consumption."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "At the diff slide, 'The change, line for line', in src/linkedin_mdp_mcp/invitation_shortlist.py: the hunk inside `for candidate_row in eligible:` where old line 1018 (`if slots[candidate_row.company_id] <= 0:`) and old line 1021 (`slots[candidate_row.company_id] -= 1`) are replaced by new line 1031 (`if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):`) and new lines 1034-1035 (`for company_id in employers[candidate_row.profile_url].assignments:` / `slots[company_id] -= 1`). The receipts single out invitation_shortlist.py:1031 and invitation_shortlist.py:1035 for the two new behaviours, and invitation_shortlist.py:1038 with invitation_shortlist.py:73 (old) for the earlier scenes.",
+      "verdict": "wrong",
+      "reason": "Points to the later selection loop instead of the keyed _current_employers review start."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False. The packet shows only candidate selection and in-memory slot counting (`slots[company_id] -= 1`, against a `slots` mapping) in src/linkedin_mdp_mcp/invitation_shortlist.py, with no code that sends invitations or writes to a database; the title card describes the change as 'feat(report): count every present employer', and the last slide's 'no one is invited' describes the shortlist outcome, not an invitation being sent.",
+      "verdict": "correct",
+      "reason": "Correctly says this is shortlist logic with no send or database write."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "The packet never says 'private invitation report' or 'reviewer' — it frames the change as 'This pull request changes who makes the LinkedIn invitation shortlist.' The behaviour change: the capacity check moved from one employer per person to every employer — old 'if slots[candidate_row.company_id] <= 0:' (line 1018) becomes 'if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):' (line 1031), and a selected person now charges a slot to every company ('slots[company_id] -= 1', lines 1034-1035). Before, 'A had one employer on record, say co-a, so only co-a's limit was checked' and 'Nothing stopped A, and co-b's people got a fourth invitation'; now 'A needs a free slot at every company A works at', and when both have room 'A is invited once and uses a slot at each' ('2 left' at co-a and co-b). It changes the outcome for people with two jobs at once (Person A, 'two current jobs') under the per-company cap of 3 invitations ('max(0, 3 - company_counts[company_id])', line 1038).",
+      "verdict": "partial",
+      "reason": "Explains the multi-employer capacity behavior precisely, but omits preservation guarantees and incomplete-set withholding from the main answer."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "CANNOT TELL — the packet shows the change only as lines inside the file 'src/linkedin_mdp_mcp/invitation_shortlist.py' (the loop 'for candidate_row in eligible:' and the symbols '_current_employers', '_make_markdown'); no class name appears anywhere in the packet.",
+      "verdict": "cannot_tell",
+      "reason": "Explicitly cannot identify the class."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "Old field: 'company_id' — cited as old line 73, 'company_id: str' ('src/linkedin_mdp_mcp/invitation_shortlist.py:73 (old)', receipt struck through against base 0c54c1a), used directly by the old check 'if slots[candidate_row.company_id] <= 0:'. New field: 'assignments' — the new check reads 'employers[candidate_row.profile_url].assignments' (line 1031) and the new decrement loops 'for company_id in employers[candidate_row.profile_url].assignments:' (lines 1034-1035). The packet does not itself print the class/type name 'CurrentEmployer'.",
+      "verdict": "correct",
+      "reason": "Correctly identifies old company_id and new assignments semantics."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "PLANS.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "docs/invitation-shortlist.md",
+        "infographic/present-employer-sets/analysis.md",
+        "infographic/present-employer-sets/infographic.png",
+        "infographic/present-employer-sets/prompts/01-infographic-present-employers.md",
+        "infographic/present-employer-sets/source.md",
+        "infographic/present-employer-sets/structured-content.md"
+      ],
+      "verdict": "correct",
+      "reason": "Includes every keyed changed file, plus additional release artifacts."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "None of the listed surfaces. The packet shows no CI, dependency, auth, schema, secret or external-call change: the change is Python selection logic in 'src/linkedin_mdp_mcp/invitation_shortlist.py', plus tests and docs. The packet's only non-doc, non-test changed file with another tag is 'artifacts/invitation-shortlist-e2e-evidence.json', tagged 'config' ('Changed files not shown'). The 'company_id' to 'assignments' switch is internal to the module — no database schema or migration is shown.",
+      "verdict": "correct",
+      "reason": "Correctly reports none of the listed risky surfaces."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "The new tests pin the multi-employer capacity rules. The packet names three of seven ('7 new tests', '+ 4 more'): 'A second employer at capacity blocks the person, and selected people charge every job.' (tests/e2e_invitation_shortlist.py:1058); 'Replayed invitation facts charge one profile once to every present employer.' (tests/e2e_invitation_shortlist.py:989); 'Unbounded or contradictory claims cannot create company capacity.' (tests/e2e_invitation_shortlist.py:1016). Assertions shown: 'assert result[\"invitations\"] == []', 'assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3', '[\"co-a\"][\"remaining_slots_after_selection\"] == 2' / '[\"co-b\"][\"remaining_slots_after_selection\"] == 2', 'assert result[\"status\"] == \"withheld_current_employer_assignments\"' and 'result[\"research_queue\"]' for 'current_employer_assignment_invalid', 'current_employer_unregistered', 'current_employer_coverage_incomplete', 'conflicting_current_employer_assignments'. The older file pins the regression name 'secondary employer at capacity admitted an invitation' (tests/test_invitation_shortlist_e2e.py:89).",
+      "verdict": "correct",
+      "reason": "Correctly captures the multi-employer capacity and withholding tests."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "Start at the change itself: scene 5, 'The change, line for line', 'src/linkedin_mdp_mcp/invitation_shortlist.py' lines 1018-1035 — the replaced check 'if any(slots[company_id] <= 0 for company_id in employers[candidate_row.profile_url].assignments):' (line 1031) paired with old line 1018, and the replaced decrement 'for company_id in employers[candidate_row.profile_url].assignments:' / 'slots[company_id] -= 1' (lines 1034-1035) paired with old line 1021. Then the cap it relies on, 'max(0, 3 - company_counts[company_id])' (line 1038), and the tests in 'tests/e2e_invitation_shortlist.py' (e.g. 1058) and 'tests/test_invitation_shortlist_e2e.py:89'.",
+      "verdict": "wrong",
+      "reason": "Directs the reviewer to the selection-loop diff. The keyed start is _current_employers."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. The packet shows only shortlist-selection logic: the change edits the in-memory check and decrement over 'slots' ('if any(slots[company_id] <= 0 ...)' and 'slots[company_id] -= 1'), and the tests assert on a returned 'result' dict (keys 'invitations', 'company_usage', 'remaining_slots_after_selection', 'research_queue'). No invitation sending and no database write appears anywhere in the packet; its only written output file is the changed evidence artifact 'artifacts/invitation-shortlist-e2e-evidence.json'.",
+      "verdict": "correct",
+      "reason": "Correctly says the PR neither sends invitations nor writes the database."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "The private invitation report now counts every present employer, including people with more than one present employer.",
+      "verdict": "partial",
+      "reason": "Gets the core every-present-employer accounting change but omits capacity-at-every-employer, withholding, and preservation details."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "CurrentEmployer",
+      "verdict": "correct",
+      "reason": "Correctly identifies CurrentEmployer."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "Besides invitation_shortlist.py, the packet shows changes to PLANS.md, invitation-shortlist-e2e-evidence.json, invitation-shortlist.md, analysis.md, infographic.png, 01-infographic-present-employers.md, source.md, and structured-content.md.",
+      "verdict": "partial",
+      "reason": "Names several keyed docs and artifacts but omits both keyed test files."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "None. The map reports 0 risky surfaces.",
+      "verdict": "correct",
+      "reason": "Correctly reports no risky surface."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "The new tests cover employer sets, conflicting and identical employer cases, invalid present-employer input, legacy employer handling, and present-employer-set behavior.",
+      "verdict": "partial",
+      "reason": "Names the relevant employer-set test area but does not state the required every-company slot behavior precisely."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "Start with build_invita... in invitation_shortlist.py, then follow _current_cmp... and CurrentEmplo....",
+      "verdict": "partial",
+      "reason": "Includes _current_employers, but tells the reviewer to start at build_invitation_shortlist first."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "False",
+      "verdict": "correct",
+      "reason": "Correctly answers false."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "classify_dm_evidence",
+      "verdict": "wrong",
+      "reason": "Names classify_dm_evidence. The keyed main function is build_dm_doc_bodies."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q4",
+      "answer": "The packet shows changes in src/linkedin_mdp_mcp/invitation_shor..., scripts/report_connections_doc.py, multiple .github/workflows CI files, PLANS.md, and artifacts/doc-report-e2e-evi....",
+      "verdict": "partial",
+      "reason": "Names other real changed areas but omits the keyed DM publication scripts, tests, docs, and evidence files."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "CI workflows and external calls.",
+      "verdict": "partial",
+      "reason": "Includes the keyed external-call risk but adds CI as a risky surface not present in the key."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start with build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shor....",
+      "verdict": "wrong",
+      "reason": "Points to build_invitation_shortlist. The keyed review start is build_dm_doc_bodies in dm_doc_report.py."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q4",
+      "answer": "The packet shows changes across CI workflows, PLANS.md, an E2E evidence artifact, diagnostics, docs, scripts, source modules, and E2E tests. It reports 62 changed files total.",
+      "verdict": "partial",
+      "reason": "Correctly identifies broad changed areas, but does not enumerate the keyed files."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "It touches CI workflows and multiple external-call surfaces.",
+      "verdict": "partial",
+      "reason": "Includes external calls but adds CI beyond the keyed risky surface."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "Start with build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shortlist.py, then classify_dm_evidence in src/linkedin_mdp_mcp/dm_actions.py, then run in scripts/report_connections_doc.py.",
+      "verdict": "wrong",
+      "reason": "Starts at invitation_shortlist.py rather than build_dm_doc_bodies in dm_doc_report.py."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "The owner gets two private owner-only Google Docs: a first-DM draft report and a follow-up report. The packet shows these for the owner only.",
+      "verdict": "partial",
+      "reason": "Correctly describes separate first-DM and follow-up owner docs, but omits the connections document and material publisher safeguards."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "build_dm_doc_bodies",
+      "verdict": "correct",
+      "reason": "Correctly names build_dm_doc_bodies."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)):\n raise DmDocReportError(\"managed_marker_in_body\")",
+      "verdict": "correct",
+      "reason": "Correctly identifies the managed_marker_in_body guard and rejection."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q4",
+      "answer": "The packet shows changes in the E2E private-DM report tests, e2e_private_dm_doc_report.py. It does not identify the other changed files.",
+      "verdict": "partial",
+      "reason": "Names one keyed E2E test file but omits the rest of the keyed changed areas."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "The new tests pin that both documents complete, reruns converge, a second conflict fails closed, and dual preflight behavior works.",
+      "verdict": "correct",
+      "reason": "Captures complete publication, convergent reruns, fail-closed conflict handling, and dual preflight."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "Start with src/linkedin_mdp_mcp/dm_doc_report.py, especially build_dm_doc_bodies.",
+      "verdict": "correct",
+      "reason": "Starts at build_dm_doc_bodies in dm_doc_report.py."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False",
+      "verdict": "correct",
+      "reason": "Correctly answers false."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "The owner gets the first-DM and follow-up reports published to separate owner-only Google Docs. A rerun converges on the same text.",
+      "verdict": "partial",
+      "reason": "Correctly describes separate first-DM and follow-up documents and rerun convergence, but omits the third connections document and retained-evidence/revision safeguards."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "build_dm_doc_bodies in src/linkedin_mdp_mcp/dm_doc_report.py: def build_dm_doc_bodies(actions_value: Any, retained_value: Any, *, now: datetime) -> DmDocBodies:",
+      "verdict": "correct",
+      "reason": "Correctly names build_dm_doc_bodies in the correct source file."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)): followed by raise DmDocReportError(\"managed_marker_in_body\").",
+      "verdict": "correct",
+      "reason": "Correctly identifies the managed_marker_in_body rejection guard."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q4",
+      "answer": "Besides src/linkedin_mdp_mcp/dm_doc_report.py, the packet shows changes across CI workflows, publication/build scripts, google_doc_report.py, client.py, DM actions, inbox sync, invitation shortlist code, E2E/tests, docs, evidence artifacts, diagnostics, plans, and infographics.",
+      "verdict": "correct",
+      "reason": "Covers every keyed changed area at category level, including workflow, scripts, tests, docs, evidence, and plans."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "It touches CI, authentication, and external calls. The packet shows changed GitHub workflow files and Google Doc publishing code including GoogleDocPublisher._access_token, _request, publish, and publish_text. It does not show enough evidence to claim dependency, schema, or secret changes.",
+      "verdict": "partial",
+      "reason": "Correctly includes external calls, but also classifies CI and auth beyond the keyed risky surface."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "The new tests pin both docs completing, reruns converging, a second conflict failing closed, and dual preflight behavior. The packet labels these scenarios both_docs_complete, rerun_converges, second_conflict_fails_closed, and dual_preflight_.",
+      "verdict": "correct",
+      "reason": "Captures both-doc completion, rerun convergence, second-conflict failure, and dual preflight."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "Start at build_dm_doc_bodies in src/linkedin_mdp_mcp/dm_doc_report.py.",
+      "verdict": "correct",
+      "reason": "Starts at build_dm_doc_bodies in dm_doc_report.py."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. A rendered body containing BEGIN_MARKER or END_MARKER raises DmDocReportError(\"managed_marker_in_body\") instead of being returned for publication.",
+      "verdict": "correct",
+      "reason": "Correctly says marker-bearing bodies are rejected instead of published."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "Besides src/linkedin_mdp_mcp, the map shows changes in diagnostics/verify_inbox_live.py, scripts, tests, morning-report.yml, report-tests.yml, sync-connections.yml, PLANS.md, analysis.md, infographic.png, 01-infographic-inbox-evidence.md, source-inbox-evidence.md, and structured-content.md.",
+      "verdict": "partial",
+      "reason": "Names several real changed areas, including workflow, scripts, and tests, but does not identify the keyed publication files precisely."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "CI",
+      "verdict": "partial",
+      "reason": "Reports CI but misses the keyed external-call surface."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py",
+      "verdict": "wrong",
+      "reason": "Points to client.py. The keyed review start is build_dm_doc_bodies in dm_doc_report.py."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "Answer is explicitly CANNOT TELL."
+    }
+  ]
+}

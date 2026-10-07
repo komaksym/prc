@@ -1,0 +1,44 @@
+{
+  "pr": 8,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL. The card only shows the problem headline 'The owner had no durable inbox evidence.'; it does not describe the resulting behaviour change or who it is for."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_inbox, in src/linkedin_mdp_mcp/inbox_sync.py (listed first under 'LOOK HERE FIRST')."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet does not show the old default or the new explicit behaviour for writes."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py (LinkedInMCPClient)",
+        "scripts/sync_inbox.py (run)",
+        "diagnostics/verify_inbox_liv…",
+        "tests/e2e_inbox_review.py",
+        "tests/e2e_inbox_sync.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "external calls — every entry under 'RISKY SURFACES' is tagged 'external calls': diagnostics/verify_inbox_liv…, scripts/sync_inbox.py, src/linkedin_mdp_mcp/inbox_s…, tests/e2e_inbox_review.py, tests/e2e_inbox_sync.py."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card shows only '4 tests touched' and 'no direct test: FrozenInbox, FrozenInbox.__init__, FrozenInbox…'; it does not say which behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with reconcile_inbox in src/linkedin_mdp_mcp/inbox_sync.py ('LOOK HERE FIRST'); then LinkedInMCPClient in src/linkedin_mdp_mcp/client.py and run in scripts/sync_inbox.py."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card does not state whether the sync persists message evidence to the store on every run."
+    }
+  ]
+}

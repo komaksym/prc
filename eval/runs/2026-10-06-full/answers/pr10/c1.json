@@ -1,0 +1,38 @@
+{
+  "pr": 10,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet shows only the card headline: \"The invitation report ignored history outside the CRM.\" The packet does not name the people or roles affected, so the \"for whom\" part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "`build_invitation_shortlist` (in `src/linkedin_mdp/mcp/invitation_shor…`) — the first entry under the card's \"LOOK HERE FIRST\"."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL — the packet does not show a per-company capacity rule."
+    },
+    {
+      "id": "q4",
+      "answer": ["CANNOT TELL"]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The card's \"RISKY SURFACES\" section says \"None.\""
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL — the card reports \"2\" \"tests touched\" and \"48\" \"no direct test\", but does not show what behaviour the tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the card's \"LOOK HERE FIRST\" list: `build_invitation_shortlist` (src/linkedin_mdp/mcp/invitation_shor…), then `ShortlistInputError` and `_citation_list` in the same module."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL — the packet does not mention a recommendation report, a recommendation event plan, or a persistence key."
+    }
+  ]
+}

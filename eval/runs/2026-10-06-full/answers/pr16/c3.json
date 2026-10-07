@@ -1,0 +1,41 @@
+{
+  "pr": 16,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The sync's default behaviour becomes non-recording: without the new apply flag, a run reads the three strict provider snapshots and the consent changelog, stages actual LinkedIn activity into a duplicate-safe batch, and returns a dry run with no writes (ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched)). Recording the activity to the store happens only with the explicit apply opt-in. This affects the owner of the private reports, i.e. the account the sync runs for (account_profile_url, account_member_urn); the packet does not name that owner further."
+    },
+    {
+      "id": "q2",
+      "answer": "sync_actual_actions, in src/linkedin_mdp_mcp/actual_action_sync.py (line 199)."
+    },
+    {
+      "id": "q3",
+      "answer": "Old default (shown only by implication; the diff quotes no old write line): a run persisted its events to the store on every run. New explicit behaviour: writes are opt-in. apply: bool = False is the new default; if not apply: returns ActualActionSyncSummary(\"dry_run\", planned_by_type, len(events), None, None, len(evidence.uncertain), dm_plan.unmatched) with no writes, and only with apply does it run inserted = await supabase.insert_events_ignore_duplicates(events) if events else 0 (dedupe by source,key)."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_actual_action_sync.py — new test ok dry_run_zero_posts (e2e_actual_action_sync.py:168); shown as \"1 new tests\".",
+        "The PR header counts 15 files changed (+1211 −11 · 15 files · komaksym/linkedin-mdp#16); the packet does not enumerate the remaining files."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls: the sync reads LinkedIn provider snapshots (PROVIDER SNAPSHOTS, three domains) and a consent changelog (CONSENT CHANGELOG, 28-day window), and writes to the store via supabase.insert_events_ignore_duplicates. The packet shows no CI, dependency, auth, schema, or secrets change."
+    },
+    {
+      "id": "q6",
+      "answer": "That a dry run stages events but posts zero rows to the store — the new test \"ok dry_run_zero_posts\" (e2e_actual_action_sync.py:168); caption: \"New tests pin dry-run staging with zero store posts.\""
+    },
+    {
+      "id": "q7",
+      "answer": "At src/linkedin_mdp_mcp/actual_action_sync.py — the changed function async def sync_actual_actions(linkedin: Any, supabase: Any, *, account_profile_url: str, account_member_urn: str, apply: bool = False, sources: ActualActionSources | None = None) -> ActualActionSyncSummary (line 199), the new if not apply: dry-run return (lines 238–239), and the insert line inserted = await supabase.insert_events_ignore_duplicates( (line 241). The receipts point to actual_action_sync.py:199 · actual_action_sync.py:238 · actual_action_sync.py:239 (and :111 · :111 · :118 for the snapshot reads); the new test is e2e_actual_action_sync.py:168."
+    },
+    {
+      "id": "q8",
+      "answer": "False. The new signature defaults to apply: bool = False, so a run without extra flags stays a dry run and does not persist; events are inserted only when apply is passed (supabase.insert_events_ignore_duplicates, dedupe by source,key)."
+    }
+  ]
+}

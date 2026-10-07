@@ -1,0 +1,14 @@
+{
+  "pr": 19,
+  "condition": "c3",
+  "answers": [
+    {"id": "q1", "answer": "The owner gets two private owner-only Google Docs: a first-DM draft report and a follow-up report. The packet shows these for the owner only."},
+    {"id": "q2", "answer": "build_dm_doc_bodies"},
+    {"id": "q3", "answer": "if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)):\n raise DmDocReportError(\"managed_marker_in_body\")"},
+    {"id": "q4", "answer": "The packet shows changes in the E2E private-DM report tests, e2e_private_dm_doc_report.py. It does not identify the other changed files."},
+    {"id": "q5", "answer": "CANNOT TELL"},
+    {"id": "q6", "answer": "The new tests pin that both documents complete, reruns converge, a second conflict fails closed, and dual preflight behavior works."},
+    {"id": "q7", "answer": "Start with src/linkedin_mdp_mcp/dm_doc_report.py, especially build_dm_doc_bodies."},
+    {"id": "q8", "answer": "False"}
+  ]
+}

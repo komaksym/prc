@@ -1,0 +1,26 @@
+[
+ {
+  "scene": 2,
+  "phrase": "marked paragraphs",
+  "said": 3.056,
+  "share": 3.056
+ },
+ {
+  "scene": 2,
+  "phrase": "terminal message",
+  "said": 5.398,
+  "share": 5.398
+ },
+ {
+  "scene": 3,
+  "phrase": "provider message",
+  "said": 5.327,
+  "share": 5.327
+ },
+ {
+  "scene": 3,
+  "phrase": "public error text",
+  "said": 7.229,
+  "share": 7.229
+ }
+]

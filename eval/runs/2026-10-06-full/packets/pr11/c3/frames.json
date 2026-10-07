@@ -1,0 +1,32 @@
+[
+  {
+    "label": "scene00_end",
+    "t": 7.1,
+    "width": 800
+  },
+  {
+    "label": "scene01_end",
+    "t": 18.51,
+    "width": 800
+  },
+  {
+    "label": "scene02_end",
+    "t": 29.92,
+    "width": 800
+  },
+  {
+    "label": "scene03_end",
+    "t": 37.94,
+    "width": 800
+  },
+  {
+    "label": "scene04_end",
+    "t": 50.62,
+    "width": 800
+  },
+  {
+    "label": "scene05_end",
+    "t": 58.64,
+    "width": 800
+  }
+]

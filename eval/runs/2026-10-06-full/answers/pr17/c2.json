@@ -1,0 +1,43 @@
+{
+  "pr": 17,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet shows only the headline claim: \"This pull request changes who makes the LinkedIn invitation shortlist.\" The listed changed symbols are `build_invitation_shortlist`, `_current_employers`, `CurrentEmployer` and `_make_markdown` (modified) plus `employer_set` (added), all under `src/linkedin_mdp_mcp/invitation_shortlist.py`. The packet does not describe what a reviewer of the private invitation report now sees, and it never names who is affected, so that part is CANNOT TELL."
+    },
+    {
+      "id": "q2",
+      "answer": "`CurrentEmployer` — the only class-like symbol in the changed set; the comment places it in `src/linkedin_mdp_mcp/invitation_shortlist.py` (modified, and listed under \"Not covered by tests\"). All the other shown symbols are functions (`build_invitation_shortlist`, `_current_employers`, `_make_markdown`, the tests)."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet does not show the fields on `CurrentEmployer`. The closest things it shows are the modified symbol `_current_employers` and the added symbol `employer_set`; neither is named in the packet as a field."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "Tests: seven added test functions are listed (`test_conflicting_canonical_present_sets_are_not_unioned`, `test_identical_canonical_present_sets_merge_citations_only`, `test_invalid_present_sets_keep_global_withholding`, `test_legacy_employer_rows_reject_completeness_metadata`, `test_present_set_charges_each_company_once_and_keeps_flat_au`, `test_present_set_selection_requires_and_consumes_every_compa`, `test_present_set_membership_does_not_invent_primary_employer`); the packet does not show their file paths.",
+        "CI: the footer reports `CI 1/1`.",
+        "Nothing else is enumerated. The packet only reports `Files 11, symbols 13` and says `Showing 12 of 13 changed symbols. Full map: map.html`."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The \"Risky surfaces and description vs diff\" section says: \"No risky surfaces.\" and \"Everything the description names is in the diff.\""
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests pin the present-set behaviour of the shortlist: conflicting canonical present sets are not unioned (`test_conflicting_canonical_present_sets_are_not_unioned`); identical canonical present sets merge citations only (`test_identical_canonical_present_sets_merge_citations_only`); invalid present sets keep global withholding (`test_invalid_present_sets_keep_global_withholding`); legacy employer rows reject completeness metadata (`test_legacy_employer_rows_reject_completeness_metadata`); a present set charges each company once and keeps the flat au… (`test_present_set_charges_each_company_once_and_keeps_flat_au`, truncated in the packet); present-set selection requires and consumes every compa… (`test_present_set_selection_requires_and_consumes_every_compa`, truncated in the packet); present-set membership does not invent a primary employer (`test_present_set_membership_does_not_invent_primary_employer`)."
+    },
+    {
+      "id": "q7",
+      "answer": "With the three items in the \"Look here first\" list, all in `src/linkedin_mdp_mcp/invitation_shortlist.py`: `build_invitation_shortlist`, then `_current_employers`, then `_make_markdown`."
+    },
+    {
+      "id": "q8",
+      "answer": "False, as far as the packet shows. The comment describes only shortlist-building and markdown changes (`build_invitation_shortlist`, `_current_employers`, `CurrentEmployer`, `_make_markdown`, `employer_set`) plus tests, and its risky-surfaces section says \"No risky surfaces.\" It never mentions sending invitations or writing to a database."
+    }
+  ]
+}
+

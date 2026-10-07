@@ -1,0 +1,42 @@
+{
+  "pr": 13,
+  "condition": "c1",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The card states the problem this PR fixes: \"The owner had no offline plan for inbox messages.\" The behaviour change is therefore that the owner of the private inbox gains an offline plan for inbox messages, produced through `main` in `scripts/build_private_dm_actions.py` and the highlighted functions `classify_dm_evidence` / `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`. The packet names no other party whose behaviour changes; it changes for the owner of the private inbox."
+    },
+    {
+      "id": "q2",
+      "answer": "The card does not single one function out. Its \"LOOK HERE FIRST\" list shows, in this order: `classify_dm_evidence`, `plan_dm_actions` (both `src/linkedin_mdp_mcp/dm_actions.py`), and `main` (`scripts/build_private_dm_actions.py`). `classify_dm_evidence` is listed first, but the packet never says which one carries the main change."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The packet contains only the PR card (title, counts, hotspot names, risky surfaces line). It shows no code, so it shows no new rule and no reason the code records."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "`scripts/build_private_dm_actions.py` (hotspot `main`) is the only other file path named on the card besides the main source module `src/linkedin_mdp_mcp/dm_actions.py`.",
+        "Tests: the card reports \"3 tests touched\" but names no test file.",
+        "The change spans \"15 files\" in total per the card stat; the other files are not named in the packet."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None. The card's \"RISKY SURFACES\" section reads \"None.\" (CI appears only as a stat: \"1/1 CI passed\")."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The card shows only counts and names: \"3 tests touched\" and \"No direct test: _Parser, _Parser.error, _markdown +18 more\". It does not state which behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start at the \"LOOK HERE FIRST\" hotspots: `classify_dm_evidence` and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, then `main` in `scripts/build_private_dm_actions.py`."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The card never mentions report generation. It only reports \"RISKY SURFACES / None.\", so the packet does not show whether the PR sends messages or writes to the database."
+    }
+  ]
+}

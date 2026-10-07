@@ -232,6 +232,18 @@ def test_card_numbers_equal_shop_recomputation() -> None:
 # --- Card order, headline, risky ---
 
 
+def test_card_headline_describes_the_result_instead_of_the_before_state() -> None:
+    board = {
+        "scenes": [
+            {"type": "title", "say": ["The collector dropped timestamps."]},
+            {"type": "outro", "l1": "Prospect rows now carry their creation timestamps."},
+        ]
+    }
+    html = card.build_card_html(shop_dict(), board=board)
+    assert "Prospect rows now carry their creation timestamps." in html
+    assert "The collector dropped timestamps." not in html
+
+
 def test_card_part_order_and_headline() -> None:
     m = shop_dict()
     board = {"scenes": [{"type": "title", "say": ["Board headline wins."]}]}

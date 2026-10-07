@@ -1,0 +1,30 @@
+{
+  "pr": 10,
+  "findings": [
+    {
+      "code": "src/linkedin_mdp_mcp/invitation_shortlist.py:905-906: `if cap_scope != \"all_history\": raise ShortlistInputError(\"cap_scope_invalid\")`; tests/e2e_invitation_shortlist.py:873-876: `run(..., cap_scope=\"crm\")` raises cap_scope_invalid.",
+      "output": "board say scene 1",
+      "statement": "A CRM-only scope could still pass an all-history report."
+    },
+    {
+      "code": "src/linkedin_mdp_mcp/invitation_shortlist.py:1025-1033: cap_evidence_by_company extends one entry per evidence row (multiple entries per person); tests/e2e_invitation_shortlist.py:373: `test_distinct_history_rows_without_event_ids_keep_distinct_bindings` — repeated sends without event IDs remain separate cap events by source pointer.",
+      "output": "board say scene 2",
+      "statement": "Every source now counts once against the mapped latest employer."
+    }
+  ],
+  "verdicts": [
+    {
+      "statement": "The scope must read all history.",
+      "output": "board.json scene 1 (i=1), say — also doc.html Scene 2 of 7",
+      "verdict": "rejected",
+      "evidence": "src/linkedin_mdp_mcp/invitation_shortlist.py:905-906 `if cap_scope != \"all_history\": raise ShortlistInputError(\"cap_scope_invalid\")`; tests/e2e_invitation_shortlist.py:873-876 test_cap_scope_rejects_universal_policy_relaxation expects cap_scope_invalid for cap_scope=\"crm\" — a CRM-only scope cannot pass."
+    },
+    {
+      "statement": "Each event record counts once against the mapped latest employer.",
+      "output": "board.json scene 2 (i=2), say — also doc.html Scene 3 of 7",
+      "verdict": "confirmed",
+      "evidence": "src/linkedin_mdp_mcp/invitation_shortlist.py:1009 `for profile_url, evidence_rows in history_by_profile.items():` and :1024 `company_counts[employer.company_id] += 1` — one count per person, not per event record; :1025-1033 only extends audit entries. tests/e2e_invitation_shortlist.py:1080-1089 three evidence rows for one profile leave recorded == 1 (\"evidence count once at latest employer with source audit retained\"). docs/invitation-shortlist.md:52 (cited receipt) \"counts each person once against their mapped latest-known employer\".",
+      "suggested_fix": "Each person's history counts once against the mapped latest employer."
+    }
+  ]
+}

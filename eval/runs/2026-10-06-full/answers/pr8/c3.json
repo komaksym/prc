@@ -1,0 +1,41 @@
+{
+  "pr": 8,
+  "condition": "c3",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The packet shows that the private LinkedIn inbox is read as a \"complete INBOX snapshot\" and that \"Complete clean snapshots become planned evidence.\", while nothing is written by default: reconcile_inbox runs with \"dry_run: bool = True\" and \"writes nothing unless the caller opts into apply\". So the behaviour change is that the inbox owner's data is only snapshotted and planned, and writes happen only for a caller who opts into apply; the packet names the caller as the party that must opt in and does not identify any other affected party."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_inbox — \"async def reconcile_inbox(\" at line 311 of src/linkedin_mdp_mcp/inbox_sync.py (\"Changed functions carry the reconcile path.\")."
+    },
+    {
+      "id": "q3",
+      "answer": "New behaviour (shown): \"dry_run: bool = True\" — the reconcile \"writes nothing unless the caller opts into apply\", with writes gated by \"if not dry_run:\" (\"writes only when applied\"); an explicit apply is what writes. Old default: the packet shows only added + lines, so the old default for writes is not shown — CANNOT TELL."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_inbox_sync.py — two new tests: unicode_profile_identity_persisted (line 115) and dry_run_writes_nothing (line 298)",
+        "Title card: +1892 −7 · 29 files — 29 files change in total, but the packet does not name the other changed files"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "External calls — \"snapshot = await linkedin.snapshot(\"INBOX\", max_pages=50, strict_elements=True)\". The packet shows no CI, dependency, auth, schema, or secret changes."
+    },
+    {
+      "id": "q6",
+      "answer": "That Unicode profile identity is persisted (\"unicode_profile_identity_persisted\") and that a dry run writes nothing (\"dry_run_writes_nothing\"): \"New scenarios pin Unicode identity and dry-run defaults.\""
+    },
+    {
+      "id": "q7",
+      "answer": "Start at src/linkedin_mdp_mcp/inbox_sync.py, at reconcile_inbox (line 311), which the packet presents under \"The change, line for line\"; then the new tests in e2e_inbox_sync.py."
+    },
+    {
+      "id": "q8",
+      "answer": "False — \"It writes nothing unless the caller opts into apply\"; writes are gated by \"if not dry_run:\" under the default \"dry_run: bool = True\"."
+    }
+  ]
+}

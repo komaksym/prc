@@ -1,0 +1,19 @@
+{
+  "pr": 15,
+  "findings": [
+    {
+      "code": "scripts/publish_combined_action_report.py:33-34 — `text = validate_report_text(...)` then `GoogleDocPublisher(GoogleDocConfig.from_env())`, followed by OAuth token fetch and Google Docs API region replacement with one revision-conflict retry (src/linkedin_mdp_mcp/google_doc_report.py:publish_text); the comment itself lists `GoogleDocPublisher.publish` under Not covered by tests",
+      "output": "comment.md Risky surfaces and description vs diff + card.html Risky surfaces",
+      "statement": "No risky surfaces."
+    }
+  ],
+  "verdicts": [
+    {
+      "statement": "No risky surfaces.",
+      "output": "comment.md:82 'Risky surfaces and description vs diff' + card.html:92 risky list ('None.')",
+      "verdict": "confirmed",
+      "evidence": "scripts/publish_combined_action_report.py:33-36 (new file, +56): 'text = validate_report_text(...)', 'publisher = GoogleDocPublisher(GoogleDocConfig.from_env())', 'await publisher.publish_text(text)'. That path fetches an OAuth token from https://oauth2.googleapis.com/token and writes the Docs API (src/linkedin_mdp_mcp/google_doc_report.py:17 TOKEN_URL; :160-173 publish_text with 'for attempt in range(2)' and insertText/deleteContentRange). The output's own map.json/map.html brief marks scripts/publish_combined_action_report.py sensitive='external calls', and prc counts external calls as a risky surface (src/prc/brief.py:199 calls_external, :609 assigns the reason; docs/mvp/EVAL.md:74). The comment itself lists 'GoogleDocPublisher.publish' (comment.md:106) as untested.",
+      "suggested_fix": "comment.md: replace 'No risky surfaces.' with '- `scripts/publish_combined_action_report.py`: external calls' (the renderer then omits the follow-on 'Everything the description names...' line); card.html: replace the 'None.' reason with the same path/reason entry."
+    }
+  ]
+}

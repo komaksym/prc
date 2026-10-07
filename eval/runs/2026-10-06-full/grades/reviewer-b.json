@@ -1,0 +1,1392 @@
+{
+  "reviewer": "B",
+  "prs": [
+    11,
+    12,
+    13,
+    14
+  ],
+  "graded_at": "2026-10-06T23:25:47.251815Z",
+  "source": "final C1-C5 answer packets",
+  "grades": [
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "The card title states: \"The private collector dropped prospect timestamps.\" So the private collector no longer carries prospect timestamps in the private reports (path shown truncated as \"diagnostics/action-report-private-so…\"). The card does not say which audience is affected beyond that — the \"for whom\" is CANNOT TELL.",
+      "verdict": "wrong",
+      "reason": "It reverses the behavior. The key says created_at is added and preserved; the answer says timestamps were dropped."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "The card does not label one symbol as carrying the main change. \"Look here first\" lists three symbols, in this order: \"exercise\", \"main\", \"main.synthetic_export\" (file path truncated as \"diagnostics/action-report-private-so…\"). The only function-scoped name among them is \"main.synthetic_export\"; \"exercise\" is listed first (\"No direct test\" lists \"exercise.database\" and \"exercise.provider\", so those are module level).",
+      "verdict": "wrong",
+      "reason": "It names main.synthetic_export instead of the keyed function read_table."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL. The card shows no column projection and no code; no old or new projection appears anywhere in the packet.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "diagnostics/action-report-pr… (truncated on the card; the only area named besides the collector module) — flagged under \"Risky surfaces\" with \"external calls\"",
+        "The card reports 12 files changed in total, but it names no other file: every file path on the card is truncated (\"diagnostics/action-report-private-so…\", \"diagnostics/action-report-pr…\")"
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "External calls. The \"Risky surfaces\" section shows \"diagnostics/action-report-pr…\" with \"external calls\". No CI, dependencies, auth, schema, or secrets surface is named beyond the \"1/1 CI passed\" stat.",
+      "verdict": "wrong",
+      "reason": "It claims external calls, but the keyed risky surface is none."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL. The card reports \"0 tests touched\" and \"6 no direct test\" (listed: \"exercise, exercise.database, exercise.provider +3 more\"); it shows no new test and does not state which behaviour a test would pin.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start with \"Look here first\" in \"diagnostics/action-report-private-so…\": \"exercise\", then \"main\", then \"main.synthetic_export\" (in the order shown on the card).",
+      "verdict": "wrong",
+      "reason": "It points to e2e_private_source.py symbols, not collect_private_source.py :: read_table."
+    },
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL. The card shows nothing about created_at or any fallback value; it only states \"The private collector dropped prospect timestamps.\"",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "CANNOT TELL beyond the title. The packet's only related text is the title 'The private collector dropped prospect timestamps.' It does not state what behaviour changes for the owner of the private reports or who else is affected.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "CANNOT TELL which single function carries the main change. Under 'Look here first' the packet lists `exercise`, `main` and `main.synthetic_export`, all in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`, and its mermaid graph shows `main` -> `exercise` and `synthetic_export` -> `exercise`, with all six symbols marked as added.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL. The packet contains no SQL or column list for prospects; the only related text is the title 'The private collector dropped prospect timestamps.'",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "areas/symbols in that file: `exercise`, `database`, `provider`, `synthetic_export`, `failing_export`, `main`",
+        "CANNOT TELL for any other file names: the comment reports 'Files 12, symbols 6, CI 1/1' but names no other file"
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "External calls. The comment's 'Risky surfaces and description vs diff' section says: `diagnostics/action-report-private-source-20261002/e2e_private_source.py`: external calls.",
+      "verdict": "wrong",
+      "reason": "It claims external calls, but the keyed risky surface is none."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "CANNOT TELL. The packet does not describe any new tests or what they pin. It only lists, under 'Not covered by tests': `exercise`, `exercise.database`, `exercise.provider`, `main`, `main.failing_export`, `main.synthetic_export` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "Start with the comment's 'Look here first' section: `exercise`, `main` and `main.synthetic_export` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`.",
+      "verdict": "wrong",
+      "reason": "It points to e2e_private_source.py instead of collect_private_source.py :: read_table."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "CANNOT TELL. The packet shows no code or description about `created_at` or a fallback to the collection time, so it neither confirms nor denies this.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "The packet's only behaviour statement is \"Prospect rows now carry their creation timestamps.\" (this change \"fetches the existing created_at column.\"). The packet does not name the owner of the private reports or show who else is affected, so the \"for whom\" part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "CANNOT TELL — the packet's only code site is TABLE_COLUMNS in collect_private_source.py (line 19); it shows no function name.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "Old: \"prospects\": \"id,lead_id,linkedin_url,attributes\". New: \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\".",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "CANNOT TELL — the packet names no other file or area; it shows only \"diagnostics/action-report-private-source-20261002/collect_private_source.py\" and the aggregate \"+259 −1 · 12 files\"."
+      ],
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "None shown in the packet: the quoted change is the added created_at in the TABLE_COLUMNS prospects projection, and the packet says the column already exists (\"This change fetches the existing created_at column.\"). No CI, dependency, auth, schema, secrets, or external-call change appears. (The packet does not show the other files in the 12-file change.)",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "CANNOT TELL — the packet shows no test file, test name, or test behaviour.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "Start at TABLE_COLUMNS in collect_private_source.py.",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False — the packet labels the new created_at \"provider value kept\" and says \"Prospect rows now carry their creation timestamps.\"; the quoted diff only adds created_at to the prospects projection and shows no code that fills in the collection time.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "Before: 'The private collector dropped prospect timestamps.' and 'The projection left out the created_at column.', so each prospect row was fetched 'without its timestamp'. After: 'This change fetches the existing created_at column.' and 'Prospect rows now carry their creation timestamps.', with 'Each encrypted row keeps the provider timestamp exactly.' The only affected party the packet names is the owner of the private reports behind the private collector / private source ('The private collector', 'private-source'); no other audience is shown.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "The packet shows no function name. The change is in the module-level projection map TABLE_COLUMNS in diagnostics/action-report-private-source-20261002/collect_private_source.py ('Start at TABLE_COLUMNS in collect_private_source.py.', 'Start at the projection map in collect_private_source.py.'), where line 19 is the changed line.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "Old prospects projection (removed line '-19'): \"prospects\": \"id,lead_id,linkedin_url,attributes\",  New prospects projection (added line '+19'): \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\",",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py - synthetic end to end test (receipts #L116, #L117, #L63); changed symbols not shown: exercise.provider, main.failing_export, main.synthetic_export",
+        "PLANS.md (docs)",
+        "diagnostics/action-report-private-source-20261002/README.md (docs)",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json (config)",
+        "infographic/prospect-created-at/analysis.md (docs)",
+        "infographic/prospect-created-at/infographic.png (opaque)",
+        "infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md (docs)",
+        "infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md (docs)",
+        "infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md (docs)",
+        "infographic/prospect-created-at/source.md (docs)",
+        "infographic/prospect-created-at/structured-content.md (docs)"
+      ],
+      "verdict": "correct",
+      "reason": "It covers the required changed files or areas; extra valid changed files do not conflict with the key."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "None shown. The packet shows one column added to the prospects projection in TABLE_COLUMNS (collect_private_source.py), a synthetic end to end test, and docs/infographic/config files. It shows no CI, dependency, auth, schema, secrets, or external call change.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "The new tests pin that prospect created_at values survive paging exactly - item 'prospect_created_at_exact_across_pages' (diagnostics/action-report-private-source-20261002/e2e_private_source.py#L116) with the value '2025-01-02T03:04:05.123456+00:00' (#L63) - and that a missing value stays missing - item 'missing_created_at' (#L117).",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "Start at TABLE_COLUMNS in diagnostics/action-report-private-source-20261002/collect_private_source.py ('Start at the projection map in collect_private_source.py.', 'Start at TABLE_COLUMNS in collect_private_source.py.'). The diff quotes lines 18-20; line 19 is the changed line.",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. The packet says 'Exact timestamps survive paging, and a missing value stays missing.' and lists the item 'missing_created_at' (e2e_private_source.py#L117); 'Each encrypted row keeps the provider timestamp exactly.' No fill-in of the collection time is shown.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "The PR changes private-report collection so prospect timestamps are fetched for the owner. CANNOT TELL for exactly whom beyond the owner.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "main",
+      "verdict": "wrong",
+      "reason": "It answers main, but the keyed function is read_table."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "PLANS.md, README.md, collect_private_source.py, e2e-evidence.json, analysis.md, infographic.png, 01-infographic-prospect-created-at.md, 02-infographic-prospect-created-at.md, 03-infographic-prospect-created-at.md, source.md, and structured-content.md.",
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "External calls. The map shows calls to LinkedInMDPClient and SupabaseClient.",
+      "verdict": "wrong",
+      "reason": "It claims external calls, but the keyed risky surface is none."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "No new tests are shown; the map says 0 tests touched.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "main in e2e_private_source.py",
+      "verdict": "wrong",
+      "reason": "It points to main in e2e_private_source.py, not collect_private_source.py :: read_table."
+    },
+    {
+      "pr": 11,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "The card says the PR \"adds a date to each row of the invitation report\", so a reviewer of the report sees a date added to every row. Who the report is for is not shown on the card: CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "\"build_invitation_shortlist\" — it is the first entry under \"LOOK HERE FIRST\", in src/linkedin_mdp_mcp/invitation_shor...; the other changed symbols listed are \"_date_added\" and \"_make_markdown\".",
+      "verdict": "wrong",
+      "reason": "It answers build_invitation_shortlist, but the keyed function is _date_added."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL. The card shows no check that rejects a timestamp and no reason recorded for a future timestamp; it only names \"_date_added\" and \"_make_markdown\" and gives counts (12 files, 8 symbols changed, 5 call sites, 2 tests touched, 1/1 CI passed, 2 no direct test).",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/invitation_shor... (the only path shown; truncated in the card, tied to build_invitation_shortlist, _date_added and _make_markdown)",
+        "CANNOT TELL for the rest: the card reports 12 files changed and 2 tests touched but names no other file or area."
+      ],
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "None. The card's \"RISKY SURFACES\" section says \"None.\"",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL. The card says \"2 tests touched\" and \"No direct test: _date_added, _make_markdown\"; it does not describe which behaviour the new tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "With \"build_invitation_shortlist\", the first entry under \"LOOK HERE FIRST\" in src/linkedin_mdp_mcp/invitation_shor..., then \"_date_added\" and \"_make_markdown\".",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL. The card does not state whether adding date_added can change shortlist membership or ranking.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "The invitation report gains a date on each row: \"This pull request adds a date to each row of the invitation report.\" The packet does not name the person or role the report is for, so the \"for whom\" part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "`build_invitation_shortlist` in `src/linkedin_mdp_mcp/invitation_shortlist.py`. It is the first entry under \"Look here first\" and the diagram marks it `modified`; the diagram also shows it calling the newly `added` helper `_date_added` in the same file (edge `n2 --> n3`), which is where the date value itself is produced.",
+      "verdict": "wrong",
+      "reason": "It selects build_invitation_shortlist even though the keyed function is _date_added."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL. The packet shows no code or diff, so neither the check nor the recorded reason is visible. The only related evidence is the truncated test name `test_invalid_or_future_date_added_stays_unknown_with_safe_po` (the diagram cuts it off at `safe_po`), which suggests an invalid or future timestamp stays \"unknown\".",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "Added test symbols: `test_date_added_uses_exact_canonical_source_match_and_never_`, `test_invalid_or_future_date_added_stays_unknown_with_safe_po`, `test_missing_date_added_stays_unknown_and_does_not_change_me`.",
+        "Modified test symbols: `test_cli_writes_private_outputs_and_sanitized_stdout`, `test_invitation_shortlist_e2e`.",
+        "CI: the footer reports \"CI 1/1\".",
+        "Total footprint: \"Files 12, symbols 8, CI 1/1\", so files beyond the main source module change, but the packet names no test file paths and no other file paths besides `src/linkedin_mdp_mcp/invitation_shortlist.py`.",
+        "`main` and `run` appear in the diagram without an added, modified, or deleted class, so the packet does not show them as changed."
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "None. Under \"Risky surfaces and description vs diff\" the comment states \"No risky surfaces.\" The footer also reports \"CI 1/1\".",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "The three added tests pin the date_added behaviour: an exact canonical source match (`test_date_added_uses_exact_canonical_source_match_and_never_`), invalid or future timestamps staying unknown with a safe po... (`test_invalid_or_future_date_added_stays_unknown_with_safe_po`), and a missing timestamp staying unknown without changing me... (`test_missing_date_added_stays_unknown_and_does_not_change_me`). All three names are cut off in the diagram, so the full pinned assertions are not visible. The comment's \"Not covered by tests\" section still lists `_date_added` and `_make_markdown` as not covered.",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "\"Look here first\" lists, in order, `build_invitation_shortlist`, `_date_added`, and `_make_markdown`, all in `src/linkedin_mdp_mcp/invitation_shortlist.py`. Start with `build_invitation_shortlist`, then read `_date_added` (the added helper) and `_make_markdown` in the same file.",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "False. The description says the pull request \"adds a date to each row of the invitation report\", the comment reports \"No risky surfaces.\", and the test name `test_missing_date_added_stays_unknown_and_does_not_change_me` (truncated in the diagram) states that a missing date_added does not change me... (membership). No code or diff is in the packet, so this rests on the comment and the diagram.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "The private invitation report gains a date for each row. Before this change, the report row showed none of it: the row ('REPORT ROW invitation', 'Synthetic Person') had a dashed DATE_ADDED cell marked 'no date'. Now the report row carries that exact timestamp as date added: the matching prospect row in Supabase (tracked-a, created_at) supplies its creation time. The slides say 'Each prospect row matched here supplies its creation time, or unknown when missing', 'Each selected invitation row then gets its date' and 'Each row now shows its date added. Unknown stays unknown.' So the reviewer of the private invitation report sees, for every row, when it was added; a bad value is never guessed and is never copied ('The row keeps a reason, and the bad value is never copied'). The packet names no audience other than the reviewer of that private invitation report; no other consumer is shown.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "The only function named in the packet is _date_added, applied per row at lines 1030-1031: 'for row in rows_out:' then 'row.update(_date_added(row[\"profile_url\"], prospect'. The packet does not name the function that encloses the other changed lines (line 453 'if len(matches) != 1:' and lines 472-476 'except (ShortlistInputError, OverflowError):' ... 'if parsed > now:' ... 'provenance[\"reason\"] = \"future_timestamp\"'), so the enclosing function of that validation block is CANNOT TELL.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "The new code rejects a timestamp in two ways. It catches a raising parse with 'except (ShortlistInputError, OverflowError):' then 'provenance[\"reason\"] = \"invalid_timestamp\"' and returns the row as unknown: 'return {\"date_added\": None, \"date_added_source\": provenance}'. It also compares the parsed value with the current time: 'if parsed > now:' and then 'provenance[\"reason\"] = \"future_timestamp\"'. So for a timestamp in the future the reason recorded is exactly 'future_timestamp', and the row stays unknown, because 'The row keeps a reason, and the bad value is never copied.' The cases slide shows '(None, \"missing\")', '(42, \"invalid_timestamp\")', '(\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\")', '(\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\")', '(\"not-a-timestamp\", \"invalid_timestamp\")', '(\"2026-09-30T14:12:13\", \"invalid_timestamp\")' and '(\"2026-10-03T00:00:00Z\", \"future_timestamp\")'. The check above these is line 453, 'if len(matches) != 1:'.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "Tests in 'e2e_invitation_shortlist.py': the '3 new tests' slide cites e2e_invitation_shortlist.py:669 ('An exact URL alias may enrich output, but its source time cannot affect selection.'), e2e_invitation_shortlist.py:703 ('Invalid values stay unknown and never leak their raw timestamp into output.') and e2e_invitation_shortlist.py:720 ('A missing creation time is not inferred and cannot alter eligibility.').",
+        "The same test file appears in the receipts of the other slides at e2e_invitation_shortlist.py:621, :652, :657, :658, :693, :694, :695, :696, :697, :698, :699, :710 and :716.",
+        "No other file or area is shown in this packet; the main source module named is 'src/linkedin_mdp_mcp/invitation_shortlist.py'."
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "None of CI, dependencies, auth, schema or secrets are shown to change; the packet shows no such surface. The only outside-system element visible is data: the 'PROSPECT ROW in Supabase' with tracked-a and created_at, whose creation time is read and copied into the report row, plus the per-row call 'row.update(_date_added(row[\"profile_url\"], prospect'. The packet does not show whether that prospect lookup is new or whether any schema changed, so that part is CANNOT TELL.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "The three new tests pin: 'An exact URL alias may enrich output, but its source time cannot affect selection.'; 'Invalid values stay unknown and never leak their raw timestamp into output.'; 'A missing creation time is not inferred and cannot alter eligibility.' Together they pin that date added only enriches output rows and cannot change selection or eligibility, that invalid timestamps stay unknown and are not copied into output, and that a missing creation time is not inferred.",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "Start in 'src/linkedin_mdp_mcp/invitation_shortlist.py' - the 'The change, line for line' slide names this path. Read the validation block first: line 453 'if len(matches) != 1:', then lines 472-476 'except (ShortlistInputError, OverflowError):' / 'provenance[\"reason\"] = \"invalid_timestamp\"' / 'return {\"date_added\": None, \"date_added_source\": provenance}' / 'if parsed > now:' / 'provenance[\"reason\"] = \"future_timestamp\"'. Then follow the per-row application at lines 1030-1031 'for row in rows_out:' / 'row.update(_date_added(row[\"profile_url\"], prospect'. After that, the 3 new tests in 'e2e_invitation_shortlist.py' (lines 669, 703, 720).",
+      "verdict": "correct",
+      "reason": "It points to the keyed code location or its exact enclosing lines."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False. The new tests pin that the source time 'cannot affect selection', that invalid values 'never leak their raw timestamp into output' and that a missing creation time 'cannot alter eligibility'; the slides only claim enrichment ('Each row now shows its date added. Unknown stays unknown.'). So adding date_added enriches the output rows and does not change shortlist membership or ranking.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "Behaviour change: the invitation report now adds a date to each row. The packet's scene 1 says: \"This pull request adds a date to each row of the invitation report.\" and \"It shows when the prospect was added.\" Scene 2 adds: \"Before this change, the report row showed none of it.\" and \"Now the report row carries that exact timestamp as date added.\" A matched prospect row supplies its creation time (\"created_at\"), or unknown when missing; bad values show as unknown. For whom: the reader/reviewer of that report sees the new date per row; the packet does not name any other user group.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "The new helper _date_added in src/linkedin_mdp_mcp/invitation_shortlist.py. The packet shows it through the diff scene's call site, line 1031: row.update(_date_added(row[\"profile_url\"], prospects, now)), plus its quoted lines 453 (if len(matches) != 1:) and 472-476; the helper's def line is not shown in the packet.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "To reject a future timestamp the new code checks if parsed > now: (line 475) and records provenance[\"reason\"] = \"future_timestamp\" (line 476). Other rejection paths shown: line 453 if len(matches) != 1: (not exactly one matching prospect row), and line 472 except (ShortlistInputError, OverflowError): which records provenance[\"reason\"] = \"invalid_timestamp\" (line 473) and returns {\"date_added\": None, \"date_added_source\": provenance} (line 474). Scene 3 lists the cases: (None, \"missing\"), (42, \"invalid_timestamp\"), (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"), (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"), (\"not-a-timestamp\", \"invalid_timestamp\"), (\"2026-09-30T14:12:13\", \"invalid_timestamp\"), (\"2026-10-03T00:00:00Z\", \"future_timestamp\").",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "PLANS.md",
+        "PR10-present-employer-e2e-matrix.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "docs/invitation-shortlist.md",
+        "infographic/prospect-date-added/analysis.md",
+        "infographic/prospect-date-added/infographic.png",
+        "infographic/prospect-date-added/prompts/01-infographic-date-added.md",
+        "infographic/prospect-date-added/source.md",
+        "infographic/prospect-date-added/structured-content.md"
+      ],
+      "verdict": "correct",
+      "reason": "It covers the required changed files or areas; extra valid changed files do not conflict with the key."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "None. The packet's changed-file list shows only the source module (src/linkedin_mdp_mcp/invitation_shortlist.py), tests (tests/e2e_invitation_shortlist.py with the new tests; tests/test_invitation_shortlist_e2e.py), docs (PLANS.md, PR10-present-employer-e2e-matrix.md, docs/invitation-shortlist.md and the infographic markdown files), one evidence JSON (artifacts/invitation-shortlist-e2e-evidence.json) and infographic/prospect-date-added/infographic.png. No CI, dependency, auth, schema, secret or external-call change is shown.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "Three new tests pin it down (scene 5): tests/e2e_invitation_shortlist.py:669 \"An exact URL alias may enrich output, but its source time cannot affect selection.\"; :703 \"Invalid values stay unknown and never leak their raw timestamp into output.\"; :720 \"A missing creation time is not inferred and cannot alter eligibility.\" Supporting assertions from the receipts: row[\"date_added\"] == created_at (L650), assert row[\"date_added\"] is None (L710), assert str(created_at) not in json.dumps(row) (L716), and the case table at L693-699 ((None, \"missing\"), (42, \"invalid_timestamp\"), (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"), (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"), (\"not-a-timestamp\", \"invalid_timestamp\"), (\"2026-09-30T14:12:13\", \"invalid_timestamp\"), (\"2026-10-03T00:00:00Z\", \"future_timestamp\")), with created_at = \"2026-09-30T14:12:13.123456+02:00\" (L621).",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "The packet contains no separate 'start here' statement; its only code walkthrough is scene 4, 'The change, line for line', so that is where to start: src/linkedin_mdp_mcp/invitation_shortlist.py, first receipt line 453 (if len(matches) != 1:), then 472-476 (except (ShortlistInputError, OverflowError): / provenance[\"reason\"] = \"invalid_timestamp\" / return {\"date_added\": None, \"date_added_source\": provenance} / if parsed > now: / provenance[\"reason\"] = \"future_timestamp\"), then the call site 1030-1031 (for row in rows_out: / row.update(_date_added(row[\"profile_url\"], prospects, now))). The behaviour tests to read next are in tests/e2e_invitation_shortlist.py at L669, L703 and L720.",
+      "verdict": "correct",
+      "reason": "It points to the keyed code location or its exact enclosing lines."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. Adding date_added only enriches each selected output row; the new tests pin that this date information cannot affect selection or eligibility: \"An exact URL alias may enrich output, but its source time cannot affect selection.\" (tests/e2e_invitation_shortlist.py:669) and \"A missing creation time is not inferred and cannot alter eligibility.\" (:720). The diff also applies the date after selection: for row in rows_out: row.update(_date_added(row[\"profile_url\"], prospects, now)) (lines 1030-1031). The packet shows no membership or ranking effect.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "The private invitation shortlist report adds a visible date-added value for reviewers of that report.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "_date_added in p_mcp/invitation_shortlist.py",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "PLANS.md; PR10-present-employer-e2e-matrix.md; invitation-shortlist-e2e-evidence.json; invitation-shortlist.md; analysis.md; infographic.png; 01-infographic-date-added.md; source.md; structured-content.md; invitation-shortlist E2E test files.",
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "None. The packet shows 0 risky surfaces.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "The new tests pin date-added behavior, including valid, invalid, and missing date cases, plus the invitation-shortlist E2E behavior.",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "Start with _date_added and its call site in p_mcp/invitation_shortlist.py.",
+      "verdict": "correct",
+      "reason": "It points to the keyed code location or its exact enclosing lines."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "False.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "The card states the problem this PR fixes: \"The owner had no offline plan for inbox messages.\" The behaviour change is therefore that the owner of the private inbox gains an offline plan for inbox messages, produced through `main` in `scripts/build_private_dm_actions.py` and the highlighted functions `classify_dm_evidence` / `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`. The packet names no other party whose behaviour changes; it changes for the owner of the private inbox.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "The card does not single one function out. Its \"LOOK HERE FIRST\" list shows, in this order: `classify_dm_evidence`, `plan_dm_actions` (both `src/linkedin_mdp_mcp/dm_actions.py`), and `main` (`scripts/build_private_dm_actions.py`). `classify_dm_evidence` is listed first, but the packet never says which one carries the main change.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL. The packet contains only the PR card (title, counts, hotspot names, risky surfaces line). It shows no code, so it shows no new rule and no reason the code records.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "`scripts/build_private_dm_actions.py` (hotspot `main`) is the only other file path named on the card besides the main source module `src/linkedin_mdp_mcp/dm_actions.py`.",
+        "Tests: the card reports \"3 tests touched\" but names no test file.",
+        "The change spans \"15 files\" in total per the card stat; the other files are not named in the packet."
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "None. The card's \"RISKY SURFACES\" section reads \"None.\" (CI appears only as a stat: \"1/1 CI passed\").",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL. The card shows only counts and names: \"3 tests touched\" and \"No direct test: _Parser, _Parser.error, _markdown +18 more\". It does not state which behaviour the new tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start at the \"LOOK HERE FIRST\" hotspots: `classify_dm_evidence` and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, then `main` in `scripts/build_private_dm_actions.py`.",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL. The card never mentions report generation. It only reports \"RISKY SURFACES / None.\", so the packet does not show whether the PR sends messages or writes to the database.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "The packet's title states the change: \"The owner had no offline plan for inbox messages.\" So before this PR the owner of the private inbox had no offline plan for inbox messages, and the change gives the owner an offline plan for inbox messages, carried by `classify_dm_evidence` and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, driven by `main` in `scripts/build_private_dm_actions.py`. The only audience the packet names is the owner of the private inbox; it does not show anyone else's behaviour changing.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "`classify_dm_evidence` in `src/linkedin_mdp_mcp/dm_actions.py` (first entry under \"Look here first\"); the packet also points to `plan_dm_actions` in the same file and `main` in `scripts/build_private_dm_actions.py`.",
+      "verdict": "wrong",
+      "reason": "It selects classify_dm_evidence, but the keyed function is plan_dm_actions."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL — the packet quotes no code and never states the rule or the reason the code records. The closest names shown are `classify_dm_evidence`, `_qualified`, and `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, but no rule text and no recorded reason appear anywhere in the packet.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "scripts/build_private_dm_actions.py (the only other file path named in the packet; it contains `_Parser`, `_Parser.error`, `_markdown`, `_read`, `_write`, and `main`)",
+        "The packet's summary reports \"Files 15\" changed in total, but it lists no other paths."
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "None — the packet's \"Risky surfaces and description vs diff\" section says \"No risky surfaces.\" and \"Everything the description names is in the diff.\" The packet separately reports \"CI 1/1\".",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "CANNOT TELL — the packet only lists symbols under \"Not covered by tests\" and reports \"CI 1/1\". It names no new tests and does not say what behaviour any test pins.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "Start with the \"Look here first\" list: `classify_dm_evidence` in `src/linkedin_mdp_mcp/dm_actions.py`, then `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`, then `main` in `scripts/build_private_dm_actions.py`.",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 13,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "False. The packet describes the change as an offline plan (title: \"The owner had no offline plan for inbox messages.\") through `classify_dm_evidence` and `plan_dm_actions`, and reports \"No risky surfaces\"; it never states that the PR sends messages or writes to the database.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "For the owner of the private inbox, the report now plans DM actions by explicit rules instead of leaving rows unknown: an old verified outbound message still earns a planned follow-up (frame_02: \"A verified outbound message of that age still earns a follow-up.\"), a newer inbound message after the last outbound queues a reply (frame_06: \"A newer inbound message after the last outbound queues a reply.\"), anonymous/ambiguous rows follow a time-scoped rule (frame_01: \"Anonymous rows nearby follow a time-scoped rule.\"), and recent ambiguous history withholds the action (frames 03-05: \"Recent ambiguous history withholds the action, and the owner still writes every word.\"). It is for the owner alone: the packet shows one PERSON INBOX and the chip \"owner sends everything\"; no other party appears.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "CANNOT TELL - the packet names no function. It shows only the file src/linkedin_mdp_mcp/dm_actions.py with lines 500, 505 and 511 (receipts also cite dm_actions.py:471, dm_actions.py:505, dm_actions.py:508), and frame_11's caption \"Changed functions carry the planning logic.\" with no function names shown.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "The new rule is the time-scoped condition on line 505 of src/linkedin_mdp_mcp/dm_actions.py: \"if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):\" - a follow-up is planned only when the latest outbound is at least 72 hours old and no inbound message is newer than it. The reason the code records (line 511) is: report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"}) - the quoted reason string is \"message_history_ambiguous_or_action_not_due\".",
+      "verdict": "partial",
+      "reason": "It gets the 72-hour rule right, but quotes the withheld-case reason instead of the keyed follow-up reason."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "private-dm-actions.md - documentation; receipt \"private-dm-actions.md:3\" in frame_01 (and in frame_02's footer).",
+        "e2e_private_dm_actions.py - end-to-end tests at e2e_private_dm_actions.py:130, e2e_private_dm_actions.py:131 and e2e_private_dm_actions.py:134 (frame_10).",
+        "Nothing else is named: frame_00 gives only the totals \"+1403 -3 . 15 files\", so the remaining files are not shown in the packet."
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "None shown in the packet. The only surfaces visible are the planning logic in src/linkedin_mdp_mcp/dm_actions.py (lines 500, 505, 511), a doc receipt private-dm-actions.md:3, and e2e tests in e2e_private_dm_actions.py. No CI, dependency, auth, schema, secret, or external-call change appears in any frame.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "Follow-up, reply, and invitation-note separation. Frame_10 lists three passing tests - ok verified_outbound_followup (e2e_private_dm_actions.py:130), ok verified_inbound_reply (e2e_private_dm_actions.py:131), ok invitation_note_not_dm (e2e_private_dm_actions.py:134) - with the caption \"New tests pin follow-up, reply, and invitation-note separation.\"",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "Start with the diff in src/linkedin_mdp_mcp/dm_actions.py: frames 06-09 head that file \"The change, line for line\" and quote lines 500, 505 and 511 there, and the receipts point at dm_actions.py:471, dm_actions.py:505, dm_actions.py:508 and dm_actions.py:511 (frame_01) / dm_actions.py:471, dm_actions.py:508, dm_actions.py:508 and dm_actions.py:511 (frame_03). The packet names no specific function to start from (frame_11 says only \"Changed functions carry the planning logic.\").",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "False. Nothing in the packet shows a message send or a database write during report generation. The only write shown is to the in-memory report: report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"}). The captions agree - \"Recent ambiguous history withholds the action, and the owner still writes every word.\" with the chip \"owner sends everything\" - and the title is \"feat(report): plan DM actions\" (planning, not sending).",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "For the owner of the private inbox: 'The owner had no offline plan for inbox messages' before, and this change 'queues manual reply, follow-up, and first-DM actions' so the owner gets an offline plan of manual actions. A verified outbound message old enough earns a follow-up, and 'Recent ambiguous history withholds the action, and the owner still writes every word.' The change is for the owner of the private inbox (komaksym/linkedin-mdp#13); the cited doc line says 'sends no message'.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "`plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`. The outro states: 'Start review at plan_dm_actions in dm_actions.py.' The diff 'The change, line for line' shows its new lines 500, 505 and 511.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "The rule: a verified outbound DM at least 72 hours old with no later observed inbound queues a follow-up. Line 505: 'if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):'. The reason the code records for that entry (receipt at line 508) is 'verified outbound DM at least 72 hours old with no later observed inbound', with the action 'Owner writes follow-up'. For the withheld case the recorded reason is 'message_history_ambiguous_or_action_not_due' (line 511: 'report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"})').",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "docs/private-dm-actions.md",
+        "tests/e2e_private_dm_actions.py",
+        "PLANS.md",
+        "artifacts/dm-uncertainty-scope-e2e-evidence.json",
+        "artifacts/private-dm-actions-e2e-evidence.json",
+        "docs/action-report-contract.md",
+        "infographic/private-dm-actions/analysis.md",
+        "infographic/private-dm-actions/infographic.png",
+        "infographic/private-dm-actions/prompts/01-infographic-private-dm-actions.md",
+        "infographic/private-dm-actions/source.md",
+        "infographic/private-dm-actions/structured-content.md",
+        "scripts/build_private_dm_actions.py",
+        "tests/e2e_dm_uncertainty_scope.py",
+        "tests/test_private_dm_actions_e2e.py"
+      ],
+      "verdict": "correct",
+      "reason": "It covers the required changed files or areas; extra valid changed files do not conflict with the key."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "None shown in the packet. The listed changed areas are docs, JSON evidence artifacts, infographic assets, a build script, tests and the main source module; no CI, dependency, auth, schema, secrets or external-call change appears in the packet, and the cited doc line says 'sends no message' (docs/private-dm-actions.md:3).",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "'New tests pin follow-up, reply, and invitation-note separation': 'verified_outbound_followup' (tests/e2e_private_dm_actions.py:130), 'verified_inbound_reply' (tests/e2e_private_dm_actions.py:131) and 'invitation_note_not_dm' (tests/e2e_private_dm_actions.py:134).",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "Start at `plan_dm_actions` in `src/linkedin_mdp_mcp/dm_actions.py`: 'Start review at plan_dm_actions in dm_actions.py.' The diff scene ('The change, line for line') quotes lines 500, 505 and 511 of that file.",
+      "verdict": "correct",
+      "reason": "It points to the keyed code location or its exact enclosing lines."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. The change only queues manual reply, follow-up and first-DM actions in the report; docs/private-dm-actions.md:3 says 'sends no message', and the walkthrough says 'the owner still writes every word.' The packet shows no message sending or database writes during report generation.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "scripts/build_private_dm_actions.py, tests, PLANS.md, dm-uncertainty-scope=e2e-evidence.json, private-dm-actions=e2e-evidence.json, infographic.png, 01-infographic-private-dm-actions.md, source.md, structured-content.md, and an action-report-contract… file.",
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "None. The packet shows 0 risky surfaces.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "src/linkedin_mdp_mcp/dm_actions.py",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 13,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "False",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q1",
+      "answer": "The card shows only this summary: \"This pull request makes the private source collector gather LinkedIn's member changelog.\" The packet never identifies the owner of the private source bundle or says for whom the behaviour changes, so that part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q2",
+      "answer": "LinkedInMDPClient._get_paged (src/linkedin_mdp_mcp/client.py), the first entry under \"LOOK HERE FIRST\".",
+      "verdict": "wrong",
+      "reason": "It answers LinkedInMDPClient._get_paged, but the keyed function is collect_sources."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q3",
+      "answer": "CANNOT TELL. The card shows no old pagination behaviour and no new rejection; pagination appears only in the symbol name LinkedInMDPClient._get_paged.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q4",
+      "answer": [
+        "diagnostics/action-report-private-so…",
+        "diagnostics/source-refresh-p…",
+        "diagnostics/action-report-pr…"
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q5",
+      "answer": "external calls (the RISKY SURFACES entries for diagnostics/action-report-pr… and diagnostics/source-refresh-p… are each labelled \"external calls\").",
+      "verdict": "wrong",
+      "reason": "It claims external calls, but the keyed risky surface is none."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q6",
+      "answer": "CANNOT TELL (no new tests are shown): the card reports \"0 tests touched\" and \"No direct test: collect_sources, exercise.provider, main +4 more\", so it does not show any behaviour that new tests pin.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q7",
+      "answer": "Start with the top \"LOOK HERE FIRST\" item: LinkedInMDPClient._get_paged in src/linkedin_mdp_mcp/client.py.",
+      "verdict": "wrong",
+      "reason": "It points to client.py::_get_paged, not collect_private_source.py :: collect_sources."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q8",
+      "answer": "CANNOT TELL. The card labels diagnostics areas as \"external calls\" risky surfaces, but it never states whether the PR performs live source acquisition against real services.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q1",
+      "answer": "The title says: \"This pull request makes the private source collector gather LinkedIn's member changelog.\" So the private source collector now gathers LinkedIn's member changelog. The packet does not name the owner of the private source bundle or say for whom, so that part is CANNOT TELL.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q2",
+      "answer": "CANNOT TELL. The packet never states which function carries the main change. It lists three \"Look here first\" locations (`LinkedInMDPClient._get_paged` in `src/linkedin_mdp_mcp/client.py`, `collect_sources` in `diagnostics/action-report-private-source-20261002/collect_private_source.py`, `main` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`) and marks 7 symbols as changed: `provider`, `collect_sources`, `main`, `changelog`, `_get_paged`, `_next_link` modified and `seeded_provider` added.",
+      "verdict": "partial",
+      "reason": "It mentions the keyed function collect_sources but does not clearly identify it as the main answer."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q3",
+      "answer": "CANNOT TELL. The packet shows no old pagination behaviour and no new rejection. It only names `LinkedInMDPClient._get_paged` and `LinkedInMDPClient._next_link` in `src/linkedin_mdp_mcp/client.py` as modified symbols and as \"Not covered by tests\".",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q4",
+      "answer": [
+        "`src/linkedin_mdp_mcp/client.py` (LinkedInMDPClient `_get_paged`, `_next_link`, `changelog`)",
+        "`diagnostics/action-report-private-source-20261002/e2e_private_source.py` (`main`, `exercise.provider`, `main.seeded_provider`)",
+        "`diagnostics/source-refresh-proposal-20261002/private-action-source.yml` (flagged under \"Risky surfaces and description vs diff\")",
+        "The packet does not name the other changed files: it reports only \"Files 13, symbols 7, CI 1/1.\""
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q5",
+      "answer": "External calls. The \"Risky surfaces and description vs diff\" section tags all three named files with \"external calls\": `diagnostics/action-report-private-source-20261002/collect_private_source.py`, `diagnostics/action-report-private-source-20261002/e2e_private_source.py`, and `diagnostics/source-refresh-proposal-20261002/private-action-source.yml`. The packet shows no dependencies, auth, schema, or secrets flags.",
+      "verdict": "wrong",
+      "reason": "It claims external calls, but the keyed risky surface is none."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q6",
+      "answer": "CANNOT TELL. The packet says nothing about new tests. Its only test-related section is \"Not covered by tests\", which names `collect_sources`, `exercise.provider`, `main`, `main.seeded_provider`, `LinkedInMDPClient._get_paged`, `LinkedInMDPClient._next_link`, and `LinkedInMDPClient.changelog` as not covered.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q7",
+      "answer": "With the \"Look here first\" list: (1) `LinkedInMDPClient._get_paged` in `src/linkedin_mdp_mcp/client.py`, (2) `collect_sources` in `diagnostics/action-report-private-source-20261002/collect_private_source.py`, (3) `main` in `diagnostics/action-report-private-source-20261002/e2e_private_source.py`.",
+      "verdict": "partial",
+      "reason": "It points into the relevant code area, but not to the keyed reviewer start location."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q8",
+      "answer": "CANNOT TELL. The packet does not state whether the PR performs live source acquisition against real services. It flags \"external calls\" for `collect_private_source.py`, `e2e_private_source.py`, and `private-action-source.yml`, and the diagram shows an added `seeded_provider` node, but no statement about live acquisition is shown.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q1",
+      "answer": "The owner of the private source bundle now receives the changelog inside the bundle. The packet shows the 'ENCRYPTED SOURCE BUNDLE' 'collected with no writes' with three chips, CONNECTIONS, INVITATIONS and INBOX ('Before, the bundle held three snapshots: connections, invitations and inbox.'). This PR adds a fourth chip 'changelog' tagged 'new in this PR' ('Now it also holds the changelog.'), and the closing card says 'The bundle now carries the changelog.' The packet names the owner of the private source bundle as the affected party; it names no other party.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q2",
+      "answer": "CANNOT TELL by name: no function is named anywhere in the packet - no 'def' line appears in any frame. What is shown is the location and content of the main change: 5 lines in the diff of src/linkedin_mdp_mcp/client.py - 217 'next_params = parse_qs(parsed.query, keep_blank_values=True)', 220 'for key, value in params.items():', 221 'expected = [str(value)]', plus added lines 218-219 - described as 'In the client, a changelog next link is compared with the request.'",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q3",
+      "answer": "The packet does not describe the old pagination behaviour in words. The only evidence of it: the new check appears as added lines 218-219 (marked with '+' in the diff of src/linkedin_mdp_mcp/client.py), and the narration says 'The collector now stops with an error' - so previously the collector did not stop when the provider's next page link added startTime. The new rejection is 'if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:' then 'raise LinkedInAPIError(0, \"changelog next link changed request scope\")'. The scene shows the caller request 'no startTime set' / 'count=50' and the 'NEXT LINK FROM PROVIDER' 'second page' adding 'startTime=1710000000', marked 'not in request'.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py - the code diff shown in 'The new scope check': lines 217, 220, 221 with added lines 218-219 (footer: 'receipts 5 lines quoted verbatim from the diff of client.py').",
+        "e2e_private_source.py - 'changelog checks in the end-to-end script' at lines 183, 187, 197 and 39.",
+        "The title frame reports '+261 -20 - 13 files', so the full PR changes 13 files; no other file or area is named in the packet (footers also cite receipts from collect_private_source.py:92 and e2e_private_source.py:72, :177, :179)."
+      ],
+      "verdict": "partial",
+      "reason": "It identifies some required changed files or areas, but the keyed set is incomplete."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q5",
+      "answer": "No CI, dependency, auth, schema or secrets surface appears anywhere in the packet. The only surface the shown change touches is the client's handling of the provider's next-page link (external calls / pagination) in src/linkedin_mdp_mcp/client.py ('NEXT LINK FROM PROVIDER') plus the end-to-end checks in e2e_private_source.py. The title frame says '+261 -20 - 13 files', so the packet shows only part of the diff; nothing beyond this is shown.",
+      "verdict": "wrong",
+      "reason": "It classifies provider pagination as an external-call risky surface, but the keyed answer is none."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q6",
+      "answer": "The checks listed under 'changelog checks in the end-to-end script': 'changelog_complete_watermark' (e2e_private_source.py:183), 'changelog_valid_pagination_preserves_scope_and_events' (e2e_private_source.py:187), 'changelog_original_start_time_survives_pagination' (e2e_private_source.py:197), 'change_added_start_time' (e2e_private_source.py:39), 'plus more rejection cases for bad changelog pages'. Together they pin: a complete changelog watermark, valid pagination that preserves scope and events, the original start time surviving pagination, a start time added by paging (the scene shows 'not in request' then 'The collector now stops with an error.'), and more rejection cases for bad changelog pages.",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q7",
+      "answer": "The packet gives no explicit reviewer instruction. The place it presents as the core is 'The new scope check' - start with the diff of src/linkedin_mdp_mcp/client.py, lines 217-221 with the added rejection at 218-219 (footer: 'receipts 5 lines quoted verbatim from the diff of client.py'). Then read the changelog checks in the end-to-end script e2e_private_source.py (lines 183, 187, 197, 39).",
+      "verdict": "wrong",
+      "reason": "It tells the reviewer to start in client.py, not collect_private_source.py :: collect_sources."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q8",
+      "answer": "CANNOT TELL - the packet never states whether source acquisition or the end-to-end checks run against real services or use fixtures/mocks. It shows only the 'ENCRYPTED SOURCE BUNDLE' 'collected with no writes', the client scope check, and 'changelog checks in the end-to-end script'.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q1",
+      "answer": "The private source collector now also gathers LinkedIn's member changelog, so the encrypted source bundle ('collected with no writes') gains a fourth snapshot, 'changelog', beside 'CONNECTIONS', 'INVITATIONS' and 'INBOX' (marked 'new in this PR'); and paging is guarded: if the next page link adds a start time, 'the scope has changed' and 'The collector now stops with an error.' The packet shows this change only for the owner of the private source bundle; it does not name any other party who is affected.",
+      "verdict": "partial",
+      "reason": "It gets the main behavior direction right but omits material facts from key_facts."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q2",
+      "answer": "CANNOT TELL - the packet shows no function definition and never says which function encloses the change. The only code quoted is in 'src/linkedin_mdp_mcp/client.py' lines 217-221 ('The new scope check'): 'next_params = parse_qs(parsed.query, keep_blank_values=True)' and the added lines 'if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:' and 'raise LinkedInAPIError(0, \"changelog next link changed request scope\")'. The changed symbols the packet names are 'LinkedInMDPClient._next_link' and 'LinkedInMDPClient.changelog' in 'src/linkedin_mdp_mcp/client.py' plus 'main.seeded_provider' in the end-to-end script, but the packet lists them under 'Changed symbols not shown'.",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q3",
+      "answer": "Old behaviour: the packet does not quote the old pagination code; it shows only the two added lines (marked '+') and says 'The collector now stops with an error', with the scene text 'If the next page link adds one, the scope has changed.' - so the old behaviour it implies is that a next page link was followed instead of stopped. New rejection: line 218 'if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:' followed by line 219 'raise LinkedInAPIError(0, \"changelog next link changed request scope\")', with the packet's note on line 219 'rejects the link'. Trigger shown: the caller request has 'no startTime set' ('count=50') while the next link ('second page') carries 'start=1' and 'startTime=1710000000', noted 'not in request' and marked with an 'x'.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py - the only diff quoted (lines 217-221, 'The new scope check')",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py - the end-to-end script (receipts at lines 39, 72, 177, 179, 183, 187, 197)",
+        "diagnostics/action-report-private-source-20261002/README.md",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "diagnostics/source-refresh-proposal-20261002/README.md",
+        "diagnostics/source-refresh-proposal-20261002/private-action-source.yml",
+        "PLANS.md",
+        "infographic/source-changelog/analysis.md",
+        "infographic/source-changelog/infographic.png",
+        "infographic/source-changelog/prompts/01-infographic-source-changelog.md",
+        "infographic/source-changelog/source.md",
+        "infographic/source-changelog/structured-content.md",
+        "Changed symbols not shown: main.seeded_provider (e2e_private_source.py), LinkedInMDPClient._next_link and LinkedInMDPClient.changelog (src/linkedin_mdp_mcp/client.py)"
+      ],
+      "verdict": "correct",
+      "reason": "It covers the required changed files or areas; extra valid changed files do not conflict with the key."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q5",
+      "answer": "External calls: the collector's LinkedIn changelog request is shown (caller request 'count=50' at 'diagnostics/action-report-private-source-20261002/collect_private_source.py:92' and the next link '/rest/memberChangeLogs?start=1&startTime=1710000000' at 'diagnostics/action-report-private-source-20261002/e2e_private_source.py:72'). The packet shows no CI, dependency, auth, schema or secrets surface: apart from the code files shown, the changed files are labelled only docs, config or opaque (PLANS.md, two README.md files, e2e-evidence.json, private-action-source.yml, the infographic files).",
+      "verdict": "wrong",
+      "reason": "It claims external calls, but the keyed risky surface is none."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q6",
+      "answer": "The four checks the packet lists for the end-to-end script, all marked with a check and cited to 'diagnostics/action-report-private-source-20261002/e2e_private_source.py': 'changelog_complete_watermark' (line 183), 'changelog_valid_pagination_preserves_scope_and_events' (line 187), 'changelog_original_start_time_survives_pagination' (line 197), and 'change_added_start_time' (line 39), 'plus more rejection cases for bad changelog pages'. In the packet's words: the changelog is complete to its watermark, valid paging preserves scope and events, a caller's own start time survives pagination, and a next link that adds a start time is rejected ('It also feeds in a next link that adds a start time, and expects a rejection.').",
+      "verdict": "correct",
+      "reason": "Its test-behavior description semantically matches the keyed behavior."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q7",
+      "answer": "Start with the only code quoted verbatim: 'The new scope check' in 'src/linkedin_mdp_mcp/client.py' lines 217-221 (receipts 'src/linkedin_mdp_mcp/client.py#L217' through '#L221'). The packet's receipts then lead to the collector call site 'diagnostics/action-report-private-source-20261002/collect_private_source.py#L92' (caller request 'count=50', 'no startTime set') and the end-to-end checks in 'diagnostics/action-report-private-source-20261002/e2e_private_source.py' (#L39, #L72, #L177, #L179, #L183, #L187, #L197). The packet itself does not state a reading order.",
+      "verdict": "wrong",
+      "reason": "It starts at the client scope check, not collect_private_source.py :: collect_sources."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q8",
+      "answer": "False. The packet shows the changelog checks running in the end-to-end script against a seeded provider - the changed symbol 'main.seeded_provider' in 'diagnostics/action-report-private-source-20261002/e2e_private_source.py' - with fixed values ('start=1', 'startTime=1710000000') and an everyday evidence file 'diagnostics/action-report-private-source-20261002/e2e-evidence.json'. The packet never mentions live or real services, and the bundle is 'collected with no writes'.",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q1",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q2",
+      "answer": "collect_source",
+      "verdict": "wrong",
+      "reason": "It gives collect_source, but the keyed function is collect_sources."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q3",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q4",
+      "answer": "Besides the main collector module, the packet shows changes in src/linkedin_mdp_mcp/client.py, e2e_private_source.py, and supporting files including PLANS.md, README.md, e2e-evidence.json, private-action-source.yml, analysis.md, infographic.png, 01-infographic-source-changelog.md, source.md, and structured-content.md.",
+      "verdict": "correct",
+      "reason": "It covers the required changed files or areas; extra valid changed files do not conflict with the key."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q5",
+      "answer": "CI is touched via private-action-source.yml. The packet does not show dependency, auth, schema, secrets, or external-call changes.",
+      "verdict": "wrong",
+      "reason": "It claims CI is a risky surface, but the keyed answer is none."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q6",
+      "answer": "CANNOT TELL",
+      "verdict": "cannot_tell",
+      "reason": "The answer leaves the requested fact unresolved and does not assert a conflicting fact."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q7",
+      "answer": "Start with collect_source in e2e/collect_private_source.py, the largest modified symbol shown in the PR map.",
+      "verdict": "wrong",
+      "reason": "It gives the wrong symbol and path; the keyed start is collect_private_source.py :: collect_sources."
+    },
+    {
+      "pr": 14,
+      "condition": "c5",
+      "question": "q8",
+      "answer": "False",
+      "verdict": "correct",
+      "reason": "It matches the keyed answer and does not add a material contradiction."
+    }
+  ]
+}

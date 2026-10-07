@@ -1,0 +1,41 @@
+{
+  "pr": 10,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL \u2014 the packet only shows the headline 'The invitation report ignored history outside the CRM.' It does not describe the new behaviour or whom it affects."
+    },
+    {
+      "id": "q2",
+      "answer": "build_invitation_shortlist in src/linkedin_mdp_mcp/invitation_shortlist.py (listed first under 'Look here first')."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL \u2014 the packet shows no per-company capacity rule."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/build_invitation_shortlist.py",
+        "No other changed files are named; the packet only reports 'Files 14, symbols 128', so the remaining files are CANNOT TELL."
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "None \u2014 the packet states: 'No risky surfaces. Everything the description names is in the diff.'"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL \u2014 the packet only lists symbols under 'Not covered by tests'; it does not state which behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with 'Look here first': build_invitation_shortlist, ShortlistInputError, and _citation_list, all in src/linkedin_mdp_mcp/invitation_shortlist.py."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL \u2014 the packet shows nothing about a recommendation event plan or a persistence key."
+    }
+  ]
+}

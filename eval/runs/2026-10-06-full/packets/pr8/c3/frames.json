@@ -1,0 +1,47 @@
+[
+  {
+    "label": "scene00_end",
+    "t": 6.86,
+    "width": 800
+  },
+  {
+    "label": "scene01_end",
+    "t": 15.45,
+    "width": 800
+  },
+  {
+    "label": "scene02_end",
+    "t": 23.22,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 25.96,
+    "width": 800
+  },
+  {
+    "label": "scene03_cue",
+    "t": 32.28,
+    "width": 800
+  },
+  {
+    "label": "scene03_end",
+    "t": 32.63,
+    "width": 800
+  },
+  {
+    "label": "scene04_end",
+    "t": 37.57,
+    "width": 800
+  },
+  {
+    "label": "scene05_end",
+    "t": 44.52,
+    "width": 800
+  },
+  {
+    "label": "scene06_end",
+    "t": 49.46,
+    "width": 800
+  }
+]

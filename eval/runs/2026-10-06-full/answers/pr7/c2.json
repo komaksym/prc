@@ -1,0 +1,46 @@
+{
+  "pr": 7,
+  "condition": "c2",
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL. The packet shows only the headline `The owner had no durable invitation history.` plus symbol and file lists; it does not state what behaviour changes for the owner or name who the owner is."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL. The comment does not single out one main-change function; it lists three under 'Look here first': `reconcile_invitations` in `src/linkedin_mdp_mcp/invitation_sync.py`, `plan_invitation_events` in `src/linkedin_mdp_mcp/invitation_sync.py`, and `main` in `scripts/sync_invitations.py`."
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL. The comment mentions `.github/workflows/sync-invitations.yml` only as a risky surface labelled 'CI workflow'; it says nothing about a manual workflow or an opt-in gate."
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "`.github/workflows/sync-invitations.yml` (listed under 'Risky surfaces and description vs diff' as 'CI workflow')",
+        "`artifacts/invitation_sync_verification.json` (listed under 'Risky surfaces and description vs diff' as external calls)",
+        "`scripts/sync_invitations.py` (external calls; `main` appears under 'Look here first')",
+        "`scripts/verify_invitation_sync.py` (external calls; `main` appears under 'Not covered by tests')",
+        "`tests/test_invitation_sync_e2e.py` (listed under 'Risky surfaces and description vs diff' as external calls)",
+        "`src/linkedin_mdp_mcp/client.py` (`LinkedInMDPClient._get_paged`, `LinkedInMDPClient._next_link`, `LinkedInMDPClient.changelog`, `LinkedInMDPClient.snapshot` appear under 'Not covered by tests'; `snapshot` appears as a modified symbol in the map)",
+        "Also shown as changed symbols: `Boundary` (risky surface) and `__init__`, with `snapshot` marked modified; the comment reports 'Files 17, symbols 25, CI 1/1.'"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CI and external calls. Under 'Risky surfaces and description vs diff' the comment lists `.github/workflows/sync-invitations.yml` (CI workflow) and external calls in `artifacts/invitation_sync_verification.json`, `scripts/sync_invitations.py`, `scripts/verify_invitation_sync.py`, `src/linkedin_mdp_mcp/invitation_sync.py`, and `tests/test_invitation_sync_e2e.py`. The packet shows nothing about dependencies, auth, schema, or secrets."
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL. The packet only lists `tests/test_invitation_sync_e2e.py` as a risky surface with 'external calls' and lists what is 'Not covered by tests'; it does not say which behaviour the new tests pin."
+    },
+    {
+      "id": "q7",
+      "answer": "Start with the three items under 'Look here first': `reconcile_invitations` in `src/linkedin_mdp_mcp/invitation_sync.py`, `plan_invitation_events` in `src/linkedin_mdp_mcp/invitation_sync.py`, and `main` in `scripts/sync_invitations.py`."
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL. The packet does not show the workflow's triggers or any gate; it only lists `.github/workflows/sync-invitations.yml` as a 'CI workflow', so true or false cannot be checked from the packet."
+    }
+  ]
+}

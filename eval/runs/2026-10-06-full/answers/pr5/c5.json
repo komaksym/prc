@@ -1,0 +1,14 @@
+{
+  "pr": 5,
+  "condition": "c5",
+  "answers": [
+    {"id": "q1", "answer": "Private morning connection reports are published to Google Docs for the report owner."},
+    {"id": "q2", "answer": "LinkedInMDPClient"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": "scripts/linkedin_mdp_mcp/client.py, scripts/report_connections_doc.py, and linkedin_mdp_mcp/google_doc_report.py also change."},
+    {"id": "q5", "answer": "external calls"},
+    {"id": "q6", "answer": "CANNOT TELL"},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/client.py, starting with LinkedInMDPClient"},
+    {"id": "q8", "answer": "false"}
+  ]
+}

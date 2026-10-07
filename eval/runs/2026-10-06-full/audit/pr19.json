@@ -1,0 +1,31 @@
+{
+  "pr": 19,
+  "findings": [
+    {
+      "code": "scripts/report_connections_doc.py:66 — `await publisher.publish(result)` publishes the connections COMPLETE/BLOCKED/FAILED report to its own Google Doc via the Private Morning Report workflow (.github/workflows/morning-report.yml:36-46), alongside the two DM-doc publishes in scripts/publish_private_dm_docs.py:121-122",
+      "output": "board spoken text scene 0 + doc.html scene 1 title + card.html headline",
+      "statement": "This change publishes two to Google Docs."
+    },
+    {
+      "code": "scripts/report_connections_doc.py:38-42 — `LinkedInMDPClient.from_env()` + `SupabaseClient.from_env()` live reconciliation; scripts/publish_private_dm_docs.py:104-115 — Google OAuth config plus two Google Docs API publishers; ground-truth risky surface is external calls",
+      "output": "comment.md Risky surfaces and description vs diff + card.html Risky surfaces",
+      "statement": "Risky surfaces list names only the three CI workflow files, omitting the added Google/LinkedIn/Supabase external-call surfaces."
+    }
+  ],
+  "verdicts": [
+    {
+      "statement": "This change publishes two to Google Docs.",
+      "output": "board.json scene 0 say[1] + doc.html:179 (the card.html headline renders only say[0], 'The owner had no private DM reports.')",
+      "verdict": "confirmed",
+      "evidence": "The change adds three publishes to three distinct docs. scripts/publish_private_dm_docs.py:121-122 'await first.publish_text(bodies.first_dm)' / 'await follow.publish_text(bodies.follow_up)' use GOOGLE_FIRST_DM_REPORT_DOCUMENT_ID / GOOGLE_FOLLOW_UP_REPORT_DOCUMENT_ID (:24-25); scripts/report_connections_doc.py:66 'await publisher.publish(result)' uses GOOGLE_REPORT_DOCUMENT_ID (src/linkedin_mdp_mcp/google_doc_report.py:36) and is run by the added .github/workflows/morning-report.yml:36-46 'Update private Google Doc'. All these files are absent at base 1253403 (git ls-tree empty), so this PR adds the third publish.",
+      "suggested_fix": "This change publishes three reports to Google Docs."
+    },
+    {
+      "statement": "Risky surfaces list: `.github/workflows/morning-report.yml`: CI workflow; `.github/workflows/report-tests.yml`: CI workflow; `.github/workflows/sync-connections.yml`: CI workflow",
+      "output": "comment.md:72-74 'Risky surfaces and description vs diff' + card.html:92 risky list",
+      "verdict": "confirmed",
+      "evidence": "The list names only 3 of the 16 sensitive files in the output's own map.json brief; the omitted 13 are 'external calls', e.g. scripts/report_connections_doc.py, scripts/publish_private_dm_docs.py, src/linkedin_mdp_mcp/google_doc_report.py. Code: scripts/report_connections_doc.py:39/41 'LinkedInMDPClient.from_env()' / 'SupabaseClient.from_env()' with live reconcile at :42; scripts/publish_private_dm_docs.py:104-115 'GoogleDocConfig.from_env(...)' plus two GoogleDocPublisher objects publishing at :121-122. prc counts external calls as a risky surface (src/prc/brief.py:199, :609; docs/mvp/EVAL.md:74).",
+      "suggested_fix": "Add the omitted external-call entries, e.g. '- `scripts/report_connections_doc.py`: external calls', '- `scripts/publish_private_dm_docs.py`: external calls', '- `src/linkedin_mdp_mcp/google_doc_report.py`: external calls'."
+    }
+  ]
+}

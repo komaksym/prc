@@ -1,0 +1,38 @@
+[
+ {
+  "scene": 1,
+  "phrase": "three strict snapshots",
+  "said": 1.506,
+  "share": 1.506
+ },
+ {
+  "scene": 1,
+  "phrase": "bounded consent window",
+  "said": 5.891,
+  "share": 5.891
+ },
+ {
+  "scene": 2,
+  "phrase": "one optional batch",
+  "said": 3.619,
+  "share": 3.619
+ },
+ {
+  "scene": 2,
+  "phrase": "stays a dry run",
+  "said": 6.806,
+  "share": 6.806
+ },
+ {
+  "scene": 3,
+  "phrase": "dry run",
+  "said": 2.704,
+  "share": 2.704
+ },
+ {
+  "scene": 3,
+  "phrase": "duplicates stay ignored",
+  "said": 7.018,
+  "share": 7.018
+ }
+]

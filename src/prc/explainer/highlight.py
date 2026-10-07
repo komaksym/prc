@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -215,7 +216,8 @@ def attach_tokens(
             if "warned" not in cache:
                 print(
                     f"warning: highlighting {path} from hunk text only; "
-                    "colours may be wrong at hunk edges"
+                    "colours may be wrong at hunk edges",
+                    file=sys.stderr,
                 )
                 cache["warned"] = True
             if side == "new":

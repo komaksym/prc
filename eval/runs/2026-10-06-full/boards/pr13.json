@@ -1,0 +1,295 @@
+{
+ "name": "pr13",
+ "scenes": [
+  {
+   "kicker": "Open pull request",
+   "say": [
+    "The owner had no offline plan for inbox messages.",
+    "This change queues manual reply, follow-up, and first-DM actions."
+   ],
+   "type": "title"
+  },
+  {
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:471",
+     "match": "\"reply\": [], \"follow_up\": [], \"first_dm\": [], \"withheld\": []"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:505",
+     "match": "timedelta(hours=72)"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:508",
+     "match": "verified outbound DM at least 72 hours old with no later observed inbound"
+    },
+    {
+     "line": "docs/private-dm-actions.md:3",
+     "match": "sends no message"
+    }
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "show",
+     "ids": [
+      "inbox"
+     ],
+     "step": 0.4
+    },
+    {
+     "at": [
+      1,
+      0.5
+     ],
+     "do": "show",
+     "ids": [
+      "queue"
+     ],
+     "step": 0.4
+    }
+   ],
+   "groups": [
+    {
+     "col": 0,
+     "ground": "follow_up",
+     "id": "inbox",
+     "items": [
+      {
+       "ground": "verified outbound DM at least 72 hours old with no later observed inbound",
+       "id": "o",
+       "text": "outbound"
+      }
+     ],
+     "row": true,
+     "sub": "one verified message",
+     "title": "person inbox"
+    },
+    {
+     "col": 1,
+     "ground": "withheld",
+     "id": "queue",
+     "items": [
+      {
+       "ground": "unknown",
+       "id": "a",
+       "text": "unknown"
+      }
+     ],
+     "row": true,
+     "sub": "time-scoped rule",
+     "title": "action queue"
+    }
+   ],
+   "say": [
+    "A verified outbound message sits unanswered for days.",
+    "Anonymous rows nearby follow a time-scoped rule."
+   ],
+   "type": "groups"
+  },
+  {
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:471",
+     "match": "\"reply\": [], \"follow_up\": [], \"first_dm\": [], \"withheld\": []"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:508",
+     "match": "verified outbound DM at least 72 hours old with no later observed inbound"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:508",
+     "match": "Owner writes follow-up"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:511",
+     "match": "message_history_ambiguous_or_action_not_due"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:503",
+     "match": "latest verified inbound DM after outbound"
+    }
+   ],
+   "cues": [
+    {
+     "at": "verified outbound",
+     "do": "fill",
+     "ids": [
+      "o"
+     ]
+    },
+    {
+     "at": "ambiguous history",
+     "do": "tone",
+     "ids": [
+      "a"
+     ],
+     "tone": "bad"
+    },
+    {
+     "at": "owner still writes",
+     "do": "note",
+     "id": "queue",
+     "text": "owner sends everything"
+    }
+   ],
+   "groups": [
+    {
+     "col": 0,
+     "ground": "follow_up",
+     "id": "inbox",
+     "items": [
+      {
+       "ground": "verified outbound DM at least 72 hours old with no later observed inbound",
+       "id": "o",
+       "text": "outbound"
+      }
+     ],
+     "row": true,
+     "sub": "verified evidence only",
+     "title": "person inbox"
+    },
+    {
+     "col": 1,
+     "ground": "withheld",
+     "id": "queue",
+     "items": [
+      {
+       "ground": "message_history_ambiguous_or_action_not_due",
+       "id": "a",
+       "text": "unknown"
+      }
+     ],
+     "row": true,
+     "sub": "ambiguous rows wait",
+     "title": "action queue"
+    }
+   ],
+   "say": [
+    "A verified outbound message of that age still earns a follow-up.",
+    "Recent ambiguous history withholds the action, and the owner still writes every word."
+   ],
+   "type": "groups"
+  },
+  {
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:500",
+     "match": "latest_in.occurred_at > latest_out.occurred_at"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:505",
+     "match": "timedelta(hours=72)"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/dm_actions.py:511",
+     "match": "message_history_ambiguous_or_action_not_due"
+    }
+   ],
+   "cues": [
+    {
+     "at": "newer inbound",
+     "do": "step",
+     "n": 1
+    },
+    {
+     "at": "old outbound",
+     "do": "step",
+     "n": 2
+    },
+    {
+     "at": "ambiguous history",
+     "do": "step",
+     "n": 3
+    }
+   ],
+   "file": "src/linkedin_mdp_mcp/dm_actions.py",
+   "label": "The change, line for line",
+   "lines": [
+    {
+     "ref": "500",
+     "step": 1
+    },
+    {
+     "ref": "505",
+     "step": 2
+    },
+    {
+     "ref": "511",
+     "step": 3
+    }
+   ],
+   "say": [
+    "A newer inbound message after the last outbound queues a reply.",
+    "An old outbound message with no later reply queues a follow-up.",
+    "Recent ambiguous history withholds the action instead."
+   ],
+   "type": "diff"
+  },
+  {
+   "big": "{tests_added}",
+   "code": false,
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.3
+    }
+   ],
+   "items": [
+    {
+     "cite": "tests/e2e_private_dm_actions.py:130",
+     "text": "verified_outbound_followup"
+    },
+    {
+     "cite": "tests/e2e_private_dm_actions.py:131",
+     "text": "verified_inbound_reply"
+    },
+    {
+     "cite": "tests/e2e_private_dm_actions.py:134",
+     "text": "invitation_note_not_dm"
+    }
+   ],
+   "label": "new tests",
+   "mark": "ok",
+   "say": [
+    "New tests pin follow-up, reply, and invitation-note separation."
+   ],
+   "tone": "good",
+   "type": "list"
+  },
+  {
+   "cards": [
+    {
+     "label": "new tests",
+     "tone": "good",
+     "value": "{tests_added}"
+    },
+    {
+     "label": "changed functions",
+     "tone": "blue",
+     "value": "{changed}"
+    }
+   ],
+   "say": [
+    "New tests guard the DM action queues.",
+    "Changed functions carry the planning logic."
+   ],
+   "type": "stats"
+  },
+  {
+   "l1": "Verified inbox evidence queues manual reply, follow-up, and first-DM actions.",
+   "l2": "Start review at plan_dm_actions in dm_actions.py.",
+   "say": [
+    "That is the change, quoted from the diff."
+   ],
+   "type": "outro"
+  }
+ ]
+}

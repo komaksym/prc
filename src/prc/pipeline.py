@@ -5,10 +5,11 @@ from __future__ import annotations
 import dataclasses
 import json
 import shutil
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from prc.brief import Brief, build_brief
 from prc.capture import Clock, capture_bundle
@@ -470,11 +471,45 @@ def load_map_dict(
         stored = json.loads(map_path.read_text())
         change_map = _change_map_from_stored(stored)
         repo = Path(f"prototypes/mdp/store/git-cache/{ref.owner}__{ref.repo}__{ref.number}.git")
-        if not repo.exists():
-            repo = Path(".")
         return stored, stored, change_map, repo
     live_dict, change_map, repo = _live_map_dict(source, ref, clock, policy)
     return live_dict, live_dict, change_map, repo
+
+
+def _publish_explain(work: Path, out: Path) -> None:
+    lock = out.parent / f".{out.name}.lock"
+    lock.mkdir()
+    backup: Path | None = None
+    committed = False
+    try:
+        if out.is_symlink() or (out.exists() and not out.is_dir()):
+            raise RuntimeError(f"Explain output must be a real directory: {out}")
+        backup = Path(tempfile.mkdtemp(prefix=".explain-backup-", dir=out.parent))
+        previous = backup / "previous"
+        if out.exists():
+            out.rename(previous)
+        try:
+            work.rename(out)
+            committed = True
+        except OSError:
+            if previous.exists():
+                try:
+                    previous.rename(out)
+                except OSError as error:
+                    raise RuntimeError(
+                        f"Cannot restore explain output; recover {previous}"
+                    ) from error
+            raise
+    finally:
+        if backup is not None and (committed or not (backup / "previous").exists()):
+            try:
+                shutil.rmtree(backup)
+            except OSError as error:
+                print(f"warning: backup cleanup failed at {backup}: {error}", file=sys.stderr)
+        try:
+            lock.rmdir()
+        except OSError as error:
+            print(f"warning: lock cleanup failed at {lock}: {error}", file=sys.stderr)
 
 
 def run_explain(
@@ -489,104 +524,110 @@ def run_explain(
     git_dir: str | None = None,
 ) -> ExplainResult:
     used, live_dict, change_map, repo = load_map_dict(source, ref, clock, policy, map_path)
-    map_source = "stored" if used is not live_dict else "live"
+    map_source = "stored" if map_path is not None else "live"
     stored_head = used["head_sha"]
 
     backend: Backend = select_voice(voice)
     slug = explain_slug(ref, str(used["head_sha"]))
     out_dir = out_root / slug
-    out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "map.json").write_text(json.dumps(to_jsonable(change_map), indent=2, sort_keys=True))
-    (out_dir / "map.html").write_text(render_map(change_map))
+    out_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".explain-", dir=out_root) as staging:
+        work = Path(staging) / slug
+        work.mkdir()
+        rebuilt = to_jsonable(change_map)
+        (work / "map.json").write_text(json.dumps(rebuilt, indent=2, sort_keys=True))
+        (work / "map.html").write_text(render_map(change_map))
 
-    check_passed, board_out, video, doc_out, duration, estimate, predicted, warnings = (
-        False,
-        None,
-        None,
-        None,
-        0.0,
-        0.0,
-        0.0,
-        [],
-    )
-    check_detail: dict[str, object] = {"passed": False, "board": None}
-    board: dict[str, Any] | None = None
-    if board_path is not None:
-        board = json.loads(board_path.read_text())
-        try:
-            facts = verify_board(board, used)
-        except SystemExit as error:
-            raise ExplainCheckError(str(error)) from error
-        check_passed = True
-        check_detail = {
-            "passed": True,
-            "receipts": facts["receipts"],
-            "covered": facts["covered"],
-            "changed": facts["changed"],
-            "tests_added": facts["tests_added"],
-        }
-        estimate = estimate_seconds(board)
-        rendered = explain_render.render(
-            board,
-            used,
-            facts,
-            out_dir,
-            backend,
-            git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
+        check_passed, board_out, video, doc_out, duration, estimate, predicted, warnings = (
+            False,
+            None,
+            None,
+            None,
+            0.0,
+            0.0,
+            0.0,
+            [],
         )
-        board_out = out_dir / "board.json"
-        board_out.write_text(json.dumps(board, indent=2, sort_keys=True))
-        duration, warnings = rendered.duration, rendered.layout_warnings
-        video = out_dir / "video.mp4"
-        predicted = predict_seconds(board, backend)
-        render_explain_doc(board, used, out_dir, duration, has_video=True)
-        doc_out = out_dir / "doc.html"
+        check_detail: dict[str, object] = {"passed": False, "board": None}
+        board: dict[str, Any] | None = None
+        if board_path is not None:
+            board = json.loads(board_path.read_text())
+            try:
+                facts = verify_board(board, used)
+            except SystemExit as error:
+                raise ExplainCheckError(str(error)) from error
+            check_passed = True
+            check_detail = {
+                "passed": True,
+                "receipts": facts["receipts"],
+                "covered": facts["covered"],
+                "changed": facts["changed"],
+                "tests_added": facts["tests_added"],
+            }
+            estimate = estimate_seconds(board)
+            rendered = explain_render.render(
+                board,
+                used,
+                facts,
+                work,
+                backend,
+                git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
+            )
+            board_out = out_dir / "board.json"
+            (work / "board.json").write_text(json.dumps(board, indent=2, sort_keys=True))
+            duration, warnings = rendered.duration, rendered.layout_warnings
+            video = out_dir / "video.mp4"
+            predicted = predict_seconds(board, backend)
+            render_explain_doc(board, used, work, duration, has_video=True)
+            doc_out = out_dir / "doc.html"
 
-    card_html = out_dir / "card.html"
-    used_any = cast("dict[str, Any]", used)
-    card_html.write_text(build_pr_card_html(used_any, used_any.get("brief"), board))
-    card_png: Path | None = None
-    try:
-        render_pr_card_png(card_html, out_dir / "card.png")
-        card_png = out_dir / "card.png"
-    except CardError as error:
-        warnings = [*warnings, str(error)]
-    comment_md = out_dir / "comment.md"
-    comment_md.write_text(render_pr_comment(used_any, used_any.get("brief"), board))
+        card_html = out_dir / "card.html"
+        (work / "card.html").write_text(build_pr_card_html(rebuilt, rebuilt.get("brief"), board))
+        card_png: Path | None = None
+        try:
+            render_pr_card_png(work / "card.html", work / "card.png")
+            card_png = out_dir / "card.png"
+        except CardError as error:
+            (work / "card.png").unlink(missing_ok=True)
+            warnings = [*warnings, str(error)]
+        comment_md = out_dir / "comment.md"
+        (work / "comment.md").write_text(render_pr_comment(rebuilt, rebuilt.get("brief"), board))
 
-    run = {
-        "source": source.label,
-        "pr": used["pr"],
-        "live_head_sha": live_dict["head_sha"],
-        "stored_head_sha": stored_head,
-        "map_source": map_source,
-        "board": str(board_path) if board_path else None,
-        "check": check_detail,
-        "voice": backend.name,
-        "estimate_seconds": round(estimate, 2),
-        "predicted_seconds": round(predicted, 2),
-        "duration_seconds": round(duration, 2),
-        "fps": explain_render.FPS,
-        "doc": str(doc_out) if doc_out else None,
-        "card": str(card_png) if card_png else None,
-        "comment": str(comment_md),
-        "layout_warnings": warnings,
-    }
-    run_json = out_dir / "run.json"
-    run_json.write_text(json.dumps(run, indent=2, sort_keys=True))
+        run = {
+            "source": source.label,
+            "pr": used["pr"],
+            "live_head_sha": live_dict["head_sha"] if map_path is None else None,
+            "stored_head_sha": stored_head,
+            "map_source": map_source,
+            "board": str(board_path) if board_path else None,
+            "check": check_detail,
+            "voice": backend.name,
+            "estimate_seconds": round(estimate, 2),
+            "predicted_seconds": round(predicted, 2),
+            "duration_seconds": round(duration, 2),
+            "fps": explain_render.FPS,
+            "doc": str(doc_out) if doc_out else None,
+            "card": str(card_png) if card_png else None,
+            "comment": str(comment_md),
+            "layout_warnings": warnings,
+        }
+        run_json = out_dir / "run.json"
+        (work / "run.json").write_text(json.dumps(run, indent=2, sort_keys=True))
 
-    return ExplainResult(
-        out_dir,
-        out_dir / "map.json",
-        out_dir / "map.html",
-        board_out,
-        video,
-        doc_out,
-        card_html,
-        card_png,
-        comment_md,
-        run_json,
-        duration,
-        estimate,
-        check_passed,
-    )
+        _publish_explain(work, out_dir)
+
+        return ExplainResult(
+            out_dir,
+            out_dir / "map.json",
+            out_dir / "map.html",
+            board_out,
+            video,
+            doc_out,
+            card_html,
+            card_png,
+            comment_md,
+            run_json,
+            duration,
+            estimate,
+            check_passed,
+        )

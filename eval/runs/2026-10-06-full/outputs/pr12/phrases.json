@@ -1,0 +1,50 @@
+[
+ {
+  "scene": 1,
+  "phrase": "Each prospect",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 1,
+  "phrase": "Before this change",
+  "said": 6.595,
+  "share": 6.595
+ },
+ {
+  "scene": 1,
+  "phrase": "showed none",
+  "said": 9.06,
+  "share": 9.06
+ },
+ {
+  "scene": 1,
+  "phrase": "Now the report",
+  "said": 10.627,
+  "share": 10.627
+ },
+ {
+  "scene": 1,
+  "phrase": "carries that exact",
+  "said": 11.965,
+  "share": 11.965
+ },
+ {
+  "scene": 3,
+  "phrase": "A new helper",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 3,
+  "phrase": "Each selected",
+  "said": 10.135,
+  "share": 10.135
+ },
+ {
+  "scene": 3,
+  "phrase": "gets its date",
+  "said": 12.529,
+  "share": 12.529
+ }
+]

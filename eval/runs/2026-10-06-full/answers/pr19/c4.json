@@ -1,0 +1,14 @@
+{
+  "pr": 19,
+  "condition": "c4",
+  "answers": [
+    {"id": "q1", "answer": "The owner gets the first-DM and follow-up reports published to separate owner-only Google Docs. A rerun converges on the same text."},
+    {"id": "q2", "answer": "build_dm_doc_bodies in src/linkedin_mdp_mcp/dm_doc_report.py: def build_dm_doc_bodies(actions_value: Any, retained_value: Any, *, now: datetime) -> DmDocBodies:"},
+    {"id": "q3", "answer": "if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)): followed by raise DmDocReportError(\"managed_marker_in_body\")."},
+    {"id": "q4", "answer": "Besides src/linkedin_mdp_mcp/dm_doc_report.py, the packet shows changes across CI workflows, publication/build scripts, google_doc_report.py, client.py, DM actions, inbox sync, invitation shortlist code, E2E/tests, docs, evidence artifacts, diagnostics, plans, and infographics."},
+    {"id": "q5", "answer": "It touches CI, authentication, and external calls. The packet shows changed GitHub workflow files and Google Doc publishing code including GoogleDocPublisher._access_token, _request, publish, and publish_text. It does not show enough evidence to claim dependency, schema, or secret changes."},
+    {"id": "q6", "answer": "The new tests pin both docs completing, reruns converging, a second conflict failing closed, and dual preflight behavior. The packet labels these scenarios both_docs_complete, rerun_converges, second_conflict_fails_closed, and dual_preflight_."},
+    {"id": "q7", "answer": "Start at build_dm_doc_bodies in src/linkedin_mdp_mcp/dm_doc_report.py."},
+    {"id": "q8", "answer": "False. A rendered body containing BEGIN_MARKER or END_MARKER raises DmDocReportError(\"managed_marker_in_body\") instead of being returned for publication."}
+  ]
+}
