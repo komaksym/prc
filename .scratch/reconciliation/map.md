@@ -27,5 +27,5 @@ Public PyPI publication, promotion, new product features, and final human approv
 ## Decisions so far
 
 - [Establish one verified local PRC baseline](issues/01-local-baseline.md): consolidated retained source, tests, docs, and eval evidence into one commit; archived unrelated experiments and historical evidence with hash checks.
-- [Identify the intended GitHub destination](issues/02-github-destination.md): no intended repository found in local config or the accessible account inventory; blocked on the human identity decision, no remote created.
+- [Identify the intended GitHub destination](issues/02-github-destination.md): human directed a new public repository; created https://github.com/komaksym/prc and pushed local main dbcbe63 to origin/main with matching SHAs.
 - Technical package verification passes (572 tests, lint, format, strict types, build, installed-wheel browser checks); product acceptance stays incomplete per docs/mvp/STATUS.md.

@@ -3,7 +3,7 @@
 Label: wayfinder:research
 Type: research
 Mode: AFK
-Status: blocked
+Status: resolved
 Assignee: none
 Parent: ../map.md
 Blocked by: human repository identity decision
@@ -27,6 +27,13 @@ The human repository identity decision remains open, so this ticket is not resol
 
 Evidence: [GitHub destination report](../../../.audit/reconciliation-remote.md).
 Map pointer: [Reconciliation map](../map.md).
+
+## Resolution
+
+Human directed creation of a new public repository on 2026-10-08.
+Destination is https://github.com/komaksym/prc with default branch `main`.
+Local `main` at `dbcbe63` pushed to `origin/main`; `git ls-remote` confirms identical SHAs.
+Future changes use branches and pull requests against `main`.
 
 Next step: obtain the intended existing repository URL, or an explicit human decision that a new destination is needed.
 
