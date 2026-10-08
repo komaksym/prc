@@ -1,3 +1,16 @@
+# Project verification skill, 2026-10-08
+
+## Summary
+
+Create a Codex project skill at `.agents/skills/verify`. Drive PRC through the real CLI and generated browser pages. Reuse the existing fixture and Playwright dependency. Preserve all earlier release work.
+
+- [x] V1. Inspect commands, fixtures, browser controls, isolation, and repository sync rules.
+- [x] V2. Create the skill, five feature recipes, and an executable map driver.
+- [x] V3. Execute launch, doctor, map interaction, screenshots, and cleanup. Validate the generated files and run the isolated verifier.
+- [x] V4. Commit only these task files. Skip remote sync if no remote exists.
+
+Throughput checkpoint. Parent owns the skill and driver. One independent reviewer checks the new files while the parent runs the driver. Each run owns a unique scratch store and evidence directory. This task does not resolve the unfinished release evaluation.
+
 # Release completion, 2026-10-07
 
 ## Full release audit, evening continuation

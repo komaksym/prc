@@ -87,3 +87,16 @@ Append one entry per stage or session. Newest at the bottom. Label every number 
   for none) rather than the check-formula estimate_seconds, which undershoots by ~10 percent
   because it lacks the per-sentence estimator. mdp12/mdp17b videos use none timing, so scene
   starts drift ~0.6 s from the Kokoro prototype; compared at scene-relative times.
+
+## 2026-10-08. Project verification skill
+
+- Added `.agents/skills/verify/SKILL.md`, five feature recipes, and an executable map driver. The desktop discovers the project skill.
+- The driver calls the real fixture CLI, verifies checkout in Chromium, and captures overview, open drawer, and closed drawer screenshots. Unique scratch stores are removed; proof survives.
+- Screenshot inspection found both drawer shots captured during animation. A failing geometry assertion reproduced the defect. The helper now waits for each visible transition.
+- Independent review found lost failure diagnostics and three incomplete recipes. An injected real browser error reproduced missing checks.json. The helper now retains collected errors, requests, revision, map hash, and failure information while failing the run.
+- Final normal proof: `artifacts/verification/map-uy5vvt1z`. Failure proof: `artifacts/verification/map-rrkr_4j_`. Recipe proof: `artifacts/verification/recipes-7ozhtxxa`. Screenshot inspection confirmed readable code and visible keyboard captions.
+- Commands: `env PLAYWRIGHT_BROWSERS_PATH=/Users/koval/dev/prc/artifacts/release/browser-cache .venv/bin/python .agents/skills/verify/scripts/map.py` passed. Scoped ruff, strict mypy with MYPYPATH=src, structural checks, reference checks, persisted-decision reads, rejected-board CLI calls, and Play/Pause/keyboard checks passed.
+- `bash scripts/verify-release.sh` passed in `artifacts/release/verify/run-yu4NDi`: lint, formatting, mypy (97 source files), 563 tests, sdist, wheel, and installed-wheel rendering outside source. These numbers are measured. Video was 1920x1080 at 30 fps; browser errors were empty.
+- Reused Playwright because Vercel agent-browser was unavailable in this session. No production dependency was added. Five recipes were seeded; this task does not prove every recipe or live GitHub acquisition.
+- Final independent recheck passed all four findings. Reports: `.audit/verification-skill-review.md` and `.audit/verification-skill-recheck.md`.
+- Release evaluation and final human comparison remain open. This skill does not establish release acceptance. No remote is configured; push and PR creation are skipped.
