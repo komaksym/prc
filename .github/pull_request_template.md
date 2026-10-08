@@ -18,4 +18,4 @@
 - None
 
 ## Visual summary
-- Every PR posts a renderable visual. Mermaid renders inline. Raster images must use a hosted URL GitHub can display, never a local path.
+- Post a visual only when it carries review information: a Mermaid diagram of the change, a before/after, or a diff map. Mermaid renders inline. Raster images must use a hosted URL GitHub can display, never a local path. Skip decoration on small diffs.
