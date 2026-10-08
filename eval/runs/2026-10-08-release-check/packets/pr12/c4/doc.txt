@@ -1,0 +1,183 @@
+PULL REQUEST WALKTHROUGH
+
+feat(report): show date added
+
+komaksym/linkedin-mdp#12
+
+AUTHOR komaksym
+
+HEAD 0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7 commit
+
+Watch the 65 s video
+
+SCENE 1 OF 6 · TITLE
+
+This pull request adds a date to each row of the invitation report.
+
+It shows when the prospect was added.
+
+OPEN PULL REQUEST
+feat(report): show date added
++204 −4 · 12 files · komaksym/linkedin-mdp#12
+linkedin-mdp #12 · komaksym
+SCENE 2 OF 6 · GROUPS
+
+Each prospect row matched here supplies its creation time, or unknown when missing.
+
+Before this change, the report row showed none of it.
+
+Now the report row carries that exact timestamp as date added.
+
+PROSPECT ROW
+in Supabase
+tracked-a
+created_at
+REPORT ROW
+invitation
+Synthetic Person
+created_at
+DATE_ADDED
+no date
+created_at
+linkedin-mdp #12 · komaksym
+RECEIPTS
+tests/e2e_invitation_shortlist.py#L621
+tests/e2e_invitation_shortlist.py#L652
+tests/e2e_invitation_shortlist.py#L657
+tests/e2e_invitation_shortlist.py#L650
+SCENE 3 OF 6 · LIST
+
+A missing, malformed, out-of-range, timezone-less or future timestamp shows as unknown.
+
+The row keeps a reason, and the bad value is never copied.
+
+cases stay unknown, not guessed
+?
+(None, "missing")
+e2e_invitation_shortlist.py:693
+?
+(42, "invalid_timestamp")
+e2e_invitation_shortlist.py:694
+?
+("0001-01-01T00:00:00+01:00", "invalid_timestamp")
+e2e_invitation_shortlist.py:695
+?
+("9999-12-31T23:59:59-01:00", "invalid_timestamp")
+e2e_invitation_shortlist.py:696
+?
+("not-a-timestamp", "invalid_timestamp")
+e2e_invitation_shortlist.py:697
+?
+("2026-09-30T14:12:13", "invalid_timestamp")
+e2e_invitation_shortlist.py:698
+?
+("2026-10-03T00:00:00Z", "future_timestamp")
+e2e_invitation_shortlist.py:699
+linkedin-mdp #12 · komaksym
+RECEIPTS
+tests/e2e_invitation_shortlist.py#L710
+tests/e2e_invitation_shortlist.py#L716
+tests/e2e_invitation_shortlist.py#L693
+tests/e2e_invitation_shortlist.py#L694
+tests/e2e_invitation_shortlist.py#L695
+tests/e2e_invitation_shortlist.py#L696
+tests/e2e_invitation_shortlist.py#L697
+tests/e2e_invitation_shortlist.py#L698
+tests/e2e_invitation_shortlist.py#L699
+SCENE 4 OF 6 · DIFF
+
+A new helper finds exactly one matching prospect row.
+
+It returns unknown with a reason when the timestamp is bad or in the future.
+
+Each selected invitation row then gets its date.
+
+The change, line for line
+src/linkedin_mdp_mcp/invitation_shortlist.py
+453
++
+if len(matches) != 1:
+⋯
+472
++
+except (ShortlistInputError, OverflowError):
+473
++
+    provenance["reason"] = "invalid_timestamp"
+474
++
+    return {"date_added": None, "date_added_source": provenance}
+475
++
+if parsed > now:
+476
++
+    provenance["reason"] = "future_timestamp"
+⋯
+1030
++
+for row in rows_out:
+1031
++
+    row.update(_date_added(row["profile_url"], prospects, now))
+date_added on each row
+linkedin-mdp #12 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_shortlist.py#L453
+src/linkedin_mdp_mcp/invitation_shortlist.py#L472
+src/linkedin_mdp_mcp/invitation_shortlist.py#L473
+src/linkedin_mdp_mcp/invitation_shortlist.py#L474
+src/linkedin_mdp_mcp/invitation_shortlist.py#L475
+src/linkedin_mdp_mcp/invitation_shortlist.py#L476
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1030
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1031
+SCENE 5 OF 6 · LIST
+
+Three new tests pin it down.
+
+3
+new tests
+✓
+An exact URL alias may enrich output, but its source time cannot affect selection.
+e2e_invitation_shortlist.py:669
+✓
+Invalid values stay unknown and never leak their raw timestamp into output.
+e2e_invitation_shortlist.py:703
+✓
+A missing creation time is not inferred and cannot alter eligibility.
+e2e_invitation_shortlist.py:720
+linkedin-mdp #12 · komaksym
+RECEIPTS
+tests/e2e_invitation_shortlist.py#L669
+tests/e2e_invitation_shortlist.py#L703
+tests/e2e_invitation_shortlist.py#L720
+SCENE 6 OF 6 · OUTRO
+
+Each row now shows its date added. Unknown stays unknown.
+
+Each row now shows its date added.
+Unknown stays unknown.
+prc map github.com/komaksym/linkedin-mdp/pull/12
+Every name, number and arrow on screen was checked against the pull request's code before rendering.
+linkedin-mdp #12 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+PR10-present-employer-e2e-matrix.md docs
+artifacts/invitation-shortlist-e2e-evidence.json config
+docs/invitation-shortlist.md docs
+infographic/prospect-date-added/analysis.md docs
+infographic/prospect-date-added/infographic.png opaque
+infographic/prospect-date-added/prompts/01-infographic-date-added.md docs
+infographic/prospect-date-added/source.md docs
+infographic/prospect-date-added/structured-content.md docs
+tests/test_invitation_shortlist_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+_make_markdown src/linkedin_mdp_mcp/invitation_shortlist.py
+
+Built by prc explain from the checked board.
+
+0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7

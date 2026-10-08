@@ -1,0 +1,2882 @@
+[
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "partial"
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "partial"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 11,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "partial"
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "partial"
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 5,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 7,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "partial"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 8,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 10,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 13,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 14,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 15,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c1",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c2",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q4",
+    "verdict": "wrong"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q6",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q1",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q2",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q5",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q6",
+    "verdict": "NEEDS_HUMAN"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q7",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c4",
+    "question": "q8",
+    "verdict": "correct"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q1",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q2",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q3",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q4",
+    "verdict": "partial"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q5",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q6",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q7",
+    "verdict": "cannot_tell"
+  },
+  {
+    "pr": 16,
+    "condition": "c5",
+    "question": "q8",
+    "verdict": "cannot_tell"
+  }
+]

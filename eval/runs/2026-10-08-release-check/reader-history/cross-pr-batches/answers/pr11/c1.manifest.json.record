@@ -1,0 +1,14 @@
+{
+  "condition": "c1",
+  "files": [
+    "card.png",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "card.png": "501ba9edd27ba0536430d9136551d7db8b02cb45fbedcc35ef246228b010da16"
+  },
+  "payload_sha256": {
+    "card.png": "a8723ca0bf804b00d5b8a76fed9d8b9045c8157ce98b86b73e9013ec230c2ef5",
+    "prompt.md": "48e76e15e5f75db0e7720fdd6f49b0da783c5ea8149bcf70282cd8490f150cc1"
+  }
+}

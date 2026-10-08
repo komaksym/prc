@@ -1,0 +1,874 @@
+{
+  "duration": 56.090845070422546,
+  "header": "<b>linkedin-mdp #5</b> \u00b7 komaksym",
+  "name": "pr5",
+  "scenes": [
+    {
+      "end": 7.354225352112677,
+      "footer": "base 1253403  \u2192  head 5f4440d",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+999</span> <span class=\"del\">\u22125</span> \u00b7 10 files \u00b7 komaksym/linkedin-mdp#5",
+      "say": [
+        "The owner had no private morning report.",
+        "This change publishes one to Google Docs."
+      ],
+      "sentences": [
+        {
+          "dur": 2.8169014084507045,
+          "off": 2.8169014084507045,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The owner had no private morning report."
+        },
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 3.5669014084507045,
+          "text": "This change publishes one to Google Docs."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(report): publish private morning reports to Google Docs",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "docs/google-docs-report.md:3",
+          "match": "aggregate CONNECTIONS reconciliation counts"
+        },
+        {
+          "line": "docs/google-docs-report.md:41",
+          "match": "daily at 06:17 UTC"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/google_doc_report.py:13",
+          "match": "[BEGIN AUTOMATED REPORT]"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "doc"
+          ],
+          "step": 0.4,
+          "t": 8.23380281690141
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "cron"
+          ],
+          "step": 0.4,
+          "t": 15.357746478873242
+        }
+      ],
+      "end": 19.21549295774648,
+      "footer": "receipts   google-docs-report.md:3  \u00b7  google-docs-report.md:41  \u00b7  google_doc_report.py:13",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "aggregate CONNECTIONS reconciliation counts",
+          "id": "doc",
+          "items": [
+            {
+              "ground": "[BEGIN AUTOMATED REPORT]",
+              "id": "m",
+              "text": "marker"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "morning report"
+        },
+        {
+          "col": 1,
+          "ground": "daily at 06:17 UTC",
+          "id": "cron",
+          "items": [
+            {
+              "ground": "daily at 06:17 UTC",
+              "id": "c",
+              "text": "daily"
+            }
+          ],
+          "row": true,
+          "sub": "daily schedule",
+          "title": "workflow"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "The reporter updates one marked section in an owner-only doc.",
+        "The schedule stays gated until the owner enables it, and operator notes stay intact."
+      ],
+      "sentences": [
+        {
+          "dur": 4.295774647887324,
+          "off": 4.295774647887324,
+          "on": 0.0,
+          "start": 7.804225352112677,
+          "text": "The reporter updates one marked section in an owner-only doc."
+        },
+        {
+          "dur": 5.915492957746479,
+          "off": 5.915492957746479,
+          "on": 0.0,
+          "start": 12.400000000000002,
+          "text": "The schedule stays gated until the owner enables it, and operator notes stay intact."
+        }
+      ],
+      "start": 7.354225352112677,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/google_doc_report.py:113",
+          "match": "class GoogleDocPublisher"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/google_doc_report.py:114",
+          "match": "marked report paragraphs"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/client.py:15",
+          "match": "No data found for this domain and memberId"
+        }
+      ],
+      "cues": [
+        {
+          "at": "marked paragraphs",
+          "do": "show",
+          "ids": [
+            "pub"
+          ],
+          "t": 22.27112676056338
+        },
+        {
+          "at": "terminal message",
+          "do": "show",
+          "ids": [
+            "snap"
+          ],
+          "t": 24.61338028169014
+        }
+      ],
+      "end": 29.104929577464787,
+      "footer": "receipts   google_doc_report.py:113  \u00b7  google_doc_report.py:114  \u00b7  client.py:15",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "class GoogleDocPublisher",
+          "id": "pub",
+          "items": [
+            {
+              "ground": "marked report paragraphs",
+              "id": "p",
+              "text": "publisher"
+            }
+          ],
+          "row": true,
+          "sub": "marker-owned region",
+          "title": "before"
+        },
+        {
+          "col": 1,
+          "ground": "No data found for this domain and memberId",
+          "id": "snap",
+          "items": [
+            {
+              "ground": "No data found for this domain and memberId",
+              "id": "s",
+              "text": "snapshot"
+            }
+          ],
+          "row": true,
+          "sub": "rows retained",
+          "title": "after"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "GoogleDocPublisher replaces only the marked paragraphs.",
+        "Later-page terminal message cases complete with rows retained."
+      ],
+      "sentences": [
+        {
+          "dur": 3.8732394366197185,
+          "off": 3.8732394366197185,
+          "on": 0.0,
+          "start": 19.66549295774648,
+          "text": "GoogleDocPublisher replaces only the marked paragraphs."
+        },
+        {
+          "dur": 4.366197183098592,
+          "off": 4.366197183098592,
+          "on": 0.0,
+          "start": 23.838732394366197,
+          "text": "Later-page terminal message cases complete with rows retained."
+        }
+      ],
+      "start": 19.21549295774648,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/client.py:15",
+          "match": "No data found for this domain and memberId"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/client.py:22",
+          "match": "preserving the public error text"
+        }
+      ],
+      "cues": [
+        {
+          "at": "provider message",
+          "do": "step",
+          "n": 1,
+          "t": 34.43239436619718
+        },
+        {
+          "at": "public error text",
+          "do": "note",
+          "line": "22",
+          "t": 36.333802816901404,
+          "text": "message kept, text stable"
+        }
+      ],
+      "cut": 0,
+      "end": 39.4169014084507,
+      "file": "src/linkedin_mdp_mcp/client.py",
+      "footer": "receipts   5 lines quoted verbatim from the diff of client.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        "14",
+        "15",
+        "16",
+        "21",
+        "22"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 14,
+          "op": "+",
+          "ref": "14",
+          "step": 1,
+          "text": "SNAPSHOT_EXHAUSTED_MESSAGES = frozenset({",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "SNAPSHOT_EXHAUSTED_MESSAGES"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "frozenset"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "{"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 15,
+          "op": "+",
+          "ref": "15",
+          "step": 1,
+          "text": "    \"No data found for this domain and memberId\",",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "No"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "data"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "found"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "for"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "this"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "domain"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "and"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "memberId"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 16,
+          "op": "+",
+          "ref": "16",
+          "step": 1,
+          "text": "    \"No data found for this memberId\",",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "No"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "data"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "found"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "for"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "this"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "memberId"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            20
+          ],
+          "hang": 8,
+          "num": 21,
+          "op": " ",
+          "ref": "21",
+          "step": 0,
+          "text": "    def __init__(self, status_code: int, message: str, service_error_code: int | None = None):",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "def"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "__init__"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "self"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "status_code"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "int"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "message"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "str"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "service_error_code"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "int"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "|"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "None"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "None"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            20
+          ],
+          "hang": 12,
+          "num": 22,
+          "op": "+",
+          "ref": "22",
+          "step": 1,
+          "text": "        \"\"\"Keep the provider message available while preserving the public error text.\"\"\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "Keep"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "the"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "provider"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "message"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "available"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "while"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "preserving"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "the"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "public"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "error"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "text"
+            },
+            {
+              "cls": "s",
+              "text": "."
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        }
+      ],
+      "say": [
+        "The client names the exact terminal no-data message.",
+        "It keeps the provider message while the public error text stays stable."
+      ],
+      "sentences": [
+        {
+          "dur": 3.6619718309859155,
+          "off": 3.6619718309859155,
+          "on": 0.0,
+          "start": 29.554929577464787,
+          "text": "The client names the exact terminal no-data message."
+        },
+        {
+          "dur": 5.0,
+          "off": 5.0,
+          "on": 0.0,
+          "start": 33.5169014084507,
+          "text": "It keeps the provider message while the public error text stays stable."
+        }
+      ],
+      "start": 29.104929577464787,
+      "type": "diff"
+    },
+    {
+      "big": "0",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 40.20492957746479
+        }
+      ],
+      "end": 44.14718309859155,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_doc_report.py:141",
+          "text": "exhaustion_domain"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": null,
+      "say": [
+        "A scenario script exercises exhaustion handling."
+      ],
+      "sentences": [
+        {
+          "dur": 3.3802816901408455,
+          "off": 3.3802816901408455,
+          "on": 0.0,
+          "start": 39.8669014084507,
+          "text": "A scenario script exercises exhaustion handling."
+        }
+      ],
+      "start": 39.4169014084507,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "0"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "30"
+        }
+      ],
+      "end": 51.85352112676057,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "A scenario script guards the report pipeline.",
+        "Changed functions carry the publish path."
+      ],
+      "sentences": [
+        {
+          "dur": 3.1690140845070425,
+          "off": 3.1690140845070425,
+          "on": 0.0,
+          "start": 44.59718309859155,
+          "text": "A scenario script guards the report pipeline."
+        },
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 48.066197183098595,
+          "text": "Changed functions carry the publish path."
+        }
+      ],
+      "start": 44.14718309859155,
+      "type": "stats"
+    },
+    {
+      "end": 56.090845070422546,
+      "footer": "",
+      "i": 6,
+      "l1": "Private morning reports publish to one marked Google Docs section.",
+      "l2": "Start review at GoogleDocPublisher in google_doc_report.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 52.30352112676057,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 51.85352112676057,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/5"
+    }
+  ]
+}

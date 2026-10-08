@@ -1,0 +1,1073 @@
+{
+  "duration": 49.54154929577465,
+  "header": "<b>linkedin-mdp #19</b> \u00b7 komaksym",
+  "name": "pr19",
+  "scenes": [
+    {
+      "end": 7.776760563380282,
+      "footer": "base 1253403  \u2192  head 5ec569d",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+8083</span> <span class=\"del\">\u221212</span> \u00b7 62 files \u00b7 komaksym/linkedin-mdp#19",
+      "say": [
+        "The owner had no private DM reports.",
+        "This change publishes three reports to Google Docs."
+      ],
+      "sentences": [
+        {
+          "dur": 2.535211267605634,
+          "off": 2.535211267605634,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The owner had no private DM reports."
+        },
+        {
+          "dur": 3.591549295774648,
+          "off": 3.591549295774648,
+          "on": 0.0,
+          "start": 3.285211267605634,
+          "text": "This change publishes three reports to Google Docs."
+        }
+      ],
+      "start": 0.0,
+      "title": "Reconcile legacy evidence and publish private DM reports",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:260",
+          "match": "LinkedIn first-time DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:267",
+          "match": "LinkedIn follow-up DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:287",
+          "match": "Synthetic researched opener"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:272",
+          "match": "Action: Owner writes follow-up"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "first"
+          ],
+          "step": 0.4,
+          "t": 8.614084507042254
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "follow"
+          ],
+          "step": 0.4,
+          "t": 14.054929577464788
+        }
+      ],
+      "end": 16.609859154929577,
+      "footer": "receipts   e2e_private_dm_doc_report.py:260  \u00b7  e2e_private_dm_doc_report.py:267  \u00b7  e2e_private_dm_doc_report.py:287  \u00b7  e2e_private_dm_doc_report.py:272",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "LinkedIn first-time DM report",
+          "id": "first",
+          "items": [
+            {
+              "ground": "Synthetic researched opener",
+              "id": "d",
+              "outside": true,
+              "text": "draft",
+              "tone": "bad"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "first-DM doc"
+        },
+        {
+          "col": 1,
+          "ground": "LinkedIn follow-up DM report",
+          "id": "follow",
+          "items": [
+            {
+              "ground": "Action: Owner writes follow-up",
+              "id": "f",
+              "outside": true,
+              "text": "follow-up",
+              "tone": "bad"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "follow-up doc"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "The owner drafts first messages and follow-ups by hand.",
+        "Neither report reaches its own private doc yet."
+      ],
+      "sentences": [
+        {
+          "dur": 3.8732394366197185,
+          "off": 3.8732394366197185,
+          "on": 0.0,
+          "start": 8.226760563380282,
+          "text": "The owner drafts first messages and follow-ups by hand."
+        },
+        {
+          "dur": 3.3098591549295775,
+          "off": 3.3098591549295775,
+          "on": 0.0,
+          "start": 12.4,
+          "text": "Neither report reaches its own private doc yet."
+        }
+      ],
+      "start": 7.776760563380282,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:260",
+          "match": "LinkedIn first-time DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:267",
+          "match": "LinkedIn follow-up DM report"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:287",
+          "match": "Synthetic researched opener"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:272",
+          "match": "Action: Owner writes follow-up"
+        },
+        {
+          "line": "tests/e2e_private_dm_doc_report.py:280",
+          "match": "FIRST_ID: 2, FOLLOW_ID: 2"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "first"
+          ],
+          "step": 0.4,
+          "t": 17.348591549295772
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "follow"
+          ],
+          "step": 0.4,
+          "t": 21.479577464788733
+        }
+      ],
+      "end": 23.61197183098591,
+      "footer": "receipts   e2e_private_dm_doc_report.py:260  \u00b7  e2e_private_dm_doc_report.py:267  \u00b7  e2e_private_dm_doc_report.py:287  \u00b7  e2e_private_dm_doc_report.py:272",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "LinkedIn first-time DM report",
+          "id": "first",
+          "items": [
+            {
+              "ground": "Synthetic researched opener",
+              "id": "d",
+              "text": "draft",
+              "tone": "good"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "first-DM doc"
+        },
+        {
+          "col": 1,
+          "ground": "LinkedIn follow-up DM report",
+          "id": "follow",
+          "items": [
+            {
+              "ground": "Action: Owner writes follow-up",
+              "id": "f",
+              "text": "follow-up",
+              "tone": "good"
+            }
+          ],
+          "row": true,
+          "sub": "owner-only Google Doc",
+          "title": "follow-up doc"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "Now each report publishes to its own doc.",
+        "A rerun converges on the same text."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 17.059859154929576,
+          "text": "Now each report publishes to its own doc."
+        },
+        {
+          "dur": 2.4647887323943665,
+          "off": 2.4647887323943665,
+          "on": 0.0,
+          "start": 20.24718309859155,
+          "text": "A rerun converges on the same text."
+        }
+      ],
+      "start": 16.609859154929577,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+          "match": "build_dm_doc_bodies"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:50",
+          "match": "actions = _actions(actions_value)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:51",
+          "match": "_retained_evidence(retained_value, actions)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:53",
+          "match": "_render_follow_up(actions, now)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:54",
+          "match": "BEGIN_MARKER, END_MARKER"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:55",
+          "match": "managed_marker_in_body"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_doc_report.py:56",
+          "match": "DmDocBodies(first_dm=first_dm, follow_up=follow_up)"
+        }
+      ],
+      "cues": [
+        {
+          "at": "validates both inputs",
+          "do": "step",
+          "n": 1,
+          "t": 24.907042253521123
+        },
+        {
+          "at": "managed marker is refused",
+          "do": "step",
+          "n": 2,
+          "t": 29.784507042253516
+        }
+      ],
+      "cut": 0,
+      "end": 32.515492957746474,
+      "file": "src/linkedin_mdp_mcp/dm_doc_report.py",
+      "footer": "receipts   7 lines quoted verbatim from the diff of dm_doc_report.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        {
+          "ref": "46",
+          "step": 1
+        },
+        {
+          "ref": "50",
+          "step": 1
+        },
+        {
+          "ref": "51",
+          "step": 1
+        },
+        {
+          "ref": "53",
+          "step": 1
+        },
+        {
+          "ref": "54",
+          "step": 2
+        },
+        {
+          "ref": "55",
+          "step": 2
+        },
+        {
+          "ref": "56",
+          "step": 2
+        }
+      ],
+      "rows": [
+        {
+          "breaks": [
+            19
+          ],
+          "hang": 4,
+          "num": 46,
+          "op": "+",
+          "ref": "46",
+          "step": 1,
+          "text": "def build_dm_doc_bodies(actions_value: Any, retained_value: Any, *, now: datetime) -> DmDocBodies:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "def"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "build_dm_doc_bodies"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "actions_value"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Any"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "retained_value"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Any"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "*"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "now"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "datetime"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "-"
+            },
+            {
+              "cls": "k",
+              "text": ">"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "DmDocBodies"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 50,
+          "op": "+",
+          "ref": "50",
+          "step": 1,
+          "text": "    actions = _actions(actions_value)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "actions"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "_actions"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "actions_value"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            10
+          ],
+          "hang": 8,
+          "num": 51,
+          "op": "+",
+          "ref": "51",
+          "step": 1,
+          "text": "    retained_rows, publication_status = _retained_evidence(retained_value, actions)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "retained_rows"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "publication_status"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "_retained_evidence"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "retained_value"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "actions"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 53,
+          "op": "+",
+          "ref": "53",
+          "step": 1,
+          "text": "    follow_up = _render_follow_up(actions, now)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "follow_up"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "_render_follow_up"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "actions"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "now"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            26
+          ],
+          "hang": 8,
+          "num": 54,
+          "op": "+",
+          "ref": "54",
+          "step": 2,
+          "text": "    if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)):",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "any"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "marker"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "body"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "body"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "first_dm"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "follow_up"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "marker"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "BEGIN_MARKER"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "END_MARKER"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "num": 55,
+          "op": "+",
+          "ref": "55",
+          "step": 2,
+          "text": "        raise DmDocReportError(\"managed_marker_in_body\")",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "k",
+              "text": "raise"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "DmDocReportError"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "managed_marker_in_body"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 56,
+          "op": "+",
+          "ref": "56",
+          "step": 2,
+          "text": "    return DmDocBodies(first_dm=first_dm, follow_up=follow_up)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "return"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "DmDocBodies"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "first_dm"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": "first_dm"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "follow_up"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": "follow_up"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "The builder validates both inputs, then renders each body.",
+        "Any body holding a managed marker is refused."
+      ],
+      "sentences": [
+        {
+          "dur": 4.084507042253521,
+          "off": 4.084507042253521,
+          "on": 0.0,
+          "start": 24.06197183098591,
+          "text": "The builder validates both inputs, then renders each body."
+        },
+        {
+          "dur": 3.1690140845070425,
+          "off": 3.1690140845070425,
+          "on": 0.0,
+          "start": 28.446478873239432,
+          "text": "Any body holding a managed marker is refused."
+        }
+      ],
+      "start": 23.61197183098591,
+      "type": "diff"
+    },
+    {
+      "big": "70",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 33.40211267605633
+        }
+      ],
+      "end": 38.23169014084507,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:275",
+          "text": "both_docs_complete"
+        },
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:281",
+          "text": "rerun_converges"
+        },
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:294",
+          "text": "second_conflict_fails_closed"
+        },
+        {
+          "cite": "tests/e2e_private_dm_doc_report.py:302",
+          "text": "dual_preflight_"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": "+ 66 more",
+      "say": [
+        "New scenarios pin both docs, reruns, conflicts, and preflight."
+      ],
+      "sentences": [
+        {
+          "dur": 4.366197183098592,
+          "off": 4.366197183098592,
+          "on": 0.0,
+          "start": 32.96549295774648,
+          "text": "New scenarios pin both docs, reruns, conflicts, and preflight."
+        }
+      ],
+      "start": 32.515492957746474,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "70"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "159"
+        }
+      ],
+      "end": 45.304225352112674,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "New tests guard the publication path.",
+        "Changed functions carry the two reports."
+      ],
+      "sentences": [
+        {
+          "dur": 2.6056338028169015,
+          "off": 2.6056338028169015,
+          "on": 0.0,
+          "start": 38.68169014084507,
+          "text": "New tests guard the publication path."
+        },
+        {
+          "dur": 2.8169014084507045,
+          "off": 2.8169014084507045,
+          "on": 0.0,
+          "start": 41.58732394366197,
+          "text": "Changed functions carry the two reports."
+        }
+      ],
+      "start": 38.23169014084507,
+      "type": "stats"
+    },
+    {
+      "end": 49.54154929577465,
+      "footer": "",
+      "i": 6,
+      "l1": "Two private DM reports now publish to separate owner-only docs.",
+      "l2": "Start review at build_dm_doc_bodies in dm_doc_report.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 45.75422535211268,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 45.304225352112674,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/19"
+    }
+  ]
+}

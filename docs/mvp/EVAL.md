@@ -107,6 +107,16 @@ A reader never sees two conditions of the same PR. Run the 4 pilot PRs (11, 12, 
 
 `scripts/eval/grade.py` grades exact answers (names, code, sets, true or false) after it normalizes whitespace and quotes. A grader agent (sonnet) grades free text against the key facts. Each answer is `correct`, `partial`, `wrong` or `cannot_tell`.
 
+`scripts/eval/grade_round.py` uses the frozen v1 files, even when unverified v2 files exist.
+It rejects duplicate, unknown, or missing question answers and unanswered materialized packets.
+Before comparing runs, it requires identical PR, condition, and question coverage.
+Each grade records the question file's SHA-256 hash.
+When a run has `question-hashes.json`, grading rejects missing or changed keys against that record.
+Historical runs without this record do not prove that their keys stayed unchanged.
+It leaves free-text verdicts as `NEEDS_HUMAN` until an independent grader supplies them.
+JSON booleans and leading `True` or `False` tokens with reasons are accepted.
+`CANNOT TELL` with a reason remains an abstention.
+
 `wrong` is the worst result. A wrong answer from C1 to C5 means a prc output misled the reader. Count it on its own as **misleading answers**. The target is 0. Trace each one to the output that caused it.
 
 ### Targets

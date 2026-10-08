@@ -1,0 +1,241 @@
+{
+ "name": "pr8",
+ "scenes": [
+  {
+   "kicker": "Open pull request",
+   "say": [
+    "The owner had no durable inbox evidence.",
+    "This change syncs private inbox messages."
+   ],
+   "type": "title"
+  },
+  {
+   "cite": [
+    {
+     "line": "docs/inbox-evidence.md:3",
+     "match": "DRY_RUN_COMPLETE"
+    },
+    {
+     "line": "tests/e2e_inbox_sync.py:27",
+     "match": "\"CONVERSATION ID\""
+    }
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "show",
+     "ids": [
+      "cli",
+      "rows"
+     ],
+     "step": 0.4
+    }
+   ],
+   "groups": [
+    {
+     "col": 0,
+     "ground": "CONVERSATION ID",
+     "id": "rows",
+     "items": [
+      {
+       "ground": "CONVERSATION ID",
+       "id": "r",
+       "text": "message"
+      }
+     ],
+     "row": true,
+     "sub": "raw provider snapshot",
+     "title": "inbox rows"
+    },
+    {
+     "col": 1,
+     "ground": "DRY_RUN_COMPLETE",
+     "id": "cli",
+     "items": [
+      {
+       "ground": "DRY_RUN_COMPLETE",
+       "id": "g",
+       "text": "dry run"
+      }
+     ],
+     "row": true,
+     "sub": "dry run default",
+     "title": "sync command"
+    }
+   ],
+   "say": [
+    "Inbox rows arrive as one raw provider snapshot.",
+    "The sync command defaults to a dry run."
+   ],
+   "type": "groups"
+  },
+  {
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/inbox_sync.py:295",
+     "match": "LINKEDIN_MESSAGE_OBSERVED"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/inbox_sync.py:317",
+     "match": "dry_run: bool = True,"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/inbox_sync.py:357",
+     "match": "if not dry_run:"
+    }
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "show",
+     "ids": [
+      "cli",
+      "rows"
+     ],
+     "step": 0.4
+    }
+   ],
+   "groups": [
+    {
+     "col": 0,
+     "ground": "LINKEDIN_MESSAGE_OBSERVED",
+     "id": "rows",
+     "items": [
+      {
+       "ground": "LINKEDIN_MESSAGE_OBSERVED",
+       "id": "r",
+       "text": "evidence"
+      }
+     ],
+     "row": true,
+     "sub": "planned message evidence",
+     "title": "inbox rows"
+    },
+    {
+     "col": 1,
+     "ground": "dry_run",
+     "id": "cli",
+     "items": [
+      {
+       "ground": "dry_run",
+       "id": "g",
+       "text": "still dry"
+      }
+     ],
+     "row": true,
+     "sub": "still dry run",
+     "title": "sync command"
+    }
+   ],
+   "say": [
+    "Complete clean snapshots become planned evidence.",
+    "Writes stay off unless the caller opts in."
+   ],
+   "type": "groups"
+  },
+  {
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/inbox_sync.py:311",
+     "match": "async def reconcile_inbox("
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/inbox_sync.py:357",
+     "match": "if not dry_run:"
+    }
+   ],
+   "cues": [
+    {
+     "at": "complete inbox snapshot",
+     "do": "step",
+     "n": 1
+    },
+    {
+     "at": "opts into apply",
+     "do": "note",
+     "line": "357",
+     "text": "writes only when applied",
+     "tone": "good"
+    }
+   ],
+   "file": "src/linkedin_mdp_mcp/inbox_sync.py",
+   "label": "The change, line for line",
+   "lines": [
+    "311",
+    "317",
+    "319",
+    "326",
+    "357"
+   ],
+   "say": [
+    "Reconcile validates the complete inbox snapshot, then plans evidence.",
+    "It writes nothing unless the caller opts into apply."
+   ],
+   "type": "diff"
+  },
+  {
+   "big": "{tests_added}",
+   "code": false,
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.3
+    }
+   ],
+   "items": [
+    {
+     "cite": "tests/e2e_inbox_sync.py:115",
+     "text": "unicode_profile_identity_persisted"
+    },
+    {
+     "cite": "tests/e2e_inbox_sync.py:298",
+     "text": "dry_run_writes_nothing"
+    }
+   ],
+   "label": "new tests",
+   "mark": "ok",
+   "say": [
+    "New scenarios pin Unicode identity and dry-run defaults."
+   ],
+   "tone": "good",
+   "type": "list"
+  },
+  {
+   "cards": [
+    {
+     "label": "new tests",
+     "tone": "good",
+     "value": "{tests_added}"
+    },
+    {
+     "label": "changed functions",
+     "tone": "blue",
+     "value": "{changed}"
+    }
+   ],
+   "say": [
+    "New tests guard the inbox pipeline.",
+    "Changed functions carry the reconcile path."
+   ],
+   "type": "stats"
+  },
+  {
+   "l1": "Private inbox rows gain validated evidence with dry run as default.",
+   "l2": "Start review at reconcile_inbox in inbox_sync.py.",
+   "say": [
+    "That is the change, quoted from the diff."
+   ],
+   "type": "outro"
+  }
+ ]
+}

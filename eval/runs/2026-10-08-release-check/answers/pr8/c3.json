@@ -1,0 +1,41 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private LinkedIn inbox owner can plan message evidence from complete clean snapshots and persist it by explicitly applying the sync."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_inbox"
+    },
+    {
+      "id": "q3",
+      "answer": "dry_run=True; dry_run=False"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_inbox_sync.py",
+        "inbox-evidence.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "The tests pin Unicode profile identity persistence and dry runs writing nothing."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mcp/inbox_sync.py::reconcile_inbox"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private reports owner can stage real LinkedIn activity and persist duplicate-safe events with explicit apply."
+    },
+    {
+      "id": "q2",
+      "answer": "sync_actual_actions"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "PLANS.md",
+        "README.md",
+        "artifacts/actual-action-sync-e2e-evidence.json",
+        "docs/actual-action-sync.md",
+        "infographic/actual-action-sync/analysis.md",
+        "infographic/actual-action-sync/infographic.png",
+        "infographic/actual-action-sync/prompts/01-infographic-actual-actions.md",
+        "infographic/actual-action-sync/source.md",
+        "infographic/actual-action-sync/structured-content.md",
+        "scripts/sync_actual_actions.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "tests/e2e_actual_action_sync.py",
+        "tests/test_actual_action_sync_e2e.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "The new tests pin dry-run staging with zero store posts."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/actual_action_sync.py::sync_actual_actions"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

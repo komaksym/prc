@@ -1,0 +1,172 @@
+PULL REQUEST WALKTHROUGH
+
+feat(sync): record actual LinkedIn activity
+
+komaksym/linkedin-mdp#16
+
+AUTHOR komaksym
+
+HEAD df74ac34650a049fd1feb4a081adb3ace5f3e0cf commit
+
+Watch the 52 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner had no record of real LinkedIn activity.
+
+This change stages the evidence and syncs it safely.
+
+OPEN PULL REQUEST
+feat(sync): record actual LinkedIn activity
++1211 −11 · 15 files · komaksym/linkedin-mdp#16
+linkedin-mdp #16 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+The sync reads three strict snapshots first.
+
+A changelog follows inside a bounded consent window.
+
+PROVIDER SNAPSHOTS
+three domains
+INVITATIONS
+CONSENT CHANGELOG
+28-day window
+changelog
+linkedin-mdp #16 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/actual_action_sync.py#L111
+src/linkedin_mdp_mcp/actual_action_sync.py#L118
+SCENE 3 OF 7 · GROUPS
+
+sync_actual_actions stages every source into one optional batch.
+
+Without apply the run stays a dry run.
+
+PLANNED BATCH
+duplicate-safe events
+dry_run
+APPLY GATE
+explicit opt-in
+if not apply
+linkedin-mdp #16 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/actual_action_sync.py#L199
+src/linkedin_mdp_mcp/actual_action_sync.py#L238
+src/linkedin_mdp_mcp/actual_action_sync.py#L239
+SCENE 4 OF 7 · DIFF
+
+Without apply the run returns a dry run with no writes.
+
+Explicit apply inserts once while duplicates stay ignored.
+
+The change, line for line
+src/linkedin_mdp_mcp/actual_action_sync.py
+199
++
+async def sync_actual_actions(linkedin: Any, supabase: Any, *, 
+account_profile_url: str, account_member_urn: str, apply: bool = 
+False, sources: ActualActionSources | None = None) -> 
+ActualActionSyncSummary:
+⋯
+238
++
+    if not apply:
+239
++
+        return ActualActionSyncSummary("dry_run", planned_by_type, 
+len(events), None, None, len(evidence.uncertain), dm_plan
+.unmatched)
+⋯
+241
++
+        inserted = await supabase.insert_events_ignore_duplicates(
+events) if events else 0
+dedupe by source, key
+linkedin-mdp #16 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/actual_action_sync.py#L199
+src/linkedin_mdp_mcp/actual_action_sync.py#L238
+src/linkedin_mdp_mcp/actual_action_sync.py#L239
+src/linkedin_mdp_mcp/actual_action_sync.py#L241
+SCENE 5 OF 7 · LIST
+
+New tests pin dry-run staging with zero store posts.
+
+1
+new tests
+ok
+dry_run_zero_posts
+e2e_actual_action_sync.py:168
+linkedin-mdp #16 · komaksym
+RECEIPTS
+tests/e2e_actual_action_sync.py#L168
+SCENE 6 OF 7 · STATS
+
+New tests guard the sync pipeline.
+
+Changed functions carry the stage path.
+
+1
+new tests
+29
+changed functions
+linkedin-mdp #16 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+One sync stages LinkedIn evidence and applies only with apply.
+Start review at sync_actual_actions in actual_action_sync.py.
+prc map github.com/komaksym/linkedin-mdp/pull/16
+undefined
+linkedin-mdp #16 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+README.md docs
+artifacts/actual-action-sync-e2e-evidence.json config
+docs/actual-action-sync.md docs
+infographic/actual-action-sync/analysis.md docs
+infographic/actual-action-sync/infographic.png opaque
+infographic/actual-action-sync/prompts/01-infographic-actual-actions.md docs
+infographic/actual-action-sync/source.md docs
+infographic/actual-action-sync/structured-content.md docs
+scripts/sync_actual_actions.py code
+src/linkedin_mdp_mcp/client.py code
+src/linkedin_mdp_mcp/invitation_sync.py code
+tests/test_actual_action_sync_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+_Parser scripts/sync_actual_actions.py
+_Parser.error scripts/sync_actual_actions.py
+_new_output_path scripts/sync_actual_actions.py
+_write_manifest scripts/sync_actual_actions.py
+main scripts/sync_actual_actions.py
+run scripts/sync_actual_actions.py
+ActualActionSources src/linkedin_mdp_mcp/actual_action_sync.py
+ActualActionSyncSummary src/linkedin_mdp_mcp/actual_action_sync.py
+ActualSyncError src/linkedin_mdp_mcp/actual_action_sync.py
+ActualSyncError.__init__ src/linkedin_mdp_mcp/actual_action_sync.py
+DmSyncPlan src/linkedin_mdp_mcp/actual_action_sync.py
+_aware src/linkedin_mdp_mcp/actual_action_sync.py
+_digest src/linkedin_mdp_mcp/actual_action_sync.py
+_fresh src/linkedin_mdp_mcp/actual_action_sync.py
+_matched_source src/linkedin_mdp_mcp/actual_action_sync.py
+_validate_sources src/linkedin_mdp_mcp/actual_action_sync.py
+plan_verified_dm_events src/linkedin_mdp_mcp/actual_action_sync.py
+LinkedInMDPClient._get_paged src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._next_link src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.changelog src/linkedin_mdp_mcp/client.py
+InvitationSyncError src/linkedin_mdp_mcp/invitation_sync.py
+InvitationSyncPlan src/linkedin_mdp_mcp/invitation_sync.py
+InvitationSyncSummary src/linkedin_mdp_mcp/invitation_sync.py
+_complete_rows src/linkedin_mdp_mcp/invitation_sync.py
+_provider_timestamp src/linkedin_mdp_mcp/invitation_sync.py
+plan_invitation_events src/linkedin_mdp_mcp/invitation_sync.py
+reconcile_invitations src/linkedin_mdp_mcp/invitation_sync.py
+
+Built by prc explain from the checked board.
+
+df74ac34650a049fd1feb4a081adb3ace5f3e0cf

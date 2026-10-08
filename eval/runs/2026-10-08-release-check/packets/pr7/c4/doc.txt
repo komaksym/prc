@@ -1,0 +1,163 @@
+PULL REQUEST WALKTHROUGH
+
+feat(invitations): reconcile outbound invitation history
+
+komaksym/linkedin-mdp#7
+
+AUTHOR komaksym
+
+HEAD 1f2f010c57e12cb3fa58f83fdcd5b46b37349cc4 commit
+
+Watch the 56 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner had no durable invitation history.
+
+This change reconciles past outbound invitations.
+
+OPEN PULL REQUEST
+feat(invitations): reconcile outbound invitation history
++818 −9 · 17 files · komaksym/linkedin-mdp#7
+linkedin-mdp #7 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+Outbound invitation rows wait as raw provider history.
+
+A manual workflow stays gated behind main branch plus one variable.
+
+INVITATION ROWS
+raw provider history
+OUTGOING
+MANUAL WORKFLOW
+stays disabled
+manual
+linkedin-mdp #7 · komaksym
+RECEIPTS
+.github/workflows/sync-invitations.yml#L11
+.github/workflows/sync-invitations.yml#L4
+src/linkedin_mdp_mcp/invitation_sync.py#L83
+SCENE 3 OF 7 · GROUPS
+
+Matched rows become durable history events.
+
+The manual workflow still waits for main branch plus the opt-in variable.
+
+INVITATION ROWS
+durable history events
+history
+MANUAL WORKFLOW
+still gated
+gated
+linkedin-mdp #7 · komaksym
+RECEIPTS
+.github/workflows/sync-invitations.yml#L11
+src/linkedin_mdp_mcp/invitation_sync.py#L107
+SCENE 4 OF 7 · DIFF
+
+Reconcile fetches every invitations page before any database write.
+
+It plans duplicate-safe events then inserts them idempotently.
+
+The change, line for line
+src/linkedin_mdp_mcp/invitation_sync.py
+170
++
+async def reconcile_invitations(
+⋯
+176
++
+    """Fetch and validate all provider pages before any database read 
+or write."""
+177
++
+    snapshot = await linkedin.snapshot(
+178
++
+        "INVITATIONS", max_pages=50, strict_elements=True
+⋯
+183
++
+    plan = plan_invitation_events(rows, prospects_by_key, observed_at
+=observed_at)
+184
++
+    inserted = await supabase.insert_events_ignore_duplicates(plan.
+events)
+dedupe safe, replay clean
+linkedin-mdp #7 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_sync.py#L176
+src/linkedin_mdp_mcp/invitation_sync.py#L184
+src/linkedin_mdp_mcp/invitation_sync.py#L170
+src/linkedin_mdp_mcp/invitation_sync.py#L177
+src/linkedin_mdp_mcp/invitation_sync.py#L178
+src/linkedin_mdp_mcp/invitation_sync.py#L183
+SCENE 5 OF 7 · LIST
+
+New tests pin multipage matching with dedupe and replay.
+
+6
+new tests
+ok
+test_complete_multipage_history_is_matched_deduped_and_idempotent
+test_invitation_sync_e2e.py:111
++ 5 more
+linkedin-mdp #7 · komaksym
+RECEIPTS
+tests/test_invitation_sync_e2e.py#L111
+SCENE 6 OF 7 · STATS
+
+New tests guard the invitation pipeline.
+
+Changed functions carry the reconcile path.
+
+6
+new tests
+13
+changed functions
+linkedin-mdp #7 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+Past outbound invitations gain durable history with the workflow gated.
+Start review at reconcile_invitations in invitation_sync.py.
+prc map github.com/komaksym/linkedin-mdp/pull/7
+undefined
+linkedin-mdp #7 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+README.md docs
+artifacts/invitation_change_summary.md docs
+artifacts/invitation_eligibility_acceptance.md docs
+artifacts/invitation_production_baseline.json config
+artifacts/invitation_sync_verification.json config
+infographic/invitation-history-reconciliation/analysis.md docs
+infographic/invitation-history-reconciliation/infographic.png opaque
+infographic/invitation-history-reconciliation/prompts/01-technical-system.md docs
+infographic/invitation-history-reconciliation/source.md docs
+infographic/invitation-history-reconciliation/structured-content.md docs
+scripts/sync_invitations.py code
+scripts/verify_invitation_sync.py code
+src/linkedin_mdp_mcp/client.py code
+CHANGED SYMBOLS NOT SHOWN
+main scripts/sync_invitations.py
+main scripts/verify_invitation_sync.py
+LinkedInMDPClient._get_paged src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._next_link src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.changelog src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.snapshot src/linkedin_mdp_mcp/client.py
+InvitationSyncError src/linkedin_mdp_mcp/invitation_sync.py
+InvitationSyncPlan src/linkedin_mdp_mcp/invitation_sync.py
+InvitationSyncSummary src/linkedin_mdp_mcp/invitation_sync.py
+_complete_rows src/linkedin_mdp_mcp/invitation_sync.py
+_provider_timestamp src/linkedin_mdp_mcp/invitation_sync.py
+
+Built by prc explain from the checked board.
+
+1f2f010c57e12cb3fa58f83fdcd5b46b37349cc4

@@ -1,0 +1,39 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner gets follow-up and reply actions for people with verified messages, while recent ambiguous history withholds actions and the owner writes and sends every message."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):\n\"message_history_ambiguous_or_action_not_due\""
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "e2e_private_dm_actions.py",
+        "private-dm-actions.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q6",
+      "answer": "The tests pin verified outbound follow-ups, verified inbound replies, and invitation notes being separate from DMs."
+    },
+    {
+      "id": "q7",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

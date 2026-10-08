@@ -1,0 +1,12 @@
+{
+  "answers": [
+    {"id": "q1", "answer": "The private report owner gets one combined invitation and DM action report, which the Google command can publish after validation."},
+    {"id": "q2", "answer": "combine_action_reports"},
+    {"id": "q3", "answer": "validate_report_text"},
+    {"id": "q4", "answer": ["e2e_combined_action_report.py", "Google command"]},
+    {"id": "q5", "answer": ["external calls"]},
+    {"id": "q6", "answer": "The tests pin complete composition across real upstream shapes and preservation of sources when message text is empty."},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/combined_action_report.py::combine_action_reports"},
+    {"id": "q8", "answer": false}
+  ]
+}

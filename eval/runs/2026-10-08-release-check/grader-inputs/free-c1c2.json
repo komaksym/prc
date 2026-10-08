@@ -1,0 +1,410 @@
+[
+  {
+    "pr": 11,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:19",
+        "diagnostics/action-report-private-source-20261002/README.md:3"
+      ],
+      "id": "q1",
+      "key": "The private collector now selects the existing prospects.created_at column and preserves its exact value through pagination and CMS encryption, so exported rows keep their creation timestamp.",
+      "key_facts": [
+        "the prospects projection gains created_at",
+        "the exact value survives pagination and encryption",
+        "a missing value stays missing and is never fabricated"
+      ],
+      "type": "free"
+    },
+    "answer": "Prospect rows in private reports now carry their creation timestamps."
+  },
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:19",
+        "diagnostics/action-report-private-source-20261002/README.md:3"
+      ],
+      "id": "q1",
+      "key": "The private collector now selects the existing prospects.created_at column and preserves its exact value through pagination and CMS encryption, so exported rows keep their creation timestamp.",
+      "key_facts": [
+        "the prospects projection gains created_at",
+        "the exact value survives pagination and encryption",
+        "a missing value stays missing and is never fabricated"
+      ],
+      "type": "free"
+    },
+    "answer": "Prospect rows now carry their creation timestamps in the private source collection."
+  },
+  {
+    "pr": 12,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:62",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:441"
+      ],
+      "id": "q1",
+      "key": "Each selected invitation row shows a read-only date_added taken from the matched Supabase prospect row, so the report reader sees when the prospect was first added.",
+      "key_facts": [
+        "date_added is read only from created_at on exactly one canonical-profile-matched Supabase prospect row",
+        "missing, malformed, timezone-naive or future timestamps stay unknown with a fixed reason",
+        "it never affects shortlist eligibility, ranking, exclusions or capacity"
+      ],
+      "type": "free"
+    },
+    "answer": "Each invitation row shows its date added to the report reviewer."
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:62",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:441"
+      ],
+      "id": "q1",
+      "key": "Each selected invitation row shows a read-only date_added taken from the matched Supabase prospect row, so the report reader sees when the prospect was first added.",
+      "key_facts": [
+        "date_added is read only from created_at on exactly one canonical-profile-matched Supabase prospect row",
+        "missing, malformed, timezone-naive or future timestamps stay unknown with a fixed reason",
+        "it never affects shortlist eligibility, ranking, exclusions or capacity"
+      ],
+      "type": "free"
+    },
+    "answer": "Each row in the private invitation report now shows its date added for the reviewer."
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:702"
+      ],
+      "id": "q6",
+      "key": "test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "type": "name_or_free"
+    },
+    "answer": "New tests pin exact canonical source matching for date_added and that invalid, future, or missing dates stay unknown."
+  },
+  {
+    "pr": 17,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:70",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:833"
+      ],
+      "id": "q1",
+      "key": "A prospect with several present employers now consumes invitation capacity at every current employer, so the report reader sees capacity accounted once per employer instead of one latest-known employer.",
+      "key_facts": [
+        "each profile is counted once per employer and selection requires capacity at every employer",
+        "incomplete, contradictory or unregistered employer sets withhold capacity claims",
+        "identities, exclusions, ranking and date_added are preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "Capacity counts each current employer for reviewers of the private invitation report."
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:70",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:833"
+      ],
+      "id": "q1",
+      "key": "A prospect with several present employers now consumes invitation capacity at every current employer, so the report reader sees capacity accounted once per employer instead of one latest-known employer.",
+      "key_facts": [
+        "each profile is counted once per employer and selection requires capacity at every employer",
+        "incomplete, contradictory or unregistered employer sets withhold capacity claims",
+        "identities, exclusions, ranking and date_added are preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "Capacity counts each current employer once in the invitation report."
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:1057"
+      ],
+      "id": "q6",
+      "key": "test_present_set_selection_requires_and_consumes_every_company_slot",
+      "type": "name_or_free"
+    },
+    "answer": "Tests pin present-set employer_set charging, merging, and withholding."
+  },
+  {
+    "pr": 19,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private DM reports, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+        "src/linkedin_mdp_mcp/dm_doc_report.py:54"
+      ],
+      "id": "q1",
+      "key": "The owner gets three-doc publication: owner-only Google Docs for connections, first-time DMs and follow-ups through one marker-safe, revision-checked publisher with dual preflight and retained-evidence binding.",
+      "key_facts": [
+        "renders separate first-DM and follow-up bodies from validated planner plus retained evidence",
+        "refuses bodies containing managed markers",
+        "dual preflight and revision-checked replacement per document"
+      ],
+      "type": "free"
+    },
+    "answer": "Two private DM reports now publish to separate owner-only docs."
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private DM reports, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+        "src/linkedin_mdp_mcp/dm_doc_report.py:54"
+      ],
+      "id": "q1",
+      "key": "The owner gets three-doc publication: owner-only Google Docs for connections, first-time DMs and follow-ups through one marker-safe, revision-checked publisher with dual preflight and retained-evidence binding.",
+      "key_facts": [
+        "renders separate first-DM and follow-up bodies from validated planner plus retained evidence",
+        "refuses bodies containing managed markers",
+        "dual preflight and revision-checked replacement per document"
+      ],
+      "type": "free"
+    },
+    "answer": "The owner now receives two private DM reports published to separate owner-only docs."
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the connection reports, and for whom?",
+      "evidence": [
+        "docs/google-docs-report.md:45",
+        "docs/google-docs-report.md:49"
+      ],
+      "id": "q1",
+      "key": "The owner gets a private repeatable morning report: one revision-guarded marker-owned Google Docs section published after owner-only permission checks, preserving operator notes, with fetched snapshot rows retained on the exact terminal no-data response.",
+      "key_facts": [
+        "one revision-guarded marker-owned section after owner-only permission checks",
+        "operator notes outside the managed region are preserved",
+        "fetched rows retained on the exact known terminal no-data response; genuine failures preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "Private morning connection reports publish to one marked Google Docs section for the connection report owner."
+  },
+  {
+    "pr": 8,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private inbox, and for whom?",
+      "evidence": [
+        "docs/inbox-evidence.md:3",
+        "src/linkedin_mdp_mcp/inbox_sync.py:311"
+      ],
+      "id": "q1",
+      "key": "The owner gets inbox evidence sync: complete INBOX snapshots are validated with exact Unicode profile identity and message direction before optional duplicate-safe persistence, with dry-run as the default.",
+      "key_facts": [
+        "validates complete snapshots and exact Unicode profile identities",
+        "preserves attachments, subject, timestamp uncertainty and unknown read status",
+        "withholds ambiguous threads; dry-run remains the default"
+      ],
+      "type": "free"
+    },
+    "answer": "The private inbox owner gains rows with validated evidence, with dry run as the default."
+  },
+  {
+    "pr": 8,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private inbox, and for whom?",
+      "evidence": [
+        "docs/inbox-evidence.md:3",
+        "src/linkedin_mdp_mcp/inbox_sync.py:311"
+      ],
+      "id": "q1",
+      "key": "The owner gets inbox evidence sync: complete INBOX snapshots are validated with exact Unicode profile identity and message direction before optional duplicate-safe persistence, with dry-run as the default.",
+      "key_facts": [
+        "validates complete snapshots and exact Unicode profile identities",
+        "preserves attachments, subject, timestamp uncertainty and unknown read status",
+        "withholds ambiguous threads; dry-run remains the default"
+      ],
+      "type": "free"
+    },
+    "answer": "The private inbox owner can add validated evidence to inbox rows, with dry run as the default."
+  },
+  {
+    "pr": 10,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:68",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:1050"
+      ],
+      "id": "q1",
+      "key": "Invitation capacity now counts all outgoing history including people outside the CRM before selecting up to 25 qualified prospects, enforcing a three-person lifetime company cap.",
+      "key_facts": [
+        "counts exact recipients against cited current employers with a three-person lifetime company cap",
+        "binds each qualification citation to the same canonical profile with ASCII-safe snapshot hashing",
+        "reconciles contaminated legacy CRM rows only under strict uniqueness conditions"
+      ],
+      "type": "free"
+    },
+    "answer": "The private invitation report counts all invitation history once per person against their mapped latest employer."
+  },
+  {
+    "pr": 10,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:68",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:1050"
+      ],
+      "id": "q1",
+      "key": "Invitation capacity now counts all outgoing history including people outside the CRM before selecting up to 25 qualified prospects, enforcing a three-person lifetime company cap.",
+      "key_facts": [
+        "counts exact recipients against cited current employers with a three-person lifetime company cap",
+        "binds each qualification citation to the same canonical profile with ASCII-safe snapshot hashing",
+        "reconciles contaminated legacy CRM rows only under strict uniqueness conditions"
+      ],
+      "type": "free"
+    },
+    "answer": "The private invitation report counts all invitation history once per person against that person\u2019s mapped latest employer."
+  },
+  {
+    "pr": 13,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private inbox, and for whom?",
+      "evidence": [
+        "docs/private-dm-actions.md:3",
+        "src/linkedin_mdp_mcp/dm_actions.py:471"
+      ],
+      "id": "q1",
+      "key": "The owner gets offline DM action queues (manual reply, follow-up, first-DM) built from verified message evidence, with ambiguous evidence withheld; the owner still writes and sends every message manually.",
+      "key_facts": [
+        "offline planning with exact identity and directional source evidence",
+        "anonymous or ambiguous evidence withholds actions; unknown read status stays unknown",
+        "no provider requests or database writes during report generation"
+      ],
+      "type": "free"
+    },
+    "answer": "Verified inbox evidence queues manual reply, follow-up, and first-DM actions for the private inbox owner."
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private source bundle, and for whom?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:92",
+        "src/linkedin_mdp_mcp/client.py:218"
+      ],
+      "id": "q1",
+      "key": "The collector now bundles bounded LinkedIn member changelog events with member identity validation, and rejects a pagination next link that adds startTime when the caller set none.",
+      "key_facts": [
+        "collects bounded changelog events with collector observation timestamps and unknown provider freshness",
+        "validates member identity before encryption",
+        "rejects endpoint/query drift including an injected startTime before a second request"
+      ],
+      "type": "free"
+    },
+    "answer": "The private source bundle now includes the changelog for its owner."
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private source bundle, and for whom?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:92",
+        "src/linkedin_mdp_mcp/client.py:218"
+      ],
+      "id": "q1",
+      "key": "The collector now bundles bounded LinkedIn member changelog events with member identity validation, and rejects a pagination next link that adds startTime when the caller set none.",
+      "key_facts": [
+        "collects bounded changelog events with collector observation timestamps and unknown provider freshness",
+        "validates member identity before encryption",
+        "rejects endpoint/query drift including an injected startTime before a second request"
+      ],
+      "type": "free"
+    },
+    "answer": "The private source bundle now includes the changelog for its owner."
+  },
+  {
+    "pr": 15,
+    "condition": "c1",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+      "evidence": [
+        "docs/combined-action-report.md:3",
+        "src/linkedin_mdp_mcp/combined_action_report.py:150"
+      ],
+      "id": "q1",
+      "key": "The owner gets one combined document with invitation recommendations, researched first-DM drafts and manual reminders composed from real upstream planner outputs, publishable to Google Docs through a safeguarded command.",
+      "key_facts": [
+        "composes real upstream planner outputs while preserving evidence, uncertainty and withheld states",
+        "publishes prepared text through a Google-only command with marker and revision safeguards",
+        "offline composition only; no LinkedIn requests, Supabase writes or outreach sends"
+      ],
+      "type": "free"
+    },
+    "answer": "The private-report owner can combine invitation and DM outputs into one report offline."
+  },
+  {
+    "pr": 15,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+      "evidence": [
+        "docs/combined-action-report.md:3",
+        "src/linkedin_mdp_mcp/combined_action_report.py:150"
+      ],
+      "id": "q1",
+      "key": "The owner gets one combined document with invitation recommendations, researched first-DM drafts and manual reminders composed from real upstream planner outputs, publishable to Google Docs through a safeguarded command.",
+      "key_facts": [
+        "composes real upstream planner outputs while preserving evidence, uncertainty and withheld states",
+        "publishes prepared text through a Google-only command with marker and revision safeguards",
+        "offline composition only; no LinkedIn requests, Supabase writes or outreach sends"
+      ],
+      "type": "free"
+    },
+    "answer": "The owner can combine private invitation and DM report outputs into one report offline."
+  }
+]

@@ -1,3 +1,19 @@
+# Repository reconciliation, 2026-10-08
+
+## Summary
+
+Recover all PRC work into one verified local baseline. Preserve experiments and unique branch evidence. Determine GitHub identity from facts. Publish an honest product and verification status.
+
+- [x] Q1. Snapshot refs and pending work; classify branches, worktrees, and release changes.
+- [x] Q2. Reconcile retained changes and archive unrelated experiments without deletion.
+- [x] Q3. Verify the product and verification skill; resolve independent findings.
+- [x] Q4. Commit the baseline and align local main. Sync only to a verified intended remote.
+- [x] Q5. Record the tracker resolution, completeness, evidence, and exact remaining gates.
+
+Throughput checkpoint. Parent owns backups, reconciliation, Git mutations, and artifact execution. Separate read-only agents own branch evidence, release/evaluation completeness, source review, and remote discovery. Each writes only its report. Existing worktrees remain intact.
+
+The shared map is `.scratch/reconciliation/map.md`. Remote discovery does not block local consolidation.
+
 # Project verification skill, 2026-10-08
 
 ## Summary
@@ -12,6 +28,36 @@ Create a Codex project skill at `.agents/skills/verify`. Drive PRC through the r
 Throughput checkpoint. Parent owns the skill and driver. One independent reviewer checks the new files while the parent runs the driver. Each run owns a unique scratch store and evidence directory. This task does not resolve the unfinished release evaluation.
 
 # Release completion, 2026-10-07
+
+## Final review comparison, 2026-10-08
+
+### Summary
+
+Finish the automatic evidence and independent source review. Prepare three captured PRs for the user's final review. Compare the plain diff, PRC, and genuine available third-party review material. Record exact revisions, tool availability, time, answers, and familiarity. Repeated exposure is a learning effect; the comparison measures usefulness and incremental findings, not an unbiased speed ranking.
+
+- [x] J1. Recover durable readers and measurements; replace the missing reviewer.
+- [ ] J2. Finish fresh single-packet readers, grading, and current grounding audits.
+- [ ] J3. Fix confirmed defects and run final package checks.
+- [x] J4. Prepare PR12, PR16, and PR19 with fixed-revision plain diffs, PRC outputs, and authentic available comparison material.
+- [ ] J5. Verify the comparison artifacts and give the user the final human review.
+
+Confirmed blank-scene defect. Eight boards omit statistics and outro reveal cues. The engine correctly keeps uncued elements invisible, but the checker accepted them. Add rejection tests before changing validation. Preserve this scored run. Render corrected boards into a separate run and repeat affected C3/C4 reads.
+
+Throughput checkpoint. Parent owns integration, comparison artifacts, and measurements. Fresh readers own one packet and write durable files under the run's reader-work directory. One independent reviewer owns a separate report. Do not reuse the unavailable Hooke verdict. Human responses remain blank until the user supplies them.
+
+## Continuation, 2026-10-08
+
+### Summary
+
+Finish the interrupted offline rebuild and release verification. Obtain independent reviews of grading and presentation changes. Preserve frozen v1 question selection and reject incomplete reader sets. Keep product acceptance open until fresh readers and human checks meet the existing targets.
+
+- [x] C1. Recover the current source and partial output run; dispatch separate grading and presentation reviewers.
+- [x] C2. Finish twelve offline outputs and inspect screenshots through the background browser.
+- [x] C3. Resolve confirmed review defects with regressions and rerun relevant checks.
+- [x] C4. Run the isolated verifier and inspect installed-wheel evidence.
+- [ ] C5. Record fresh evaluation coverage, limitations, and operator gates.
+
+Throughput checkpoint. Reviewers read disjoint source areas and write separate temporary reports. The parent owns rendering, integration, and installed-package verification. Reader packets remain isolated from source files and answer keys. Exploratory batches are archived. Acceptance uses one fresh agent per packet, with dispatch IDs and payload hashes recorded.
 
 ## Full release audit, evening continuation
 
@@ -390,3 +436,21 @@ evaluation/  protocol.py (assignment, roster seal) → scoring.py → analysis.p
 - 2026-10-04 00:36 start. 00:45 M0–M4+M7 (6/10), 52 tests. 00:52 M5–M6 (8/10), 93 tests. 00:55 M8 E2E green, full verify green (97 tests, build ok). M9 independent validation running.
 - 01:05 Independent validator (fresh context, one finite pass) reported 1 CRITICAL + 2 MAJOR: mechanical checks not bound to claim text/kind and able to close coverage; assessor crash not contained; losing publication overwrote the canonical bundle. All three fixed test-first and re-verified with the validator's own repro scripts. Final verify: ruff, format, mypy strict, 101 tests, build all pass. 10/10.
 - Decisions: Python 3.12 + stdlib + numpy (PCG64 fixed by protocol); SQLite for atomic publication/CAS; static HTML/SVG with no script (CSP `default-src 'none'`); fixture models and fixture sources are labelled in every artifact.
+
+---
+
+# Clean rebaseline and hillclimb, 2026-10-07 (continued)
+
+## Summary
+
+Rebuild all 12 PR outputs with current source into a new run, re-read with fresh readers on materialized packets, and hillclimb comprehension against the frozen targets. Frozen questions, targets, grades, and outputs stay unchanged. Grade-audit review shows the deterministic replay disagrees with reviewers 275/410 times, so reviewer grades remain the instrument of record and product tuning follows reviewer-marked wrong answers only.
+
+## Milestones
+
+- [ ] H1. Rebuild 12 outputs with current source and frozen boards into `eval/runs/2026-10-07-rebaseline/`, then materialize packets with hashes.
+- [ ] H2. Fresh readers score pilot PRs (11, 12, 17, 19) on all conditions, then the other 8. Grade and record a clean scoreboard.
+- [ ] H3. Trace each misleading answer to its causing output and fix at source, test-first. One commit per accepted win.
+- [ ] H4. Complete measurement evidence: timing medians, OCR diagnosis, judge check and grounding audit on current outputs.
+- [ ] H5. Independent review, launch docs, full verifier, commit. Operator gates (license, repo name, push, PyPI, human session) stay with the user.
+
+Q4/Q5 outcome, 2026-10-08: baseline committed on verification-skill; local main fast-forwarded (ancestor, no unique commits). No remote is configured, so no push or PR exists. Ticket 01 resolved. Ticket 02 stays blocked on the human repository-identity decision. Ticket 03 stays open for human review. Final independent recheck of the four source fixes is pending; narrow tests, lint, types, and the 572-test package check pass.

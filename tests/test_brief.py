@@ -544,3 +544,40 @@ def test_test_data_directories_are_test_files(path: str) -> None:
 
     assert [f.kind for f in brief.files] == ["test"]
     assert brief.mismatches == () and brief.look_first == ()
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "diagnostics/action-report/e2e_private_source.py",
+        "tests/e2e_inbox_sync.py",
+        "docs/guide.md",
+        ".github/workflows/check.yml",
+    ],
+)
+def test_client_names_outside_shipped_code_are_not_external_calls(path: str) -> None:
+    diff = "+from supabase_client import SupabaseClient\n+store = SupabaseClient(synthetic)"
+    brief = make("Test scaffolding", delta(path, diff=diff, head=diff))
+
+    assert [(f.path, f.sensitive) for f in brief.files] != [(path, "external calls")]
+    if not path.startswith(".github/"):
+        assert [(f.path, f.sensitive) for f in brief.files] == [(path, None)]
+
+
+def test_shipped_client_use_still_flags_external_calls() -> None:
+    diff = "+async with httpx.AsyncClient() as http:\n+    await http.get(url)"
+    brief = make("Publish", delta("src/app/publisher.py", diff=diff, head=diff))
+
+    assert [f.sensitive for f in brief.files] == ["external calls"]
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "scripts/e2e_inbox_sync.py",
+    ],
+)
+def test_end_to_end_checks_count_as_tests_outside_test_directory(path: str) -> None:
+    brief = make("Adds an end-to-end check", delta(path))
+    assert [f.kind for f in brief.files] == ["test"]

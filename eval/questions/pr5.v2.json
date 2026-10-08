@@ -1,0 +1,103 @@
+{
+  "head_sha": "5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe",
+  "pr": 5,
+  "questions": [
+    {
+      "ask": "What behaviour changes for the owner of the connection reports, and for whom?",
+      "evidence": [
+        "docs/google-docs-report.md:45",
+        "docs/google-docs-report.md:49"
+      ],
+      "id": "q1",
+      "key": "The owner gets a private repeatable morning report: one revision-guarded marker-owned Google Docs section published after owner-only permission checks, preserving operator notes, with fetched snapshot rows retained on the exact terminal no-data response.",
+      "key_facts": [
+        "one revision-guarded marker-owned section after owner-only permission checks",
+        "operator notes outside the managed region are preserved",
+        "fetched rows retained on the exact known terminal no-data response; genuine failures preserved"
+      ],
+      "type": "free"
+    },
+    {
+      "ask": "Which class carries the main change?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/google_doc_report.py:113"
+      ],
+      "id": "q2",
+      "key": "GoogleDocPublisher",
+      "type": "exact"
+    },
+    {
+      "ask": "What exact provider messages (all of them) does the new code accept as normal snapshot completion?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/client.py:15"
+      ],
+      "id": "q3",
+      "key": [
+        "No data found for this domain and memberId",
+        "No data found for this memberId"
+      ],
+      "type": "set"
+    },
+    {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_doc_report.py:141",
+        "docs/google-docs-report.md:49"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/client.py",
+        "scripts/report_connections_doc.py",
+        "tests/e2e_doc_report.py",
+        "docs/google-docs-report.md",
+        ".github/workflows/morning-report.yml",
+        ".github/workflows/report-tests.yml",
+        ".github/workflows/sync-connections.yml",
+        "docs/images/google-doc-report.jpg",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    {
+      "ask": "Which risky surface does it touch (CI, dependencies, auth, schema, secrets, external calls), or none?",
+      "evidence": [
+        ".github/workflows/morning-report.yml:13",
+        "docs/google-docs-report.md:45"
+      ],
+      "id": "q5",
+      "key": [
+        "CI",
+        "external calls"
+      ],
+      "type": "set_or_none"
+    },
+    {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_doc_report.py:141"
+      ],
+      "id": "q6",
+      "key": "The 32-scenario matrix pins snapshot-exhaustion handling: the exact terminal no-data message completes with rows retained, while first-page or unrecognized 404s still block.",
+      "type": "name_or_free"
+    },
+    {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/google_doc_report.py:113"
+      ],
+      "id": "q7",
+      "key": "src/linkedin_mdp_mcp/google_doc_report.py :: GoogleDocPublisher",
+      "type": "location"
+    },
+    {
+      "ask": "True or false: this run activates reporting, collects live data, or changes schema.",
+      "evidence": [
+        ".github/workflows/morning-report.yml:13"
+      ],
+      "id": "q8",
+      "key": "false",
+      "type": "bool"
+    }
+  ],
+  "version": 2
+}

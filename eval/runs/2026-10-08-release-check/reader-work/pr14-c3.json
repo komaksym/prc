@@ -1,0 +1,39 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private source bundle owner now receives the changelog alongside connections, invitations, and inbox, and pagination rejects an added startTime."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py",
+        "e2e_private_source.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q6",
+      "answer": "Tests pin the complete watermark, valid pagination preserving scope and events, retention of the original start time, and rejection of added start times and bad pages."
+    },
+    {
+      "id": "q7",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

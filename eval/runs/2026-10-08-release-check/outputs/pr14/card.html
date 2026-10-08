@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<title>PR card</title><style>
+:root {
+  color-scheme: dark;
+  --bg: #08090c;
+  --card: #13161d;
+  --raise: #12151b;
+  --border: #22262f;
+  --text: #eceef3;
+  --muted: #959cab;
+  --faint: #5d6473;
+  --green: #3fd68a;
+  --amber: #f2b33d;
+  --red: #f4676f;
+  --grey: #5f6676;
+  --accent: #8d9bff;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  width: 1200px;
+  height: 630px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { padding: 28px 44px 24px; height: 630px; display: flex; flex-direction: column; }
+.eyebrow {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--muted); font-size: 16px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.logo { display: inline-grid; grid-template-columns: repeat(3, 5px); gap: 3px; align-items: center; }
+.logo i { display: block; width: 5px; height: 15px; border-radius: 2px; background: var(--green); }
+.logo i:nth-child(2) { height: 10px; background: var(--amber); }
+.logo i:nth-child(3) { height: 6px; background: var(--red); }
+.headline {
+  margin: 10px 0 0;
+  font-size: 42px; line-height: 1.18; font-weight: 700; letter-spacing: -0.015em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 14px; }
+.stat {
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--raise);
+  white-space: nowrap; overflow: hidden;
+}
+.stat-value { font-size: 36px; line-height: 1.1; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+.stat-label { font-size: 17px; color: var(--muted); letter-spacing: 0.02em; }
+.stat.good .stat-value { color: var(--green); }
+.stat.warn .stat-value { color: var(--amber); }
+.stat.bad .stat-value { color: var(--red); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 14px; flex: 1 1 auto; min-height: 0; }
+.cols > div { min-width: 0; }
+h2 {
+  margin: 0 0 10px; font-size: 15px; font-weight: 700; white-space: nowrap;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint);
+}
+ul { margin: 0; padding: 0; list-style: none; }
+li {
+  position: relative; padding: 6px 0 6px 16px; overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+li::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 5px; border-radius: 2px; background: var(--st, var(--grey)); }
+li.st-added { --st: var(--green); }
+li.st-modified { --st: var(--amber); }
+li.st-deleted { --st: var(--red); }
+.name { font: 600 28px/1.3 var(--mono); letter-spacing: 0.03em; }
+.path { font: 600 21px/1.45 var(--mono); color: var(--muted); letter-spacing: 0.05em; }
+#look-first li { white-space: normal; overflow-wrap: anywhere; }
+#look-first .path { font-size: 18px; line-height: 1.3; letter-spacing: 0; }
+.reason { font-size: 20px; color: var(--muted); }
+#risky li { white-space: normal; }
+#risky .name { font-size: 20px; line-height: 1.25; overflow-wrap: anywhere; letter-spacing: 0; }
+.untested { margin-top: 14px; font-size: 19px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.untested strong { color: var(--text); font-weight: 600; }
+.untested .mono { font-family: var(--mono); }
+footer {
+  margin-top: auto; padding-top: 12px;
+  font-size: 15px; color: var(--faint);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+footer .sha { font-family: var(--mono); }
+</style></head>
+<body><div class="wrap">
+<div class="eyebrow"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><span>PR card · komaksym/linkedin-mdp#14</span></div>
+<h1 class="headline">The bundle now carries the changelog.</h1>
+<div class="stats"><div class="stat"><div class="stat-value">13</div><div class="stat-label">files</div></div><div class="stat"><div class="stat-value">7</div><div class="stat-label">symbols changed</div></div><div class="stat"><div class="stat-value">6</div><div class="stat-label">call sites</div></div><div class="stat"><div class="stat-value">1</div><div class="stat-label">tests touched</div></div><div class="stat"><div class="stat-value">1/1</div><div class="stat-label">CI passed</div></div><div class="stat warn"><div class="stat-value">4</div><div class="stat-label">no direct test</div></div></div>
+<div class="cols">
+<div id="look-first"><h2>Look here first</h2><ul><li class="st-modified"><span class="name">LinkedInMDPClient._get_paged</span><br><span class="path">src/linkedin_mdp_mcp/client.py</span></li><li class="st-modified"><span class="name">collect_sources</span><br><span class="path">diagnostics/action-report-private-source-20261002/collect_private_source.py</span></li><li class="st-modified"><span class="name">LinkedInMDPClient._next_link</span><br><span class="path">src/linkedin_mdp_mcp/client.py</span></li></ul></div>
+<div id="risky"><h2>Risky surfaces</h2><ul><li><span class="reason">None.</span></li></ul></div>
+</div>
+<div class="untested"><strong>No direct test:</strong> <span class="mono">collect_sources</span>, <span class="mono">LinkedInMDPClient._get_paged</span>, <span class="mono">LinkedInMDPClient._next_link</span> +1 more</div>
+<footer>computed from the code · komaksym/linkedin-mdp#14 · head 66e8fe47d8cf</footer>
+</div></body></html>

@@ -1,0 +1,12 @@
+ {
+   "answers": [
+     {"id": "q1", "answer": "Each invitation report row now shows date_added from its matched prospect created_at for the report reviewer, or unknown when missing."},
+     {"id": "q2", "answer": "_date_added"},
+     {"id": "q3", "answer": "if parsed > now: provenance[\"reason\"] = \"future_timestamp\""},
+     {"id": "q4", "answer": ["tests/e2e_invitation_shortlist.py", "PLANS.md", "PR10-present-employer-e2e-matrix.md", "artifacts/invitation-shortlist-e2e-evidence.json", "docs/invitation-shortlist.md", "infographic/prospect-date-added/analysis.md", "infographic/prospect-date-added/infographic.png", "infographic/prospect-date-added/prompts/01-infographic-date-added.md", "infographic/prospect-date-added/source.md", "infographic/prospect-date-added/structured-content.md", "tests/test_invitation_shortlist_e2e.py"]},
+     {"id": "q5", "answer": []},
+     {"id": "q6", "answer": "New tests pin that date_added stays unknown for missing, invalid, or future timestamps and never affects selection."},
+     {"id": "q7", "answer": "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added"},
+     {"id": "q8", "answer": false}
+   ]
+ }

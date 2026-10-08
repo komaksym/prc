@@ -1,0 +1,38 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "plan_dm_actions"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/build_private_dm_actions.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": []
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/dm_actions.py::plan_dm_actions"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+PULL REQUEST WALKTHROUGH
+
+feat(report): combine actions
+
+komaksym/linkedin-mdp#15
+
+AUTHOR komaksym
+
+HEAD 1b183458ae48f7a575ae92d8f310009671767553 commit
+
+Watch the 56 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner juggled two separate private action reports.
+
+This change combines them into one guarded document.
+
+OPEN PULL REQUEST
+feat(report): combine actions
++881 −2 · 14 files · komaksym/linkedin-mdp#15
+linkedin-mdp #15 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+Two private planner outputs sit apart today.
+
+Invitations and drafts never form one report.
+
+INVITATION SHORTLIST
+upstream planner output
+invitation-shortlist.json
+DM ACTIONS
+upstream planner output
+private-dm-actions.json
+linkedin-mdp #15 · komaksym
+RECEIPTS
+docs/combined-action-report.md#L3
+SCENE 3 OF 7 · GROUPS
+
+combine_action_reports renders one private owner report.
+
+The Google command publishes that text after a validation gate.
+
+COMBINED REPORT
+offline composition only
+Status: {status}
+PUBLISH GATE
+Google-only publication
+validate_report_text
+linkedin-mdp #15 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/combined_action_report.py#L181
+src/linkedin_mdp_mcp/combined_action_report.py#L228
+SCENE 4 OF 7 · DIFF
+
+The combiner validates both upstream envelopes before composing any text.
+
+Anything withheld or uncovered keeps the report partial.
+
+The change, line for line
+src/linkedin_mdp_mcp/combined_action_report.py
+150
++
+def combine_action_reports(invitations: Any, dm_actions: Any) -> dict
+[str, Any]:
+⋯
+156
++
+    if inv.get("schema_version") != 1 or inv.get("cap_scope") != "
+all_history" or inv.get("status") not in {"ready", "
+withheld_current_employer_assignments"}:
+⋯
+180
++
+    status = "partial" if inv.get("status") != "ready" or reasons or 
+withheld or any(withheld_counts.values()) else "complete"
+⋯
+228
++
+    text = validate_report_text("\n".join(lines))
+partial unless complete
+linkedin-mdp #15 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/combined_action_report.py#L150
+src/linkedin_mdp_mcp/combined_action_report.py#L156
+src/linkedin_mdp_mcp/combined_action_report.py#L180
+src/linkedin_mdp_mcp/combined_action_report.py#L228
+SCENE 5 OF 7 · LIST
+
+New tests pin complete composition across real upstream shapes.
+
+1
+new tests
+ok
+all_sections_complete
+e2e_combined_action_report.py:125
+ok
+empty_message_text_preserves_sources
+e2e_combined_action_report.py:143
+linkedin-mdp #15 · komaksym
+RECEIPTS
+tests/e2e_combined_action_report.py#L125
+tests/e2e_combined_action_report.py#L143
+SCENE 6 OF 7 · STATS
+
+New tests guard the combined report pipeline.
+
+Changed functions carry the compose path.
+
+1
+new tests
+26
+changed functions
+linkedin-mdp #15 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+One combined report composes invitation and DM outputs offline.
+Start review at combine_action_reports in combined_action_report.py.
+prc map github.com/komaksym/linkedin-mdp/pull/15
+undefined
+linkedin-mdp #15 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+artifacts/combined-action-report-e2e-evidence.json config
+infographic/combined-action-report/analysis.md docs
+infographic/combined-action-report/infographic.png opaque
+infographic/combined-action-report/prompts/01-infographic-combined-report.md docs
+infographic/combined-action-report/source.md docs
+infographic/combined-action-report/structured-content.md docs
+scripts/build_combined_action_report.py code
+scripts/publish_combined_action_report.py code
+src/linkedin_mdp_mcp/google_doc_report.py code
+tests/test_combined_action_report_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+_Parser scripts/build_combined_action_report.py
+_Parser.error scripts/build_combined_action_report.py
+_private_file scripts/build_combined_action_report.py
+_remove_owned scripts/build_combined_action_report.py
+_write scripts/build_combined_action_report.py
+main scripts/build_combined_action_report.py
+_Parser scripts/publish_combined_action_report.py
+_Parser.error scripts/publish_combined_action_report.py
+_publish scripts/publish_combined_action_report.py
+main scripts/publish_combined_action_report.py
+CombinedReportError src/linkedin_mdp_mcp/combined_action_report.py
+_citations src/linkedin_mdp_mcp/combined_action_report.py
+_counts src/linkedin_mdp_mcp/combined_action_report.py
+_dm_lines src/linkedin_mdp_mcp/combined_action_report.py
+_invitation_lines src/linkedin_mdp_mcp/combined_action_report.py
+_json_contract src/linkedin_mdp_mcp/combined_action_report.py
+_object src/linkedin_mdp_mcp/combined_action_report.py
+_profile src/linkedin_mdp_mcp/combined_action_report.py
+_rows src/linkedin_mdp_mcp/combined_action_report.py
+_show src/linkedin_mdp_mcp/combined_action_report.py
+_string src/linkedin_mdp_mcp/combined_action_report.py
+GoogleDocPublisher src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.publish src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.publish_text src/linkedin_mdp_mcp/google_doc_report.py
+validate_report_text src/linkedin_mdp_mcp/google_doc_report.py
+
+Built by prc explain from the checked board.
+
+1b183458ae48f7a575ae92d8f310009671767553

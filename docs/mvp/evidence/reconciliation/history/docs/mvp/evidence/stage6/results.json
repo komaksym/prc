@@ -1,0 +1,38 @@
+{
+  "pr": "komaksym/linkedin-mdp#19",
+  "command": "prc explain --source https://github.com/komaksym/linkedin-mdp/pull/19 --map /Users/koval/dev/prc/prototypes/mdp/maps/pr19/cf2927e42529d8ea/map.json --voice none",
+  "worktree": ".claude/worktrees/stage6",
+  "branch": "stage6-large",
+  "map_source": "stored map.json from prototypes/mdp/maps/pr19/cf2927e42529d8ea (head_sha 5ec569d6f35a198021164a09b1769e8bda052ede, matches live head)",
+  "counts": {
+    "files": 62,
+    "changed_symbols": 311,
+    "symbols_total": 326,
+    "edges": 639,
+    "groups": 4,
+    "grouped_edges": 4,
+    "grouped_edge_calls_total": 43,
+    "grouped_edge_calls_detail": "scripts←src/linkedin_mdp_mcp 20, tests→src/linkedin_mdp_mcp 16, tests→scripts 5, diagnostics→src/linkedin_mdp_mcp 2"
+  },
+  "timings": {
+    "clock": "macOS /usr/bin/time -p and time.perf_counter, measured 2026-10-06, M-series laptop, PR 19 git cache warm",
+    "explain_wall_s": 5.5,
+    "explain_total_python_s": 4.7,
+    "acquisition_and_map_build_s": 4.2,
+    "layout_map_s": 0.018,
+    "map_html_render_s": 0.161,
+    "board_write_s": null,
+    "video_render_s": null,
+    "note": "voice none and no board, so the video render and board write did not run; the 5-minute guard in the plan (excluding board writing) passes with a large margin"
+  },
+  "screenshot": {
+    "viewport": "1280x800 at deviceScaleFactor 2",
+    "browser": "Playwright Chromium, cache reused from ~/Library/Caches/ms-playwright",
+    "after": "docs/mvp/evidence/stage6/pr19-map-after.png",
+    "before": "docs/mvp/evidence/stage6/pr19-map-before.png",
+    "ocr": "docs/mvp/evidence/stage6/pr19-map-after-ocr.txt",
+    "ocr_result": "all 4 group labels found (diagnostics/verify_inbox_live.py, scripts, src/linkedin_mdp_mcp, tests); before the fix the first label was ellipsized and OCR missed it",
+    "first_screen_cards": 4,
+    "first_screen_limit": 25
+  }
+}

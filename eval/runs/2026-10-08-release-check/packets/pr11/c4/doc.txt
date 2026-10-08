@@ -1,0 +1,131 @@
+PULL REQUEST WALKTHROUGH
+
+fix(collector): fetch prospect timestamps
+
+komaksym/linkedin-mdp#11
+
+AUTHOR komaksym
+
+HEAD 306ff5a26ca6502173b40eeb723826e9e3eca6cd commit
+
+Watch the 59 s video
+
+SCENE 1 OF 6 · TITLE
+
+The private collector keeps prospect timestamps.
+
+This change fetches the existing created_at column.
+
+OPEN PULL REQUEST
+fix(collector): fetch prospect timestamps
++259 −1 · 12 files · komaksym/linkedin-mdp#11
+linkedin-mdp #11 · komaksym
+SCENE 2 OF 6 · GROUPS
+
+The collector fetched each prospect row without its timestamp.
+
+The projection left out the created_at column.
+
+PROSPECT ROW
+collector projection
+id
+attrs
+no created_at fetched
+linkedin-mdp #11 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L19
+SCENE 3 OF 6 · GROUPS
+
+Now the same projection asks for created_at too.
+
+Each encrypted row keeps the provider timestamp exactly.
+
+PROSPECT ROW
+collector projection
+id
+attrs
+created_at
+provider value kept
+linkedin-mdp #11 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L19
+SCENE 4 OF 6 · DIFF
+
+One column joins the prospect projection.
+
+The events line stays exactly as it was.
+
+The change, line for line
+diagnostics/action-report-private-source-20261002/collect_private_source.py
+18
+TABLE_COLUMNS = {
+19
+−
+    "prospects": "id,lead_id,linkedin_url,attributes",
+19
++
+    "prospects": "id,lead_id,linkedin_url,attributes,created_at",
+20
+    "events": "id,prospect_id,source,event_type,external_key,
+occurred_at,payload,created_at",
+linkedin-mdp #11 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L18
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L19
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L19
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L20
+SCENE 5 OF 6 · LIST
+
+A synthetic end to end test pins the behavior.
+
+Exact timestamps survive paging, and a missing value stays missing.
+
+synthetic evidence
+✓
+prospect_created_at_exact_across_pages
+e2e_private_source.py:116
+✓
+missing_created_at
+e2e_private_source.py:117
+✓
+2025-01-02T03:04:05.123456+00:00
+e2e_private_source.py:63
+linkedin-mdp #11 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L116
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L117
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L63
+SCENE 6 OF 6 · OUTRO
+
+Prospect rows now carry their creation timestamps.
+
+Start at the projection map in collect_private_source.py.
+
+Prospect rows now carry their creation timestamps.
+Start at TABLE_COLUMNS in collect_private_source.py.
+prc map github.com/komaksym/linkedin-mdp/pull/11
+prc explain renders this board; prc posted nothing
+linkedin-mdp #11 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+diagnostics/action-report-private-source-20261002/README.md docs
+diagnostics/action-report-private-source-20261002/e2e-evidence.json config
+infographic/prospect-created-at/analysis.md docs
+infographic/prospect-created-at/infographic.png opaque
+infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md docs
+infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md docs
+infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md docs
+infographic/prospect-created-at/source.md docs
+infographic/prospect-created-at/structured-content.md docs
+CHANGED SYMBOLS NOT SHOWN
+exercise.provider diagnostics/action-report-private-source-20261002/e2e_private_source.py
+main.failing_export diagnostics/action-report-private-source-20261002/e2e_private_source.py
+main.synthetic_export diagnostics/action-report-private-source-20261002/e2e_private_source.py
+
+Built by prc explain from the checked board.
+
+306ff5a26ca6502173b40eeb723826e9e3eca6cd

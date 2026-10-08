@@ -15,7 +15,7 @@ from pathlib import Path
 
 root, checkout = map(Path, sys.argv[1:])
 paths = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z']).decode().split('\0')
-for pattern in ['tests/test_release*.py', 'tests/test_eval*.py', 'tests/test_explain_publication.py', 'scripts/verify-release.sh']:
+for pattern in ['tests/test_release*.py', 'tests/test_eval*.py', 'tests/test_card_receipts.py', 'tests/test_explain_publication.py', 'scripts/eval/*.py', 'scripts/verify-release.sh']:
     paths += [str(path.relative_to(root)) for path in root.glob(pattern)]
 for name in paths:
     if name and (root / name).is_file():
@@ -89,9 +89,12 @@ with sync_playwright() as driver:
     page.locator(f'[data-node="s{checkout}"]').click()
     assert page.locator('#drawer').get_attribute('aria-hidden') == 'false'
     assert 'apply_discount' in page.locator('#drawer').inner_text()
+    page.wait_for_function("() => getComputedStyle(document.querySelector('#drawer')).transform === 'none'")
     page.screenshot(path=str(screenshots / 'map-drawer.png'))
     page.keyboard.press('Escape')
     assert page.locator('#drawer').get_attribute('aria-hidden') == 'true'
+    page.wait_for_function("() => document.querySelector('#drawer').getBoundingClientRect().left >= innerWidth")
+    page.screenshot(path=str(screenshots / 'map-closed.png'))
     page.set_viewport_size({'width': 800, 'height': 900})
     page.goto((folder / 'doc.html').as_uri())
     page.wait_for_function('window.docReady === true')

@@ -373,24 +373,38 @@ def _change_map_from_stored(stored: dict[str, object]) -> ChangeMap:
     """Rebuild render inputs from a stored map.json. No network, no acquisition."""
     from typing import Any, cast
 
-    from prc.brief import Brief, Check, FileChange, Mismatch, Pointer
+    from prc.brief import Brief, Check, FileChange, Mismatch
     from prc.changemap import ChangeMap, DiffLine, Edge, FileNode, Hunk, Step, Symbol
 
     raw_brief = cast(dict[str, Any], stored["brief"])
-    from prc.brief import calls_external
+    from prc.brief import Delta, calls_external, is_shipped_code, kind_of, pointers_of, reason_of
 
     raw_files_for_brief = cast(list[Any], stored["files"])
-    brief_reasons = {f["path"]: f.get("sensitive") for f in raw_brief["files"]}
+    captured_files = {f["path"]: f for f in raw_brief["files"]}
+    deltas: dict[str, Delta] = {}
     brief_files = []
     for f in raw_files_for_brief:
         diff_text = "\n".join(
-            ln["text"] for h in f["hunks"] for ln in h["lines"] if ln["op"] == "+"
+            f"+{ln['text']}" for h in f["hunks"] for ln in h["lines"] if ln["op"] == "+"
         )
-        sensitive = brief_reasons.get(f["path"]) or (
-            "external calls" if calls_external(diff_text, "") else None
+        captured = captured_files.get(f["path"], {})
+        sensitive = reason_of(f["path"]) or (
+            "external calls"
+            if is_shipped_code(f["path"])
+            and (calls_external(diff_text, "") or captured.get("sensitive") == "external calls")
+            else None
         )
+        delta = Delta(f["path"], f["kind"] == "opaque", f["added"], f["removed"], diff_text, "")
+        deltas[f["path"]] = delta
         brief_files.append(
-            FileChange(f["path"], f["kind"], f["added"], f["removed"], False, sensitive)
+            FileChange(
+                f["path"],
+                kind_of(delta),
+                f["added"],
+                f["removed"],
+                bool(captured.get("named", False)),
+                sensitive,
+            )
         )
     brief = Brief(
         pr=str(raw_brief["pr"]),
@@ -399,7 +413,7 @@ def _change_map_from_stored(stored: dict[str, object]) -> ChangeMap:
         files=tuple(brief_files),
         checks=tuple(Check(**c) for c in raw_brief["checks"]),
         mismatches=tuple(Mismatch(**mm) for mm in raw_brief["mismatches"]),
-        look_first=tuple(Pointer(**p) for p in raw_brief["look_first"]),
+        look_first=pointers_of(tuple(brief_files), deltas),
     )
 
     def hunks(raw: Any) -> Any:
@@ -409,13 +423,14 @@ def _change_map_from_stored(stored: dict[str, object]) -> ChangeMap:
         )
 
     raw_files = cast(list[Any], stored["files"])
+    brief_by_path = {f.path: f for f in brief.files}
     files = tuple(
         FileNode(
             f["path"],
-            f["kind"],
+            brief_by_path[f["path"]].kind,
             f["status"],
             f["language"],
-            f["sensitive"],
+            brief_by_path[f["path"]].sensitive,
             f["added"],
             f["removed"],
             hunks(f["hunks"]),
@@ -471,7 +486,8 @@ def load_map_dict(
         stored = json.loads(map_path.read_text())
         change_map = _change_map_from_stored(stored)
         repo = Path(f"prototypes/mdp/store/git-cache/{ref.owner}__{ref.repo}__{ref.number}.git")
-        return stored, stored, change_map, repo
+        reconciled = to_jsonable(change_map)
+        return reconciled, reconciled, change_map, repo
     live_dict, change_map, repo = _live_map_dict(source, ref, clock, policy)
     return live_dict, live_dict, change_map, repo
 

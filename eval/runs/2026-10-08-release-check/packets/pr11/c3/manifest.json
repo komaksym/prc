@@ -1,0 +1,48 @@
+{
+  "condition": "c3",
+  "files": [
+    "frame-01.png",
+    "frame-02.png",
+    "frame-03.png",
+    "frame-04.png",
+    "frame-05.png",
+    "frame-06.png",
+    "frame-07.png",
+    "frame-08.png",
+    "frame-09.png",
+    "frame-10.png",
+    "frame-11.png",
+    "frame-12.png",
+    "frame-13.png",
+    "frame-14.png",
+    "frame-15.png",
+    "frame-16.png",
+    "frames.json",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "board.json": "0ee58a763ecfbfef82823aa6a9d7914ad23baf061c4946e28b4dbbdede217b05",
+    "run.json": "876ea9610458966fe5a51423b921faa75240a98f7f3de9a9c4de785c2f9a1257",
+    "video.mp4": "2db212c11cb9f0cf990d8220fb0b95ba09920c2cf4bb4e51c33425889310224d"
+  },
+  "payload_sha256": {
+    "frame-01.png": "6b0c752a3053bafa246dd912f9f7df825f784cb6a3412c688c8206b2d45a3d1f",
+    "frame-02.png": "53c6b67461d833ceb9e11a7dd1c27b4f61f92418d670a7d0bf073c0cf7fe3953",
+    "frame-03.png": "ea3f6c7748240a5127a46a88e47b77049982a39dd3ed70f5ea4707c77b6e6b23",
+    "frame-04.png": "626a5058a74e284d08594936f1646f292c2c5729139cf7aed93b15a71eff2e3d",
+    "frame-05.png": "76e470f42666df7024d90644bfc6873a9abc423b3458e239132e4c7c342fa331",
+    "frame-06.png": "8e37b23701ffc8a32b50986c79fb619d7ef736bc117d15052cabf8745d0bf6d7",
+    "frame-07.png": "767f96e3ccc3aef560466048a68d414a420ef570161105d5ef671ffd05535d46",
+    "frame-08.png": "7072efce2a0c11568ee4b1dfa2dad977848e63b39dd9ed139faec4efc098e8cd",
+    "frame-09.png": "c6544dd2cf605f2738c2067e36f05ff796bccd337c8099028c4333d0326e6e7e",
+    "frame-10.png": "ff167c0f753099d8203c30a533510549475122f24647ddcea79aaf8d664157d7",
+    "frame-11.png": "43ca457f8edfbc3eb546c03606ea8a225ad3aeba0955285776f8faeffd9680af",
+    "frame-12.png": "2f14b22f15351824bbad5fee071e01421c4176195c8ede95a03066cfc9f6488a",
+    "frame-13.png": "492a4878756a4266146a827f2ba18e3bf41efa10e67ed8f4831d98c0e6049ad8",
+    "frame-14.png": "cf4917178a27b9366f95913bbc01f68c5ac125c97e80af35ad08d272472b27a9",
+    "frame-15.png": "caa358931bae5d1f50f399fbde2cbd7cae55f2152b9181c197edc376652cdcf1",
+    "frame-16.png": "295c5eee4198efadb499d3d89d7e6c2fadfeaaa458582c639a9408c0784df562",
+    "frames.json": "8f66270122dfd2e7d35a5f66c9ca58a300ada4df00044972d1698231ae484b15",
+    "prompt.md": "48e76e15e5f75db0e7720fdd6f49b0da783c5ea8149bcf70282cd8490f150cc1"
+  }
+}

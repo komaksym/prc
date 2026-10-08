@@ -1,0 +1,24 @@
+{
+  "board": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/boards/pr11.json",
+  "card": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/card.png",
+  "check": {
+    "changed": 6,
+    "covered": 3,
+    "passed": true,
+    "receipts": 16,
+    "tests_added": 0
+  },
+  "comment": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/comment.md",
+  "doc": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/doc.html",
+  "duration_seconds": 59.0,
+  "estimate_seconds": 46.57,
+  "fps": 30,
+  "layout_warnings": [],
+  "live_head_sha": null,
+  "map_source": "stored",
+  "pr": "komaksym/linkedin-mdp#11",
+  "predicted_seconds": 59.0,
+  "source": "github",
+  "stored_head_sha": "306ff5a26ca6502173b40eeb723826e9e3eca6cd",
+  "voice": "none"
+}

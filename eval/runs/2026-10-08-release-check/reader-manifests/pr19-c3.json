@@ -1,0 +1,44 @@
+{
+  "condition": "c3",
+  "files": [
+    "frame-01.png",
+    "frame-02.png",
+    "frame-03.png",
+    "frame-04.png",
+    "frame-05.png",
+    "frame-06.png",
+    "frame-07.png",
+    "frame-08.png",
+    "frame-09.png",
+    "frame-10.png",
+    "frame-11.png",
+    "frame-12.png",
+    "frame-13.png",
+    "frame-14.png",
+    "frames.json",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "board.json": "09720f313922fbbd725069872fe094b21dfbcc63963c83cea7abe9413e32b802",
+    "run.json": "f6da846442439010cb6937c0c801f83bf7309b584928ea638dc7cf6c75078d11",
+    "video.mp4": "931f24dc9b63d301d0448f6b50bb59b76eb54844b41cf4ce69a93e0100c7bd57"
+  },
+  "payload_sha256": {
+    "frame-01.png": "5a8d9e62eb5457e7dac8e3558c60ba76ef2d74da3fd430e462374884eece3d33",
+    "frame-02.png": "d599e6ed70f80458bea646db80065137548900c7b4c12bbdba8c48f1037a5e2b",
+    "frame-03.png": "b616ab8914a3592fa9589ecdcdf51a17ea504002e492780dd91839985afccf0a",
+    "frame-04.png": "af3760078647917f0ddc3811ce672d7d4304ce65af237e56d4b0708d8037498a",
+    "frame-05.png": "fbc56e5843c74c2c46f02447749781aa609d5d88d5cd262bc3b69820eb0493f8",
+    "frame-06.png": "3b7eea70ce17a1c51e7ea8f7cf92f3b08891b3863c26274c411d62e40d7c07e3",
+    "frame-07.png": "390d8ebe5ab770bebbc15f6e433622425ed4276c1152fb09fdba1bfc72c6579a",
+    "frame-08.png": "0c23236138d41fe2d597bb3fe94443507abb2b20b02146cb21dd4f76b7b507ca",
+    "frame-09.png": "56b05d4544578cf27d4de1722742e6930ca45ab107ea48980011f973b0665c5f",
+    "frame-10.png": "483b63133362cf08381a74ee6346f11481eb0f70efe0f2753ca58bdee6c7c0bc",
+    "frame-11.png": "4adec92b25f3954a0ff8e445e19bc413c33b621dbf2f60bd4312dc285ad52e9e",
+    "frame-12.png": "d6c0c0e4c5ce383abbb829e362eb9ee10a4559a71f16a74ccf0f63b4eb558789",
+    "frame-13.png": "1f77385c1864879142de917e71ecb5b38898a7cc8546fa85e07fa26f832e4d81",
+    "frame-14.png": "84413baa8313c026508d218dc8bcc6bbca8fe61385bd3e393b2b208b439c565a",
+    "frames.json": "962d4ef3bf0cc02af51589ae0cf0c3e9dacf23ee84b8614f587be27a60369ee1",
+    "prompt.md": "cb4906a8f26058f18bde91a24f6e1fb27fcc8968133b2f90af7e19af73b14f41"
+  }
+}

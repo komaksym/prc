@@ -1,0 +1,1960 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ZIRvi2Yaj7xStloGM4lDVKhjThQ9+8MVXIt1MHHT9OI='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="referrer" content="no-referrer"><link rel="icon" href="data:,"><title>PR map</title><style>:root {
+  color-scheme: dark;
+  --bg: #08090c;
+  --dot: rgba(255, 255, 255, 0.07);
+  --panel: rgba(14, 16, 21, 0.88);
+  --panel-solid: #0e1015;
+  --raise: #12151b;
+  --card: #13161d;
+  --card-ctx: #0e1015;
+  --border: #22262f;
+  --border-strong: #2f3440;
+  --band: rgba(255, 255, 255, 0.018);
+  --text: #eceef3;
+  --muted: #959cab;
+  --faint: #5d6473;
+  --green: #3fd68a;
+  --amber: #f2b33d;
+  --red: #f4676f;
+  --grey: #5f6676;
+  --accent: #8d9bff;
+  --edge: #4a505e;
+  --add-bg: rgba(63, 214, 138, 0.11);
+  --del-bg: rgba(244, 103, 111, 0.11);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --dot: rgba(15, 23, 42, 0.09);
+    --panel: rgba(255, 255, 255, 0.9);
+    --panel-solid: #ffffff;
+    --raise: #ffffff;
+    --card: #ffffff;
+    --card-ctx: #f9fafb;
+    --border: #e1e4ea;
+    --border-strong: #cfd4dc;
+    --band: rgba(15, 23, 42, 0.022);
+    --text: #0f1420;
+    --muted: #5b6372;
+    --faint: #8b93a1;
+    --green: #129b5a;
+    --amber: #c27c0e;
+    --red: #d6363f;
+    --grey: #9aa1ad;
+    --accent: #4f5bd5;
+    --edge: #a3a9b5;
+    --add-bg: rgba(18, 155, 90, 0.1);
+    --del-bg: rgba(214, 54, 63, 0.09);
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 6px 20px rgba(15, 23, 42, 0.07);
+    --shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.18);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh;
+}
+
+.st-added { --st: var(--green); }
+.st-modified { --st: var(--amber); }
+.st-deleted { --st: var(--red); }
+.st-context { --st: var(--grey); }
+
+/* Header */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-solid);
+  position: relative;
+  z-index: 5;
+}
+
+.headline { min-width: 0; flex: 1 1 0; }
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.logo {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 2px;
+  align-items: center;
+}
+
+.logo i {
+  display: block;
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--green);
+}
+
+.logo i:nth-child(2) { height: 8px; background: var(--amber); }
+.logo i:nth-child(3) { height: 5px; background: var(--red); }
+
+.brand-name {
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.meta { overflow: hidden; text-overflow: ellipsis; }
+.meta .sep { color: var(--faint); margin: 0 6px; }
+.meta .mono { font-family: var(--mono); font-size: 11.5px; }
+
+.meta a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.meta a:hover { text-decoration: underline; }
+
+h1 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 72px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--raise);
+  white-space: nowrap;
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat.good .stat-value { color: var(--green); }
+.stat.bad .stat-value { color: var(--red); }
+.stat.warn .stat-value { color: var(--amber); }
+.stat.none .stat-value { color: var(--muted); }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.play {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.play:hover { opacity: 0.9; }
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-left: 9px solid currentColor;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.playing .play-icon {
+  width: 10px;
+  height: 12px;
+  border: 0;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+/* Canvas */
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.viewport.dragging { cursor: grabbing; }
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.band {
+  position: absolute;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: var(--band);
+}
+
+.band-label {
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.edges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.e {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.5;
+  transition: opacity 160ms ease;
+}
+
+.e-added {
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 8 6;
+  animation: flow 1s linear infinite;
+}
+
+.e-removed {
+  stroke: var(--red);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 5;
+  opacity: 0.85;
+}
+
+.e-name {
+  stroke-dasharray: 1 6;
+  stroke-linecap: round;
+  stroke-width: 2.25;
+}
+
+.e-added.e-name { stroke-width: 2.5; }
+
+.arrow-added { fill: var(--green); }
+.arrow-removed { fill: var(--red); }
+.arrow-kept { fill: var(--edge); }
+
+@keyframes flow {
+  to { stroke-dashoffset: -28; }
+}
+
+/* Nodes */
+
+.node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 160ms ease, border-color 120ms ease, box-shadow 160ms ease;
+}
+
+.node:hover { border-color: var(--border-strong); }
+.node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.node .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--st);
+}
+
+.node.st-context {
+  background: var(--card-ctx);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.node.st-context .bar { opacity: 0.6; }
+
+.n-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.glyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font: 600 10.5px/1 var(--mono);
+}
+
+.name {
+  min-width: 0;
+  flex: 1 1 auto;
+  font: 600 13px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-context .name { color: var(--muted); font-weight: 500; }
+
+.st-deleted .name {
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  color: var(--muted);
+}
+
+.pill {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--st);
+  background: color-mix(in srgb, var(--st) 14%, transparent);
+}
+
+.path {
+  font: 11px/1.35 var(--mono);
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+}
+
+.path > span { direction: ltr; unicode-bidi: isolate; }
+
+.n-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.n-row > .path { flex: 1 1 auto; min-width: 0; }
+
+.n-row > .sites {
+  flex: none;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.delta { font: 600 11.5px/1 var(--mono); }
+.plus { color: var(--green); }
+.minus { color: var(--red); }
+
+.badge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}
+
+.chip {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 12px 0 16px;
+  border-radius: 999px;
+}
+
+.chip .bar { width: 3px; }
+
+.chip .name { flex: 0 1 auto; font-weight: 500; font-size: 12.5px; }
+.chip.st-deleted .name { color: var(--muted); }
+
+.dense .sym {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.dense .sym .bar { width: 3px; }
+.dense .sym .name { font-size: 12px; }
+.dense .sym .glyph { width: 16px; height: 16px; font-size: 9.5px; }
+.dense .sym .pill { padding: 0 5px; font-size: 9px; }
+
+.flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font: 700 10px/1 var(--sans);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+}
+
+.group {
+  position: absolute;
+  padding: 6px 4px 0;
+  font: 11px/1.3 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  pointer-events: none;
+}
+
+.group > span { direction: ltr; unicode-bidi: isolate; }
+
+body:not(.touring) .dense .e:not(.lit) { opacity: 0; }
+
+.empty {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.risk {
+  flex: none;
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 35%, transparent);
+  white-space: nowrap;
+}
+
+.world.far .path,
+.world.far .sites { display: none; }
+.world.far .name { font-size: 16px; }
+.world.far .pill { font-size: 12px; }
+
+.hovering .node:not(.lit),
+.hovering .e:not(.lit) { opacity: 0.14; }
+
+.hovering .e.lit { stroke-width: 2.5; }
+
+.node.lit { border-color: var(--border-strong); }
+
+.node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent), var(--shadow);
+}
+
+.node.focus {
+  border-color: var(--st);
+  box-shadow: 0 0 0 1px var(--st), 0 0 40px color-mix(in srgb, var(--st) 40%, transparent), var(--shadow);
+}
+
+/* Tour */
+
+.touring .node,
+.touring .e { transition: none; }
+
+.touring .e-added { animation: none; }
+
+.spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 40%, transparent 35%, color-mix(in srgb, var(--bg) 82%, transparent) 100%);
+}
+
+.touring .spot { opacity: 1; }
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  display: none;
+}
+
+.touring .progress { display: block; }
+
+#progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: min(760px, calc(100% - 48px));
+  transform: translateX(-50%);
+  padding: 16px 24px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .caption { display: block; }
+
+.cap-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cap-count { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+.cap-main {
+  margin-top: 6px;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.cap-main .code { font-family: var(--mono); font-size: 20px; }
+
+.cap-sub {
+  margin-top: 6px;
+  font: 12.5px/1.4 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(720px, calc(100% - 48px));
+  transform: translate(-50%, -50%);
+  padding: 32px 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .summary { display: block; }
+
+.sum-kicker {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sum-title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.sum-cell {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--raise);
+}
+
+.sum-num {
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sum-label { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.sum-cell.good .sum-num { color: var(--green); }
+.sum-cell.bad .sum-num { color: var(--red); }
+.sum-cell.warn .sum-num { color: var(--amber); }
+
+.sum-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sum-brand {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* Floating controls */
+
+.legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 11.5px;
+  color: var(--muted);
+  box-shadow: var(--shadow);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.sw {
+  width: 10px;
+  height: 10px;
+  margin-left: 6px;
+  border-radius: 3px;
+  background: var(--st);
+}
+
+.sw:first-child, .ls:first-child { margin-left: 0; }
+.ls { width: 32px; height: 8px; margin-left: 8px; overflow: visible; }
+
+.zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.zoom button {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.zoom button:last-child { border-right: 0; }
+.zoom button:hover { color: var(--text); background: var(--band); }
+
+.touring .legend,
+.touring .zoom { opacity: 0; pointer-events: none; }
+
+/* Drawer */
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 92vw);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--panel-solid);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(104%);
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 4;
+  cursor: auto;
+  user-select: text;
+}
+
+.drawer[aria-hidden="false"] { transform: none; }
+
+.d-head {
+  position: relative;
+  padding: 20px 56px 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.d-head .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--st);
+}
+
+.d-tags { display: flex; align-items: center; gap: 8px; }
+
+.d-kind {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.d-name {
+  margin: 8px 0 4px;
+  font: 650 18px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+
+.st-deleted .d-name { text-decoration: line-through; text-decoration-color: var(--red); }
+
+.d-path { font: 12px/1.4 var(--mono); color: var(--muted); word-break: break-all; }
+
+.d-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.d-close:hover { color: var(--text); border-color: var(--border-strong); }
+
+.d-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fact {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.fact.warn { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, transparent); }
+.fact.bad { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+.d-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px 0 24px;
+}
+
+.d-section { padding: 16px 24px 0; }
+
+.d-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.d-empty { font-size: 12.5px; color: var(--faint); }
+
+.diff {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+  background: var(--bg);
+  font: 12px/20px var(--mono);
+}
+
+.diff-rows { width: max-content; min-width: 100%; }
+
+.hunk-head {
+  padding: 2px 12px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+.diff-rows .hunk-head:first-child { border-top: 0; }
+
+.dl {
+  display: grid;
+  grid-template-columns: 40px 40px 20px auto;
+  white-space: pre;
+}
+
+.dl .ln {
+  padding-right: 8px;
+  text-align: right;
+  color: var(--faint);
+  user-select: none;
+}
+
+.dl .sg { text-align: center; user-select: none; }
+.dl .code { padding-right: 16px; }
+.dl.add { background: var(--add-bg); }
+.dl.add .sg { color: var(--green); }
+.dl.del { background: var(--del-bg); }
+.dl.del .sg { color: var(--red); }
+
+.links { display: grid; gap: 4px; }
+
+.link {
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--raise);
+  text-align: left;
+  overflow: hidden;
+}
+
+.link:hover { border-color: var(--border-strong); }
+.link .bar { height: 100%; min-height: 32px; background: var(--st); border-radius: 0 2px 2px 0; }
+.link-text { min-width: 0; }
+.link-name { display: block; font: 600 12.5px/1.35 var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-path { display: block; font: 11px/1.35 var(--mono); color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.etag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.etag.added { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); }
+.etag.removed { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+/* Footer */
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-solid);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.brand-line { font-weight: 550; color: var(--text); opacity: 0.8; }
+.hints { color: var(--faint); overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 1440px) {
+  .top { gap: 16px; }
+  .stat { min-width: 0; padding: 6px 10px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 10.5px; }
+}
+
+@media (max-width: 1100px) {
+  .top { flex-wrap: wrap; }
+  .stats { order: 3; flex-basis: 100%; overflow-x: auto; }
+  .hints { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .e-added { animation: none; }
+  .drawer { transition: none; }
+}
+</style></head><body><div class="app"><header class="top"><div class="headline"><div class="eyebrow"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">PR map</span><span id="meta" class="meta"></span></div><h1 id="title"></h1></div><div id="stats" class="stats"></div><button id="play" class="play" type="button"><span class="play-icon" aria-hidden="true"></span><span id="play-label">Play tour</span></button></header><main id="viewport" class="viewport"><div id="world" class="world"></div><div class="spot" aria-hidden="true"></div><div id="progress" class="progress" aria-hidden="true"><div id="progress-bar"></div></div><div id="caption" class="caption" aria-live="polite"></div><div id="summary" class="summary"></div><div class="legend" aria-label="Legend"><div class="legend-row"><span class="sw st-added"></span>added<span class="sw st-modified"></span>modified<span class="sw st-deleted"></span>deleted<span class="sw st-context"></span>unchanged</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-added" d="M2 4H38"/></svg>new call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-removed" d="M2 4H38"/></svg>removed call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept" d="M2 4H38"/></svg>call</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept e-name" d="M2 4H38"/></svg>dotted: matched by name only, no import proves it</div></div><div class="zoom"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-fit" type="button">Fit</button></div><aside id="drawer" class="drawer" aria-hidden="true"></aside></main><footer class="foot"><span class="brand-line">PR map · computed from the code, no AI drew this</span><span class="hints">Click a node for its diff · Drag to pan, pinch or Ctrl+scroll to zoom · Space steps the tour · F fits</span></footer></div><script type="application/json" id="map-data">{"author":"komaksym","base_sha":"ea23445f4ce3771d233443e9a31bd79596e0f4f9","brief":{"checks":[{"name":"Greptile Review","state":"passed"}],"files":[{"added":14,"kind":"docs","named":false,"path":"PLANS.md","removed":0,"sensitive":null},{"added":5,"kind":"docs","named":false,"path":"diagnostics/action-report-private-source-20261002/README.md","removed":0,"sensitive":null},{"added":1,"kind":"code","named":true,"path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","removed":1,"sensitive":null},{"added":28,"kind":"config","named":true,"path":"diagnostics/action-report-private-source-20261002/e2e-evidence.json","removed":0,"sensitive":null},{"added":177,"kind":"code","named":true,"path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","removed":0,"sensitive":null},{"added":1,"kind":"docs","named":false,"path":"infographic/prospect-created-at/analysis.md","removed":0,"sensitive":null},{"added":0,"kind":"opaque","named":false,"path":"infographic/prospect-created-at/infographic.png","removed":0,"sensitive":null},{"added":9,"kind":"docs","named":false,"path":"infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md","removed":0,"sensitive":null},{"added":11,"kind":"docs","named":false,"path":"infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md","removed":0,"sensitive":null},{"added":1,"kind":"docs","named":false,"path":"infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md","removed":0,"sensitive":null},{"added":7,"kind":"docs","named":true,"path":"infographic/prospect-created-at/source.md","removed":0,"sensitive":null},{"added":5,"kind":"docs","named":false,"path":"infographic/prospect-created-at/structured-content.md","removed":0,"sensitive":null}],"head_sha":"306ff5a26ca6502173b40eeb723826e9e3eca6cd","look_first":[{"lines":[],"path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","reason":"largest code change (+177 −0)"},{"lines":[],"path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","reason":"largest code change (+1 −1)"}],"mismatches":[],"pr":"komaksym/linkedin-mdp#11","title":"fix(collector): fetch prospect timestamps"},"edges":[{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise","status":"added","target":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient"},{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise","status":"added","target":"src/linkedin_mdp_mcp/supabase_client.py::SupabaseClient"},{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","status":"added","target":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"},{"resolution":"exact","source":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export","status":"added","target":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"}],"files":[{"added":14,"hunks":[{"lines":[{"new":1,"old":1,"op":" ","text":"# Implementation plans"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"## Private prospect creation timestamp"},{"new":4,"old":null,"op":"+","text":""},{"new":5,"old":null,"op":"+","text":"Summary: export the existing `prospects.created_at` field in the encrypted private source bundle, preserving its provider value without deriving or backfilling dates."},{"new":6,"old":null,"op":"+","text":""},{"new":7,"old":null,"op":"+","text":"Failure cases: omission from the Supabase projection drops exact timestamps on each counted page; a missing source value must not be fabricated; source or paging failure must not create an artifact; plaintext must not appear in the ciphertext or fixed CLI logs."},{"new":8,"old":null,"op":"+","text":""},{"new":9,"old":null,"op":"+","text":"Milestones: (1) make the synthetic HTTP and CMS roundtrip fail on timestamp omission, (2) add the field to the prospect projection, (3) rerun the E2E and repository checks. No schema, workflow, live source call, or outreach change belongs to this slice."},{"new":10,"old":null,"op":"+","text":""},{"new":11,"old":null,"op":"+","text":"Throughput checkpoint: one owner holds this isolated checkout and its coupled collector/E2E files. The fixed `TABLE_COLUMNS` map owns the row shape; the database mock honors `select`, so the E2E detects projection loss. Review and PR publication remain with the coordinating task."},{"new":12,"old":null,"op":"+","text":""},{"new":13,"old":null,"op":"+","text":"Validation: the timestamp scenario failed before the projection edit and all 19 synthetic verdicts passed afterward. Scoped Ruff and mypy passed, the full 21-test repository suite passed in an isolated runtime using the declared dependencies, and source/wheel builds passed. The initially installed local MCP package lacked `Client`; using the declared project runtime resolved that collection failure. Independent read-only review found no actionable issues."},{"new":14,"old":null,"op":"+","text":""},{"new":15,"old":null,"op":"+","text":"PR review correction: two synthetic failure injections first showed that an unrelated encryption fault could count as an expected negative rejection and an early certificate failure preserved prior all-true evidence. The E2E now attributes each negative case to its expected collection error, lets encryption failures propagate, and records failed run status before certificate generation. All 22 synthetic verdicts, 21 isolated repository tests, scoped Ruff, 10-file mypy, and wheel build pass after the correction."},{"new":16,"old":2,"op":" ","text":""},{"new":17,"old":3,"op":" ","text":"## Inbox evidence and actionable report"},{"new":18,"old":4,"op":" ","text":""}],"new_start":1,"old_start":1}],"kind":"docs","language":null,"path":"PLANS.md","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":5,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# Private source collector timestamp check"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"The collector reads the existing `prospects.created_at` column and keeps its exact value in the encrypted prospect rows. A missing value stays missing. This slice changes no schema, workflow, schedule, or outreach behavior."},{"new":4,"old":null,"op":"+","text":""},{"new":5,"old":null,"op":"+","text":"Run `PYTHONPATH=src python diagnostics/action-report-private-source-20261002/e2e_private_source.py` from the repository root. The test uses synthetic HTTP responses with the actual clients and OpenSSL CMS roundtrip. Its database mock applies the requested `select` columns, so omitting `created_at` from the collector projection fails the timestamp check. Negative cases check their expected error type and message, and injected unrelated collection and encryption faults must fail independently. The evidence file begins each run with `run_status: failed` and changes to `passed` only after all verdicts pass, so an early certificate failure cannot leave stale success evidence. It writes only fixed synthetic verdicts to `e2e-evidence.json`; the temporary certificate, key, and ciphertext are removed when the test ends. The test does not contact live services."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"diagnostics/action-report-private-source-20261002/README.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":1,"hunks":[{"lines":[{"new":16,"old":16,"op":" ","text":"BASE_REVISION = \"817fe2da7d433e6b00ac4bf98851bd4b0eef31f4\""},{"new":17,"old":17,"op":" ","text":"DOMAINS = (\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\")"},{"new":18,"old":18,"op":" ","text":"TABLE_COLUMNS = {"},{"new":null,"old":19,"op":"-","text":"    \"prospects\": \"id,lead_id,linkedin_url,attributes\","},{"new":19,"old":null,"op":"+","text":"    \"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\","},{"new":20,"old":20,"op":" ","text":"    \"events\": \"id,prospect_id,source,event_type,external_key,occurred_at,payload,created_at\","},{"new":21,"old":21,"op":" ","text":"}"},{"new":22,"old":22,"op":" ","text":""}],"new_start":16,"old_start":16}],"kind":"code","language":"python","path":"diagnostics/action-report-private-source-20261002/collect_private_source.py","removed":1,"sensitive":null,"status":"modified","symbols":[]},{"added":28,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"{"},{"new":2,"old":null,"op":"+","text":"  \"synthetic_only\": true,"},{"new":3,"old":null,"op":"+","text":"  \"run_status\": \"passed\","},{"new":4,"old":null,"op":"+","text":"  \"scenarios\": {"},{"new":5,"old":null,"op":"+","text":"    \"complete_sources_roundtrip\": true,"},{"new":6,"old":null,"op":"+","text":"    \"prospect_created_at_exact_across_pages\": true,"},{"new":7,"old":null,"op":"+","text":"    \"missing_created_at_not_fabricated\": true,"},{"new":8,"old":null,"op":"+","text":"    \"private_plaintext_absent_encrypted_artifact\": true,"},{"new":9,"old":null,"op":"+","text":"    \"read_only_http\": true,"},{"new":10,"old":null,"op":"+","text":"    \"successful_empty_sources_encrypt\": true,"},{"new":11,"old":null,"op":"+","text":"    \"unavailable_rejected_without_artifact\": true,"},{"new":12,"old":null,"op":"+","text":"    \"malformed_rejected_without_artifact\": true,"},{"new":13,"old":null,"op":"+","text":"    \"domain_rejected_without_artifact\": true,"},{"new":14,"old":null,"op":"+","text":"    \"truncated_rejected_without_artifact\": true,"},{"new":15,"old":null,"op":"+","text":"    \"escaped_domain_rejected_without_artifact\": true,"},{"new":16,"old":null,"op":"+","text":"    \"db_cap_rejected_without_artifact\": true,"},{"new":17,"old":null,"op":"+","text":"    \"db_malformed_rejected_without_artifact\": true,"},{"new":18,"old":null,"op":"+","text":"    \"db_missing_count_rejected_without_artifact\": true,"},{"new":19,"old":null,"op":"+","text":"    \"db_changed_count_rejected_without_artifact\": true,"},{"new":20,"old":null,"op":"+","text":"    \"db_duplicate_rejected_without_artifact\": true,"},{"new":21,"old":null,"op":"+","text":"    \"unexpected_failure_not_counted_as_rejection\": true,"},{"new":22,"old":null,"op":"+","text":"    \"encryption_failure_not_counted_as_rejection\": true,"},{"new":23,"old":null,"op":"+","text":"    \"cli_fixed_success_log_without_plaintext\": true,"},{"new":24,"old":null,"op":"+","text":"    \"cli_fixed_failure_log_without_plaintext\": true,"},{"new":25,"old":null,"op":"+","text":"    \"no_plaintext_source_file\": true,"},{"new":26,"old":null,"op":"+","text":"    \"early_failure_invalidates_stale_evidence\": true"},{"new":27,"old":null,"op":"+","text":"  }"},{"new":28,"old":null,"op":"+","text":"}"}],"new_start":1,"old_start":0}],"kind":"config","language":null,"path":"diagnostics/action-report-private-source-20261002/e2e-evidence.json","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":177,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"\"\"\"Verify synthetic source collection through real clients and CMS encryption.\"\"\""},{"new":2,"old":null,"op":"+","text":"from __future__ import annotations"},{"new":3,"old":null,"op":"+","text":""},{"new":4,"old":null,"op":"+","text":"import asyncio"},{"new":5,"old":null,"op":"+","text":"import importlib.util"},{"new":6,"old":null,"op":"+","text":"import json"},{"new":7,"old":null,"op":"+","text":"import subprocess"},{"new":8,"old":null,"op":"+","text":"import sys"},{"new":9,"old":null,"op":"+","text":"import tempfile"},{"new":10,"old":null,"op":"+","text":"from contextlib import redirect_stdout"},{"new":11,"old":null,"op":"+","text":"from io import StringIO"},{"new":12,"old":null,"op":"+","text":"from pathlib import Path"},{"new":13,"old":null,"op":"+","text":"from typing import Any"},{"new":14,"old":null,"op":"+","text":"from unittest.mock import patch"},{"new":15,"old":null,"op":"+","text":""},{"new":16,"old":null,"op":"+","text":"import httpx"},{"new":17,"old":null,"op":"+","text":""},{"new":18,"old":null,"op":"+","text":"from linkedin_mdp_mcp.client import LinkedInAPIError, LinkedInMDPClient"},{"new":19,"old":null,"op":"+","text":"from linkedin_mdp_mcp.supabase_client import SupabaseClient"},{"new":20,"old":null,"op":"+","text":""},{"new":21,"old":null,"op":"+","text":"HERE = Path(__file__).resolve().parent"},{"new":22,"old":null,"op":"+","text":"spec = importlib.util.spec_from_file_location(\"private_source\", HERE / \"collect_private_source.py\")"},{"new":23,"old":null,"op":"+","text":"if spec is None or spec.loader is None:"},{"new":24,"old":null,"op":"+","text":"    raise RuntimeError(\"collector unavailable\")"},{"new":25,"old":null,"op":"+","text":"collector = importlib.util.module_from_spec(spec)"},{"new":26,"old":null,"op":"+","text":"spec.loader.exec_module(collector)"},{"new":27,"old":null,"op":"+","text":""},{"new":28,"old":null,"op":"+","text":"MARKER = \"PRIVATE_SYNTHETIC_MEMBER_ONLY_493829\""},{"new":29,"old":null,"op":"+","text":"EXPECTED_FAILURES: dict[str, tuple[type[Exception], str]] = {"},{"new":30,"old":null,"op":"+","text":"    \"unavailable\": (RuntimeError, \"private source collection failed\"),"},{"new":31,"old":null,"op":"+","text":"    \"malformed\": (LinkedInAPIError, \"LinkedIn API error 0: malformed snapshot element\"),"},{"new":32,"old":null,"op":"+","text":"    \"domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot element domain does not match request\"),"},{"new":33,"old":null,"op":"+","text":"    \"truncated\": (RuntimeError, \"private source collection failed\"),"},{"new":34,"old":null,"op":"+","text":"    \"escaped_domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot next link changed request scope\"),"},{"new":35,"old":null,"op":"+","text":"    **{case: (RuntimeError, \"private source collection failed\") for case in (\"db_cap\", \"db_malformed\", \"db_missing_count\", \"db_changed_count\", \"db_duplicate\")},"},{"new":36,"old":null,"op":"+","text":"}"},{"new":37,"old":null,"op":"+","text":""},{"new":38,"old":null,"op":"+","text":"async def exercise(case: str, cert: Path, target: Path) -\u003e tuple[bytes | None, list[str]]:"},{"new":39,"old":null,"op":"+","text":"    \"\"\"Run production HTTP clients with complete or deliberately defective pages.\"\"\""},{"new":40,"old":null,"op":"+","text":"    methods: list[str] = []"},{"new":41,"old":null,"op":"+","text":"    def provider(request: httpx.Request) -\u003e httpx.Response:"},{"new":42,"old":null,"op":"+","text":"        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""},{"new":43,"old":null,"op":"+","text":"        methods.append(request.method)"},{"new":44,"old":null,"op":"+","text":"        domain = request.url.params.get(\"domain\")"},{"new":45,"old":null,"op":"+","text":"        if case == \"unavailable\":"},{"new":46,"old":null,"op":"+","text":"            return httpx.Response(404, json={\"message\": \"unavailable\"})"},{"new":47,"old":null,"op":"+","text":"        if case == \"malformed\":"},{"new":48,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": [None]})"},{"new":49,"old":null,"op":"+","text":"        payload: dict[str, Any] = {\"elements\": [{\"snapshotDomain\": \"WRONG\" if case == \"domain\" else domain, \"snapshotData\": [] if case == \"empty\" else [{\"synthetic\": MARKER}]}]}"},{"new":50,"old":null,"op":"+","text":"        if case in (\"truncated\", \"escaped_domain\"):"},{"new":51,"old":null,"op":"+","text":"            scope = \"\u0026domain=INBOX\" if case == \"escaped_domain\" else \"\""},{"new":52,"old":null,"op":"+","text":"            payload[\"paging\"] = {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberSnapshotData?start=1\" + scope}]}"},{"new":53,"old":null,"op":"+","text":"        if case == \"empty\":"},{"new":54,"old":null,"op":"+","text":"            payload[\"elements\"] = []"},{"new":55,"old":null,"op":"+","text":"        return httpx.Response(200, json=payload)"},{"new":56,"old":null,"op":"+","text":"    def database(request: httpx.Request) -\u003e httpx.Response:"},{"new":57,"old":null,"op":"+","text":"        \"\"\"Serve counted pages and optional database completeness defects.\"\"\""},{"new":58,"old":null,"op":"+","text":"        methods.append(request.method)"},{"new":59,"old":null,"op":"+","text":"        offset = int(request.url.params[\"offset\"])"},{"new":60,"old":null,"op":"+","text":"        table = request.url.path.rsplit(\"/\", 1)[-1]"},{"new":61,"old":null,"op":"+","text":"        data = [{\"id\": f\"{table}-1\", \"attributes\": {\"synthetic\": MARKER}}, {\"id\": f\"{table}-2\", \"attributes\": {}}]"},{"new":62,"old":null,"op":"+","text":"        if table == \"prospects\":"},{"new":63,"old":null,"op":"+","text":"            data[0][\"created_at\"] = \"2025-01-02T03:04:05.123456+00:00\""},{"new":64,"old":null,"op":"+","text":"            if case != \"missing_created_at\":"},{"new":65,"old":null,"op":"+","text":"                data[1][\"created_at\"] = \"2025-06-07T08:09:10Z\""},{"new":66,"old":null,"op":"+","text":"        selected = request.url.params[\"select\"].split(\",\")"},{"new":67,"old":null,"op":"+","text":"        data = [{key: value for key, value in row.items() if key in selected} for row in data]"},{"new":68,"old":null,"op":"+","text":"        if case == \"db_cap\":"},{"new":69,"old":null,"op":"+","text":"            data.append({\"id\": f\"{table}-3\", \"attributes\": {}})"},{"new":70,"old":null,"op":"+","text":"        page = [] if case == \"empty\" else data[offset:offset + 1]"},{"new":71,"old":null,"op":"+","text":"        if case == \"db_malformed\":"},{"new":72,"old":null,"op":"+","text":"            return httpx.Response(200, json={})"},{"new":73,"old":null,"op":"+","text":"        if case == \"db_duplicate\" and offset == 1:"},{"new":74,"old":null,"op":"+","text":"            page = [data[0]]"},{"new":75,"old":null,"op":"+","text":"        headers = {} if case == \"db_missing_count\" else {\"Content-Range\": f\"{offset}-{offset}/2\"}"},{"new":76,"old":null,"op":"+","text":"        if case == \"empty\":"},{"new":77,"old":null,"op":"+","text":"            headers = {\"Content-Range\": \"*/0\"}"},{"new":78,"old":null,"op":"+","text":"        if case == \"db_cap\":"},{"new":79,"old":null,"op":"+","text":"            headers = {\"Content-Range\": f\"{offset}-{offset}/3\"}"},{"new":80,"old":null,"op":"+","text":"        elif case == \"db_changed_count\" and offset == 1:"},{"new":81,"old":null,"op":"+","text":"            headers = {\"Content-Range\": \"1-1/3\"}"},{"new":82,"old":null,"op":"+","text":"        return httpx.Response(200, json=page, headers=headers)"},{"new":83,"old":null,"op":"+","text":"    linkedin = LinkedInMDPClient(\"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(provider)))"},{"new":84,"old":null,"op":"+","text":"    store = SupabaseClient(\"https://db.example.test\", \"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(database)))"},{"new":85,"old":null,"op":"+","text":"    try:"},{"new":86,"old":null,"op":"+","text":"        try:"},{"new":87,"old":null,"op":"+","text":"            bundle = await collector.collect_sources(linkedin, store, page_size=1, max_db_pages=2, snapshot_pages=1)"},{"new":88,"old":null,"op":"+","text":"        except Exception as error:  # noqa: BLE001"},{"new":89,"old":null,"op":"+","text":"            expected = EXPECTED_FAILURES.get(case)"},{"new":90,"old":null,"op":"+","text":"            if expected is None or type(error) is not expected[0] or str(error) != expected[1]:"},{"new":91,"old":null,"op":"+","text":"                raise RuntimeError(\"unexpected synthetic collection failure\") from None"},{"new":92,"old":null,"op":"+","text":"            return None, methods"},{"new":93,"old":null,"op":"+","text":"        collector.encrypt_bundle(bundle, cert, target)"},{"new":94,"old":null,"op":"+","text":"        return target.read_bytes(), methods"},{"new":95,"old":null,"op":"+","text":"    finally:"},{"new":96,"old":null,"op":"+","text":"        await linkedin._http.aclose()"},{"new":97,"old":null,"op":"+","text":"        await store._http.aclose()"},{"new":98,"old":null,"op":"+","text":""},{"new":99,"old":null,"op":"+","text":"async def main(evidence: Path | None = None) -\u003e None:"},{"new":100,"old":null,"op":"+","text":"    \"\"\"Require real encryption roundtrip, safe failures and an artifact-only result.\"\"\""},{"new":101,"old":null,"op":"+","text":"    evidence = HERE / \"e2e-evidence.json\" if evidence is None else evidence"},{"new":102,"old":null,"op":"+","text":"    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}, indent=2) + \"\\n\")"},{"new":103,"old":null,"op":"+","text":"    verdicts: dict[str, bool] = {}"},{"new":104,"old":null,"op":"+","text":"    with tempfile.TemporaryDirectory() as folder:"},{"new":105,"old":null,"op":"+","text":"        tmp = Path(folder)"},{"new":106,"old":null,"op":"+","text":"        key, cert = tmp / \"test-key.pem\", tmp / \"test-cert.pem\""},{"new":107,"old":null,"op":"+","text":"        generated = await asyncio.to_thread(subprocess.run, [\"openssl\", \"req\", \"-x509\", \"-newkey\", \"rsa:2048\", \"-nodes\", \"-keyout\", str(key), \"-out\", str(cert), \"-days\", \"1\", \"-subj\", \"/CN=synthetic-test\"], capture_output=True, check=False)"},{"new":108,"old":null,"op":"+","text":"        if generated.returncode:"},{"new":109,"old":null,"op":"+","text":"            raise RuntimeError(\"synthetic certificate generation failed\")"},{"new":110,"old":null,"op":"+","text":"        output = tmp / \"source.cms\""},{"new":111,"old":null,"op":"+","text":"        encrypted, methods = await exercise(\"complete\", cert, output)"},{"new":112,"old":null,"op":"+","text":"        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":113,"old":null,"op":"+","text":"        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"},{"new":114,"old":null,"op":"+","text":"        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"},{"new":115,"old":null,"op":"+","text":"        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"},{"new":116,"old":null,"op":"+","text":"        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"},{"new":117,"old":null,"op":"+","text":"        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"},{"new":118,"old":null,"op":"+","text":"        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":119,"old":null,"op":"+","text":"        missing_rows = json.loads(missing_result.stdout).get(\"prospects\", {}).get(\"rows\", []) if missing_result.returncode == 0 else []"},{"new":120,"old":null,"op":"+","text":"        verdicts[\"missing_created_at_not_fabricated\"] = bool(missing) and len(missing_rows) == 2 and \"created_at\" not in missing_rows[1]"},{"new":121,"old":null,"op":"+","text":"        verdicts[\"private_plaintext_absent_encrypted_artifact\"] = encrypted is not None and MARKER.encode() not in encrypted"},{"new":122,"old":null,"op":"+","text":"        verdicts[\"read_only_http\"] = set(methods) == {\"GET\"}"},{"new":123,"old":null,"op":"+","text":"        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"},{"new":124,"old":null,"op":"+","text":"        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":125,"old":null,"op":"+","text":"        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"},{"new":126,"old":null,"op":"+","text":"        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"},{"new":127,"old":null,"op":"+","text":"        for case in EXPECTED_FAILURES:"},{"new":128,"old":null,"op":"+","text":"            target = tmp / f\"{case}.cms\""},{"new":129,"old":null,"op":"+","text":"            encrypted, methods = await exercise(case, cert, target)"},{"new":130,"old":null,"op":"+","text":"            verdicts[f\"{case}_rejected_without_artifact\"] = encrypted is None and not target.exists() and set(methods) == {\"GET\"}"},{"new":131,"old":null,"op":"+","text":"        with patch.object(collector, \"collect_sources\", side_effect=RuntimeError(\"unrelated synthetic fault\")):"},{"new":132,"old":null,"op":"+","text":"            try:"},{"new":133,"old":null,"op":"+","text":"                await exercise(\"db_missing_count\", cert, tmp / \"unrelated.cms\")"},{"new":134,"old":null,"op":"+","text":"            except RuntimeError as error:"},{"new":135,"old":null,"op":"+","text":"                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = str(error) == \"unexpected synthetic collection failure\""},{"new":136,"old":null,"op":"+","text":"            else:"},{"new":137,"old":null,"op":"+","text":"                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = False"},{"new":138,"old":null,"op":"+","text":"        with patch.object(collector, \"collect_sources\", return_value={}), patch.object(collector, \"encrypt_bundle\", side_effect=RuntimeError(\"private source collection failed\")):"},{"new":139,"old":null,"op":"+","text":"            try:"},{"new":140,"old":null,"op":"+","text":"                await exercise(\"db_missing_count\", cert, tmp / \"encrypt-fault.cms\")"},{"new":141,"old":null,"op":"+","text":"            except RuntimeError as error:"},{"new":142,"old":null,"op":"+","text":"                verdicts[\"encryption_failure_not_counted_as_rejection\"] = str(error) == \"private source collection failed\""},{"new":143,"old":null,"op":"+","text":"            else:"},{"new":144,"old":null,"op":"+","text":"                verdicts[\"encryption_failure_not_counted_as_rejection\"] = False"},{"new":145,"old":null,"op":"+","text":"        async def synthetic_export(certificate: Path, target: Path) -\u003e None:"},{"new":146,"old":null,"op":"+","text":"            \"\"\"Exercise the actual collector/encryptor under the CLI verdict boundary.\"\"\""},{"new":147,"old":null,"op":"+","text":"            value, _ = await exercise(\"complete\", certificate, target)"},{"new":148,"old":null,"op":"+","text":"            if value is None:"},{"new":149,"old":null,"op":"+","text":"                raise RuntimeError(MARKER)"},{"new":150,"old":null,"op":"+","text":"        logged = StringIO()"},{"new":151,"old":null,"op":"+","text":"        cli_target = tmp / \"cli.cms\""},{"new":152,"old":null,"op":"+","text":"        with patch.object(collector, \"export\", synthetic_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(cli_target)]), redirect_stdout(logged):"},{"new":153,"old":null,"op":"+","text":"            code = await asyncio.to_thread(collector.main)"},{"new":154,"old":null,"op":"+","text":"        verdicts[\"cli_fixed_success_log_without_plaintext\"] = code == 0 and logged.getvalue() == \"private source export: encrypted\\n\" and MARKER not in logged.getvalue()"},{"new":155,"old":null,"op":"+","text":"        async def failing_export(certificate: Path, target: Path) -\u003e None:"},{"new":156,"old":null,"op":"+","text":"            \"\"\"Raise a deliberately private error to verify CLI sanitization.\"\"\""},{"new":157,"old":null,"op":"+","text":"            raise RuntimeError(MARKER)"},{"new":158,"old":null,"op":"+","text":"        logged = StringIO()"},{"new":159,"old":null,"op":"+","text":"        with patch.object(collector, \"export\", failing_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(tmp / \"failed.cms\")]), redirect_stdout(logged):"},{"new":160,"old":null,"op":"+","text":"            code = await asyncio.to_thread(collector.main)"},{"new":161,"old":null,"op":"+","text":"        verdicts[\"cli_fixed_failure_log_without_plaintext\"] = code == 1 and logged.getvalue() == \"private source export: failed\\n\" and not (tmp / \"failed.cms\").exists()"},{"new":162,"old":null,"op":"+","text":"        verdicts[\"no_plaintext_source_file\"] = all(path.suffix != \".json\" for path in tmp.iterdir())"},{"new":163,"old":null,"op":"+","text":"        stale = tmp / \"stale-evidence.json\""},{"new":164,"old":null,"op":"+","text":"        stale.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\", \"scenarios\": {\"stale\": True}}))"},{"new":165,"old":null,"op":"+","text":"        with patch.object(subprocess, \"run\", return_value=subprocess.CompletedProcess([], 1, b\"\", b\"\")):"},{"new":166,"old":null,"op":"+","text":"            try:"},{"new":167,"old":null,"op":"+","text":"                await main(stale)"},{"new":168,"old":null,"op":"+","text":"            except RuntimeError:"},{"new":169,"old":null,"op":"+","text":"                pass"},{"new":170,"old":null,"op":"+","text":"        verdicts[\"early_failure_invalidates_stale_evidence\"] = json.loads(stale.read_text()) == {\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}"},{"new":171,"old":null,"op":"+","text":"    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\" if all(verdicts.values()) else \"failed\", \"scenarios\": verdicts}, indent=2) + \"\\n\")"},{"new":172,"old":null,"op":"+","text":"    if not all(verdicts.values()):"},{"new":173,"old":null,"op":"+","text":"        raise RuntimeError(\"private source E2E failed\")"},{"new":174,"old":null,"op":"+","text":"    print(\"private source synthetic E2E: verified\")"},{"new":175,"old":null,"op":"+","text":""},{"new":176,"old":null,"op":"+","text":"if __name__ == \"__main__\":"},{"new":177,"old":null,"op":"+","text":"    asyncio.run(main())"}],"new_start":1,"old_start":0}],"kind":"code","language":"python","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","removed":0,"sensitive":null,"status":"added","symbols":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise","diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.database","diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider","diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.failing_export","diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export"]},{"added":1,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Technical system scope: existing database field through collector to encrypted export. Audience: PR reviewer. Small correction; English, structural-breakdown, technical-schematic, 16:9, native imagegen selected from technical defaults and saved auto backend. No private data."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-created-at/analysis.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":0,"hunks":[],"kind":"opaque","language":null,"path":"infographic/prospect-created-at/infographic.png","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":9,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Use case: infographic-diagram"},{"new":2,"old":null,"op":"+","text":"Create a small high-level professional technical system infographic, 16:9 English. Structural-breakdown layout, technical-schematic style. An exploded three-layer cutaway of a data export system, with separated flat layers and short callouts: database layer, collector layer, encrypted bundle layer. Show existing timestamp data retained through each layer. Opaque neutral light-gray canvas, visible dark outer boundary, large high-contrast charcoal labels, restrained teal and blue accents, ample whitespace. Crisp readable sans-serif. No generic node graph or DAG; use an exploded system component visual."},{"new":3,"old":null,"op":"+","text":"Title verbatim: \"Prospect timestamp collection\""},{"new":4,"old":null,"op":"+","text":"Layer 1 labels verbatim: \"Supabase\", \"Existing prospects.created_at\""},{"new":5,"old":null,"op":"+","text":"Layer 2 labels verbatim: \"Collector\", \"Request existing column\""},{"new":6,"old":null,"op":"+","text":"Layer 3 labels verbatim: \"Encrypted export\", \"Exact timestamp retained\""},{"new":7,"old":null,"op":"+","text":"Bottom verification band verbatim: \"Synthetic E2E: 19 checks passed\""},{"new":8,"old":null,"op":"+","text":"Scope footer verbatim: \"Live values not inspected\", \"No schema or schedule change\""},{"new":9,"old":null,"op":"+","text":"No additional labels, person data, credentials, URLs or logos. Do not imply live database validation or report publication."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":11,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Use case: infographic-diagram"},{"new":2,"old":null,"op":"+","text":"Create a small high-level professional technical system infographic, 16:9 English. Structural-breakdown layout, technical-schematic style. An exploded three-layer cutaway of a data export system, with separated flat layers and short callouts: database layer, collector layer, encrypted bundle layer. Show existing timestamp data retained through each layer. Opaque neutral light-gray canvas, visible dark outer boundary, large high-contrast charcoal labels, restrained teal and blue accents, ample whitespace. Crisp readable sans-serif. No generic node graph or DAG; use an exploded system component visual."},{"new":3,"old":null,"op":"+","text":"Title verbatim: \"Prospect timestamp collection\""},{"new":4,"old":null,"op":"+","text":"Layer 1 labels verbatim: \"Supabase\", \"Existing prospects.created_at\""},{"new":5,"old":null,"op":"+","text":"Layer 2 labels verbatim: \"Collector\", \"Request existing column\""},{"new":6,"old":null,"op":"+","text":"Layer 3 labels verbatim: \"Encrypted export\", \"Exact timestamp retained\""},{"new":7,"old":null,"op":"+","text":"Bottom verification band verbatim: \"Synthetic E2E: 19 checks passed\""},{"new":8,"old":null,"op":"+","text":"Scope footer verbatim: \"Live values not inspected\", \"No schema or schedule change\""},{"new":9,"old":null,"op":"+","text":"No additional labels, person data, credentials, URLs or logos. Do not imply live database validation or report publication."},{"new":10,"old":null,"op":"+","text":""},{"new":11,"old":null,"op":"+","text":"Do not print any example dates, numeric timestamps, extra tables, row data or invented data. On each layer use a simple blank document icon with teal lines and NO text. Only the exact labels listed above may appear."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":1,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Edit the provided infographic. Preserve the complete composition, all colors and every other label. Change only the bottom verification label from \"Synthetic E2E: 19 checks passed\" to \"Synthetic E2E: 22 checks passed\". No other text changes. Keep opaque neutral canvas and high contrast. Do not add dates, row data, examples or extra labels."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":7,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Prospect timestamp collection"},{"new":2,"old":null,"op":"+","text":"Supabase: existing prospects.created_at"},{"new":3,"old":null,"op":"+","text":"Collector: request existing column"},{"new":4,"old":null,"op":"+","text":"Encrypted export: exact timestamp retained"},{"new":5,"old":null,"op":"+","text":"Synthetic E2E: 22 checks passed"},{"new":6,"old":null,"op":"+","text":"Live values not inspected"},{"new":7,"old":null,"op":"+","text":"No schema or schedule change"}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-created-at/source.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":5,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# Prospect timestamp collection"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"Learning objective: understand where the existing timestamp was dropped and how it now survives collection."},{"new":4,"old":null,"op":"+","text":""},{"new":5,"old":null,"op":"+","text":"Three separated layers: Supabase existing prospects.created_at; collector request existing column; encrypted export exact timestamp retained. Verification band: synthetic E2E 22 checks passed. Scope: live values not inspected; no schema or schedule change."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-created-at/structured-content.md","removed":0,"sensitive":null,"status":"added","symbols":[]}],"head_sha":"306ff5a26ca6502173b40eeb723826e9e3eca6cd","pr":"komaksym/linkedin-mdp#11","symbols":[{"added":18,"base_span":null,"call_sites":7,"hunks":[{"lines":[{"new":38,"old":null,"op":"+","text":"async def exercise(case: str, cert: Path, target: Path) -\u003e tuple[bytes | None, list[str]]:"},{"new":39,"old":null,"op":"+","text":"    \"\"\"Run production HTTP clients with complete or deliberately defective pages.\"\"\""},{"new":40,"old":null,"op":"+","text":"    methods: list[str] = []"}],"new_start":38,"old_start":0},{"lines":[{"new":83,"old":null,"op":"+","text":"    linkedin = LinkedInMDPClient(\"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(provider)))"},{"new":84,"old":null,"op":"+","text":"    store = SupabaseClient(\"https://db.example.test\", \"synthetic\", http=httpx.AsyncClient(transport=httpx.MockTransport(database)))"},{"new":85,"old":null,"op":"+","text":"    try:"},{"new":86,"old":null,"op":"+","text":"        try:"},{"new":87,"old":null,"op":"+","text":"            bundle = await collector.collect_sources(linkedin, store, page_size=1, max_db_pages=2, snapshot_pages=1)"},{"new":88,"old":null,"op":"+","text":"        except Exception as error:  # noqa: BLE001"},{"new":89,"old":null,"op":"+","text":"            expected = EXPECTED_FAILURES.get(case)"},{"new":90,"old":null,"op":"+","text":"            if expected is None or type(error) is not expected[0] or str(error) != expected[1]:"},{"new":91,"old":null,"op":"+","text":"                raise RuntimeError(\"unexpected synthetic collection failure\") from None"},{"new":92,"old":null,"op":"+","text":"            return None, methods"},{"new":93,"old":null,"op":"+","text":"        collector.encrypt_bundle(bundle, cert, target)"},{"new":94,"old":null,"op":"+","text":"        return target.read_bytes(), methods"},{"new":95,"old":null,"op":"+","text":"    finally:"},{"new":96,"old":null,"op":"+","text":"        await linkedin._http.aclose()"},{"new":97,"old":null,"op":"+","text":"        await store._http.aclose()"}],"new_start":83,"old_start":0}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"exercise","removed":0,"span":[38,97],"status":"added"},{"added":27,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":56,"old":null,"op":"+","text":"    def database(request: httpx.Request) -\u003e httpx.Response:"},{"new":57,"old":null,"op":"+","text":"        \"\"\"Serve counted pages and optional database completeness defects.\"\"\""},{"new":58,"old":null,"op":"+","text":"        methods.append(request.method)"},{"new":59,"old":null,"op":"+","text":"        offset = int(request.url.params[\"offset\"])"},{"new":60,"old":null,"op":"+","text":"        table = request.url.path.rsplit(\"/\", 1)[-1]"},{"new":61,"old":null,"op":"+","text":"        data = [{\"id\": f\"{table}-1\", \"attributes\": {\"synthetic\": MARKER}}, {\"id\": f\"{table}-2\", \"attributes\": {}}]"},{"new":62,"old":null,"op":"+","text":"        if table == \"prospects\":"},{"new":63,"old":null,"op":"+","text":"            data[0][\"created_at\"] = \"2025-01-02T03:04:05.123456+00:00\""},{"new":64,"old":null,"op":"+","text":"            if case != \"missing_created_at\":"},{"new":65,"old":null,"op":"+","text":"                data[1][\"created_at\"] = \"2025-06-07T08:09:10Z\""},{"new":66,"old":null,"op":"+","text":"        selected = request.url.params[\"select\"].split(\",\")"},{"new":67,"old":null,"op":"+","text":"        data = [{key: value for key, value in row.items() if key in selected} for row in data]"},{"new":68,"old":null,"op":"+","text":"        if case == \"db_cap\":"},{"new":69,"old":null,"op":"+","text":"            data.append({\"id\": f\"{table}-3\", \"attributes\": {}})"},{"new":70,"old":null,"op":"+","text":"        page = [] if case == \"empty\" else data[offset:offset + 1]"},{"new":71,"old":null,"op":"+","text":"        if case == \"db_malformed\":"},{"new":72,"old":null,"op":"+","text":"            return httpx.Response(200, json={})"},{"new":73,"old":null,"op":"+","text":"        if case == \"db_duplicate\" and offset == 1:"},{"new":74,"old":null,"op":"+","text":"            page = [data[0]]"},{"new":75,"old":null,"op":"+","text":"        headers = {} if case == \"db_missing_count\" else {\"Content-Range\": f\"{offset}-{offset}/2\"}"},{"new":76,"old":null,"op":"+","text":"        if case == \"empty\":"},{"new":77,"old":null,"op":"+","text":"            headers = {\"Content-Range\": \"*/0\"}"},{"new":78,"old":null,"op":"+","text":"        if case == \"db_cap\":"},{"new":79,"old":null,"op":"+","text":"            headers = {\"Content-Range\": f\"{offset}-{offset}/3\"}"},{"new":80,"old":null,"op":"+","text":"        elif case == \"db_changed_count\" and offset == 1:"},{"new":81,"old":null,"op":"+","text":"            headers = {\"Content-Range\": \"1-1/3\"}"},{"new":82,"old":null,"op":"+","text":"        return httpx.Response(200, json=page, headers=headers)"}],"new_start":56,"old_start":0}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.database","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"exercise.database","removed":0,"span":[56,82],"status":"added"},{"added":15,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":41,"old":null,"op":"+","text":"    def provider(request: httpx.Request) -\u003e httpx.Response:"},{"new":42,"old":null,"op":"+","text":"        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""},{"new":43,"old":null,"op":"+","text":"        methods.append(request.method)"},{"new":44,"old":null,"op":"+","text":"        domain = request.url.params.get(\"domain\")"},{"new":45,"old":null,"op":"+","text":"        if case == \"unavailable\":"},{"new":46,"old":null,"op":"+","text":"            return httpx.Response(404, json={\"message\": \"unavailable\"})"},{"new":47,"old":null,"op":"+","text":"        if case == \"malformed\":"},{"new":48,"old":null,"op":"+","text":"            return httpx.Response(200, json={\"elements\": [None]})"},{"new":49,"old":null,"op":"+","text":"        payload: dict[str, Any] = {\"elements\": [{\"snapshotDomain\": \"WRONG\" if case == \"domain\" else domain, \"snapshotData\": [] if case == \"empty\" else [{\"synthetic\": MARKER}]}]}"},{"new":50,"old":null,"op":"+","text":"        if case in (\"truncated\", \"escaped_domain\"):"},{"new":51,"old":null,"op":"+","text":"            scope = \"\u0026domain=INBOX\" if case == \"escaped_domain\" else \"\""},{"new":52,"old":null,"op":"+","text":"            payload[\"paging\"] = {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberSnapshotData?start=1\" + scope}]}"},{"new":53,"old":null,"op":"+","text":"        if case == \"empty\":"},{"new":54,"old":null,"op":"+","text":"            payload[\"elements\"] = []"},{"new":55,"old":null,"op":"+","text":"        return httpx.Response(200, json=payload)"}],"new_start":41,"old_start":0}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"exercise.provider","removed":0,"span":[41,55],"status":"added"},{"added":68,"base_span":null,"call_sites":2,"hunks":[{"lines":[{"new":99,"old":null,"op":"+","text":"async def main(evidence: Path | None = None) -\u003e None:"},{"new":100,"old":null,"op":"+","text":"    \"\"\"Require real encryption roundtrip, safe failures and an artifact-only result.\"\"\""},{"new":101,"old":null,"op":"+","text":"    evidence = HERE / \"e2e-evidence.json\" if evidence is None else evidence"},{"new":102,"old":null,"op":"+","text":"    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}, indent=2) + \"\\n\")"},{"new":103,"old":null,"op":"+","text":"    verdicts: dict[str, bool] = {}"},{"new":104,"old":null,"op":"+","text":"    with tempfile.TemporaryDirectory() as folder:"},{"new":105,"old":null,"op":"+","text":"        tmp = Path(folder)"},{"new":106,"old":null,"op":"+","text":"        key, cert = tmp / \"test-key.pem\", tmp / \"test-cert.pem\""},{"new":107,"old":null,"op":"+","text":"        generated = await asyncio.to_thread(subprocess.run, [\"openssl\", \"req\", \"-x509\", \"-newkey\", \"rsa:2048\", \"-nodes\", \"-keyout\", str(key), \"-out\", str(cert), \"-days\", \"1\", \"-subj\", \"/CN=synthetic-test\"], capture_output=True, check=False)"},{"new":108,"old":null,"op":"+","text":"        if generated.returncode:"},{"new":109,"old":null,"op":"+","text":"            raise RuntimeError(\"synthetic certificate generation failed\")"},{"new":110,"old":null,"op":"+","text":"        output = tmp / \"source.cms\""},{"new":111,"old":null,"op":"+","text":"        encrypted, methods = await exercise(\"complete\", cert, output)"},{"new":112,"old":null,"op":"+","text":"        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":113,"old":null,"op":"+","text":"        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"},{"new":114,"old":null,"op":"+","text":"        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"},{"new":115,"old":null,"op":"+","text":"        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"},{"new":116,"old":null,"op":"+","text":"        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"},{"new":117,"old":null,"op":"+","text":"        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"},{"new":118,"old":null,"op":"+","text":"        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":119,"old":null,"op":"+","text":"        missing_rows = json.loads(missing_result.stdout).get(\"prospects\", {}).get(\"rows\", []) if missing_result.returncode == 0 else []"},{"new":120,"old":null,"op":"+","text":"        verdicts[\"missing_created_at_not_fabricated\"] = bool(missing) and len(missing_rows) == 2 and \"created_at\" not in missing_rows[1]"},{"new":121,"old":null,"op":"+","text":"        verdicts[\"private_plaintext_absent_encrypted_artifact\"] = encrypted is not None and MARKER.encode() not in encrypted"},{"new":122,"old":null,"op":"+","text":"        verdicts[\"read_only_http\"] = set(methods) == {\"GET\"}"},{"new":123,"old":null,"op":"+","text":"        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"},{"new":124,"old":null,"op":"+","text":"        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"},{"new":125,"old":null,"op":"+","text":"        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"},{"new":126,"old":null,"op":"+","text":"        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"},{"new":127,"old":null,"op":"+","text":"        for case in EXPECTED_FAILURES:"},{"new":128,"old":null,"op":"+","text":"            target = tmp / f\"{case}.cms\""},{"new":129,"old":null,"op":"+","text":"            encrypted, methods = await exercise(case, cert, target)"},{"new":130,"old":null,"op":"+","text":"            verdicts[f\"{case}_rejected_without_artifact\"] = encrypted is None and not target.exists() and set(methods) == {\"GET\"}"},{"new":131,"old":null,"op":"+","text":"        with patch.object(collector, \"collect_sources\", side_effect=RuntimeError(\"unrelated synthetic fault\")):"},{"new":132,"old":null,"op":"+","text":"            try:"},{"new":133,"old":null,"op":"+","text":"                await exercise(\"db_missing_count\", cert, tmp / \"unrelated.cms\")"},{"new":134,"old":null,"op":"+","text":"            except RuntimeError as error:"},{"new":135,"old":null,"op":"+","text":"                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = str(error) == \"unexpected synthetic collection failure\""},{"new":136,"old":null,"op":"+","text":"            else:"},{"new":137,"old":null,"op":"+","text":"                verdicts[\"unexpected_failure_not_counted_as_rejection\"] = False"},{"new":138,"old":null,"op":"+","text":"        with patch.object(collector, \"collect_sources\", return_value={}), patch.object(collector, \"encrypt_bundle\", side_effect=RuntimeError(\"private source collection failed\")):"},{"new":139,"old":null,"op":"+","text":"            try:"},{"new":140,"old":null,"op":"+","text":"                await exercise(\"db_missing_count\", cert, tmp / \"encrypt-fault.cms\")"},{"new":141,"old":null,"op":"+","text":"            except RuntimeError as error:"},{"new":142,"old":null,"op":"+","text":"                verdicts[\"encryption_failure_not_counted_as_rejection\"] = str(error) == \"private source collection failed\""},{"new":143,"old":null,"op":"+","text":"            else:"},{"new":144,"old":null,"op":"+","text":"                verdicts[\"encryption_failure_not_counted_as_rejection\"] = False"}],"new_start":99,"old_start":0},{"lines":[{"new":150,"old":null,"op":"+","text":"        logged = StringIO()"},{"new":151,"old":null,"op":"+","text":"        cli_target = tmp / \"cli.cms\""},{"new":152,"old":null,"op":"+","text":"        with patch.object(collector, \"export\", synthetic_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(cli_target)]), redirect_stdout(logged):"},{"new":153,"old":null,"op":"+","text":"            code = await asyncio.to_thread(collector.main)"},{"new":154,"old":null,"op":"+","text":"        verdicts[\"cli_fixed_success_log_without_plaintext\"] = code == 0 and logged.getvalue() == \"private source export: encrypted\\n\" and MARKER not in logged.getvalue()"}],"new_start":150,"old_start":0},{"lines":[{"new":158,"old":null,"op":"+","text":"        logged = StringIO()"},{"new":159,"old":null,"op":"+","text":"        with patch.object(collector, \"export\", failing_export), patch.object(sys, \"argv\", [\"collect\", \"--certificate\", str(cert), \"--output\", str(tmp / \"failed.cms\")]), redirect_stdout(logged):"},{"new":160,"old":null,"op":"+","text":"            code = await asyncio.to_thread(collector.main)"},{"new":161,"old":null,"op":"+","text":"        verdicts[\"cli_fixed_failure_log_without_plaintext\"] = code == 1 and logged.getvalue() == \"private source export: failed\\n\" and not (tmp / \"failed.cms\").exists()"},{"new":162,"old":null,"op":"+","text":"        verdicts[\"no_plaintext_source_file\"] = all(path.suffix != \".json\" for path in tmp.iterdir())"},{"new":163,"old":null,"op":"+","text":"        stale = tmp / \"stale-evidence.json\""},{"new":164,"old":null,"op":"+","text":"        stale.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\", \"scenarios\": {\"stale\": True}}))"},{"new":165,"old":null,"op":"+","text":"        with patch.object(subprocess, \"run\", return_value=subprocess.CompletedProcess([], 1, b\"\", b\"\")):"},{"new":166,"old":null,"op":"+","text":"            try:"},{"new":167,"old":null,"op":"+","text":"                await main(stale)"},{"new":168,"old":null,"op":"+","text":"            except RuntimeError:"},{"new":169,"old":null,"op":"+","text":"                pass"},{"new":170,"old":null,"op":"+","text":"        verdicts[\"early_failure_invalidates_stale_evidence\"] = json.loads(stale.read_text()) == {\"synthetic_only\": True, \"run_status\": \"failed\", \"scenarios\": {}}"},{"new":171,"old":null,"op":"+","text":"    evidence.write_text(json.dumps({\"synthetic_only\": True, \"run_status\": \"passed\" if all(verdicts.values()) else \"failed\", \"scenarios\": verdicts}, indent=2) + \"\\n\")"},{"new":172,"old":null,"op":"+","text":"    if not all(verdicts.values()):"},{"new":173,"old":null,"op":"+","text":"        raise RuntimeError(\"private source E2E failed\")"},{"new":174,"old":null,"op":"+","text":"    print(\"private source synthetic E2E: verified\")"}],"new_start":158,"old_start":0}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"main","removed":0,"span":[99,174],"status":"added"},{"added":3,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":155,"old":null,"op":"+","text":"        async def failing_export(certificate: Path, target: Path) -\u003e None:"},{"new":156,"old":null,"op":"+","text":"            \"\"\"Raise a deliberately private error to verify CLI sanitization.\"\"\""},{"new":157,"old":null,"op":"+","text":"            raise RuntimeError(MARKER)"}],"new_start":155,"old_start":0}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.failing_export","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"main.failing_export","removed":0,"span":[155,157],"status":"added"},{"added":5,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":145,"old":null,"op":"+","text":"        async def synthetic_export(certificate: Path, target: Path) -\u003e None:"},{"new":146,"old":null,"op":"+","text":"            \"\"\"Exercise the actual collector/encryptor under the CLI verdict boundary.\"\"\""},{"new":147,"old":null,"op":"+","text":"            value, _ = await exercise(\"complete\", certificate, target)"},{"new":148,"old":null,"op":"+","text":"            if value is None:"},{"new":149,"old":null,"op":"+","text":"                raise RuntimeError(MARKER)"}],"new_start":145,"old_start":0}],"id":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export","kind":"function","path":"diagnostics/action-report-private-source-20261002/e2e_private_source.py","qualname":"main.synthetic_export","removed":0,"span":[145,149],"status":"added"},{"added":0,"base_span":[36,333],"call_sites":11,"hunks":[],"id":"src/linkedin_mdp_mcp/client.py::LinkedInMDPClient","kind":"class","path":"src/linkedin_mdp_mcp/client.py","qualname":"LinkedInMDPClient","removed":0,"span":[36,333],"status":"context"},{"added":0,"base_span":[19,181],"call_sites":9,"hunks":[],"id":"src/linkedin_mdp_mcp/supabase_client.py::SupabaseClient","kind":"class","path":"src/linkedin_mdp_mcp/supabase_client.py","qualname":"SupabaseClient","removed":0,"span":[19,181],"status":"context"}],"title":"fix(collector): fetch prospect timestamps","tour":[{"focus":[],"kind":"overview","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::main"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"],"kind":"callee","via":"diagnostics/action-report-private-source-20261002/e2e_private_source.py::main"},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.database"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.synthetic_export"],"kind":"entry","via":null},{"focus":["diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.failing_export"],"kind":"entry","via":null},{"focus":[],"kind":"summary","via":null}],"url":"https://github.com/komaksym/linkedin-mdp/pull/11"}</script><script>const LAYOUT = {"w":1024,"h":792,"bands":[["files",24,24,976,208],["changed",24,248,624,520],["callees",728,248,272,520]],"symbols":[["changed",392,480,240,80],["changed",40,384,240,80],["changed",40,288,240,80],["changed",40,480,240,80],["changed",40,672,240,80],["changed",40,576,240,80],["callees",744,456,240,56],["callees",744,528,240,56]],"files":[["files",40,64,128,40],["files",184,64,128,40],["files",328,64,248,40],["files",592,64,184,40],null,["files",792,64,144,40],["files",40,120,168,40],["files",224,120,336,40],["files",576,120,336,40],["files",40,176,336,40],["files",392,176,128,40],["files",536,176,216,40]],"groups":[],"dense":false,"edges":["M632 512C688 512 688 484 744 484","M632 528C688 528 688 556 744 556","M280 520C336 520 336 512 392 512","M280 616C336 616 336 528 392 528"]};
+(() => {
+  "use strict";
+
+  const MAP = JSON.parse(document.getElementById("map-data").textContent);
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const STATUSES = new Set(["added", "modified", "deleted", "context"]);
+  const EDGE_STATUSES = new Set(["added", "removed", "kept"]);
+  const GLYPH = { function: "f", method: "m", class: "C" };
+  const PILL = { added: "new", modified: "modified", deleted: "deleted" };
+  const LANE_LABEL = {
+    files: "Other changed files",
+    callers: "Callers",
+    changed: "Changed code",
+    callees: "Callees",
+    tests: "Tests",
+  };
+  const MINUS = "\u2212";
+  const DOT = " \u00b7 ";
+  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6 };
+  const MAX_TOUR = 60;
+  const MIN_STEP = 1.6;
+  const MOVE = 1.0;
+  const DIM_NODE = 0.13;
+  const DIM_EDGE = 0.05;
+  const BEHIND_SUMMARY = 0.35;
+  const LEGIBLE = 0.55;
+  const NO_TEST = "no direct test";
+  const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const status = (s) => (STATUSES.has(s) ? s : "context");
+  const edgeStatus = (s) => (EDGE_STATUSES.has(s) ? s : "kept");
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const basename = (path) => path.slice(path.lastIndexOf("/") + 1) || path;
+
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function add(parent, ...children) {
+    for (const child of children) if (child) parent.appendChild(child);
+    return parent;
+  }
+
+  function svg(tag, cls) {
+    const node = document.createElementNS(SVGNS, tag);
+    if (cls) node.setAttribute("class", cls);
+    return node;
+  }
+
+  /* Model */
+
+  const nodes = [];
+  const symbolNode = new Map();
+  const fileNode = new Map();
+  const fileByPath = new Map(MAP.files.map((f) => [f.path, f]));
+  const briefFile = new Map(MAP.brief.files.map((f) => [f.path, f]));
+
+  MAP.symbols.forEach((sym, i) => {
+    const box = LAYOUT.symbols[i];
+    if (!box || symbolNode.has(sym.id)) return;
+    const node = {
+      key: `s${i}`, kind: "symbol", sym, status: status(sym.status), name: sym.qualname,
+      path: sym.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    symbolNode.set(sym.id, node);
+  });
+
+  MAP.files.forEach((file, i) => {
+    const box = LAYOUT.files[i];
+    if (!box || fileNode.has(file.path)) return;
+    const node = {
+      key: `f${i}`, kind: "file", file, status: file.status === "modified" ? "modified" : status(file.status),
+      name: basename(file.path), path: file.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    fileNode.set(file.path, node);
+  });
+
+  const edges = [];
+
+  MAP.edges.forEach((edge, i) => {
+    const src = symbolNode.get(edge.source);
+    const dst = symbolNode.get(edge.target);
+    const route = LAYOUT.edges[i];
+    if (!src || !dst || typeof route !== "string") return;
+    const item = { key: `e${i}`, src, dst, route, status: edgeStatus(edge.status), byName: edge.resolution === "name" };
+    edges.push(item);
+    src.out.push(item);
+    dst.in.push(item);
+    src.near.add(dst);
+    dst.near.add(src);
+  });
+
+  const isTest = (node) => node.lane === "tests";
+  const live = (edge) => edge.status !== "removed";
+
+  for (const node of nodes) {
+    node.untested =
+      node.lane === "changed" && node.status !== "deleted" && !node.in.some((e) => isTest(e.src) && live(e));
+  }
+
+  const changed = nodes.filter((n) => n.kind === "symbol" && n.status !== "context");
+  const changedCode = changed.filter((n) => n.lane === "changed");
+  const testsTouched = changed.filter(isTest);
+  const untested = changedCode.filter((n) => n.untested);
+  const callSites = changedCode.reduce((sum, n) => sum + (n.sym.call_sites || 0), 0);
+  const added = edges.filter((e) => e.status === "added").length;
+  const removed = edges.filter((e) => e.status === "removed").length;
+  const risky = MAP.brief.files.filter((f) => f.sensitive);
+
+  function ciState() {
+    const checks = MAP.brief.checks;
+    const failed = checks.filter((c) => c.state === "failed");
+    if (!checks.length) return { cls: "none", label: "no CI", word: "none" };
+    if (failed.length) return { cls: "bad", label: "CI failed", word: "failed", failed };
+    if (checks.some((c) => c.state === "pending")) return { cls: "warn", label: "CI pending", word: "pending" };
+    return { cls: "good", label: "CI passed", word: "passed" };
+  }
+
+  const ci = ciState();
+
+  /* Header */
+
+  document.title = `${MAP.title} \u00b7 PR map`;
+  $("title").textContent = MAP.title;
+
+  (() => {
+    const meta = $("meta");
+    const sep = () => el("span", "sep", "\u00b7");
+    add(meta, sep(), el("span", "", MAP.pr), sep(), el("span", "", `by ${MAP.author}`), sep(),
+      el("span", "mono", `${MAP.base_sha.slice(0, 7)} \u2192 ${MAP.head_sha.slice(0, 7)}`));
+    if (typeof MAP.url === "string" && GITHUB_PR.test(MAP.url)) {
+      const link = el("a", "", "Open on GitHub");
+      link.setAttribute("href", MAP.url);
+      link.setAttribute("rel", "noopener noreferrer");
+      link.setAttribute("target", "_blank");
+      add(meta, sep(), link);
+    }
+
+    const stats = $("stats");
+    const stat = (value, label, cls, dot) => {
+      const box = el("div", `stat ${cls || ""}`);
+      const val = el("div", "stat-value");
+      if (dot) val.appendChild(el("span", "dot"));
+      val.appendChild(el("span", "", value));
+      return add(box, val, el("div", "stat-label", label));
+    };
+    add(stats,
+      stat(MAP.files.length, MAP.files.length === 1 ? "file" : "files"),
+      stat(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      stat(callSites, "call sites affected"),
+      stat(testsTouched.length, testsTouched.length === 1 ? "test touched" : "tests touched",
+        testsTouched.length ? "" : "warn"),
+      stat(ci.word, "CI on head", ci.cls, true),
+      stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
+  })();
+
+  /* Canvas */
+
+  const viewport = $("viewport");
+  const world = $("world");
+  world.style.width = `${LAYOUT.w}px`;
+  world.style.height = `${LAYOUT.h}px`;
+
+  if (LAYOUT.dense) world.classList.add("dense");
+
+  for (const band of LAYOUT.bands) {
+    const box = el("div", "band");
+    box.style.left = `${band[1]}px`;
+    box.style.top = `${band[2]}px`;
+    box.style.width = `${band[3]}px`;
+    box.style.height = `${band[4]}px`;
+    box.appendChild(el("div", "band-label", LANE_LABEL[band[0]] || ""));
+    world.appendChild(box);
+  }
+
+  for (const group of LAYOUT.groups) {
+    const sym = MAP.symbols[group[5]];
+    if (!sym) continue;
+    const label = add(el("div", "group"), el("span", "", sym.path));
+    label.style.left = `${group[1]}px`;
+    label.style.top = `${group[2]}px`;
+    label.style.width = `${group[3]}px`;
+    label.style.height = `${group[4]}px`;
+    label.setAttribute("title", sym.path);
+    world.appendChild(label);
+  }
+
+  if (!MAP.symbols.length) {
+    viewport.appendChild(el("div", "empty", "No function or class changed in a parsed file."));
+  }
+
+  const edgeLayer = svg("svg", "edges");
+  edgeLayer.setAttribute("width", String(LAYOUT.w));
+  edgeLayer.setAttribute("height", String(LAYOUT.h));
+  edgeLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+  const defs = svg("defs");
+
+  for (const kind of EDGE_STATUSES) {
+    const marker = svg("marker");
+    marker.setAttribute("id", `arrow-${kind}`);
+    marker.setAttribute("viewBox", "0 0 10 10");
+    marker.setAttribute("refX", "9");
+    marker.setAttribute("refY", "5");
+    marker.setAttribute("markerWidth", "8");
+    marker.setAttribute("markerHeight", "8");
+    marker.setAttribute("markerUnits", "userSpaceOnUse");
+    marker.setAttribute("orient", "auto");
+    const tip = svg("path", `arrow-${kind}`);
+    tip.setAttribute("d", "M1 1L9 5L1 9z");
+    marker.appendChild(tip);
+    defs.appendChild(marker);
+  }
+
+  edgeLayer.appendChild(defs);
+  world.appendChild(edgeLayer);
+
+  const round = (v) => Math.round(v * 10) / 10;
+
+  const drawOrder = { kept: 0, removed: 1, added: 2 };
+
+  for (const edge of [...edges].sort((p, q) => drawOrder[p.status] - drawOrder[q.status])) {
+    const path = svg("path", `e e-${edge.status}${edge.byName ? " e-name" : ""}`);
+    path.setAttribute("d", edge.route);
+    path.setAttribute("marker-end", `url(#arrow-${edge.status})`);
+    path.setAttribute("data-edge", edge.key);
+    edge.el = path;
+    edgeLayer.appendChild(path);
+  }
+
+  function pathLine(path) {
+    const box = el("div", "path");
+    box.appendChild(el("span", "", path));
+    return box;
+  }
+
+  function rowCard(node) {
+    add(node.el, el("div", "bar"), el("span", "glyph", GLYPH[node.sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) node.el.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.untested) node.el.appendChild(el("span", "flag", "!"));
+    node.el.setAttribute("title", node.untested ? `${node.name} · ${NO_TEST}` : node.name);
+  }
+
+  function symbolCard(node) {
+    if (LAYOUT.dense) return rowCard(node);
+    const sym = node.sym;
+    const card = node.el;
+    const head = el("div", "n-row");
+    add(head, el("span", "glyph", GLYPH[sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) head.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.status === "context") {
+      const sub = add(el("div", "n-row"), pathLine(node.path));
+      if (sym.call_sites) sub.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+      add(card, el("div", "bar"), head, sub);
+      return;
+    }
+    add(card, el("div", "bar"), head, pathLine(node.path));
+    const foot = el("div", "n-foot");
+    const delta = el("span", "delta");
+    add(delta, el("span", "plus", `+${sym.added}`), document.createTextNode(" "), el("span", "minus", `${MINUS}${sym.removed}`));
+    add(foot, delta);
+    if (node.status !== "deleted" && !isTest(node)) foot.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+    if (node.untested) foot.appendChild(el("span", "badge", NO_TEST));
+    card.appendChild(foot);
+  }
+
+  function fileCard(node) {
+    const card = node.el;
+    add(card, el("div", "bar"), el("span", "name", node.name));
+    if (node.file.sensitive) card.appendChild(el("span", "risk", node.file.sensitive));
+    card.setAttribute("title", node.path);
+  }
+
+  for (const node of nodes) {
+    const card = el("div", `node ${node.kind === "file" ? "chip" : "sym"} st-${node.status}`);
+    card.setAttribute("data-node", node.key);
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.style.left = `${node.x}px`;
+    card.style.top = `${node.y}px`;
+    card.style.width = `${node.w}px`;
+    card.style.height = `${node.h}px`;
+    node.el = card;
+    if (node.kind === "symbol") symbolCard(node);
+    else fileCard(node);
+    world.appendChild(card);
+  }
+
+  /* Camera */
+
+  const cam = { x: 0, y: 0, k: 1 };
+  const all = { x: 0, y: 0, w: LAYOUT.w, h: LAYOUT.h };
+  let userMoved = false;
+
+  function applyCamera() {
+    world.style.transform = `translate(${round(cam.x)}px, ${round(cam.y)}px) scale(${cam.k.toFixed(4)})`;
+    viewport.style.backgroundPosition = `${round(cam.x)}px ${round(cam.y)}px`;
+    viewport.style.backgroundSize = `${round(24 * cam.k)}px ${round(24 * cam.k)}px`;
+    world.classList.toggle("far", cam.k < 0.55);
+  }
+
+  function bounds(list) {
+    if (!list.length) return all;
+    const x = Math.min(...list.map((n) => n.x));
+    const y = Math.min(...list.map((n) => n.y));
+    return { x, y, w: Math.max(...list.map((n) => n.x + n.w)) - x, h: Math.max(...list.map((n) => n.y + n.h)) - y };
+  }
+
+  function fitTo(box, area, maxK) {
+    const pad = 32;
+    const k = clamp(Math.min(area.w / (box.w + 2 * pad), area.h / (box.h + 2 * pad)), 0.12, maxK);
+    return {
+      k,
+      x: area.x + area.w / 2 - (box.x + box.w / 2) * k,
+      y: area.y + area.h / 2 - (box.y + box.h / 2) * k,
+    };
+  }
+
+  function viewArea() {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const drawer = drawerOpen() ? Math.min(520, w * 0.92) : 0;
+    return { x: 16, y: 16, w: Math.max(200, w - 32 - drawer), h: Math.max(200, h - 88) };
+  }
+
+  function fit() {
+    Object.assign(cam, fitTo(all, viewArea(), 1.1));
+    applyCamera();
+  }
+
+  function open() {
+    const area = viewArea();
+    const whole = fitTo(all, area, 1.1);
+    const band = LAYOUT.bands.find((b) => b[0] === "changed");
+    if (whole.k >= LEGIBLE || !band) {
+      Object.assign(cam, whole);
+    } else {
+      const box = { x: band[1], y: band[2], w: band[3], h: band[4] };
+      const lane = fitTo(box, area, 1.1);
+      if (lane.k >= LEGIBLE) Object.assign(cam, lane);
+      else Object.assign(cam, {
+        k: LEGIBLE,
+        x: box.w * LEGIBLE <= area.w ? area.x + area.w / 2 - (box.x + box.w / 2) * LEGIBLE : area.x - box.x * LEGIBLE,
+        y: area.y - box.y * LEGIBLE,
+      });
+    }
+    applyCamera();
+  }
+
+  let flight = 0;
+
+  function flyTo(target) {
+    const from = { ...cam };
+    const start = performance.now();
+    const id = ++flight;
+    const step = (now) => {
+      if (id !== flight) return;
+      const p = ease(clamp((now - start) / 420, 0, 1));
+      const k = from.k * Math.pow(target.k / from.k, p);
+      const cx = lerp(centreX(from), centreX(target), p);
+      const cy = lerp(centreY(from), centreY(target), p);
+      Object.assign(cam, { k, x: viewport.clientWidth / 2 - cx * k, y: viewport.clientHeight / 2 - cy * k });
+      applyCamera();
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const centreX = (c) => (viewport.clientWidth / 2 - c.x) / c.k;
+  const centreY = (c) => (viewport.clientHeight / 2 - c.y) / c.k;
+
+  function zoomAt(factor, sx, sy) {
+    const k = clamp(cam.k * factor, 0.12, 2.5);
+    cam.x = sx - ((sx - cam.x) * k) / cam.k;
+    cam.y = sy - ((sy - cam.y) * k) / cam.k;
+    cam.k = k;
+    userMoved = true;
+    applyCamera();
+  }
+
+  let drag = null;
+  let dragged = false;
+
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || $("drawer").contains(event.target) || event.target.closest(".zoom")) return;
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, cx: cam.x, cy: cam.y, captured: false };
+    dragged = false;
+  });
+
+  viewport.addEventListener("pointermove", (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.captured && Math.hypot(dx, dy) < 4) return;
+    if (!drag.captured) {
+      drag.captured = true;
+      dragged = true;
+      viewport.setPointerCapture(event.pointerId);
+      viewport.classList.add("dragging");
+      pause();
+    }
+    flight++;
+    cam.x = drag.cx + dx;
+    cam.y = drag.cy + dy;
+    userMoved = true;
+    applyCamera();
+  });
+
+  const endDrag = () => {
+    drag = null;
+    viewport.classList.remove("dragging");
+  };
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
+
+  viewport.addEventListener("wheel", (event) => {
+    if ($("drawer").contains(event.target)) return;
+    event.preventDefault();
+    flight++;
+    pause();
+    const rect = viewport.getBoundingClientRect();
+    if (event.ctrlKey || event.metaKey) {
+      zoomAt(Math.exp(-event.deltaY * 0.01), event.clientX - rect.left, event.clientY - rect.top);
+    } else {
+      cam.x -= event.deltaX;
+      cam.y -= event.deltaY;
+      userMoved = true;
+      applyCamera();
+    }
+  }, { passive: false });
+
+  viewport.addEventListener("click", (event) => {
+    if (dragged || touring) return;
+    if (event.target === viewport || event.target === world || event.target.classList.contains("band")) {
+      select(null);
+    }
+  });
+
+  $("zoom-in").addEventListener("click", () => zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-out").addEventListener("click", () => zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-fit").addEventListener("click", () => {
+    userMoved = false;
+    fit();
+  });
+
+  /* Hover and selection */
+
+  let selected = null;
+
+  function light(node) {
+    world.classList.toggle("hovering", Boolean(node));
+    for (const n of nodes) n.el.classList.toggle("lit", Boolean(node) && (n === node || node.near.has(n)));
+    for (const e of edges) e.el.classList.toggle("lit", Boolean(node) && (e.src === node || e.dst === node));
+  }
+
+  for (const node of nodes) {
+    node.el.addEventListener("pointerenter", () => {
+      if (!touring && !drag) light(node);
+    });
+    node.el.addEventListener("pointerleave", () => {
+      if (!touring) light(selected);
+    });
+    node.el.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      select(node);
+    });
+    node.el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (dragged) return;
+      select(node);
+    });
+  }
+
+  const drawer = $("drawer");
+  const drawerOpen = () => drawer.getAttribute("aria-hidden") === "false";
+
+  function select(node, centre) {
+    if (touring) exitTour();
+    if (selected) selected.el.classList.remove("selected");
+    selected = node;
+    light(node);
+    if (!node) {
+      drawer.setAttribute("aria-hidden", "true");
+      return;
+    }
+    node.el.classList.add("selected");
+    fillDrawer(node);
+    drawer.setAttribute("aria-hidden", "false");
+    if (centre) {
+      const area = viewArea();
+      const k = Math.max(cam.k, 0.8);
+      flyTo({ k, x: area.x + area.w / 2 - (node.x + node.w / 2) * k, y: area.y + area.h / 2 - (node.y + node.h / 2) * k });
+    }
+  }
+
+  function section(title, body) {
+    return add(el("section", "d-section"), el("h3", "d-title", title), body);
+  }
+
+  function diffView(hunks) {
+    if (!hunks.length) return el("div", "d-empty", "No line changes recorded for this item.");
+    const box = el("div", "diff");
+    const rows = el("div", "diff-rows");
+    for (const hunk of hunks) {
+      rows.appendChild(el("div", "hunk-head", `@@ ${MINUS}${hunk.old_start} +${hunk.new_start} @@`));
+      for (const line of hunk.lines) {
+        const kind = line.op === "+" ? "add" : line.op === "-" ? "del" : "ctx";
+        add(rows, add(el("div", `dl ${kind}`),
+          el("span", "ln", line.old === null ? "" : line.old),
+          el("span", "ln", line.new === null ? "" : line.new),
+          el("span", "sg", kind === "add" ? "+" : kind === "del" ? MINUS : ""),
+          el("span", "code", line.text)));
+      }
+    }
+    return add(box, rows);
+  }
+
+  const EDGE_TAG = { added: "new call", removed: "removed call", kept: "call" };
+
+  function linkList(items, empty) {
+    if (!items.length) return el("div", "d-empty", empty);
+    const list = el("div", "links");
+    for (const { node, tag, tagClass } of items) {
+      const row = el("button", `link st-${node.status}`);
+      row.setAttribute("type", "button");
+      const text = el("span", "link-text");
+      add(text, el("span", "link-name", node.name), el("span", "link-path", node.path));
+      add(row, el("span", "bar"), text, tag ? el("span", `etag ${tagClass || ""}`, tag) : null);
+      row.addEventListener("click", () => select(node, true));
+      list.appendChild(row);
+    }
+    return list;
+  }
+
+  const edgeItem = (edge, other) => ({
+    node: other,
+    tag: `${EDGE_TAG[edge.status]}${edge.byName ? " \u00b7 by name" : ""}`,
+    tagClass: edge.status,
+  });
+
+  function fillDrawer(node) {
+    drawer.replaceChildren();
+    drawer.className = `drawer st-${node.status}`;
+    const head = el("div", "d-head");
+    const tags = el("div", "d-tags");
+    if (PILL[node.status]) tags.appendChild(el("span", "pill", PILL[node.status]));
+    tags.appendChild(el("span", "d-kind", node.kind === "file" ? `${node.file.kind} file` : node.sym.kind));
+    const close = el("button", "d-close", "\u00d7");
+    close.setAttribute("type", "button");
+    close.setAttribute("aria-label", "Close");
+    close.addEventListener("click", () => select(null));
+    add(head, el("div", "bar"), tags, el("div", "d-name", node.kind === "file" ? node.path : node.name),
+      node.kind === "file" ? null : el("div", "d-path", node.path), close);
+
+    const facts = el("div", "d-facts");
+    const body = el("div", "d-body");
+
+    if (node.kind === "file") {
+      const file = node.file;
+      add(facts, el("span", "fact", `+${file.added} ${MINUS}${file.removed}`));
+      if (file.sensitive) facts.appendChild(el("span", "fact bad", file.sensitive));
+      const brief = briefFile.get(file.path);
+      if (file.sensitive && brief && !brief.named) facts.appendChild(el("span", "fact warn", "not mentioned in the description"));
+      if (file.language === null && file.kind === "code") facts.appendChild(el("span", "fact", "not parsed"));
+      add(body, section("Diff", diffView(file.hunks)));
+      const inside = file.symbols.map((id) => symbolNode.get(id)).filter(Boolean);
+      if (inside.length) body.appendChild(section("Symbols", linkList(inside.map((n) => ({ node: n })), "")));
+    } else {
+      const sym = node.sym;
+      if (node.status !== "context") add(facts, el("span", "fact", `+${sym.added} ${MINUS}${sym.removed}`));
+      facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
+      if (sym.span) facts.appendChild(el("span", "fact", `lines ${sym.span[0]}\u2013${sym.span[1]}`));
+      else if (sym.base_span) facts.appendChild(el("span", "fact", `was lines ${sym.base_span[0]}\u2013${sym.base_span[1]}`));
+      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no test in this map calls it`));
+      const callers = node.in.filter((e) => !isTest(e.src));
+      const tests = node.in.filter((e) => isTest(e.src));
+      add(body,
+        section("Diff", node.status === "context" ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.") : diffView(sym.hunks)),
+        section("Callers", linkList(callers.map((e) => edgeItem(e, e.src)), "No caller in the map.")),
+        section("Callees", linkList(node.out.map((e) => edgeItem(e, e.dst)), "Calls nothing in the map.")),
+        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test calls this directly.")));
+    }
+
+    head.appendChild(facts);
+    add(drawer, head, body);
+  }
+
+  /* Tour */
+
+  const names = (list) => {
+    const shown = list.slice(0, 2).map((n) => n.name);
+    return list.length > 2 ? `${shown.join(", ")} +${list.length - 2} more` : shown.join(" and ");
+  };
+
+  function focusNodes(ids) {
+    const found = [];
+    for (const id of ids) {
+      const node = symbolNode.get(id) || fileNode.get(id);
+      if (node) found.push(node);
+      else if (fileByPath.has(id)) {
+        for (const sid of fileByPath.get(id).symbols) if (symbolNode.has(sid)) found.push(symbolNode.get(sid));
+      }
+    }
+    return found;
+  }
+
+  function symbolFacts(node) {
+    const sym = node.sym;
+    const parts = [node.path, `+${sym.added} ${MINUS}${sym.removed}`];
+    if (node.status !== "deleted" && !isTest(node)) parts.push(plural(sym.call_sites, "call site", "call sites"));
+    if (node.untested) parts.push(NO_TEST);
+    return parts.join(DOT);
+  }
+
+  function describe(step, index, total) {
+    const count = `${index + 1} / ${total}`;
+    const focus = focusNodes(step.focus);
+    const node = focus[0];
+    const via = step.via ? symbolNode.get(step.via) : null;
+
+    if (step.kind === "overview") {
+      return {
+        kicker: "Overview", count, main: MAP.title,
+        sub: [plural(MAP.files.length, "file", "files"), plural(changed.length, "symbol changed", "symbols changed"),
+          plural(added, "call added", "calls added"), `${removed} removed`].join(DOT),
+      };
+    }
+
+    if (step.kind === "risky_file") {
+      const path = step.focus[0] || "";
+      const file = fileByPath.get(path);
+      const brief = briefFile.get(path);
+      const reason = (file && file.sensitive) || (brief && brief.sensitive) || "Sensitive file";
+      const unnamed = brief && !brief.named ? `${DOT}not mentioned in the description` : "";
+      return { kicker: "Risky surface", count, main: `${reason} changed${unnamed}`, sub: path };
+    }
+
+    if (step.kind === "summary") return { kicker: "Summary", count, main: "", sub: "" };
+
+    if (!node || node.kind !== "symbol") return { kicker: step.kind, count, main: step.focus.join(", "), sub: "" };
+
+    const word = node.sym.kind;
+    const name = node.name;
+
+    if (step.kind === "test") {
+      const targets = node.out.filter(live).map((e) => e.dst);
+      const covers = targets.length ? `${DOT}covers ${names(targets)}` : "";
+      const main = node.status === "added" ? `New test ${name}${covers}`
+        : node.status === "deleted" ? `Deleted test ${name}` : `Test ${name} changed${covers}`;
+      return { kicker: "Test", count, main, sub: symbolFacts(node) };
+    }
+
+    if (step.kind === "callee" && via) {
+      const link = node.in.find((e) => e.src === via);
+      let main;
+      if (node.status === "deleted") main = `Deleted ${name}${DOT}${via.name} no longer calls it`;
+      else if (node.status === "added") main = `New ${word} ${name}${DOT}called by ${via.name}`;
+      else if (link && link.status === "added") main = `${via.name} now calls ${name}`;
+      else if (link && link.status === "removed") main = `${via.name} no longer calls ${name}`;
+      else main = `${name} changed${DOT}called by ${via.name}`;
+      return { kicker: `Called from ${via.name}`, count, main, sub: symbolFacts(node) };
+    }
+
+    const callers = node.in.filter((e) => live(e) && !isTest(e.src)).map((e) => e.src);
+    let main;
+    if (node.status === "deleted") {
+      const former = node.in.filter((e) => !isTest(e.src)).map((e) => e.src);
+      main = `Deleted ${name}${former.length ? `${DOT}${names(former)} no longer ${former.length === 1 ? "calls" : "call"} it` : ""}`;
+    } else if (node.status === "added") {
+      main = `New ${word} ${name}${callers.length ? `${DOT}called by ${names(callers)}` : `${DOT}nothing calls it yet`}`;
+    } else {
+      main = `${name} changed${callers.length ? `${DOT}called by ${names(callers)}` : ""}`;
+    }
+    return { kicker: step.kind === "entry" ? "Entry point" : "Changed", count, main, sub: symbolFacts(node) };
+  }
+
+  const timeline = (() => {
+    const base = MAP.tour.map((s) => STEP_SECONDS[s.kind] || 3);
+    const fixed = MAP.tour.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
+    const middle = base.reduce((sum, v) => sum + v, 0) - fixed;
+    const scale = middle > 0 && fixed + middle > MAX_TOUR ? Math.max((MAX_TOUR - fixed) / middle, 0) : 1;
+    let start = 0;
+    return MAP.tour.map((step, i) => {
+      const plain = step.kind === "overview" || step.kind === "summary";
+      const duration = Math.round((plain ? base[i] : Math.max(base[i] * scale, MIN_STEP)) * 1000) / 1000;
+      const focus = focusNodes(step.focus);
+      const via = step.via ? symbolNode.get(step.via) : null;
+      const lit = new Set(focus);
+      if (via) lit.add(via);
+      if (step.kind !== "risky_file") for (const n of focus) for (const m of n.near) lit.add(m);
+      const item = {
+        kind: step.kind, focus: step.focus, via: step.via, start: Math.round(start * 1000) / 1000, duration,
+        caption: describe(step, i, MAP.tour.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
+      };
+      start += duration;
+      return item;
+    });
+  })();
+
+  const duration = Math.round(timeline.reduce((sum, s) => sum + s.duration, 0) * 1000) / 1000;
+
+  function tourCamera(step) {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const area = { x: 48, y: 32, w: Math.max(200, w - 96), h: Math.max(160, h - 32 - 176) };
+    if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
+    const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
+    const wide = fitTo(bounds([...step.lit]), area, 1.25);
+    return wide.k >= 0.62 ? wide : fitTo(bounds(core), area, 1.25);
+  }
+
+  let cameras = null;
+
+  function camerasFor() {
+    const size = `${viewport.clientWidth}x${viewport.clientHeight}`;
+    if (!cameras || cameras.size !== size) cameras = { size, list: timeline.map(tourCamera) };
+    return cameras.list;
+  }
+
+  const plainLevel = (step) => (step.kind === "summary" ? BEHIND_SUMMARY : 1);
+  const nodeLevel = (step, node) => (step.plain ? plainLevel(step) : step.lit.has(node) ? 1 : DIM_NODE);
+  const hidden = LAYOUT.dense ? 0 : DIM_EDGE;
+  const edgeLevel = (step, edge) => {
+    if (step.plain) return LAYOUT.dense ? 0 : plainLevel(step);
+    return step.nodes.includes(edge.src) || step.nodes.includes(edge.dst) ? 1 : hidden;
+  };
+
+  const caption = $("caption");
+  const summary = $("summary");
+  let captionFor = -1;
+
+  function fillCaption(index) {
+    if (captionFor === index) return;
+    captionFor = index;
+    const text = timeline[index].caption;
+    const kicker = add(el("div", "cap-kicker"), el("span", "", text.kicker), el("span", "cap-count", text.count));
+    caption.replaceChildren(kicker, el("div", "cap-main", text.main), el("div", "cap-sub", text.sub));
+  }
+
+  function fillSummary() {
+    summary.replaceChildren();
+    const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
+    const grid = add(el("div", "sum-grid"),
+      cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
+      cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
+      cell(callSites, "call sites affected"),
+      cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
+      cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
+    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
+    const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
+    const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+    add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
+      el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
+  }
+
+  fillSummary();
+
+  let touring = false;
+
+  function enterTour() {
+    if (touring) return;
+    select(null);
+    light(null);
+    touring = true;
+    document.body.classList.add("touring");
+  }
+
+  function exitTour() {
+    pause();
+    if (!touring) return;
+    touring = false;
+    document.body.classList.remove("touring");
+    for (const n of nodes) {
+      n.el.style.opacity = "";
+      n.el.classList.remove("focus");
+    }
+    for (const e of edges) {
+      e.el.style.opacity = "";
+      e.el.style.strokeDashoffset = "";
+    }
+    captionFor = -1;
+  }
+
+  function stepAt(t) {
+    let index = 0;
+    while (index + 1 < timeline.length && timeline[index + 1].start <= t) index++;
+    return index;
+  }
+
+  function seek(time) {
+    if (!timeline.length) return;
+    const t = clamp(Number(time) || 0, 0, duration);
+    enterTour();
+    const index = stepAt(t);
+    const step = timeline[index];
+    const prev = timeline[Math.max(index - 1, 0)];
+    const u = t - step.start;
+    const p = index === 0 ? 1 : ease(clamp(u / MOVE, 0, 1));
+    const cams = camerasFor();
+    const from = cams[Math.max(index - 1, 0)];
+    const to = cams[index];
+    const k = from.k * Math.pow(to.k / from.k, p);
+    const vw = viewport.clientWidth / 2;
+    const vh = viewport.clientHeight / 2;
+    const cx = lerp((vw - from.x) / from.k, (vw - to.x) / to.k, p);
+    const cy = lerp((vh - from.y) / from.k, (vh - to.y) / to.k, p);
+    Object.assign(cam, { k, x: vw - cx * k, y: vh - cy * k });
+    applyCamera();
+
+    for (const n of nodes) {
+      n.el.style.opacity = String(round(lerp(nodeLevel(prev, n), nodeLevel(step, n), p) * 100) / 100);
+      n.el.classList.toggle("focus", !step.plain && step.nodes.includes(n));
+    }
+    const offset = String(-round((t * 28) % 28));
+    for (const e of edges) {
+      e.el.style.opacity = String(round(lerp(edgeLevel(prev, e), edgeLevel(step, e), p) * 100) / 100);
+      if (e.status === "added") e.el.style.strokeDashoffset = offset;
+    }
+
+    const last = index === timeline.length - 1;
+    const fadeIn = clamp((u - 0.25) / 0.45, 0, 1);
+    const fadeOut = last ? 1 : clamp((step.duration - u) / 0.35, 0, 1);
+    fillCaption(index);
+    caption.style.opacity = step.kind === "summary" ? "0" : String(round(Math.min(fadeIn, fadeOut) * 100) / 100);
+    summary.style.opacity = step.kind === "summary" ? String(round(clamp((u - 0.3) / 0.6, 0, 1) * 100) / 100) : "0";
+    $("progress-bar").style.width = `${round((t / duration) * 1000) / 10}%`;
+  }
+
+  /* Playback */
+
+  const player = { t: 0, playing: false, until: null, last: 0 };
+
+  function setPlaying(on) {
+    player.playing = on;
+    document.body.classList.toggle("playing", on);
+    $("play-label").textContent = on ? "Pause" : player.t >= duration && touring ? "Replay" : "Play tour";
+  }
+
+  function frame(now) {
+    if (!player.playing) return;
+    player.t = Math.min(duration, player.t + (now - player.last) / 1000);
+    player.last = now;
+    if (player.until !== null && player.t >= player.until) player.t = player.until;
+    seek(player.t);
+    if (player.t >= duration || (player.until !== null && player.t >= player.until)) setPlaying(false);
+    else requestAnimationFrame(frame);
+  }
+
+  function run(from, until) {
+    flight++;
+    player.t = from;
+    player.until = until;
+    player.last = performance.now();
+    seek(from);
+    setPlaying(true);
+    requestAnimationFrame(frame);
+  }
+
+  function pause() {
+    if (player.playing) setPlaying(false);
+  }
+
+  function goto(index) {
+    const i = clamp(index, 0, timeline.length - 1);
+    const step = timeline[i];
+    run(step.start, step.start + Math.min(step.duration - 0.4, MOVE + 0.6));
+  }
+
+  function next() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) + 1);
+  }
+
+  function prev() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) - 1);
+  }
+
+  $("play").addEventListener("click", () => {
+    if (player.playing) return pause();
+    const from = touring && player.t < duration ? player.t : 0;
+    run(from, null);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const key = event.key;
+    if (key === "Escape") {
+      if (drawerOpen()) select(null);
+      else if (touring) exitTour();
+    } else if (key === "ArrowRight" || key === " " || key === "PageDown") {
+      next();
+    } else if (key === "ArrowLeft" || key === "PageUp") {
+      prev();
+    } else if (key === "f" || key === "F") {
+      if (touring) exitTour();
+      userMoved = false;
+      fit();
+    } else if (key === "+" || key === "=") {
+      zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else if (key === "-" || key === "_") {
+      zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else {
+      return;
+    }
+    event.preventDefault();
+  });
+
+  window.addEventListener("resize", () => {
+    if (touring) seek(player.t);
+    else if (!userMoved) open();
+  });
+
+  open();
+
+  window.prcTour = Object.freeze({
+    duration,
+    steps: timeline.map((s) => Object.freeze({
+      kind: s.kind, focus: [...s.focus], via: s.via, start: s.start, duration: s.duration,
+      caption: Object.freeze({ ...s.caption }),
+    })),
+    seek: (t) => {
+      pause();
+      player.t = clamp(Number(t) || 0, 0, duration);
+      seek(player.t);
+    },
+  });
+})();
+</script></body></html>

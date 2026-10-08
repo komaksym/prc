@@ -1,0 +1,95 @@
+[
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:62",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:441"
+      ],
+      "id": "q1",
+      "key": "Each selected invitation row shows a read-only date_added taken from the matched Supabase prospect row, so the report reader sees when the prospect was first added.",
+      "key_facts": [
+        "date_added is read only from created_at on exactly one canonical-profile-matched Supabase prospect row",
+        "missing, malformed, timezone-naive or future timestamps stay unknown with a fixed reason",
+        "it never affects shortlist eligibility, ranking, exclusions or capacity"
+      ],
+      "type": "free"
+    },
+    "answer": "The private invitation report shows date added for the reviewer."
+  },
+  {
+    "pr": 12,
+    "condition": "c5",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:702"
+      ],
+      "id": "q6",
+      "key": "test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "type": "name_or_free"
+    },
+    "answer": "The new tests pin date added display and invalid and missing timestamp handling."
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:70",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:833"
+      ],
+      "id": "q1",
+      "key": "A prospect with several present employers now consumes invitation capacity at every current employer, so the report reader sees capacity accounted once per employer instead of one latest-known employer.",
+      "key_facts": [
+        "each profile is counted once per employer and selection requires capacity at every employer",
+        "incomplete, contradictory or unregistered employer sets withhold capacity claims",
+        "identities, exclusions, ranking and date_added are preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "The private invitation report now counts every present employer for the reviewer."
+  },
+  {
+    "pr": 17,
+    "condition": "c5",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:1057"
+      ],
+      "id": "q6",
+      "key": "test_present_set_selection_requires_and_consumes_every_company_slot",
+      "type": "name_or_free"
+    },
+    "answer": "The new tests pin counting every present employer across conflicting, identical, invalid, legacy, and present-set cases."
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private DM reports, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+        "src/linkedin_mdp_mcp/dm_doc_report.py:54"
+      ],
+      "id": "q1",
+      "key": "The owner gets three-doc publication: owner-only Google Docs for connections, first-time DMs and follow-ups through one marker-safe, revision-checked publisher with dual preflight and retained-evidence binding.",
+      "key_facts": [
+        "renders separate first-DM and follow-up bodies from validated planner plus retained evidence",
+        "refuses bodies containing managed markers",
+        "dual preflight and revision-checked replacement per document"
+      ],
+      "type": "free"
+    },
+    "answer": "Private DM reports are published after legacy evidence is reconciled."
+  }
+]

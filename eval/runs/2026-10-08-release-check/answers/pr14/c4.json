@@ -1,0 +1,51 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The LinkedIn member’s private source bundle now includes their changelog, and pagination rejects an added startTime the caller omitted."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "PLANS.md",
+        "diagnostics/action-report-private-source-20261002/README.md",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "diagnostics/source-refresh-proposal-20261002/README.md",
+        "diagnostics/source-refresh-proposal-20261002/private-action-source.yml",
+        "infographic/source-changelog/analysis.md",
+        "infographic/source-changelog/infographic.png",
+        "infographic/source-changelog/prompts/01-infographic-source-changelog.md",
+        "infographic/source-changelog/source.md",
+        "infographic/source-changelog/structured-content.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "Tests pin complete watermarks, valid pagination preserving scope and events, caller startTime preservation, and rejection of added startTime and bad pages."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

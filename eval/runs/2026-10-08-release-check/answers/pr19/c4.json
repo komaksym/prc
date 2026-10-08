@@ -1,0 +1,102 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner goes from no private DM reports to first-DM and follow-up reports published in separate owner-only Google Docs."
+    },
+    {
+      "id": "q2",
+      "answer": "build_dm_doc_bodies"
+    },
+    {
+      "id": "q3",
+      "answer": "if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)):"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "tests/e2e_private_dm_doc_report.py",
+        ".github/workflows/morning-report.yml",
+        ".github/workflows/report-tests.yml",
+        ".github/workflows/sync-connections.yml",
+        "PLANS.md",
+        "PR10-present-employer-e2e-matrix.md",
+        "artifacts/doc-report-e2e-evidence.json",
+        "artifacts/inbox-e2e-evidence.json",
+        "artifacts/inbox-red-green-evidence.json",
+        "artifacts/inbox-review-e2e-evidence.json",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "artifacts/private-dm-actions-e2e-evidence.json",
+        "artifacts/private-dm-doc-report-e2e-evidence.json",
+        "diagnostics/verify_inbox_live.py",
+        "docs/action-report-contract.md",
+        "docs/google-docs-report.md",
+        "docs/images/google-doc-report.jpg",
+        "docs/inbox-evidence.md",
+        "docs/invitation-shortlist.md",
+        "docs/private-dm-actions.md",
+        "infographic/inbox-evidence-slice/analysis.md",
+        "infographic/inbox-evidence-slice/infographic.png",
+        "infographic/inbox-evidence-slice/prompts/01-infographic-inbox-evidence.md",
+        "infographic/inbox-evidence-slice/source-inbox-evidence.md",
+        "infographic/inbox-evidence-slice/structured-content.md",
+        "infographic/inbox-review-repair/analysis.md",
+        "infographic/inbox-review-repair/infographic.png",
+        "infographic/inbox-review-repair/prompts/01-infographic-inbox-review-repair.md",
+        "infographic/inbox-review-repair/source-inbox-review-repair.md",
+        "infographic/inbox-review-repair/structured-content.md",
+        "infographic/invitation-shortlist/analysis.md",
+        "infographic/invitation-shortlist/infographic.png",
+        "infographic/invitation-shortlist/prompts/01-infographic-invitation-shortlist.md",
+        "infographic/invitation-shortlist/source.md",
+        "infographic/invitation-shortlist/structured-content.md",
+        "infographic/unicode-profile-identity/analysis.md",
+        "infographic/unicode-profile-identity/infographic.png",
+        "infographic/unicode-profile-identity/prompts/01-infographic-unicode-profile-identity.md",
+        "infographic/unicode-profile-identity/source.md",
+        "infographic/unicode-profile-identity/structured-content.md",
+        "scripts/build_invitation_shortlist.py",
+        "scripts/build_private_dm_actions.py",
+        "scripts/publish_private_dm_docs.py",
+        "scripts/report_connections_doc.py",
+        "scripts/sync_inbox.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "src/linkedin_mdp_mcp/dm_actions.py",
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "src/linkedin_mdp_mcp/inbox_sync.py",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py",
+        "tests/e2e_dm_uncertainty_scope.py",
+        "tests/e2e_doc_report.py",
+        "tests/e2e_inbox_review.py",
+        "tests/e2e_inbox_sync.py",
+        "tests/e2e_invitation_shortlist.py",
+        "tests/e2e_private_dm_actions.py",
+        "tests/test_inbox_review_e2e.py",
+        "tests/test_inbox_sync_e2e.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "tests/test_private_dm_actions_e2e.py",
+        "tests/test_private_dm_doc_report_e2e.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "CI",
+        "auth",
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "New tests pin both docs completing, reruns converging, second conflicts failing closed, and dual preflight."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/dm_doc_report.py::build_dm_doc_bodies"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

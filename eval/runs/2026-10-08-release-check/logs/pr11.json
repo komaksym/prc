@@ -1,0 +1,13 @@
+{
+  "source": "github",
+  "out": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6",
+  "map": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/map.json",
+  "board": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/board.json",
+  "video": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/video.mp4",
+  "doc": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/doc.html",
+  "card": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/card.png",
+  "comment": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/rendered/komaksym-linkedin-mdp-11-306ff5a26ca6/comment.md",
+  "duration": 58.998591549295774,
+  "estimate": 46.56666666666667,
+  "check_passed": true
+}

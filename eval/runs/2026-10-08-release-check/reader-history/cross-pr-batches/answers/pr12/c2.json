@@ -1,0 +1,36 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Each row now shows its date added for the private reviewer."
+    },
+    {
+      "id": "q2",
+      "answer": "_date_added"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q5",
+      "answer": []
+    },
+    {
+      "id": "q6",
+      "answer": "Tests pin invalid or missing date_added staying Unknown without changing membership."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

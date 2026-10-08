@@ -154,15 +154,20 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
         shutil.copytree(out, ARTIFACT / "fallback" / out.name, dirs_exist_ok=True)
 
 
-def test_stored_map_card_and_comment_carry_the_rebuilt_brief(tmp_path: Path) -> None:
-    """A stored map without brief signals still flags an external call it adds."""
+@pytest.mark.parametrize("evidence", ["added-line", "captured-head"])
+def test_stored_map_card_and_comment_carry_the_rebuilt_brief(tmp_path: Path, evidence: str) -> None:
     stored = json.loads((ROOT / "tests" / "data" / "explainer" / "maps" / "pr12.json").read_text())
     for file in stored["brief"]["files"]:
         file["sensitive"] = None
     target = next(f for f in stored["files"] if f["kind"] == "code")
-    target["hunks"][0]["lines"].append(
-        {"op": "+", "old": None, "new": 0, "text": 'URL = "https://api.linkedin.com/v2/me"'}
-    )
+    if evidence == "added-line":
+        target["hunks"][0]["lines"].append(
+            {"op": "+", "old": None, "new": 0, "text": 'URL = "https://api.linkedin.com/v2/me"'}
+        )
+    else:
+        next(f for f in stored["brief"]["files"] if f["path"] == target["path"])["sensitive"] = (
+            "external calls"
+        )
     stored_path = tmp_path / "stored.json"
     stored_path.write_text(json.dumps(stored))
 
@@ -183,3 +188,159 @@ def test_stored_map_card_and_comment_carry_the_rebuilt_brief(tmp_path: Path) -> 
     rebuilt = json.loads((out / "map.json").read_text())
     assert any(f.get("sensitive") == "external calls" for f in rebuilt["brief"]["files"])
     assert json.loads((out / "run.json").read_text())["live_head_sha"] is None
+
+
+def test_stored_map_reclassifies_end_to_end_checks_consistently(tmp_path: Path) -> None:
+    stored = json.loads((ROOT / "tests" / "data" / "explainer" / "maps" / "pr12.json").read_text())
+    target = next(f for f in stored["files"] if f["kind"] == "code")
+    old_path = target["path"]
+    target["path"] = "diagnostics/e2e_private_source.py"
+    target["sensitive"] = "external calls"
+    for file in stored["brief"]["files"]:
+        if file["path"] == old_path:
+            file["path"] = target["path"]
+            file["sensitive"] = "external calls"
+    stored["brief"]["look_first"] = [
+        {"path": target["path"], "reason": "largest code change", "lines": []}
+    ]
+    stored_path = tmp_path / "stored.json"
+    stored_path.write_text(json.dumps(stored))
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "prc.cli",
+            "explain",
+            "--source",
+            "fixture:shop",
+            "--map",
+            str(stored_path),
+            "--voice",
+            "none",
+            "--out",
+            str(tmp_path / "out"),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    out = Path(json.loads(completed.stdout)["out"])
+    rebuilt = json.loads((out / "map.json").read_text())
+    for records in (rebuilt["brief"]["files"], rebuilt["files"]):
+        file = next(f for f in records if f["path"] == target["path"])
+        assert (file["kind"], file["sensitive"]) == ("test", None)
+    assert target["path"] not in {p["path"] for p in rebuilt["brief"]["look_first"]}
+
+
+@needs_ffmpeg
+def test_stored_map_check_and_outputs_share_reclassified_facts(
+    chromium: None, tmp_path: Path
+) -> None:
+    from prc.explainer.check import verify_board
+
+    stored = json.loads((ROOT / "tests/data/explainer/maps/pr12.json").read_text())
+    path = "diagnostics/e2e_probe.py"
+    sid = f"{path}::test_probe"
+    hunk = {
+        "old_start": 0,
+        "new_start": 1,
+        "lines": [{"op": "+", "old": None, "new": 1, "text": "def test_probe(): pass"}],
+    }
+    stored["files"] = [
+        {
+            "path": path,
+            "kind": "code",
+            "status": "added",
+            "language": "python",
+            "sensitive": None,
+            "added": 1,
+            "removed": 0,
+            "hunks": [hunk],
+            "symbols": [sid],
+        }
+    ]
+    stored["brief"]["files"] = [
+        {
+            "path": path,
+            "kind": "code",
+            "named": False,
+            "sensitive": None,
+            "added": 1,
+            "removed": 0,
+        }
+    ]
+    stored["brief"]["look_first"] = []
+    stored["symbols"] = [
+        {
+            "id": sid,
+            "path": path,
+            "qualname": "test_probe",
+            "kind": "function",
+            "status": "added",
+            "span": [1, 1],
+            "base_span": None,
+            "added": 1,
+            "removed": 0,
+            "hunks": [hunk],
+            "call_sites": 0,
+        }
+    ]
+    stored["edges"] = []
+    stored["tour"] = [{"kind": "overview", "focus": [], "via": None}]
+    board = {
+        "name": "reclassified-test",
+        "scenes": [
+            {
+                "type": "title",
+                "kicker": "Added test",
+                "say": ["A test was added."],
+                "assert": [{"fact": "changed", "equals": 0}, {"fact": "tests_added", "equals": 1}],
+            },
+            {
+                "type": "diff",
+                "file": path,
+                "lines": ["1"],
+                "say": ["The probe passes."],
+                "cues": [{"at": [0, 0], "do": "step", "n": 1}],
+            },
+        ],
+    }
+    stored_path, board_path = tmp_path / "map.json", tmp_path / "board.json"
+    stored_path.write_text(json.dumps(stored))
+    board_path.write_text(json.dumps(board))
+    completed = subprocess.run(
+        [sys.executable, "-m", "prc.cli", "explain", "--source", "fixture:shop",
+         "--map", str(stored_path), "--board", str(board_path), "--voice", "none",
+         "--out", str(tmp_path / "out")],
+        capture_output=True, text=True, cwd=ROOT, check=False,
+    )  # fmt: skip
+    assert completed.returncode == 0, completed.stderr
+    out = Path(json.loads(completed.stdout)["out"])
+    rebuilt = json.loads((out / "map.json").read_text())
+    facts = verify_board(json.loads((out / "board.json").read_text()), rebuilt)
+    run = json.loads((out / "run.json").read_text())
+    assert (facts["changed"], facts["tests_added"]) == (0, 1)
+    assert (run["check"]["changed"], run["check"]["tests_added"]) == (0, 1)
+    for name in ("card.html", "comment.md"):
+        assert "No production symbols changed" in (out / name).read_text()
+    assert "def test_probe" in (out / "doc.html").read_text()
+    artifact = ARTIFACT / "stored-reclassified"
+    shutil.rmtree(artifact, ignore_errors=True)
+    shutil.copytree(out, artifact)
+
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            for name in ("map", "card", "doc"):
+                page.goto((artifact / f"{name}.html").as_uri())
+                if name == "doc":
+                    page.wait_for_function("() => window.docReady === true")
+                    assert "def test_probe(): pass" in page.locator("body").inner_text()
+                page.screenshot(path=str(artifact / f"{name}.png"), full_page=True)
+        finally:
+            browser.close()

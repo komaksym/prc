@@ -1,0 +1,4 @@
+ts	phase	decision	why	evidence	result
+2026-10-07T18:57:46Z	frame	audit existing release work without discarding local changes	the checkout contains prior product fixes and unrelated experiments	PLANS.md	open
+2026-10-07T19:04:55Z	verifier	give each verifier invocation a fresh evidence directory	repeated copying nested E2E folders and failed on read-only cached git objects	artifacts/release/verifier-before.log	regression failed for overwritten logs; fixed check passes
+2026-10-07T19:07:27Z	grading	preserve frozen verdicts and record deterministic grading disagreements	275 of 410 mechanically replayed answers differ from reviewer records; prose answers cause many rule disagreements	artifacts/release/grade-audit.json	NOT VERIFIED for release acceptance

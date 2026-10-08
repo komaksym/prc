@@ -1,0 +1,4803 @@
+{
+  "author": "komaksym",
+  "base_sha": "306ff5a26ca6502173b40eeb723826e9e3eca6cd",
+  "brief": {
+    "checks": [
+      {
+        "name": "synthetic-e2e",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 16,
+        "kind": "docs",
+        "named": false,
+        "path": "PLANS.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 3,
+        "kind": "docs",
+        "named": false,
+        "path": "diagnostics/action-report-private-source-20261002/README.md",
+        "removed": 3,
+        "sensitive": null
+      },
+      {
+        "added": 39,
+        "kind": "code",
+        "named": false,
+        "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+        "removed": 4,
+        "sensitive": null
+      },
+      {
+        "added": 23,
+        "kind": "config",
+        "named": false,
+        "path": "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 85,
+        "kind": "test",
+        "named": false,
+        "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "removed": 2,
+        "sensitive": null
+      },
+      {
+        "added": 3,
+        "kind": "docs",
+        "named": false,
+        "path": "diagnostics/source-refresh-proposal-20261002/README.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 54,
+        "kind": "config",
+        "named": false,
+        "path": "diagnostics/source-refresh-proposal-20261002/private-action-source.yml",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/source-changelog/analysis.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "opaque",
+        "named": false,
+        "path": "infographic/source-changelog/infographic.png",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 1,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/source-changelog/prompts/01-infographic-source-changelog.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 11,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/source-changelog/source.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 6,
+        "kind": "docs",
+        "named": false,
+        "path": "infographic/source-changelog/structured-content.md",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 19,
+        "kind": "code",
+        "named": false,
+        "path": "src/linkedin_mdp_mcp/client.py",
+        "removed": 11,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "66e8fe47d8cf70fcde7f87ebd3b43c1ccf22eaf7",
+    "look_first": [
+      {
+        "lines": [],
+        "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+        "reason": "largest code change (+39 \u22124)"
+      },
+      {
+        "lines": [],
+        "path": "src/linkedin_mdp_mcp/client.py",
+        "reason": "largest code change (+19 \u221211)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "komaksym/linkedin-mdp#14",
+    "title": "fix(collector): collect changelog"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources",
+      "status": "kept",
+      "target": "diagnostics/action-report-private-source-20261002/collect_private_source.py::require"
+    },
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/collect_private_source.py::export",
+      "status": "kept",
+      "target": "diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources"
+    },
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+      "status": "kept",
+      "target": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise"
+    },
+    {
+      "resolution": "exact",
+      "source": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+      "status": "added",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInAPIError"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInAPIError"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.snapshot",
+      "status": "kept",
+      "target": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"
+    }
+  ],
+  "files": [
+    {
+      "added": 16,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "# Implementation plans"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "## PR14 changelog pagination scope repair"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Summary: reject a changelog next link that adds `startTime` when the caller did not set one, before a second HTTP request or encryption. Keep valid pagination cursors and an unchanged caller-supplied `startTime`."
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "Milestones: (1) extend the existing synthetic HTTP/CMS E2E and observe the missing rejection, (2) add the narrow client scope check, (3) verify the E2E and repository lint, types, tests, and build. The E2E failed before the fix with `unexpected synthetic collection failure`; after the fix, all 45 synthetic verdicts pass, including the seeded unchanged-start-time path. Full mypy (8 source files), 21 pytest tests, and sdist/wheel build pass. Parent reran the 45-verdict HTTP/CMS E2E, default scoped Ruff without exclusions, and diff check successfully. Independent correctness and comment review found no issues. The existing source-acquisition infographic remains accurate; this review fix does not change the PR purpose or high-level design."
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "## Private source changelog acquisition"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "Summary: include the existing read-only LinkedIn member changelog response in the encrypted private source bundle, with actual collector observation timestamps and an explicitly unknown provider freshness. Preserve each raw provider event exactly and accept a null watermark only for a complete empty response."
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "Failure cases to prove before implementation: (1) successful nonempty events are omitted or modified, (2) collector timestamps are absent or derived from provider event timestamps, (3) a complete empty response with a null watermark is rejected, (4) a nonempty response with a null watermark, zero/negative/boolean watermark is accepted, (5) malformed/missing envelope fields, malformed event entries, wrong-endpoint or wrong-query next links, malformed next links, or page-limit truncation are accepted, (6) valid pagination loses its original request scope, and (7) any failure creates an encrypted artifact. The collector must use only GETs and preserve the existing `created_at` projection and encrypted-only handling."
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "Milestones: (1) extend the synthetic HTTP/CMS E2E and run it red against the current collector, (2) add strict changelog acquisition to the collector, (3) rerun the E2E and narrow lint/typecheck/tests/build, and (4) prepare an inactive workflow refresh proposal outside `.github/workflows` for review."
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "Validation: the expanded E2E first failed on omitted changelog events/timestamps, empty watermark metadata, malformed events, missing and invalid watermarks, wrong endpoint/query pagination links, malformed next links, truncation, and lost query scope on valid pagination. It now passes all cases, including no artifact on collection failure and unchanged `created_at` checks. Mypy, the full 21-test suite, and package build pass in the declared `uv` environment. Ruff passes on touched source with pre-existing `UP037` in unchanged `client.py:62` excluded. System Python lacked the declared MCP client export and `build` module, so validation used `uv`."
+            },
+            {
+              "new": 18,
+              "old": 2,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 19,
+              "old": 3,
+              "op": " ",
+              "text": "## Private prospect creation timestamp"
+            },
+            {
+              "new": 20,
+              "old": 4,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "PLANS.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 1,
+              "op": "-",
+              "text": "# Private source collector timestamp check"
+            },
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Private source collector evidence"
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 3,
+              "op": "-",
+              "text": "The collector reads the existing `prospects.created_at` column and keeps its exact value in the encrypted prospect rows. A missing value stays missing. This slice changes no schema, workflow, schedule, or outreach behavior."
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "The collector reads the existing `prospects.created_at` column and keeps its exact value in the encrypted prospect rows. It also retains the exact raw events and watermark from the existing read-only LinkedIn member changelog endpoint. Changelog attempted, completed, and collected times record this collector run; they do not represent provider event time. Provider-generated time is null and upstream freshness is unknown. A null watermark is accepted only for a complete empty changelog response. A missing prospect timestamp stays missing."
+            },
+            {
+              "new": 4,
+              "old": 4,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 5,
+              "op": "-",
+              "text": "Run `PYTHONPATH=src python diagnostics/action-report-private-source-20261002/e2e_private_source.py` from the repository root. The test uses synthetic HTTP responses with the actual clients and OpenSSL CMS roundtrip. Its database mock applies the requested `select` columns, so omitting `created_at` from the collector projection fails the timestamp check. Negative cases check their expected error type and message, and injected unrelated collection and encryption faults must fail independently. The evidence file begins each run with `run_status: failed` and changes to `passed` only after all verdicts pass, so an early certificate failure cannot leave stale success evidence. It writes only fixed synthetic verdicts to `e2e-evidence.json`; the temporary certificate, key, and ciphertext are removed when the test ends. The test does not contact live services."
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Run `PYTHONPATH=src python diagnostics/action-report-private-source-20261002/e2e_private_source.py` from the repository root. The test uses synthetic HTTP responses with the actual clients and OpenSSL CMS roundtrip. Its database mock applies the requested `select` columns, so omitting `created_at` from the collector projection fails the timestamp check. Authorization cases reject missing, duplicate, malformed, wrong-prefix, or malformed member URNs. Changelog cases cover exact event retention, acquisition timestamps, complete empty results, malformed envelopes/events, missing or invalid watermarks, valid scoped pagination, wrong endpoint/query links, a next link that adds `startTime` to an unbounded request, malformed next links, and truncation. The injected `startTime` is rejected before a second HTTP request; a caller-supplied, unchanged `startTime` still pages successfully. Each rejected collection must fail before producing ciphertext. Negative cases check their expected error type and message, and injected unrelated collection and encryption faults must fail independently. The evidence file begins each run with `run_status: failed` and changes to `passed` only after all verdicts pass, so an early certificate failure cannot leave stale success evidence. It writes only fixed synthetic verdicts to `e2e-evidence.json`; the temporary certificate, key, and ciphertext are removed when the test ends. The test does not contact live services."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "diagnostics/action-report-private-source-20261002/README.md",
+      "removed": 3,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 39,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 62,
+              "old": 62,
+              "op": " ",
+              "text": "    raise RuntimeError(\"private source collection failed\")"
+            },
+            {
+              "new": 63,
+              "old": 63,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 64,
+              "old": 64,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 65,
+              "op": "-",
+              "text": "async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50) -> dict[str, Any]:"
+            },
+            {
+              "new": null,
+              "old": 66,
+              "op": "-",
+              "text": "    \"\"\"Collect all three strict snapshots and both existing tables with no writes.\"\"\""
+            },
+            {
+              "new": null,
+              "old": 67,
+              "op": "-",
+              "text": "    require(1 <= page_size <= 1000 and 1 <= max_db_pages <= 200 and 1 <= snapshot_pages <= 50)"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50, changelog_pages: int = 50) -> dict[str, Any]:"
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Collect strict snapshots, changelog, and existing tables with no writes.\"\"\""
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "    require(1 <= page_size <= 1000 and 1 <= max_db_pages <= 200 and 1 <= snapshot_pages <= 50 and 1 <= changelog_pages <= 50)"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "    authorizations = await linkedin.authorization_status()"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "    elements = authorizations.get(\"elements\") if isinstance(authorizations, dict) else None"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "    if not isinstance(elements, list) or len(elements) != 1:"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "        raise RuntimeError(\"private source collection failed\")"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "    authorization = elements[0]"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "    identity = authorization.get(\"memberComplianceAuthorizationKey\") if isinstance(authorization, dict) else None"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "    account_member_urn = identity.get(\"member\") if isinstance(identity, dict) else None"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "    require("
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "        isinstance(account_member_urn, str)"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "        and re.fullmatch(r\"urn:li:person:[A-Za-z0-9_-]+\", account_member_urn) is not None"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 79,
+              "old": 68,
+              "op": " ",
+              "text": "    snapshots: dict[str, Any] = {}"
+            },
+            {
+              "new": 80,
+              "old": 69,
+              "op": " ",
+              "text": "    for domain in DOMAINS:"
+            },
+            {
+              "new": 81,
+              "old": 70,
+              "op": " ",
+              "text": "        started = datetime.now(UTC).isoformat()"
+            }
+          ],
+          "new_start": 62,
+          "old_start": 62
+        },
+        {
+          "lines": [
+            {
+              "new": 88,
+              "old": 77,
+              "op": " ",
+              "text": "        rows = snapshot.get(\"rows\")"
+            },
+            {
+              "new": 89,
+              "old": 78,
+              "op": " ",
+              "text": "        require(isinstance(rows, list) and all(isinstance(row, dict) for row in rows))"
+            },
+            {
+              "new": 90,
+              "old": 79,
+              "op": " ",
+              "text": "        snapshots[domain] = {\"attempted_at\": started, \"completed_at\": datetime.now(UTC).isoformat(), \"source_result\": \"success\", \"provider_generated_at\": None, \"upstream_freshness\": \"unknown unless established by retained provider metadata\", **snapshot}"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "    attempted_at = datetime.now(UTC).isoformat()"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "    change_result = await linkedin.changelog(count=50, max_pages=changelog_pages)"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "    completed_at = datetime.now(UTC).isoformat()"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "    require(isinstance(change_result, dict))"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "    change_events = change_result.get(\"events\")"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "    watermark = change_result.get(\"next_start_time\")"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "    pages = change_result.get(\"page_count\")"
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": "    require(isinstance(change_result.get(\"api_version\"), str) and bool(change_result[\"api_version\"]))"
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "    require(isinstance(change_events, list) and all(isinstance(event, dict) for event in change_events))"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "    require(type(pages) is int and 0 < pages <= changelog_pages and change_result.get(\"truncated\") is False)"
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "    require((not change_events and watermark is None) or (bool(change_events) and type(watermark) is int and watermark > 0))"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "    changelog = {"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "        \"attempted_at\": attempted_at,"
+            },
+            {
+              "new": 104,
+              "old": null,
+              "op": "+",
+              "text": "        \"completed_at\": completed_at,"
+            },
+            {
+              "new": 105,
+              "old": null,
+              "op": "+",
+              "text": "        \"collected_at\": datetime.now(UTC).isoformat(),"
+            },
+            {
+              "new": 106,
+              "old": null,
+              "op": "+",
+              "text": "        \"source_result\": \"success\","
+            },
+            {
+              "new": 107,
+              "old": null,
+              "op": "+",
+              "text": "        \"provider_generated_at\": None,"
+            },
+            {
+              "new": 108,
+              "old": null,
+              "op": "+",
+              "text": "        \"upstream_freshness\": \"unknown\","
+            },
+            {
+              "new": 109,
+              "old": null,
+              "op": "+",
+              "text": "        \"api_version\": change_result[\"api_version\"],"
+            },
+            {
+              "new": 110,
+              "old": null,
+              "op": "+",
+              "text": "        \"events\": change_events,"
+            },
+            {
+              "new": 111,
+              "old": null,
+              "op": "+",
+              "text": "        \"next_start_time\": watermark,"
+            },
+            {
+              "new": 112,
+              "old": null,
+              "op": "+",
+              "text": "        \"page_count\": pages,"
+            },
+            {
+              "new": 113,
+              "old": null,
+              "op": "+",
+              "text": "        \"truncated\": False,"
+            },
+            {
+              "new": 114,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 115,
+              "old": 80,
+              "op": " ",
+              "text": "    tables = {}"
+            },
+            {
+              "new": 116,
+              "old": 81,
+              "op": " ",
+              "text": "    for table in TABLE_COLUMNS:"
+            },
+            {
+              "new": 117,
+              "old": 82,
+              "op": " ",
+              "text": "        tables[table] = await read_table(store, table, page_size=page_size, max_pages=max_db_pages)"
+            },
+            {
+              "new": null,
+              "old": 83,
+              "op": "-",
+              "text": "    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"snapshots\": snapshots, **tables}"
+            },
+            {
+              "new": 118,
+              "old": null,
+              "op": "+",
+              "text": "    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"account_member_urn\": account_member_urn, \"snapshots\": snapshots, \"changelog\": changelog, **tables}"
+            },
+            {
+              "new": 119,
+              "old": 84,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 120,
+              "old": 85,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 121,
+              "old": 86,
+              "op": " ",
+              "text": "def encrypt_bundle(bundle: dict[str, Any], certificate: Path, output: Path) -> None:"
+            }
+          ],
+          "new_start": 88,
+          "old_start": 77
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+      "removed": 4,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources",
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py::export",
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py::require"
+      ]
+    },
+    {
+      "added": 23,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 3,
+              "old": 3,
+              "op": " ",
+              "text": "  \"run_status\": \"passed\","
+            },
+            {
+              "new": 4,
+              "old": 4,
+              "op": " ",
+              "text": "  \"scenarios\": {"
+            },
+            {
+              "new": 5,
+              "old": 5,
+              "op": " ",
+              "text": "    \"complete_sources_roundtrip\": true,"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "    \"account_member_urn_roundtrip\": true,"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "    \"changelog_raw_events_and_acquisition_timestamps\": true,"
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "    \"changelog_complete_watermark\": true,"
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "    \"changelog_valid_pagination_preserves_scope_and_events\": true,"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "    \"changelog_original_start_time_survives_pagination\": true,"
+            },
+            {
+              "new": 11,
+              "old": 6,
+              "op": " ",
+              "text": "    \"prospect_created_at_exact_across_pages\": true,"
+            },
+            {
+              "new": 12,
+              "old": 7,
+              "op": " ",
+              "text": "    \"missing_created_at_not_fabricated\": true,"
+            },
+            {
+              "new": 13,
+              "old": 8,
+              "op": " ",
+              "text": "    \"private_plaintext_absent_encrypted_artifact\": true,"
+            }
+          ],
+          "new_start": 3,
+          "old_start": 3
+        },
+        {
+          "lines": [
+            {
+              "new": 18,
+              "old": 13,
+              "op": " ",
+              "text": "    \"domain_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 19,
+              "old": 14,
+              "op": " ",
+              "text": "    \"truncated_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 20,
+              "old": 15,
+              "op": " ",
+              "text": "    \"escaped_domain_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_bad_envelope_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_wrong_endpoint_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_wrong_q_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_added_start_time_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_bad_next_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 26,
+              "old": 16,
+              "op": " ",
+              "text": "    \"db_cap_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 27,
+              "old": 17,
+              "op": " ",
+              "text": "    \"db_malformed_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 28,
+              "old": 18,
+              "op": " ",
+              "text": "    \"db_missing_count_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 29,
+              "old": 19,
+              "op": " ",
+              "text": "    \"db_changed_count_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 30,
+              "old": 20,
+              "op": " ",
+              "text": "    \"db_duplicate_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_bad_event_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_no_watermark_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_zero_watermark_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_negative_watermark_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_boolean_watermark_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_truncated_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_missing_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_multiple_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_malformed_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_wrong_prefix_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_suffix_whitespace_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_suffix_internal_space_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "    \"auth_suffix_bad_chars_rejected_without_artifact\": true,"
+            },
+            {
+              "new": 44,
+              "old": 21,
+              "op": " ",
+              "text": "    \"unexpected_failure_not_counted_as_rejection\": true,"
+            },
+            {
+              "new": 45,
+              "old": 22,
+              "op": " ",
+              "text": "    \"encryption_failure_not_counted_as_rejection\": true,"
+            },
+            {
+              "new": 46,
+              "old": 23,
+              "op": " ",
+              "text": "    \"cli_fixed_success_log_without_plaintext\": true,"
+            }
+          ],
+          "new_start": 18,
+          "old_start": 13
+        }
+      ],
+      "kind": "config",
+      "language": null,
+      "path": "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 85,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 8,
+              "old": 8,
+              "op": " ",
+              "text": "import sys"
+            },
+            {
+              "new": 9,
+              "old": 9,
+              "op": " ",
+              "text": "import tempfile"
+            },
+            {
+              "new": 10,
+              "old": 10,
+              "op": " ",
+              "text": "from contextlib import redirect_stdout"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "from datetime import UTC, datetime"
+            },
+            {
+              "new": 12,
+              "old": 11,
+              "op": " ",
+              "text": "from io import StringIO"
+            },
+            {
+              "new": 13,
+              "old": 12,
+              "op": " ",
+              "text": "from pathlib import Path"
+            },
+            {
+              "new": 14,
+              "old": 13,
+              "op": " ",
+              "text": "from typing import Any"
+            }
+          ],
+          "new_start": 8,
+          "old_start": 8
+        },
+        {
+          "lines": [
+            {
+              "new": 33,
+              "old": 32,
+              "op": " ",
+              "text": "    \"domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot element domain does not match request\"),"
+            },
+            {
+              "new": 34,
+              "old": 33,
+              "op": " ",
+              "text": "    \"truncated\": (RuntimeError, \"private source collection failed\"),"
+            },
+            {
+              "new": 35,
+              "old": 34,
+              "op": " ",
+              "text": "    \"escaped_domain\": (LinkedInAPIError, \"LinkedIn API error 0: snapshot next link changed request scope\"),"
+            },
+            {
+              "new": null,
+              "old": 35,
+              "op": "-",
+              "text": "    **{case: (RuntimeError, \"private source collection failed\") for case in (\"db_cap\", \"db_malformed\", \"db_missing_count\", \"db_changed_count\", \"db_duplicate\")},"
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_bad_envelope\": (LinkedInAPIError, \"LinkedIn API error 0: malformed changelog elements list\"),"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_wrong_endpoint\": (LinkedInAPIError, \"LinkedIn API error 0: changelog next link changed endpoint\"),"
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_wrong_q\": (LinkedInAPIError, \"LinkedIn API error 0: changelog next link changed request scope\"),"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_added_start_time\": (LinkedInAPIError, \"LinkedIn API error 0: changelog next link changed request scope\"),"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "    \"change_bad_next\": (LinkedInAPIError, \"LinkedIn API error 0: malformed changelog paging link\"),"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    **{case: (RuntimeError, \"private source collection failed\") for case in (\"db_cap\", \"db_malformed\", \"db_missing_count\", \"db_changed_count\", \"db_duplicate\", \"change_bad_event\", \"change_no_watermark\", \"change_zero_watermark\", \"change_negative_watermark\", \"change_boolean_watermark\", \"change_truncated\", \"auth_missing\", \"auth_multiple\", \"auth_malformed\", \"auth_wrong_prefix\", \"auth_suffix_whitespace\", \"auth_suffix_internal_space\", \"auth_suffix_bad_chars\")},"
+            },
+            {
+              "new": 42,
+              "old": 36,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 43,
+              "old": 37,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 44,
+              "old": 38,
+              "op": " ",
+              "text": "async def exercise(case: str, cert: Path, target: Path) -> tuple[bytes | None, list[str]]:"
+            }
+          ],
+          "new_start": 33,
+          "old_start": 32
+        },
+        {
+          "lines": [
+            {
+              "new": 47,
+              "old": 41,
+              "op": " ",
+              "text": "    def provider(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 48,
+              "old": 42,
+              "op": " ",
+              "text": "        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""
+            },
+            {
+              "new": 49,
+              "old": 43,
+              "op": " ",
+              "text": "        methods.append(request.method)"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "        if request.url.path == \"/rest/memberAuthorizations\":"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "            member = \"urn:li:person:synthetic-member-493829\""
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "            elements: list[Any] = [{\"memberComplianceAuthorizationKey\": {\"member\": member}}]"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_missing\":"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "                elements = []"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_multiple\":"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "                elements.append({\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:second-synthetic\"}})"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_malformed\":"
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": 42}}]"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_wrong_prefix\":"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:organization:synthetic\"}}]"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_suffix_whitespace\":"
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person: synthetic-member\"}}]"
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_suffix_internal_space\":"
+            },
+            {
+              "new": 64,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic member\"}}]"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_suffix_bad_chars\":"
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic/member\"}}]"
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": elements})"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "        if request.url.path == \"/rest/memberChangeLogs\":"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_added_start_time\":"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "                if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "                    raise RuntimeError(\"second changelog request reached\")"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1&startTime=1710000000\"}]}})"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_bad_envelope\":"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_wrong_endpoint\":"
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberAuthorizations?start=1\"}]}})"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_wrong_q\":"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "                if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": "                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?q=other&start=1\"}]}})"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_bad_next\":"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [None]}})"
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_paged\":"
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": "                if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": "                    kind = \"SECOND\" if request.url.params.get(\"q\") == \"memberAndApplication\" and request.url.params.get(\"count\") == \"50\" else \"SECOND_BAD_SCOPE\""
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001, \"changeType\": kind}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_truncated\":"
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "            events: list[Any] = [] if case == \"empty\" else [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}]"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_bad_event\":"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "                events = [None]"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_no_watermark\":"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "                events = [{\"changeType\": \"SYNTHETIC\"}]"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_zero_watermark\":"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "                events[0][\"processedAt\"] = 0"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_negative_watermark\":"
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": "                events[0][\"processedAt\"] = -1"
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_boolean_watermark\":"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "                events[0][\"processedAt\"] = True"
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": events, \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"change_wrong_endpoint\" and request.url.path == \"/rest/memberAuthorizations\":"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 104,
+              "old": 44,
+              "op": " ",
+              "text": "        domain = request.url.params.get(\"domain\")"
+            },
+            {
+              "new": 105,
+              "old": 45,
+              "op": " ",
+              "text": "        if case == \"unavailable\":"
+            },
+            {
+              "new": 106,
+              "old": 46,
+              "op": " ",
+              "text": "            return httpx.Response(404, json={\"message\": \"unavailable\"})"
+            }
+          ],
+          "new_start": 47,
+          "old_start": 41
+        },
+        {
+          "lines": [
+            {
+              "new": 168,
+              "old": 108,
+              "op": " ",
+              "text": "        if generated.returncode:"
+            },
+            {
+              "new": 169,
+              "old": 109,
+              "op": " ",
+              "text": "            raise RuntimeError(\"synthetic certificate generation failed\")"
+            },
+            {
+              "new": 170,
+              "old": 110,
+              "op": " ",
+              "text": "        output = tmp / \"source.cms\""
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "        run_started = datetime.now(UTC)"
+            },
+            {
+              "new": 172,
+              "old": 111,
+              "op": " ",
+              "text": "        encrypted, methods = await exercise(\"complete\", cert, output)"
+            },
+            {
+              "new": 173,
+              "old": null,
+              "op": "+",
+              "text": "        run_completed = datetime.now(UTC)"
+            },
+            {
+              "new": 174,
+              "old": 112,
+              "op": " ",
+              "text": "        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 175,
+              "old": 113,
+              "op": " ",
+              "text": "        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"
+            },
+            {
+              "new": 176,
+              "old": 114,
+              "op": " ",
+              "text": "        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"
+            },
+            {
+              "new": 177,
+              "old": null,
+              "op": "+",
+              "text": "        changelog = bundle.get(\"changelog\", {})"
+            },
+            {
+              "new": 178,
+              "old": null,
+              "op": "+",
+              "text": "        change_events = changelog.get(\"events\")"
+            },
+            {
+              "new": 179,
+              "old": 115,
+              "op": " ",
+              "text": "        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"
+            },
+            {
+              "new": 180,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"account_member_urn_roundtrip\"] = bundle.get(\"account_member_urn\") == \"urn:li:person:synthetic-member-493829\""
+            },
+            {
+              "new": 181,
+              "old": null,
+              "op": "+",
+              "text": "        times = [datetime.fromisoformat(changelog[key]) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")] if all(isinstance(changelog.get(key), str) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")) else []"
+            },
+            {
+              "new": 182,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_raw_events_and_acquisition_timestamps\"] = change_events == [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}] and len(times) == 3 and run_started <= times[0] <= times[1] <= times[2] <= run_completed and changelog.get(\"provider_generated_at\") is None and changelog.get(\"upstream_freshness\") == \"unknown\""
+            },
+            {
+              "new": 183,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_complete_watermark\"] = changelog.get(\"next_start_time\") == 1710000000 and changelog.get(\"source_result\") == \"success\" and changelog.get(\"truncated\") is False and type(changelog.get(\"page_count\")) is int and changelog[\"page_count\"] > 0"
+            },
+            {
+              "new": 184,
+              "old": null,
+              "op": "+",
+              "text": "        paged, _ = await exercise(\"change_paged\", cert, tmp / \"paged.cms\")"
+            },
+            {
+              "new": 185,
+              "old": null,
+              "op": "+",
+              "text": "        paged_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"paged.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 186,
+              "old": null,
+              "op": "+",
+              "text": "        paged_changelog = json.loads(paged_result.stdout).get(\"changelog\", {}) if paged_result.returncode == 0 else {}"
+            },
+            {
+              "new": 187,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_valid_pagination_preserves_scope_and_events\"] = paged is not None and paged_changelog.get(\"events\") == [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}, {\"processedAt\": 1710000001, \"changeType\": \"SECOND\"}] and paged_changelog.get(\"page_count\") == 2 and paged_changelog.get(\"next_start_time\") == 1710000001"
+            },
+            {
+              "new": 188,
+              "old": null,
+              "op": "+",
+              "text": "        seeded_requests: list[httpx.Request] = []"
+            },
+            {
+              "new": 189,
+              "old": null,
+              "op": "+",
+              "text": "        def seeded_provider(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 190,
+              "old": null,
+              "op": "+",
+              "text": "            \"\"\"Return two pages with the caller's unchanged start time.\"\"\""
+            },
+            {
+              "new": 191,
+              "old": null,
+              "op": "+",
+              "text": "            seeded_requests.append(request)"
+            },
+            {
+              "new": 192,
+              "old": null,
+              "op": "+",
+              "text": "            if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 193,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1002}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 194,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1001}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1&startTime=1000\"}]}})"
+            },
+            {
+              "new": 195,
+              "old": null,
+              "op": "+",
+              "text": "        async with httpx.AsyncClient(transport=httpx.MockTransport(seeded_provider)) as http:"
+            },
+            {
+              "new": 196,
+              "old": null,
+              "op": "+",
+              "text": "            seeded = await LinkedInMDPClient(\"synthetic\", http=http).changelog(start_time=1000)"
+            },
+            {
+              "new": 197,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_original_start_time_survives_pagination\"] = seeded[\"page_count\"] == 2 and seeded[\"next_start_time\"] == 1002 and len(seeded_requests) == 2 and all(request.url.params.get(\"startTime\") == \"1000\" for request in seeded_requests)"
+            },
+            {
+              "new": 198,
+              "old": 116,
+              "op": " ",
+              "text": "        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"
+            },
+            {
+              "new": 199,
+              "old": 117,
+              "op": " ",
+              "text": "        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"
+            },
+            {
+              "new": 200,
+              "old": 118,
+              "op": " ",
+              "text": "        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            }
+          ],
+          "new_start": 168,
+          "old_start": 108
+        },
+        {
+          "lines": [
+            {
+              "new": 205,
+              "old": 123,
+              "op": " ",
+              "text": "        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"
+            },
+            {
+              "new": 206,
+              "old": 124,
+              "op": " ",
+              "text": "        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 207,
+              "old": 125,
+              "op": " ",
+              "text": "        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"
+            },
+            {
+              "new": null,
+              "old": 126,
+              "op": "-",
+              "text": "        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"
+            },
+            {
+              "new": 208,
+              "old": null,
+              "op": "+",
+              "text": "        empty_changelog = zero_bundle.get(\"changelog\", {})"
+            },
+            {
+              "new": 209,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values()) and empty_changelog.get(\"events\") == [] and empty_changelog.get(\"next_start_time\") is None and empty_changelog.get(\"source_result\") == \"success\""
+            },
+            {
+              "new": 210,
+              "old": 127,
+              "op": " ",
+              "text": "        for case in EXPECTED_FAILURES:"
+            },
+            {
+              "new": 211,
+              "old": 128,
+              "op": " ",
+              "text": "            target = tmp / f\"{case}.cms\""
+            },
+            {
+              "new": 212,
+              "old": 129,
+              "op": " ",
+              "text": "            encrypted, methods = await exercise(case, cert, target)"
+            }
+          ],
+          "new_start": 205,
+          "old_start": 123
+        }
+      ],
+      "kind": "test",
+      "language": "python",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "removed": 2,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.seeded_provider"
+      ]
+    },
+    {
+      "added": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Inactive collector workflow refresh proposal"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "This copied workflow is a review aid only. It is outside `.github/workflows`, uses an impossible placeholder branch, and cannot run from its current location. Before any separate operator-approved refresh, replace `PINNED_NEW_COLLECTOR_COMMIT_REQUIRED` with the reviewed immutable collector commit and review the branch/path trigger against the then-current validation process. The committed workflow remains unchanged by this proposal."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "diagnostics/source-refresh-proposal-20261002/README.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 54,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "name: PROPOSAL ONLY - Refresh Encrypted Action Report Source Runtime"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "on:"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "  push:"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "    branches: [PROPOSAL_BRANCH_REQUIRES_EXPLICIT_OPERATOR_REVIEW]"
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "    paths: [diagnostics/source-refresh-proposal-20261002/private-action-source.yml]"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "permissions:"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "  contents: read"
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "jobs:"
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "  collect:"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "    if: github.ref == 'refs/heads/PROPOSAL_BRANCH_REQUIRES_EXPLICIT_OPERATOR_REVIEW'"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "    runs-on: ubuntu-latest"
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "    timeout-minutes: 20"
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "    concurrency:"
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": "      group: connections-reconciliation"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "      cancel-in-progress: false"
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": "    steps:"
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": "        with:"
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "          ref: ${{ github.sha }}"
+            },
+            {
+              "new": 20,
+              "old": null,
+              "op": "+",
+              "text": "          persist-credentials: false"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "          path: proposal"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "        with:"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "          # Replace only with the reviewed, immutable collector commit."
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "          ref: PINNED_NEW_COLLECTOR_COMMIT_REQUIRED"
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": "          persist-credentials: false"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "          path: runtime"
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e"
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "        with:"
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": "          version: '0.12.18'"
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "          python-version: '3.12'"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "          enable-cache: false"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "      - name: Install pinned read-only runtime"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "        working-directory: runtime"
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "        run: uv sync --no-dev"
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "      - name: Collect and encrypt private source"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "        env:"
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "          LINKEDIN_ACCESS_TOKEN: ${{ secrets.ORION_TOKEN }}"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "          LINKEDIN_API_VERSION: ${{ vars.LINKEDIN_API_VERSION || '202312' }}"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "          SUPABASE_URL: https://mvgzdcqhdruhjoexbdqp.supabase.co"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "          PYTHONPATH: runtime/src"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "        run: >-"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "          runtime/.venv/bin/python"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "          proposal/diagnostics/action-report-private-source-20261002/collect_private_source.py"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "          --certificate proposal/diagnostics/action-report-private-source-20261002/recipient-cert.pem"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "          --output encrypted-source/source.cms"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "      - name: Retain encrypted source only"
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "        with:"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "          name: encrypted-action-report-source"
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "          path: encrypted-source/source.cms"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "          retention-days: 1"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "          if-no-files-found: error"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "config",
+      "language": null,
+      "path": "diagnostics/source-refresh-proposal-20261002/private-action-source.yml",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Technical/system infographic. Audience owner and reviewer. Learning objective: acquisition metadata describes when source data was collected, not when the provider updated it. Technical default structural-breakdown, technical-schematic, landscape16:9 English, native imagegen. Neutral opaque canvas. No person data or deployment claim."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/source-changelog/analysis.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "opaque",
+      "language": null,
+      "path": "infographic/source-changelog/infographic.png",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Create a polished small technical system infographic on an opaque pale-gray neutral canvas with dark navy text, blue and teal accents, clear dark outer boundary, landscape16:9. Structural-breakdown + technical-schematic. Clean engineering illustration, no logos, no gradients behind text, all labels crisp and spacious. Title exact: Fresh private report inputs. Three large panels left to right: INPUTS with two separate feed cards labelled LinkedIn snapshots and changelog and Supabase prospects with created_at; VALIDATE labelled Strict complete-source validation, Observed acquisition timestamps, Provider freshness stays unknown; ENCRYPT labelled AES-256 CMS encryption and Private encrypted artifact. Connect with restrained simple arrows. Bottom boundary strip three exact short labels: No database writes; No messages sent; Workflow activation pending. Make acquisition versus freshness distinction visible with a small clock icon beside acquisition and questionmark beside freshness. Do not add statistics, test counts, person names, secret values or deployment claims. Everything inside opaque canvas with high contrast. Use only exact supplied labels, English."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/source-changelog/prompts/01-infographic-source-changelog.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 11,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "Fresh private report inputs"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "LinkedIn snapshots and changelog"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Supabase prospects with created_at"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Strict complete-source validation"
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Observed acquisition timestamps"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Provider freshness stays unknown"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "AES-256 CMS encryption"
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "Private encrypted artifact"
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "No database writes"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "No messages sent"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "Workflow activation pending"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/source-changelog/source.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "# Fresh private report inputs"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "Inputs: LinkedIn snapshots and changelog; Supabase prospects with created_at."
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "Validation: strict complete-source validation; observed acquisition timestamps; provider freshness stays unknown."
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "Output: AES-256 CMS encryption; private encrypted artifact."
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "Boundaries: no database writes; no messages sent; workflow activation pending."
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "docs",
+      "language": null,
+      "path": "infographic/source-changelog/structured-content.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 19,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 143,
+              "old": 143,
+              "op": " ",
+              "text": "            params,"
+            },
+            {
+              "new": 144,
+              "old": 144,
+              "op": " ",
+              "text": "            max_pages=max_pages,"
+            },
+            {
+              "new": 145,
+              "old": 145,
+              "op": " ",
+              "text": "            empty_on_404=False,"
+            },
+            {
+              "new": 146,
+              "old": null,
+              "op": "+",
+              "text": "            strict_envelope=True,"
+            },
+            {
+              "new": 147,
+              "old": 146,
+              "op": " ",
+              "text": "        )"
+            },
+            {
+              "new": 148,
+              "old": 147,
+              "op": " ",
+              "text": "        processed = ["
+            },
+            {
+              "new": 149,
+              "old": 148,
+              "op": " ",
+              "text": "            value"
+            }
+          ],
+          "new_start": 143,
+          "old_start": 143
+        },
+        {
+          "lines": [
+            {
+              "new": 166,
+              "old": 165,
+              "op": " ",
+              "text": "        max_pages: int,"
+            },
+            {
+              "new": 167,
+              "old": 166,
+              "op": " ",
+              "text": "        empty_on_404: bool,"
+            },
+            {
+              "new": 168,
+              "old": 167,
+              "op": " ",
+              "text": "        strict_elements: bool = False,"
+            },
+            {
+              "new": 169,
+              "old": null,
+              "op": "+",
+              "text": "        strict_envelope: bool = False,"
+            },
+            {
+              "new": 170,
+              "old": 168,
+              "op": " ",
+              "text": "    ) -> PageResult:"
+            },
+            {
+              "new": null,
+              "old": 169,
+              "op": "-",
+              "text": "        \"\"\"Fetch every page and optionally reject malformed snapshot envelopes.\"\"\""
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "        \"\"\"Fetch every page and validate requested snapshot or source envelopes.\"\"\""
+            },
+            {
+              "new": 172,
+              "old": 170,
+              "op": " ",
+              "text": "        if not 1 <= max_pages <= 50:"
+            },
+            {
+              "new": 173,
+              "old": 171,
+              "op": " ",
+              "text": "            raise ValueError(\"max_pages must be between 1 and 50\")"
+            },
+            {
+              "new": 174,
+              "old": 172,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 166,
+          "old_start": 165
+        },
+        {
+          "lines": [
+            {
+              "new": 193,
+              "old": 191,
+              "op": " ",
+              "text": "                raise"
+            },
+            {
+              "new": 194,
+              "old": 192,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 195,
+              "old": 193,
+              "op": " ",
+              "text": "            current = payload.get(\"elements\", [])"
+            },
+            {
+              "new": 196,
+              "old": null,
+              "op": "+",
+              "text": "            if strict_envelope and (\"elements\" not in payload or not isinstance(current, list)):"
+            },
+            {
+              "new": 197,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, \"malformed changelog elements list\")"
+            },
+            {
+              "new": 198,
+              "old": 194,
+              "op": " ",
+              "text": "            if strict_elements and not isinstance(current, list):"
+            },
+            {
+              "new": 199,
+              "old": 195,
+              "op": " ",
+              "text": "                raise LinkedInAPIError(0, \"expected a snapshot elements list\")"
+            },
+            {
+              "new": 200,
+              "old": 196,
+              "op": " ",
+              "text": "            if isinstance(current, list):"
+            }
+          ],
+          "new_start": 193,
+          "old_start": 191
+        },
+        {
+          "lines": [
+            {
+              "new": 205,
+              "old": 201,
+              "op": " ",
+              "text": "                self._validate_snapshot_paging(payload)"
+            },
+            {
+              "new": 206,
+              "old": 202,
+              "op": " ",
+              "text": "            pages += 1"
+            },
+            {
+              "new": 207,
+              "old": 203,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 204,
+              "op": "-",
+              "text": "            next_url = self._next_link(payload, strict=strict_elements)"
+            },
+            {
+              "new": 208,
+              "old": null,
+              "op": "+",
+              "text": "            strict_pages = strict_elements or strict_envelope"
+            },
+            {
+              "new": 209,
+              "old": null,
+              "op": "+",
+              "text": "            page_context = \"changelog\" if strict_envelope else \"snapshot\""
+            },
+            {
+              "new": 210,
+              "old": null,
+              "op": "+",
+              "text": "            next_url = self._next_link(payload, strict=strict_pages, context=page_context)"
+            },
+            {
+              "new": 211,
+              "old": 205,
+              "op": " ",
+              "text": "            if next_url is None:"
+            },
+            {
+              "new": 212,
+              "old": 206,
+              "op": " ",
+              "text": "                return PageResult(elements=elements, page_count=pages, truncated=False)"
+            },
+            {
+              "new": null,
+              "old": 207,
+              "op": "-",
+              "text": "            if strict_elements:"
+            },
+            {
+              "new": 213,
+              "old": null,
+              "op": "+",
+              "text": "            if strict_pages:"
+            },
+            {
+              "new": 214,
+              "old": 208,
+              "op": " ",
+              "text": "                parsed = urlparse(next_url)"
+            },
+            {
+              "new": 215,
+              "old": 209,
+              "op": " ",
+              "text": "                if parsed.path != path:"
+            },
+            {
+              "new": null,
+              "old": 210,
+              "op": "-",
+              "text": "                    raise LinkedInAPIError(0, \"snapshot next link changed endpoint\")"
+            },
+            {
+              "new": 216,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, f\"{page_context} next link changed endpoint\")"
+            },
+            {
+              "new": 217,
+              "old": 211,
+              "op": " ",
+              "text": "                next_params = parse_qs(parsed.query, keep_blank_values=True)"
+            },
+            {
+              "new": 218,
+              "old": null,
+              "op": "+",
+              "text": "                if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:"
+            },
+            {
+              "new": 219,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, \"changelog next link changed request scope\")"
+            },
+            {
+              "new": 220,
+              "old": 212,
+              "op": " ",
+              "text": "                for key, value in params.items():"
+            },
+            {
+              "new": 221,
+              "old": 213,
+              "op": " ",
+              "text": "                    expected = [str(value)]"
+            },
+            {
+              "new": 222,
+              "old": 214,
+              "op": " ",
+              "text": "                    if key in next_params and next_params[key] != expected:"
+            },
+            {
+              "new": null,
+              "old": 215,
+              "op": "-",
+              "text": "                        raise LinkedInAPIError(0, \"snapshot next link changed request scope\")"
+            },
+            {
+              "new": 223,
+              "old": null,
+              "op": "+",
+              "text": "                        raise LinkedInAPIError(0, f\"{page_context} next link changed request scope\")"
+            },
+            {
+              "new": 224,
+              "old": 216,
+              "op": " ",
+              "text": "                    next_params[key] = expected"
+            },
+            {
+              "new": 225,
+              "old": 217,
+              "op": " ",
+              "text": "                next_url = parsed._replace(query=urlencode(next_params, doseq=True)).geturl()"
+            },
+            {
+              "new": 226,
+              "old": 218,
+              "op": " ",
+              "text": "            url = next_url"
+            }
+          ],
+          "new_start": 205,
+          "old_start": 201
+        },
+        {
+          "lines": [
+            {
+              "new": 285,
+              "old": 277,
+              "op": " ",
+              "text": "        if parsed.scheme != \"https\" or parsed.netloc != self._allowed_host:"
+            },
+            {
+              "new": 286,
+              "old": 278,
+              "op": " ",
+              "text": "            raise LinkedInAPIError(0, \"refusing to send LinkedIn credentials to an unexpected host\")"
+            },
+            {
+              "new": 287,
+              "old": 279,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 280,
+              "op": "-",
+              "text": "    def _next_link(self, payload: dict[str, Any], *, strict: bool = False) -> str | None:"
+            },
+            {
+              "new": 288,
+              "old": null,
+              "op": "+",
+              "text": "    def _next_link(self, payload: dict[str, Any], *, strict: bool = False, context: str = \"snapshot\") -> str | None:"
+            },
+            {
+              "new": 289,
+              "old": 281,
+              "op": " ",
+              "text": "        \"\"\"Return the single validated next link, or no link at the end.\"\"\""
+            },
+            {
+              "new": 290,
+              "old": 282,
+              "op": " ",
+              "text": "        paging = payload.get(\"paging\")"
+            },
+            {
+              "new": 291,
+              "old": 283,
+              "op": " ",
+              "text": "        if not isinstance(paging, dict):"
+            },
+            {
+              "new": 292,
+              "old": 284,
+              "op": " ",
+              "text": "            if strict and \"paging\" in payload:"
+            },
+            {
+              "new": null,
+              "old": 285,
+              "op": "-",
+              "text": "                raise LinkedInAPIError(0, \"malformed snapshot paging object\")"
+            },
+            {
+              "new": 293,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, f\"malformed {context} paging object\")"
+            },
+            {
+              "new": 294,
+              "old": 286,
+              "op": " ",
+              "text": "            return None"
+            },
+            {
+              "new": 295,
+              "old": 287,
+              "op": " ",
+              "text": "        links = paging.get(\"links\")"
+            },
+            {
+              "new": 296,
+              "old": 288,
+              "op": " ",
+              "text": "        if not isinstance(links, list):"
+            },
+            {
+              "new": 297,
+              "old": 289,
+              "op": " ",
+              "text": "            if strict and \"links\" in paging:"
+            },
+            {
+              "new": null,
+              "old": 290,
+              "op": "-",
+              "text": "                raise LinkedInAPIError(0, \"malformed snapshot paging links\")"
+            },
+            {
+              "new": 298,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, f\"malformed {context} paging links\")"
+            },
+            {
+              "new": 299,
+              "old": 291,
+              "op": " ",
+              "text": "            return None"
+            },
+            {
+              "new": 300,
+              "old": 292,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 301,
+              "old": 293,
+              "op": " ",
+              "text": "        if strict:"
+            },
+            {
+              "new": 302,
+              "old": 294,
+              "op": " ",
+              "text": "            next_links: list[str] = []"
+            },
+            {
+              "new": 303,
+              "old": 295,
+              "op": " ",
+              "text": "            for link in links:"
+            },
+            {
+              "new": 304,
+              "old": 296,
+              "op": " ",
+              "text": "                if not isinstance(link, dict):"
+            },
+            {
+              "new": null,
+              "old": 297,
+              "op": "-",
+              "text": "                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"
+            },
+            {
+              "new": 305,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"
+            },
+            {
+              "new": 306,
+              "old": 298,
+              "op": " ",
+              "text": "                rel = link.get(\"rel\")"
+            },
+            {
+              "new": 307,
+              "old": 299,
+              "op": " ",
+              "text": "                href = link.get(\"href\")"
+            },
+            {
+              "new": 308,
+              "old": 300,
+              "op": " ",
+              "text": "                if not isinstance(rel, str) or not isinstance(href, str) or not href:"
+            },
+            {
+              "new": null,
+              "old": 301,
+              "op": "-",
+              "text": "                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"
+            },
+            {
+              "new": 309,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"
+            },
+            {
+              "new": 310,
+              "old": 302,
+              "op": " ",
+              "text": "                if rel.lower() == \"next\":"
+            },
+            {
+              "new": 311,
+              "old": 303,
+              "op": " ",
+              "text": "                    next_links.append(href)"
+            },
+            {
+              "new": 312,
+              "old": 304,
+              "op": " ",
+              "text": "            if len(next_links) > 1:"
+            },
+            {
+              "new": null,
+              "old": 305,
+              "op": "-",
+              "text": "                raise LinkedInAPIError(0, \"ambiguous snapshot next links\")"
+            },
+            {
+              "new": 313,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, f\"ambiguous {context} next links\")"
+            },
+            {
+              "new": 314,
+              "old": 306,
+              "op": " ",
+              "text": "            if next_links:"
+            },
+            {
+              "new": 315,
+              "old": 307,
+              "op": " ",
+              "text": "                candidate = urljoin(LINKEDIN_BASE_URL, next_links[0])"
+            },
+            {
+              "new": 316,
+              "old": 308,
+              "op": " ",
+              "text": "                self._assert_linkedin_url(candidate)"
+            }
+          ],
+          "new_start": 285,
+          "old_start": 277
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "removed": 11,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/linkedin_mdp_mcp/client.py::LinkedInAPIError",
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient",
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged",
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link",
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog",
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.snapshot"
+      ]
+    }
+  ],
+  "head_sha": "66e8fe47d8cf70fcde7f87ebd3b43c1ccf22eaf7",
+  "pr": "komaksym/linkedin-mdp#14",
+  "symbols": [
+    {
+      "added": 39,
+      "base_span": [
+        65,
+        83
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 65,
+              "op": "-",
+              "text": "async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50) -> dict[str, Any]:"
+            },
+            {
+              "new": null,
+              "old": 66,
+              "op": "-",
+              "text": "    \"\"\"Collect all three strict snapshots and both existing tables with no writes.\"\"\""
+            },
+            {
+              "new": null,
+              "old": 67,
+              "op": "-",
+              "text": "    require(1 <= page_size <= 1000 and 1 <= max_db_pages <= 200 and 1 <= snapshot_pages <= 50)"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "async def collect_sources(linkedin: LinkedInMDPClient, store: SupabaseClient, *, page_size: int = 500, max_db_pages: int = 200, snapshot_pages: int = 50, changelog_pages: int = 50) -> dict[str, Any]:"
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Collect strict snapshots, changelog, and existing tables with no writes.\"\"\""
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "    require(1 <= page_size <= 1000 and 1 <= max_db_pages <= 200 and 1 <= snapshot_pages <= 50 and 1 <= changelog_pages <= 50)"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "    authorizations = await linkedin.authorization_status()"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "    elements = authorizations.get(\"elements\") if isinstance(authorizations, dict) else None"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "    if not isinstance(elements, list) or len(elements) != 1:"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "        raise RuntimeError(\"private source collection failed\")"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "    authorization = elements[0]"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "    identity = authorization.get(\"memberComplianceAuthorizationKey\") if isinstance(authorization, dict) else None"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "    account_member_urn = identity.get(\"member\") if isinstance(identity, dict) else None"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "    require("
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "        isinstance(account_member_urn, str)"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "        and re.fullmatch(r\"urn:li:person:[A-Za-z0-9_-]+\", account_member_urn) is not None"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 79,
+              "old": 68,
+              "op": " ",
+              "text": "    snapshots: dict[str, Any] = {}"
+            },
+            {
+              "new": 80,
+              "old": 69,
+              "op": " ",
+              "text": "    for domain in DOMAINS:"
+            },
+            {
+              "new": 81,
+              "old": 70,
+              "op": " ",
+              "text": "        started = datetime.now(UTC).isoformat()"
+            }
+          ],
+          "new_start": 65,
+          "old_start": 65
+        },
+        {
+          "lines": [
+            {
+              "new": 88,
+              "old": 77,
+              "op": " ",
+              "text": "        rows = snapshot.get(\"rows\")"
+            },
+            {
+              "new": 89,
+              "old": 78,
+              "op": " ",
+              "text": "        require(isinstance(rows, list) and all(isinstance(row, dict) for row in rows))"
+            },
+            {
+              "new": 90,
+              "old": 79,
+              "op": " ",
+              "text": "        snapshots[domain] = {\"attempted_at\": started, \"completed_at\": datetime.now(UTC).isoformat(), \"source_result\": \"success\", \"provider_generated_at\": None, \"upstream_freshness\": \"unknown unless established by retained provider metadata\", **snapshot}"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "    attempted_at = datetime.now(UTC).isoformat()"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "    change_result = await linkedin.changelog(count=50, max_pages=changelog_pages)"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "    completed_at = datetime.now(UTC).isoformat()"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "    require(isinstance(change_result, dict))"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "    change_events = change_result.get(\"events\")"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "    watermark = change_result.get(\"next_start_time\")"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "    pages = change_result.get(\"page_count\")"
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": "    require(isinstance(change_result.get(\"api_version\"), str) and bool(change_result[\"api_version\"]))"
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "    require(isinstance(change_events, list) and all(isinstance(event, dict) for event in change_events))"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "    require(type(pages) is int and 0 < pages <= changelog_pages and change_result.get(\"truncated\") is False)"
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "    require((not change_events and watermark is None) or (bool(change_events) and type(watermark) is int and watermark > 0))"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "    changelog = {"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "        \"attempted_at\": attempted_at,"
+            },
+            {
+              "new": 104,
+              "old": null,
+              "op": "+",
+              "text": "        \"completed_at\": completed_at,"
+            },
+            {
+              "new": 105,
+              "old": null,
+              "op": "+",
+              "text": "        \"collected_at\": datetime.now(UTC).isoformat(),"
+            },
+            {
+              "new": 106,
+              "old": null,
+              "op": "+",
+              "text": "        \"source_result\": \"success\","
+            },
+            {
+              "new": 107,
+              "old": null,
+              "op": "+",
+              "text": "        \"provider_generated_at\": None,"
+            },
+            {
+              "new": 108,
+              "old": null,
+              "op": "+",
+              "text": "        \"upstream_freshness\": \"unknown\","
+            },
+            {
+              "new": 109,
+              "old": null,
+              "op": "+",
+              "text": "        \"api_version\": change_result[\"api_version\"],"
+            },
+            {
+              "new": 110,
+              "old": null,
+              "op": "+",
+              "text": "        \"events\": change_events,"
+            },
+            {
+              "new": 111,
+              "old": null,
+              "op": "+",
+              "text": "        \"next_start_time\": watermark,"
+            },
+            {
+              "new": 112,
+              "old": null,
+              "op": "+",
+              "text": "        \"page_count\": pages,"
+            },
+            {
+              "new": 113,
+              "old": null,
+              "op": "+",
+              "text": "        \"truncated\": False,"
+            },
+            {
+              "new": 114,
+              "old": null,
+              "op": "+",
+              "text": "    }"
+            },
+            {
+              "new": 115,
+              "old": 80,
+              "op": " ",
+              "text": "    tables = {}"
+            },
+            {
+              "new": 116,
+              "old": 81,
+              "op": " ",
+              "text": "    for table in TABLE_COLUMNS:"
+            },
+            {
+              "new": 117,
+              "old": 82,
+              "op": " ",
+              "text": "        tables[table] = await read_table(store, table, page_size=page_size, max_pages=max_db_pages)"
+            },
+            {
+              "new": null,
+              "old": 83,
+              "op": "-",
+              "text": "    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"snapshots\": snapshots, **tables}"
+            },
+            {
+              "new": 118,
+              "old": null,
+              "op": "+",
+              "text": "    return {\"schema_version\": 1, \"base_revision\": BASE_REVISION, \"collected_at\": datetime.now(UTC).isoformat(), \"account_member_urn\": account_member_urn, \"snapshots\": snapshots, \"changelog\": changelog, **tables}"
+            }
+          ],
+          "new_start": 88,
+          "old_start": 77
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+      "qualname": "collect_sources",
+      "removed": 4,
+      "span": [
+        65,
+        118
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        98,
+        108
+      ],
+      "call_sites": 1,
+      "hunks": [],
+      "id": "diagnostics/action-report-private-source-20261002/collect_private_source.py::export",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+      "qualname": "export",
+      "removed": 0,
+      "span": [
+        133,
+        143
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        24,
+        27
+      ],
+      "call_sites": 21,
+      "hunks": [],
+      "id": "diagnostics/action-report-private-source-20261002/collect_private_source.py::require",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+      "qualname": "require",
+      "removed": 0,
+      "span": [
+        24,
+        27
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        38,
+        97
+      ],
+      "call_sites": 8,
+      "hunks": [],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "exercise",
+      "removed": 0,
+      "span": [
+        44,
+        157
+      ],
+      "status": "context"
+    },
+    {
+      "added": 54,
+      "base_span": [
+        41,
+        55
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 47,
+              "old": 41,
+              "op": " ",
+              "text": "    def provider(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 48,
+              "old": 42,
+              "op": " ",
+              "text": "        \"\"\"Provide valid source pages and one specific completeness defect.\"\"\""
+            },
+            {
+              "new": 49,
+              "old": 43,
+              "op": " ",
+              "text": "        methods.append(request.method)"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "        if request.url.path == \"/rest/memberAuthorizations\":"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "            member = \"urn:li:person:synthetic-member-493829\""
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "            elements: list[Any] = [{\"memberComplianceAuthorizationKey\": {\"member\": member}}]"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_missing\":"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "                elements = []"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_multiple\":"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "                elements.append({\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:second-synthetic\"}})"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_malformed\":"
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": 42}}]"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_wrong_prefix\":"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:organization:synthetic\"}}]"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_suffix_whitespace\":"
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person: synthetic-member\"}}]"
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_suffix_internal_space\":"
+            },
+            {
+              "new": 64,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic member\"}}]"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"auth_suffix_bad_chars\":"
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "                elements = [{\"memberComplianceAuthorizationKey\": {\"member\": \"urn:li:person:synthetic/member\"}}]"
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": elements})"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "        if request.url.path == \"/rest/memberChangeLogs\":"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_added_start_time\":"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "                if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "                    raise RuntimeError(\"second changelog request reached\")"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1&startTime=1710000000\"}]}})"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_bad_envelope\":"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_wrong_endpoint\":"
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberAuthorizations?start=1\"}]}})"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_wrong_q\":"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "                if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": "                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?q=other&start=1\"}]}})"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_bad_next\":"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [None]}})"
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_paged\":"
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": "                if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": "                    kind = \"SECOND\" if request.url.params.get(\"q\") == \"memberAndApplication\" and request.url.params.get(\"count\") == \"50\" else \"SECOND_BAD_SCOPE\""
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "                    return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001, \"changeType\": kind}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_truncated\":"
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000000}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1\"}]}})"
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "            events: list[Any] = [] if case == \"empty\" else [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}]"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_bad_event\":"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "                events = [None]"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_no_watermark\":"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "                events = [{\"changeType\": \"SYNTHETIC\"}]"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_zero_watermark\":"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "                events[0][\"processedAt\"] = 0"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_negative_watermark\":"
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": "                events[0][\"processedAt\"] = -1"
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "            if case == \"change_boolean_watermark\":"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "                events[0][\"processedAt\"] = True"
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": events, \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "        if case == \"change_wrong_endpoint\" and request.url.path == \"/rest/memberAuthorizations\":"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1710000001}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 104,
+              "old": 44,
+              "op": " ",
+              "text": "        domain = request.url.params.get(\"domain\")"
+            },
+            {
+              "new": 105,
+              "old": 45,
+              "op": " ",
+              "text": "        if case == \"unavailable\":"
+            },
+            {
+              "new": 106,
+              "old": 46,
+              "op": " ",
+              "text": "            return httpx.Response(404, json={\"message\": \"unavailable\"})"
+            }
+          ],
+          "new_start": 47,
+          "old_start": 41
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "exercise.provider",
+      "removed": 0,
+      "span": [
+        47,
+        115
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 18,
+      "base_span": [
+        99,
+        174
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 168,
+              "old": 108,
+              "op": " ",
+              "text": "        if generated.returncode:"
+            },
+            {
+              "new": 169,
+              "old": 109,
+              "op": " ",
+              "text": "            raise RuntimeError(\"synthetic certificate generation failed\")"
+            },
+            {
+              "new": 170,
+              "old": 110,
+              "op": " ",
+              "text": "        output = tmp / \"source.cms\""
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "        run_started = datetime.now(UTC)"
+            },
+            {
+              "new": 172,
+              "old": 111,
+              "op": " ",
+              "text": "        encrypted, methods = await exercise(\"complete\", cert, output)"
+            },
+            {
+              "new": 173,
+              "old": null,
+              "op": "+",
+              "text": "        run_completed = datetime.now(UTC)"
+            },
+            {
+              "new": 174,
+              "old": 112,
+              "op": " ",
+              "text": "        result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(output), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 175,
+              "old": 113,
+              "op": " ",
+              "text": "        bundle = json.loads(result.stdout) if result.returncode == 0 else {}"
+            },
+            {
+              "new": 176,
+              "old": 114,
+              "op": " ",
+              "text": "        prospects = bundle.get(\"prospects\", {}).get(\"rows\", [])"
+            },
+            {
+              "new": 177,
+              "old": null,
+              "op": "+",
+              "text": "        changelog = bundle.get(\"changelog\", {})"
+            },
+            {
+              "new": 178,
+              "old": null,
+              "op": "+",
+              "text": "        change_events = changelog.get(\"events\")"
+            },
+            {
+              "new": 179,
+              "old": 115,
+              "op": " ",
+              "text": "        verdicts[\"complete_sources_roundtrip\"] = bool(encrypted) and len(prospects) == 2 and len(bundle.get(\"events\", {}).get(\"rows\", [])) == 2 and set(bundle.get(\"snapshots\", {})) == {\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"
+            },
+            {
+              "new": 180,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"account_member_urn_roundtrip\"] = bundle.get(\"account_member_urn\") == \"urn:li:person:synthetic-member-493829\""
+            },
+            {
+              "new": 181,
+              "old": null,
+              "op": "+",
+              "text": "        times = [datetime.fromisoformat(changelog[key]) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")] if all(isinstance(changelog.get(key), str) for key in (\"attempted_at\", \"completed_at\", \"collected_at\")) else []"
+            },
+            {
+              "new": 182,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_raw_events_and_acquisition_timestamps\"] = change_events == [{\"processedAt\": 1710000000, \"changeType\": \"SYNTHETIC\", \"opaque\": {\"keep\": [1, \"two\"]}}] and len(times) == 3 and run_started <= times[0] <= times[1] <= times[2] <= run_completed and changelog.get(\"provider_generated_at\") is None and changelog.get(\"upstream_freshness\") == \"unknown\""
+            },
+            {
+              "new": 183,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_complete_watermark\"] = changelog.get(\"next_start_time\") == 1710000000 and changelog.get(\"source_result\") == \"success\" and changelog.get(\"truncated\") is False and type(changelog.get(\"page_count\")) is int and changelog[\"page_count\"] > 0"
+            },
+            {
+              "new": 184,
+              "old": null,
+              "op": "+",
+              "text": "        paged, _ = await exercise(\"change_paged\", cert, tmp / \"paged.cms\")"
+            },
+            {
+              "new": 185,
+              "old": null,
+              "op": "+",
+              "text": "        paged_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"paged.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 186,
+              "old": null,
+              "op": "+",
+              "text": "        paged_changelog = json.loads(paged_result.stdout).get(\"changelog\", {}) if paged_result.returncode == 0 else {}"
+            },
+            {
+              "new": 187,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_valid_pagination_preserves_scope_and_events\"] = paged is not None and paged_changelog.get(\"events\") == [{\"processedAt\": 1710000000, \"changeType\": \"FIRST\"}, {\"processedAt\": 1710000001, \"changeType\": \"SECOND\"}] and paged_changelog.get(\"page_count\") == 2 and paged_changelog.get(\"next_start_time\") == 1710000001"
+            },
+            {
+              "new": 188,
+              "old": null,
+              "op": "+",
+              "text": "        seeded_requests: list[httpx.Request] = []"
+            }
+          ],
+          "new_start": 168,
+          "old_start": 108
+        },
+        {
+          "lines": [
+            {
+              "new": 195,
+              "old": null,
+              "op": "+",
+              "text": "        async with httpx.AsyncClient(transport=httpx.MockTransport(seeded_provider)) as http:"
+            },
+            {
+              "new": 196,
+              "old": null,
+              "op": "+",
+              "text": "            seeded = await LinkedInMDPClient(\"synthetic\", http=http).changelog(start_time=1000)"
+            },
+            {
+              "new": 197,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"changelog_original_start_time_survives_pagination\"] = seeded[\"page_count\"] == 2 and seeded[\"next_start_time\"] == 1002 and len(seeded_requests) == 2 and all(request.url.params.get(\"startTime\") == \"1000\" for request in seeded_requests)"
+            },
+            {
+              "new": 198,
+              "old": 116,
+              "op": " ",
+              "text": "        verdicts[\"prospect_created_at_exact_across_pages\"] = [row.get(\"created_at\") for row in prospects] == [\"2025-01-02T03:04:05.123456+00:00\", \"2025-06-07T08:09:10Z\"]"
+            },
+            {
+              "new": 199,
+              "old": 117,
+              "op": " ",
+              "text": "        missing, _ = await exercise(\"missing_created_at\", cert, tmp / \"missing.cms\")"
+            },
+            {
+              "new": 200,
+              "old": 118,
+              "op": " ",
+              "text": "        missing_result = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"missing.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            }
+          ],
+          "new_start": 195,
+          "old_start": 116
+        },
+        {
+          "lines": [
+            {
+              "new": 205,
+              "old": 123,
+              "op": " ",
+              "text": "        empty, methods = await exercise(\"empty\", cert, tmp / \"empty.cms\")"
+            },
+            {
+              "new": 206,
+              "old": 124,
+              "op": " ",
+              "text": "        zero = await asyncio.to_thread(subprocess.run, [\"openssl\", \"cms\", \"-decrypt\", \"-binary\", \"-inform\", \"DER\", \"-in\", str(tmp / \"empty.cms\"), \"-inkey\", str(key), \"-recip\", str(cert)], capture_output=True, check=False)"
+            },
+            {
+              "new": 207,
+              "old": 125,
+              "op": " ",
+              "text": "        zero_bundle = json.loads(zero.stdout) if zero.returncode == 0 else {}"
+            },
+            {
+              "new": null,
+              "old": 126,
+              "op": "-",
+              "text": "        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values())"
+            },
+            {
+              "new": 208,
+              "old": null,
+              "op": "+",
+              "text": "        empty_changelog = zero_bundle.get(\"changelog\", {})"
+            },
+            {
+              "new": 209,
+              "old": null,
+              "op": "+",
+              "text": "        verdicts[\"successful_empty_sources_encrypt\"] = empty is not None and set(methods) == {\"GET\"} and zero_bundle.get(\"prospects\", {}).get(\"row_count\") == 0 and zero_bundle.get(\"events\", {}).get(\"row_count\") == 0 and all(not value[\"rows\"] and value[\"page_count\"] == 1 for value in zero_bundle.get(\"snapshots\", {}).values()) and empty_changelog.get(\"events\") == [] and empty_changelog.get(\"next_start_time\") is None and empty_changelog.get(\"source_result\") == \"success\""
+            },
+            {
+              "new": 210,
+              "old": 127,
+              "op": " ",
+              "text": "        for case in EXPECTED_FAILURES:"
+            },
+            {
+              "new": 211,
+              "old": 128,
+              "op": " ",
+              "text": "            target = tmp / f\"{case}.cms\""
+            },
+            {
+              "new": 212,
+              "old": 129,
+              "op": " ",
+              "text": "            encrypted, methods = await exercise(case, cert, target)"
+            }
+          ],
+          "new_start": 205,
+          "old_start": 123
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "main",
+      "removed": 1,
+      "span": [
+        159,
+        257
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 6,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 189,
+              "old": null,
+              "op": "+",
+              "text": "        def seeded_provider(request: httpx.Request) -> httpx.Response:"
+            },
+            {
+              "new": 190,
+              "old": null,
+              "op": "+",
+              "text": "            \"\"\"Return two pages with the caller's unchanged start time.\"\"\""
+            },
+            {
+              "new": 191,
+              "old": null,
+              "op": "+",
+              "text": "            seeded_requests.append(request)"
+            },
+            {
+              "new": 192,
+              "old": null,
+              "op": "+",
+              "text": "            if request.url.params.get(\"start\") == \"1\":"
+            },
+            {
+              "new": 193,
+              "old": null,
+              "op": "+",
+              "text": "                return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1002}], \"paging\": {\"links\": []}})"
+            },
+            {
+              "new": 194,
+              "old": null,
+              "op": "+",
+              "text": "            return httpx.Response(200, json={\"elements\": [{\"processedAt\": 1001}], \"paging\": {\"links\": [{\"rel\": \"next\", \"href\": \"/rest/memberChangeLogs?start=1&startTime=1000\"}]}})"
+            }
+          ],
+          "new_start": 189,
+          "old_start": 116
+        }
+      ],
+      "id": "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.seeded_provider",
+      "kind": "function",
+      "path": "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+      "qualname": "main.seeded_provider",
+      "removed": 0,
+      "span": [
+        189,
+        194
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        20,
+        26
+      ],
+      "call_sites": 21,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInAPIError",
+      "kind": "class",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInAPIError",
+      "removed": 0,
+      "span": [
+        20,
+        26
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        36,
+        333
+      ],
+      "call_sites": 12,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient",
+      "kind": "class",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInMDPClient",
+      "removed": 0,
+      "span": [
+        36,
+        341
+      ],
+      "status": "context"
+    },
+    {
+      "added": 12,
+      "base_span": [
+        160,
+        221
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 166,
+              "old": 165,
+              "op": " ",
+              "text": "        max_pages: int,"
+            },
+            {
+              "new": 167,
+              "old": 166,
+              "op": " ",
+              "text": "        empty_on_404: bool,"
+            },
+            {
+              "new": 168,
+              "old": 167,
+              "op": " ",
+              "text": "        strict_elements: bool = False,"
+            },
+            {
+              "new": 169,
+              "old": null,
+              "op": "+",
+              "text": "        strict_envelope: bool = False,"
+            },
+            {
+              "new": 170,
+              "old": 168,
+              "op": " ",
+              "text": "    ) -> PageResult:"
+            },
+            {
+              "new": null,
+              "old": 169,
+              "op": "-",
+              "text": "        \"\"\"Fetch every page and optionally reject malformed snapshot envelopes.\"\"\""
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "        \"\"\"Fetch every page and validate requested snapshot or source envelopes.\"\"\""
+            },
+            {
+              "new": 172,
+              "old": 170,
+              "op": " ",
+              "text": "        if not 1 <= max_pages <= 50:"
+            },
+            {
+              "new": 173,
+              "old": 171,
+              "op": " ",
+              "text": "            raise ValueError(\"max_pages must be between 1 and 50\")"
+            },
+            {
+              "new": 174,
+              "old": 172,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 166,
+          "old_start": 165
+        },
+        {
+          "lines": [
+            {
+              "new": 193,
+              "old": 191,
+              "op": " ",
+              "text": "                raise"
+            },
+            {
+              "new": 194,
+              "old": 192,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 195,
+              "old": 193,
+              "op": " ",
+              "text": "            current = payload.get(\"elements\", [])"
+            },
+            {
+              "new": 196,
+              "old": null,
+              "op": "+",
+              "text": "            if strict_envelope and (\"elements\" not in payload or not isinstance(current, list)):"
+            },
+            {
+              "new": 197,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, \"malformed changelog elements list\")"
+            },
+            {
+              "new": 198,
+              "old": 194,
+              "op": " ",
+              "text": "            if strict_elements and not isinstance(current, list):"
+            },
+            {
+              "new": 199,
+              "old": 195,
+              "op": " ",
+              "text": "                raise LinkedInAPIError(0, \"expected a snapshot elements list\")"
+            },
+            {
+              "new": 200,
+              "old": 196,
+              "op": " ",
+              "text": "            if isinstance(current, list):"
+            }
+          ],
+          "new_start": 193,
+          "old_start": 191
+        },
+        {
+          "lines": [
+            {
+              "new": 205,
+              "old": 201,
+              "op": " ",
+              "text": "                self._validate_snapshot_paging(payload)"
+            },
+            {
+              "new": 206,
+              "old": 202,
+              "op": " ",
+              "text": "            pages += 1"
+            },
+            {
+              "new": 207,
+              "old": 203,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 204,
+              "op": "-",
+              "text": "            next_url = self._next_link(payload, strict=strict_elements)"
+            },
+            {
+              "new": 208,
+              "old": null,
+              "op": "+",
+              "text": "            strict_pages = strict_elements or strict_envelope"
+            },
+            {
+              "new": 209,
+              "old": null,
+              "op": "+",
+              "text": "            page_context = \"changelog\" if strict_envelope else \"snapshot\""
+            },
+            {
+              "new": 210,
+              "old": null,
+              "op": "+",
+              "text": "            next_url = self._next_link(payload, strict=strict_pages, context=page_context)"
+            },
+            {
+              "new": 211,
+              "old": 205,
+              "op": " ",
+              "text": "            if next_url is None:"
+            },
+            {
+              "new": 212,
+              "old": 206,
+              "op": " ",
+              "text": "                return PageResult(elements=elements, page_count=pages, truncated=False)"
+            },
+            {
+              "new": null,
+              "old": 207,
+              "op": "-",
+              "text": "            if strict_elements:"
+            },
+            {
+              "new": 213,
+              "old": null,
+              "op": "+",
+              "text": "            if strict_pages:"
+            },
+            {
+              "new": 214,
+              "old": 208,
+              "op": " ",
+              "text": "                parsed = urlparse(next_url)"
+            },
+            {
+              "new": 215,
+              "old": 209,
+              "op": " ",
+              "text": "                if parsed.path != path:"
+            },
+            {
+              "new": null,
+              "old": 210,
+              "op": "-",
+              "text": "                    raise LinkedInAPIError(0, \"snapshot next link changed endpoint\")"
+            },
+            {
+              "new": 216,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, f\"{page_context} next link changed endpoint\")"
+            },
+            {
+              "new": 217,
+              "old": 211,
+              "op": " ",
+              "text": "                next_params = parse_qs(parsed.query, keep_blank_values=True)"
+            },
+            {
+              "new": 218,
+              "old": null,
+              "op": "+",
+              "text": "                if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:"
+            },
+            {
+              "new": 219,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, \"changelog next link changed request scope\")"
+            },
+            {
+              "new": 220,
+              "old": 212,
+              "op": " ",
+              "text": "                for key, value in params.items():"
+            },
+            {
+              "new": 221,
+              "old": 213,
+              "op": " ",
+              "text": "                    expected = [str(value)]"
+            },
+            {
+              "new": 222,
+              "old": 214,
+              "op": " ",
+              "text": "                    if key in next_params and next_params[key] != expected:"
+            },
+            {
+              "new": null,
+              "old": 215,
+              "op": "-",
+              "text": "                        raise LinkedInAPIError(0, \"snapshot next link changed request scope\")"
+            },
+            {
+              "new": 223,
+              "old": null,
+              "op": "+",
+              "text": "                        raise LinkedInAPIError(0, f\"{page_context} next link changed request scope\")"
+            },
+            {
+              "new": 224,
+              "old": 216,
+              "op": " ",
+              "text": "                    next_params[key] = expected"
+            },
+            {
+              "new": 225,
+              "old": 217,
+              "op": " ",
+              "text": "                next_url = parsed._replace(query=urlencode(next_params, doseq=True)).geturl()"
+            },
+            {
+              "new": 226,
+              "old": 218,
+              "op": " ",
+              "text": "            url = next_url"
+            }
+          ],
+          "new_start": 205,
+          "old_start": 201
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged",
+      "kind": "method",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInMDPClient._get_paged",
+      "removed": 5,
+      "span": [
+        161,
+        229
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 6,
+      "base_span": [
+        280,
+        323
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 280,
+              "op": "-",
+              "text": "    def _next_link(self, payload: dict[str, Any], *, strict: bool = False) -> str | None:"
+            },
+            {
+              "new": 288,
+              "old": null,
+              "op": "+",
+              "text": "    def _next_link(self, payload: dict[str, Any], *, strict: bool = False, context: str = \"snapshot\") -> str | None:"
+            },
+            {
+              "new": 289,
+              "old": 281,
+              "op": " ",
+              "text": "        \"\"\"Return the single validated next link, or no link at the end.\"\"\""
+            },
+            {
+              "new": 290,
+              "old": 282,
+              "op": " ",
+              "text": "        paging = payload.get(\"paging\")"
+            },
+            {
+              "new": 291,
+              "old": 283,
+              "op": " ",
+              "text": "        if not isinstance(paging, dict):"
+            },
+            {
+              "new": 292,
+              "old": 284,
+              "op": " ",
+              "text": "            if strict and \"paging\" in payload:"
+            },
+            {
+              "new": null,
+              "old": 285,
+              "op": "-",
+              "text": "                raise LinkedInAPIError(0, \"malformed snapshot paging object\")"
+            },
+            {
+              "new": 293,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, f\"malformed {context} paging object\")"
+            },
+            {
+              "new": 294,
+              "old": 286,
+              "op": " ",
+              "text": "            return None"
+            },
+            {
+              "new": 295,
+              "old": 287,
+              "op": " ",
+              "text": "        links = paging.get(\"links\")"
+            },
+            {
+              "new": 296,
+              "old": 288,
+              "op": " ",
+              "text": "        if not isinstance(links, list):"
+            },
+            {
+              "new": 297,
+              "old": 289,
+              "op": " ",
+              "text": "            if strict and \"links\" in paging:"
+            },
+            {
+              "new": null,
+              "old": 290,
+              "op": "-",
+              "text": "                raise LinkedInAPIError(0, \"malformed snapshot paging links\")"
+            },
+            {
+              "new": 298,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, f\"malformed {context} paging links\")"
+            },
+            {
+              "new": 299,
+              "old": 291,
+              "op": " ",
+              "text": "            return None"
+            },
+            {
+              "new": 300,
+              "old": 292,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 301,
+              "old": 293,
+              "op": " ",
+              "text": "        if strict:"
+            },
+            {
+              "new": 302,
+              "old": 294,
+              "op": " ",
+              "text": "            next_links: list[str] = []"
+            },
+            {
+              "new": 303,
+              "old": 295,
+              "op": " ",
+              "text": "            for link in links:"
+            },
+            {
+              "new": 304,
+              "old": 296,
+              "op": " ",
+              "text": "                if not isinstance(link, dict):"
+            },
+            {
+              "new": null,
+              "old": 297,
+              "op": "-",
+              "text": "                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"
+            },
+            {
+              "new": 305,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"
+            },
+            {
+              "new": 306,
+              "old": 298,
+              "op": " ",
+              "text": "                rel = link.get(\"rel\")"
+            },
+            {
+              "new": 307,
+              "old": 299,
+              "op": " ",
+              "text": "                href = link.get(\"href\")"
+            },
+            {
+              "new": 308,
+              "old": 300,
+              "op": " ",
+              "text": "                if not isinstance(rel, str) or not isinstance(href, str) or not href:"
+            },
+            {
+              "new": null,
+              "old": 301,
+              "op": "-",
+              "text": "                    raise LinkedInAPIError(0, \"malformed snapshot paging link\")"
+            },
+            {
+              "new": 309,
+              "old": null,
+              "op": "+",
+              "text": "                    raise LinkedInAPIError(0, f\"malformed {context} paging link\")"
+            },
+            {
+              "new": 310,
+              "old": 302,
+              "op": " ",
+              "text": "                if rel.lower() == \"next\":"
+            },
+            {
+              "new": 311,
+              "old": 303,
+              "op": " ",
+              "text": "                    next_links.append(href)"
+            },
+            {
+              "new": 312,
+              "old": 304,
+              "op": " ",
+              "text": "            if len(next_links) > 1:"
+            },
+            {
+              "new": null,
+              "old": 305,
+              "op": "-",
+              "text": "                raise LinkedInAPIError(0, \"ambiguous snapshot next links\")"
+            },
+            {
+              "new": 313,
+              "old": null,
+              "op": "+",
+              "text": "                raise LinkedInAPIError(0, f\"ambiguous {context} next links\")"
+            },
+            {
+              "new": 314,
+              "old": 306,
+              "op": " ",
+              "text": "            if next_links:"
+            },
+            {
+              "new": 315,
+              "old": 307,
+              "op": " ",
+              "text": "                candidate = urljoin(LINKEDIN_BASE_URL, next_links[0])"
+            },
+            {
+              "new": 316,
+              "old": 308,
+              "op": " ",
+              "text": "                self._assert_linkedin_url(candidate)"
+            }
+          ],
+          "new_start": 288,
+          "old_start": 280
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link",
+      "kind": "method",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInMDPClient._next_link",
+      "removed": 6,
+      "span": [
+        288,
+        331
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 1,
+      "base_span": [
+        128,
+        158
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 143,
+              "old": 143,
+              "op": " ",
+              "text": "            params,"
+            },
+            {
+              "new": 144,
+              "old": 144,
+              "op": " ",
+              "text": "            max_pages=max_pages,"
+            },
+            {
+              "new": 145,
+              "old": 145,
+              "op": " ",
+              "text": "            empty_on_404=False,"
+            },
+            {
+              "new": 146,
+              "old": null,
+              "op": "+",
+              "text": "            strict_envelope=True,"
+            },
+            {
+              "new": 147,
+              "old": 146,
+              "op": " ",
+              "text": "        )"
+            },
+            {
+              "new": 148,
+              "old": 147,
+              "op": " ",
+              "text": "        processed = ["
+            },
+            {
+              "new": 149,
+              "old": 148,
+              "op": " ",
+              "text": "            value"
+            }
+          ],
+          "new_start": 143,
+          "old_start": 143
+        }
+      ],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog",
+      "kind": "method",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInMDPClient.changelog",
+      "removed": 0,
+      "span": [
+        128,
+        159
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        80,
+        126
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.snapshot",
+      "kind": "method",
+      "path": "src/linkedin_mdp_mcp/client.py",
+      "qualname": "LinkedInMDPClient.snapshot",
+      "removed": 0,
+      "span": [
+        80,
+        126
+      ],
+      "status": "context"
+    }
+  ],
+  "title": "fix(collector): collect changelog",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::exercise.provider"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py::collect_sources"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py::main.seeded_provider"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"
+      ],
+      "kind": "callee",
+      "via": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient.changelog"
+    },
+    {
+      "focus": [
+        "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link"
+      ],
+      "kind": "callee",
+      "via": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/komaksym/linkedin-mdp/pull/14"
+}

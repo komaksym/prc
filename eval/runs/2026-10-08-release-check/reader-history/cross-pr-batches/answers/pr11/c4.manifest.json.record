@@ -1,0 +1,18 @@
+{
+  "condition": "c4",
+  "files": [
+    "doc.txt",
+    "doc-full.png",
+    "doc-first.png",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "doc.html": "1248ea63bc5b25bdd33348a8987b98573d288661cd48051aeaa21fdcbf66f973"
+  },
+  "payload_sha256": {
+    "doc.txt": "78f0714039fe550db61890a57b9bc4b0fc506aad095ae4b31ebe4b7dbe1798ec",
+    "doc-full.png": "4f2084346171b33f0917704faf32cde44bec985967c76bdaa7b32ac3a580e944",
+    "doc-first.png": "eed127b3c881dd54951b21af639772161220d556d05c45557072e493c9c11a69",
+    "prompt.md": "48e76e15e5f75db0e7720fdd6f49b0da783c5ea8149bcf70282cd8490f150cc1"
+  }
+}

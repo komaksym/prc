@@ -1,0 +1,12 @@
+{
+  "answers": [
+    {"id": "q1", "answer": "CANNOT TELL"},
+    {"id": "q2", "answer": "sync_actual_actions"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": ["e2e_actual_action_sync.py"]},
+    {"id": "q5", "answer": ["external calls"]},
+    {"id": "q6", "answer": "dry_run_zero_posts"},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/actual_action_sync.py::sync_actual_actions"},
+    {"id": "q8", "answer": false}
+  ]
+}

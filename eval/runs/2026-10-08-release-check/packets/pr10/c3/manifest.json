@@ -1,0 +1,48 @@
+{
+  "condition": "c3",
+  "files": [
+    "frame-01.png",
+    "frame-02.png",
+    "frame-03.png",
+    "frame-04.png",
+    "frame-05.png",
+    "frame-06.png",
+    "frame-07.png",
+    "frame-08.png",
+    "frame-09.png",
+    "frame-10.png",
+    "frame-11.png",
+    "frame-12.png",
+    "frame-13.png",
+    "frame-14.png",
+    "frame-15.png",
+    "frame-16.png",
+    "frames.json",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "board.json": "bc3fc559f92bc57eb53dfb3e7cdcbb4d34d8021c144ad4cda81669e0bdfcba90",
+    "run.json": "b7dbc3607c7aa0b4353016f5c544be229cc6591c3ab893e8e5008cdfd1dc58df",
+    "video.mp4": "e5ab201e018794e2b0670ac415ffb836abf79032757be03ea26201f21257a11d"
+  },
+  "payload_sha256": {
+    "frame-01.png": "8404b75a75a4ed5b7841b68a23ebd319ec145979e3d410c5af928dee463eed37",
+    "frame-02.png": "333254b54be888584da487bdf1d63e894ea83da161822791231a46ab772a84bb",
+    "frame-03.png": "fceb9c4aef217d5668f12fc03d744d5828cc683153879e94946b08507bc5c2c3",
+    "frame-04.png": "5b6fcec4f7b56bcc20fa332ec5aa3349e50ef051a3553d17ed8866dd3c674415",
+    "frame-05.png": "eaa8378b714ebadbff78a42fd9c4c6881809691ac5145006d85d059129fcb5a5",
+    "frame-06.png": "32698860851effd569a4da657caa30478dcfe43b03db3ffa0eb93975599dfb50",
+    "frame-07.png": "6a9d95a492eaf8ab2a37fba27b32d87928617757056c63ed092888cb77465a58",
+    "frame-08.png": "b6da64974652c62883eccf1eb250d8e37fb7c25d10777f3742505e654df4eca2",
+    "frame-09.png": "ccb0feb4ece559f72b5820e7796fa76543a0a878a4a85f1a882ff499385d28bc",
+    "frame-10.png": "1c9a5d05fa30679dd603c5e8921e8f7f7f1ce4f26e2681cf287a8b6dcd1e7a9e",
+    "frame-11.png": "2690647ffb27d34f7db2f8ca73cf75de538cab30f1ee3e1f1d9fb59a2c267c81",
+    "frame-12.png": "f8930fab32dcb1e9a7a005d58123e00037dc0a54fd474591b862b838f5ea5c66",
+    "frame-13.png": "25fa00191e47479f1d8bb9505bbe54a5f5190154d977da07b96fafc2a5004ff2",
+    "frame-14.png": "fbf6b262ff1f719c7dc8e0c206bee570bab8f362ce7e86783210cbaac110b208",
+    "frame-15.png": "0009a60173c121ea06a435178696a3a708136944bccef01fa8330154c5892ea4",
+    "frame-16.png": "32e42bd6925d798aff7040d01784415a8549194b9056321c624b48253ec47c14",
+    "frames.json": "725083c6a6dcae798f0d33950adf5555a12b127fbbf989088c7313722ed37a43",
+    "prompt.md": "020a0d8bef731f26946cb596f5932659e24b89e2c18a043e349c58d83243cc22"
+  }
+}

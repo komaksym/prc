@@ -1,0 +1,148 @@
+PULL REQUEST WALKTHROUGH
+
+fix(collector): collect changelog
+
+komaksym/linkedin-mdp#14
+
+AUTHOR komaksym
+
+HEAD 66e8fe47d8cf70fcde7f87ebd3b43c1ccf22eaf7 commit
+
+Watch the 65 s video
+
+SCENE 1 OF 6 · TITLE
+
+This pull request makes the private source collector gather LinkedIn's member changelog.
+
+It also guards how that changelog is paged.
+
+OPEN PULL REQUEST
+fix(collector): collect changelog
++261 −20 · 13 files · komaksym/linkedin-mdp#14
+linkedin-mdp #14 · komaksym
+SCENE 2 OF 6 · GROUPS
+
+Before, the bundle held three snapshots: connections, invitations and inbox.
+
+Now it also holds the changelog.
+
+ENCRYPTED SOURCE BUNDLE
+collected with no writes
+CONNECTIONS
+INVITATIONS
+INBOX
+changelog
+new in this PR
+linkedin-mdp #14 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L179
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L177
+SCENE 3 OF 6 · GROUPS
+
+The caller sets no start time.
+
+If the next page link adds one, the scope has changed.
+
+The collector now stops with an error.
+
+CALLER REQUEST
+no startTime set
+count=50
+NEXT LINK FROM PROVIDER
+second page
+start=1
+startTime=1710000000
+not in request
+✗
+linkedin-mdp #14 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/collect_private_source.py#L92
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L72
+SCENE 4 OF 6 · DIFF
+
+In the client, a changelog next link is compared with the request.
+
+A startTime the caller never sent raises an error.
+
+The new scope check
+src/linkedin_mdp_mcp/client.py
+217
+next_params = parse_qs(parsed.query, keep_blank_values=True)
+218
++
+if strict_envelope and "startTime" not in params and "startTime" in 
+next_params:
+219
++
+    raise LinkedInAPIError(0, "changelog next link changed request 
+scope")
+220
+for key, value in params.items():
+221
+    expected = [str(value)]
+rejects the link
+linkedin-mdp #14 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/client.py#L217
+src/linkedin_mdp_mcp/client.py#L218
+src/linkedin_mdp_mcp/client.py#L219
+src/linkedin_mdp_mcp/client.py#L220
+src/linkedin_mdp_mcp/client.py#L221
+SCENE 5 OF 6 · LIST
+
+The end-to-end script checks the watermark, valid paging, and a caller's own start time.
+
+It also feeds in a next link that adds a start time, and expects a rejection.
+
+changelog checks in the end-to-end script
+✓
+changelog_complete_watermark
+e2e_private_source.py:183
+✓
+changelog_valid_pagination_preserves_scope_and_events
+e2e_private_source.py:187
+✓
+changelog_original_start_time_survives_pagination
+e2e_private_source.py:197
+✓
+change_added_start_time
+e2e_private_source.py:39
+plus more rejection cases for bad changelog pages
+linkedin-mdp #14 · komaksym
+RECEIPTS
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L183
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L187
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L197
+diagnostics/action-report-private-source-20261002/e2e_private_source.py#L39
+SCENE 6 OF 6 · OUTRO
+
+The bundle now carries the changelog. Paging cannot add a start time.
+
+The bundle now carries the changelog.
+Paging cannot add a start time.
+prc map github.com/komaksym/linkedin-mdp/pull/14
+Every name on screen was checked against the pull request's code before rendering.
+linkedin-mdp #14 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+diagnostics/action-report-private-source-20261002/README.md docs
+diagnostics/action-report-private-source-20261002/e2e-evidence.json config
+diagnostics/source-refresh-proposal-20261002/README.md docs
+diagnostics/source-refresh-proposal-20261002/private-action-source.yml config
+infographic/source-changelog/analysis.md docs
+infographic/source-changelog/infographic.png opaque
+infographic/source-changelog/prompts/01-infographic-source-changelog.md docs
+infographic/source-changelog/source.md docs
+infographic/source-changelog/structured-content.md docs
+CHANGED SYMBOLS NOT SHOWN
+main.seeded_provider diagnostics/action-report-private-source-20261002/e2e_private_source.py
+LinkedInMDPClient._next_link src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.changelog src/linkedin_mdp_mcp/client.py
+
+Built by prc explain from the checked board.
+
+66e8fe47d8cf70fcde7f87ebd3b43c1ccf22eaf7

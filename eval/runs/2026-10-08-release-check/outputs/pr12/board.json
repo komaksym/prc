@@ -1,0 +1,966 @@
+{
+  "duration": 65.42957746478875,
+  "header": "<b>linkedin-mdp #12</b> \u00b7 komaksym",
+  "name": "mdp12",
+  "scenes": [
+    {
+      "end": 8.97394366197183,
+      "footer": "base 9b86621  \u2192  head 0c54c1a",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+204</span> <span class=\"del\">\u22124</span> \u00b7 12 files \u00b7 komaksym/linkedin-mdp#12",
+      "say": [
+        "This pull request adds a date to each row of the invitation report.",
+        "It shows when the prospect was added."
+      ],
+      "sentences": [
+        {
+          "dur": 4.71830985915493,
+          "off": 4.71830985915493,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "This pull request adds a date to each row of the invitation report."
+        },
+        {
+          "dur": 2.6056338028169015,
+          "off": 2.6056338028169015,
+          "on": 0.0,
+          "start": 5.46830985915493,
+          "text": "It shows when the prospect was added."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(report): show date added",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_invitation_shortlist.py:621",
+          "match": "created_at = \"2026-09-30T14:12:13.123456+02:00\""
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:652",
+          "match": "\"prospect_id\": \"tracked-a\""
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:657",
+          "match": "\"Synthetic Person\" in markdown"
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:650",
+          "match": "row[\"date_added\"] == created_at"
+        }
+      ],
+      "cues": [
+        {
+          "at": "Each prospect",
+          "do": "show",
+          "ids": [
+            "pr"
+          ],
+          "t": 9.42394366197183
+        },
+        {
+          "at": "Before this change",
+          "do": "show",
+          "ids": [
+            "rr"
+          ],
+          "t": 15.569014084507042
+        },
+        {
+          "at": "showed none",
+          "do": "note",
+          "id": "rr",
+          "t": 18.03380281690141,
+          "text": "no date",
+          "tone": "bad",
+          "until": 19.601408450704227
+        },
+        {
+          "at": "carries that exact",
+          "do": "fly",
+          "from": "ts",
+          "t": 20.93943661971831,
+          "to": "d"
+        }
+      ],
+      "end": 25.66760563380282,
+      "footer": "receipts   e2e_invitation_shortlist.py:621  \u00b7  e2e_invitation_shortlist.py:652  \u00b7  e2e_invitation_shortlist.py:657  \u00b7  e2e_invitation_shortlist.py:650",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "tracked-a",
+          "id": "pr",
+          "items": [
+            {
+              "ground": "tracked-a",
+              "id": "p",
+              "text": "tracked-a"
+            },
+            {
+              "ground": "created_at",
+              "id": "ts",
+              "text": "created_at"
+            }
+          ],
+          "row": true,
+          "sub": "in Supabase",
+          "title": "Prospect row"
+        },
+        {
+          "col": 1,
+          "ground": "Synthetic Person",
+          "id": "rr",
+          "items": [
+            {
+              "ground": "Synthetic Person",
+              "id": "n",
+              "text": "Synthetic Person"
+            },
+            {
+              "ground": "created_at",
+              "id": "d",
+              "kind": "slot",
+              "label": "date_added",
+              "text": "created_at"
+            }
+          ],
+          "row": true,
+          "sub": "invitation",
+          "title": "Report row"
+        }
+      ],
+      "hold": 0.8,
+      "i": 1,
+      "say": [
+        "Each prospect row matched here supplies its creation time, or unknown when missing.",
+        "Before this change, the report row showed none of it.",
+        "Now the report row carries that exact timestamp as date added."
+      ],
+      "sentences": [
+        {
+          "dur": 5.845070422535212,
+          "off": 5.845070422535212,
+          "on": 0.0,
+          "start": 9.42394366197183,
+          "text": "Each prospect row matched here supplies its creation time, or unknown when missing."
+        },
+        {
+          "dur": 3.7323943661971835,
+          "off": 3.7323943661971835,
+          "on": 0.0,
+          "start": 15.569014084507042,
+          "text": "Before this change, the report row showed none of it."
+        },
+        {
+          "dur": 4.366197183098592,
+          "off": 4.366197183098592,
+          "on": 0.0,
+          "start": 19.601408450704227,
+          "text": "Now the report row carries that exact timestamp as date added."
+        }
+      ],
+      "start": 8.97394366197183,
+      "type": "groups"
+    },
+    {
+      "big": "",
+      "cite": [
+        {
+          "line": "tests/e2e_invitation_shortlist.py:710",
+          "match": "assert row[\"date_added\"] is None"
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:716",
+          "match": "assert str(created_at) not in json.dumps(row)"
+        }
+      ],
+      "code": true,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "items",
+          "step": 0.4,
+          "t": 27.342957746478874
+        }
+      ],
+      "end": 38.328873239436625,
+      "footer": "receipts   e2e_invitation_shortlist.py:710  \u00b7  e2e_invitation_shortlist.py:716",
+      "hold": 0.8,
+      "i": 2,
+      "items": [
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:693",
+          "text": "(None, \"missing\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:694",
+          "text": "(42, \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:695",
+          "text": "(\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:696",
+          "text": "(\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:697",
+          "text": "(\"not-a-timestamp\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:698",
+          "text": "(\"2026-09-30T14:12:13\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:699",
+          "text": "(\"2026-10-03T00:00:00Z\", \"future_timestamp\")"
+        }
+      ],
+      "label": "cases stay unknown, not guessed",
+      "mark": "?",
+      "more": null,
+      "say": [
+        "A missing, malformed, out-of-range, timezone-less or future timestamp shows as unknown.",
+        "The row keeps a reason, and the bad value is never copied."
+      ],
+      "sentences": [
+        {
+          "dur": 6.126760563380282,
+          "off": 6.126760563380282,
+          "on": 0.0,
+          "start": 26.117605633802818,
+          "text": "A missing, malformed, out-of-range, timezone-less or future timestamp shows as unknown."
+        },
+        {
+          "dur": 4.084507042253521,
+          "off": 4.084507042253521,
+          "on": 0.0,
+          "start": 32.5443661971831,
+          "text": "The row keeps a reason, and the bad value is never copied."
+        }
+      ],
+      "start": 25.66760563380282,
+      "tone": "info",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": "A new helper",
+          "do": "step",
+          "n": 1,
+          "t": 38.77887323943663
+        },
+        {
+          "at": "Each selected",
+          "do": "step",
+          "n": 2,
+          "t": 48.46338028169015
+        },
+        {
+          "at": "gets its date",
+          "do": "note",
+          "line": "1031",
+          "t": 50.857746478873246,
+          "text": "date_added on each row",
+          "tone": "good"
+        }
+      ],
+      "cut": 4,
+      "end": 53.54366197183099,
+      "file": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "footer": "receipts   8 lines quoted verbatim from the diff of invitation_shortlist.py",
+      "gutter": 4,
+      "hold": 0.8,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        {
+          "ref": "453",
+          "step": 1
+        },
+        {
+          "ref": "472",
+          "step": 1
+        },
+        {
+          "ref": "473",
+          "step": 1
+        },
+        {
+          "ref": "474",
+          "step": 1
+        },
+        {
+          "ref": "475",
+          "step": 1
+        },
+        {
+          "ref": "476",
+          "step": 1
+        },
+        {
+          "ref": "1030",
+          "step": 2
+        },
+        {
+          "ref": "1031",
+          "step": 2
+        }
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 453,
+          "op": "+",
+          "ref": "453",
+          "step": 1,
+          "text": "if len(matches) != 1:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "len"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "matches"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "!"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "n",
+              "text": "1"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 472,
+          "op": "+",
+          "ref": "472",
+          "step": 1,
+          "text": "except (ShortlistInputError, OverflowError):",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "except"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "ShortlistInputError"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "OverflowError"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 473,
+          "op": "+",
+          "ref": "473",
+          "step": 1,
+          "text": "    provenance[\"reason\"] = \"invalid_timestamp\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "provenance"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "reason"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "invalid_timestamp"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 474,
+          "op": "+",
+          "ref": "474",
+          "step": 1,
+          "text": "    return {\"date_added\": None, \"date_added_source\": provenance}",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "return"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "{"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "date_added"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "None"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "date_added_source"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "provenance"
+            },
+            {
+              "cls": "",
+              "text": "}"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 475,
+          "op": "+",
+          "ref": "475",
+          "step": 1,
+          "text": "if parsed > now:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "parsed"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": ">"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "now"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 476,
+          "op": "+",
+          "ref": "476",
+          "step": 1,
+          "text": "    provenance[\"reason\"] = \"future_timestamp\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "provenance"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "reason"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "future_timestamp"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 1030,
+          "op": "+",
+          "ref": "1030",
+          "step": 2,
+          "text": "for row in rows_out:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "row"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "rows_out"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 1031,
+          "op": "+",
+          "ref": "1031",
+          "step": 2,
+          "text": "    row.update(_date_added(row[\"profile_url\"], prospects, now))",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "row"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "update"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "f",
+              "text": "_date_added"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "row"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "profile_url"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "prospects"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "now"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "A new helper finds exactly one matching prospect row.",
+        "It returns unknown with a reason when the timestamp is bad or in the future.",
+        "Each selected invitation row then gets its date."
+      ],
+      "sentences": [
+        {
+          "dur": 3.7323943661971835,
+          "off": 3.7323943661971835,
+          "on": 0.0,
+          "start": 38.77887323943663,
+          "text": "A new helper finds exactly one matching prospect row."
+        },
+        {
+          "dur": 5.352112676056338,
+          "off": 5.352112676056338,
+          "on": 0.0,
+          "start": 42.81126760563381,
+          "text": "It returns unknown with a reason when the timestamp is bad or in the future."
+        },
+        {
+          "dur": 3.3802816901408455,
+          "off": 3.3802816901408455,
+          "on": 0.0,
+          "start": 48.46338028169015,
+          "text": "Each selected invitation row then gets its date."
+        }
+      ],
+      "start": 38.328873239436625,
+      "type": "diff"
+    },
+    {
+      "assert": [
+        {
+          "equals": 3,
+          "fact": "tests_added"
+        }
+      ],
+      "big": "3",
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 54.19084507042255
+        }
+      ],
+      "end": 58.06549295774649,
+      "footer": "",
+      "hold": 1.2,
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:669",
+          "text": "An exact URL alias may enrich output, but its source time cannot affect selection."
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:703",
+          "text": "Invalid values stay unknown and never leak their raw timestamp into output."
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:720",
+          "text": "A missing creation time is not inferred and cannot alter eligibility."
+        }
+      ],
+      "label": "new tests",
+      "mark": "\u2713",
+      "more": null,
+      "say": [
+        "Three new tests pin it down."
+      ],
+      "sentences": [
+        {
+          "dur": 1.971830985915493,
+          "off": 1.971830985915493,
+          "on": 0.0,
+          "start": 53.993661971830996,
+          "text": "Three new tests pin it down."
+        }
+      ],
+      "start": 53.54366197183099,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            0,
+            0.0
+          ],
+          "do": "l1",
+          "t": 58.515492957746496
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2",
+          "t": 60.52253521126762
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd",
+          "t": 62.12816901408453
+        }
+      ],
+      "end": 65.42957746478875,
+      "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
+      "footer": "",
+      "hold": 2.0,
+      "i": 5,
+      "l1": "Each row now shows its date added.",
+      "l2": "Unknown stays unknown.",
+      "nocap": true,
+      "say": [
+        "Each row now shows its date added. Unknown stays unknown."
+      ],
+      "sentences": [
+        {
+          "dur": 4.014084507042254,
+          "off": 4.014084507042254,
+          "on": 0.0,
+          "start": 58.515492957746496,
+          "text": "Each row now shows its date added. Unknown stays unknown."
+        }
+      ],
+      "start": 58.06549295774649,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/12"
+    }
+  ]
+}

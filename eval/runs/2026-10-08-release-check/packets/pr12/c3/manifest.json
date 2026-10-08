@@ -1,0 +1,52 @@
+{
+  "condition": "c3",
+  "files": [
+    "frame-01.png",
+    "frame-02.png",
+    "frame-03.png",
+    "frame-04.png",
+    "frame-05.png",
+    "frame-06.png",
+    "frame-07.png",
+    "frame-08.png",
+    "frame-09.png",
+    "frame-10.png",
+    "frame-11.png",
+    "frame-12.png",
+    "frame-13.png",
+    "frame-14.png",
+    "frame-15.png",
+    "frame-16.png",
+    "frame-17.png",
+    "frame-18.png",
+    "frames.json",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "board.json": "fc81ee228d416c7b78a3e591993e11f2537179aeaf183d24e06038daeb967ef5",
+    "run.json": "18411479261969047d9453117feb977da1fd328f4cf3c92d3fa6984256c82994",
+    "video.mp4": "54b4ad8459cf70cbd3b57912ae4ddc17c25350a73b79e078e11167799d456f0e"
+  },
+  "payload_sha256": {
+    "frame-01.png": "c97a1dfd61d3ca5691591d5382bab4d6b1058a9c3e8aae72c8dce06756800df5",
+    "frame-02.png": "1286aef7aebbd700b4b2e7702fe8b4f1517327745ed867e2937ddc0adb5cd420",
+    "frame-03.png": "54364396d8d70f97781411e9ed21707892e868bb8c3927b74eebe315c8c22d1a",
+    "frame-04.png": "a78b7d2e664125ad3555543f1a7db27ed98889614809460a0ddcad79508d6a51",
+    "frame-05.png": "1410c477d60c1773ceb45dabeca6437fbc0ae8bc2057cd105d1cb2c5fc919e20",
+    "frame-06.png": "402d8f7858fbcde7165777c262b041df2deec7d6d9a5735c07d529ec483e17ef",
+    "frame-07.png": "03b3f7a9dc637b1f78d35708ee2593cae42a733702e9dea3c3b914a9657686c2",
+    "frame-08.png": "6925b8edbeec9f22491c769371c47fc92e3ab4597e44dac703bacfe512fb8eec",
+    "frame-09.png": "f2b54db7b3c2c5073cae2e23797f8d514a57b25e50ec31a362b785a1b5da3d28",
+    "frame-10.png": "7f00d5e979a853f59d183617a0bfa327a885db62eb72c67e8af8e6063993d34d",
+    "frame-11.png": "bc87540da6b72c60e9db551b6910c747b503f56d41787dd451e8637f686895f8",
+    "frame-12.png": "f6747f7b741b36596edef8e0185341218da11948f1cb0e27ea1ac8bc85839c04",
+    "frame-13.png": "f4104bfa1eb225a2e1e8b7b60d83e50189260c3cf331318456477e6513b98e38",
+    "frame-14.png": "62398ca986064256aea4a66eb8b0470e9ef58527f1d028288446076ea7d13a64",
+    "frame-15.png": "0b10c73d0e93e407ea8a58f636ac8874c6749e0cea173f2d4d241c5d53314b90",
+    "frame-16.png": "ae87255243d258d95948cf6cfa9a24512adb8b7b0fb97bd0fb8d54112b40b4a2",
+    "frame-17.png": "ad4ca8695f0f91f7cf7c2eaf15874199ab4028d9ef5bbafd151bbdfd4c9a285c",
+    "frame-18.png": "d9155fd74595d1cb277530a45a6d986b1271b658844af66475198bd6c2df6fa3",
+    "frames.json": "1f8a88a511dc3b94ef3290468962acb448eb2d7d2132dcb0e344f0743ec78389",
+    "prompt.md": "c82ee61e23c0e269416f951efc4a597cd233fd9b1e57ad62af2035f2b1fe1b58"
+  }
+}

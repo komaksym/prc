@@ -1,0 +1,798 @@
+[
+  {
+    "pr": 10,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr10.json",
+    "key_sha256": "500425e91c51c41d958b6b258e5399b31073bc0162320826169d3312638dfdcf",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:205",
+        "PR10-present-employer-e2e-matrix.md:13"
+      ],
+      "id": "q4",
+      "key": [
+        "scripts/build_invitation_shortlist.py",
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "docs/invitation-shortlist.md",
+        "docs/action-report-contract.md",
+        "PR10-present-employer-e2e-matrix.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "infographic/invitation-shortlist/structured-content.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "invitation-shortlist.md",
+      "e2e_invitation_shortlist.py",
+      "invitation-shortlist-e2e-evidence.json"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr10/c3"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr11.json",
+    "key_sha256": "adfe4528472089778d7b37dde8302f30e25c5630103af85d4dca6bdad6c3b4e1",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What was the old prospects column projection, and what is the new one?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:19"
+      ],
+      "id": "q3",
+      "key": "\"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\",",
+      "type": "exact_code"
+    },
+    "answer": "id,lead_id,linkedin_url,attributes -> id,lead_id,linkedin_url,attributes,created_at",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr11/c3"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr11.json",
+    "key_sha256": "adfe4528472089778d7b37dde8302f30e25c5630103af85d4dca6bdad6c3b4e1",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main collector module?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py:116",
+        "diagnostics/action-report-private-source-20261002/README.md:3"
+      ],
+      "id": "q4",
+      "key": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "diagnostics/action-report-private-source-20261002/README.md",
+        "infographic/prospect-created-at/structured-content.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_private_source.py"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr11/c3"
+  },
+  {
+    "pr": 11,
+    "condition": "c3",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr11.json",
+    "key_sha256": "adfe4528472089778d7b37dde8302f30e25c5630103af85d4dca6bdad6c3b4e1",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:30"
+      ],
+      "id": "q7",
+      "key": "diagnostics/action-report-private-source-20261002/collect_private_source.py :: read_table",
+      "type": "location"
+    },
+    "answer": "collect_private_source.py::TABLE_COLUMNS",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr11/c3"
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr11.json",
+    "key_sha256": "adfe4528472089778d7b37dde8302f30e25c5630103af85d4dca6bdad6c3b4e1",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What was the old prospects column projection, and what is the new one?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:19"
+      ],
+      "id": "q3",
+      "key": "\"prospects\": \"id,lead_id,linkedin_url,attributes,created_at\",",
+      "type": "exact_code"
+    },
+    "answer": "id,lead_id,linkedin_url,attributes -> id,lead_id,linkedin_url,attributes,created_at",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr11/c4"
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr12.json",
+    "key_sha256": "1530f5ab46193ed830f044cf48abc1844ec48d399896e22e84677fe7b06abb48",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:668",
+        "docs/invitation-shortlist.md:62",
+        "artifacts/invitation-shortlist-e2e-evidence.json:5"
+      ],
+      "id": "q4",
+      "key": [
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "docs/invitation-shortlist.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "PR10-present-employer-e2e-matrix.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "tests"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr12/c2"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr12.json",
+    "key_sha256": "1530f5ab46193ed830f044cf48abc1844ec48d399896e22e84677fe7b06abb48",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What does the new code check to reject a timestamp, and what reason does it record for a timestamp in the future?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:475",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:476"
+      ],
+      "id": "q3",
+      "key": "if parsed > now:",
+      "type": "exact_code"
+    },
+    "answer": "if parsed > now records reason future_timestamp",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr12/c3"
+  },
+  {
+    "pr": 12,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr12.json",
+    "key_sha256": "1530f5ab46193ed830f044cf48abc1844ec48d399896e22e84677fe7b06abb48",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:668",
+        "docs/invitation-shortlist.md:62",
+        "artifacts/invitation-shortlist-e2e-evidence.json:5"
+      ],
+      "id": "q4",
+      "key": [
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py",
+        "docs/invitation-shortlist.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "PR10-present-employer-e2e-matrix.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_invitation_shortlist.py"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr12/c3"
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr12.json",
+    "key_sha256": "1530f5ab46193ed830f044cf48abc1844ec48d399896e22e84677fe7b06abb48",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What does the new code check to reject a timestamp, and what reason does it record for a timestamp in the future?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:475",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:476"
+      ],
+      "id": "q3",
+      "key": "if parsed > now:",
+      "type": "exact_code"
+    },
+    "answer": "if parsed > now: provenance[\"reason\"] = \"future_timestamp\"",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr12/c4"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr13.json",
+    "key_sha256": "25942cb7de2dd11a608e62b3592a0aa2303f7d0a08e9ebddf3596a860920ba8c",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What new rule decides a follow-up action? Quote the reason the code records.",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_actions.py:508"
+      ],
+      "id": "q3",
+      "key": "verified outbound DM at least 72 hours old with no later observed inbound",
+      "type": "exact_code"
+    },
+    "answer": "if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):\n\"message_history_ambiguous_or_action_not_due\"",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr13/c3"
+  },
+  {
+    "pr": 13,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr13.json",
+    "key_sha256": "25942cb7de2dd11a608e62b3592a0aa2303f7d0a08e9ebddf3596a860920ba8c",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_private_dm_actions.py:131",
+        "docs/private-dm-actions.md:3"
+      ],
+      "id": "q4",
+      "key": [
+        "scripts/build_private_dm_actions.py",
+        "tests/e2e_private_dm_actions.py",
+        "tests/e2e_dm_uncertainty_scope.py",
+        "tests/test_private_dm_actions_e2e.py",
+        "docs/private-dm-actions.md",
+        "docs/action-report-contract.md",
+        "artifacts/private-dm-actions-e2e-evidence.json",
+        "artifacts/dm-uncertainty-scope-e2e-evidence.json",
+        "infographic/private-dm-actions/structured-content.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_private_dm_actions.py",
+      "private-dm-actions.md"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr13/c3"
+  },
+  {
+    "pr": 13,
+    "condition": "c4",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr13.json",
+    "key_sha256": "25942cb7de2dd11a608e62b3592a0aa2303f7d0a08e9ebddf3596a860920ba8c",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What new rule decides a follow-up action? Quote the reason the code records.",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_actions.py:508"
+      ],
+      "id": "q3",
+      "key": "verified outbound DM at least 72 hours old with no later observed inbound",
+      "type": "exact_code"
+    },
+    "answer": "if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):\n\"message_history_ambiguous_or_action_not_due\"",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr13/c4"
+  },
+  {
+    "pr": 14,
+    "condition": "c1",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr14.json",
+    "key_sha256": "cb9afde5c01bc75c08aacb341c310205cf1f387fd66630bc6b134752df2b3f6b",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:65"
+      ],
+      "id": "q7",
+      "key": "diagnostics/action-report-private-source-20261002/collect_private_source.py :: collect_sources",
+      "type": "location"
+    },
+    "answer": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr14/c1"
+  },
+  {
+    "pr": 14,
+    "condition": "c2",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr14.json",
+    "key_sha256": "cb9afde5c01bc75c08aacb341c310205cf1f387fd66630bc6b134752df2b3f6b",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:65"
+      ],
+      "id": "q7",
+      "key": "diagnostics/action-report-private-source-20261002/collect_private_source.py :: collect_sources",
+      "type": "location"
+    },
+    "answer": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr14/c2"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q5",
+    "type": "set_or_none",
+    "keys": "pr14.json",
+    "key_sha256": "cb9afde5c01bc75c08aacb341c310205cf1f387fd66630bc6b134752df2b3f6b",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which risky surface does it touch (CI, dependencies, auth, schema, secrets, external calls), or none?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/README.md:5"
+      ],
+      "id": "q5",
+      "key": "none",
+      "type": "set_or_none"
+    },
+    "answer": [
+      "external calls"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr14/c4"
+  },
+  {
+    "pr": 14,
+    "condition": "c4",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr14.json",
+    "key_sha256": "cb9afde5c01bc75c08aacb341c310205cf1f387fd66630bc6b134752df2b3f6b",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:65"
+      ],
+      "id": "q7",
+      "key": "diagnostics/action-report-private-source-20261002/collect_private_source.py :: collect_sources",
+      "type": "location"
+    },
+    "answer": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._next_link",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr14/c4"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr15.json",
+    "key_sha256": "a7e06366e7de066a39ef8b082125a9075b9ab0e04314b30a0303d63ab4e23f20",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What does the new publication path check before any OAuth or document request?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/google_doc_report.py:162"
+      ],
+      "id": "q3",
+      "key": "text = validate_report_text(text)",
+      "type": "exact_code"
+    },
+    "answer": "validate_report_text",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr15/c3"
+  },
+  {
+    "pr": 15,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr15.json",
+    "key_sha256": "a7e06366e7de066a39ef8b082125a9075b9ab0e04314b30a0303d63ab4e23f20",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_combined_action_report.py:121",
+        "docs/combined-action-report.md:5"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "scripts/build_combined_action_report.py",
+        "scripts/publish_combined_action_report.py",
+        "tests/e2e_combined_action_report.py",
+        "tests/test_combined_action_report_e2e.py",
+        "docs/combined-action-report.md",
+        "artifacts/combined-action-report-e2e-evidence.json",
+        "infographic/combined-action-report/structured-content.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_combined_action_report.py",
+      "Google command"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr15/c3"
+  },
+  {
+    "pr": 16,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr16.json",
+    "key_sha256": "a0378f5be6d273d420f5d58a720c66fedec178bcc9cff1f3d5bc2bc65982369f",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_actual_action_sync.py:168",
+        "docs/actual-action-sync.md:3"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "src/linkedin_mdp_mcp/client.py",
+        "scripts/sync_actual_actions.py",
+        "tests/e2e_actual_action_sync.py",
+        "tests/test_actual_action_sync_e2e.py",
+        "docs/actual-action-sync.md",
+        "artifacts/actual-action-sync-e2e-evidence.json",
+        "infographic/actual-action-sync/structured-content.md",
+        "README.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_actual_action_sync.py"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr16/c3"
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr17.json",
+    "key_sha256": "20af11c2d63921b75edacc4e263e5356561f1a55b82428d4161eab4df750c8af",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What was the old single-employer field on CurrentEmployer, and what is the new field?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:73"
+      ],
+      "id": "q3",
+      "key": "assignments: Mapping[str, tuple[Citation, ...]]",
+      "type": "exact_code"
+    },
+    "answer": "company_id -> assignments",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr17/c4"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr19.json",
+    "key_sha256": "abee836e8b39e51ccd2aa98cdfb55a5fcc5da818ef300a053afddc78cb732295",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What new guard keeps managed markers out of published bodies?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:55"
+      ],
+      "id": "q3",
+      "key": "managed_marker_in_body",
+      "type": "exact_code"
+    },
+    "answer": "raise DmDocReportError(\"managed_marker_in_body\")",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr19/c3"
+  },
+  {
+    "pr": 19,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr19.json",
+    "key_sha256": "abee836e8b39e51ccd2aa98cdfb55a5fcc5da818ef300a053afddc78cb732295",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_private_dm_doc_report.py:275",
+        "src/linkedin_mdp_mcp/dm_doc_report.py:46"
+      ],
+      "id": "q4",
+      "key": [
+        "scripts/publish_private_dm_docs.py",
+        "tests/e2e_private_dm_doc_report.py",
+        "tests/test_private_dm_doc_report_e2e.py",
+        "tests/e2e_dm_uncertainty_scope.py",
+        "artifacts/private-dm-doc-report-e2e-evidence.json",
+        "docs/private-dm-actions.md",
+        ".github/workflows/morning-report.yml",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_private_dm_doc_report.py"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr19/c3"
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr19.json",
+    "key_sha256": "abee836e8b39e51ccd2aa98cdfb55a5fcc5da818ef300a053afddc78cb732295",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What new guard keeps managed markers out of published bodies?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:55"
+      ],
+      "id": "q3",
+      "key": "managed_marker_in_body",
+      "type": "exact_code"
+    },
+    "answer": "if any(marker in body for body in (first_dm, follow_up) for marker in (BEGIN_MARKER, END_MARKER)):",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr19/c4"
+  },
+  {
+    "pr": 19,
+    "condition": "c5",
+    "question": "q5",
+    "type": "set_or_none",
+    "keys": "pr19.json",
+    "key_sha256": "abee836e8b39e51ccd2aa98cdfb55a5fcc5da818ef300a053afddc78cb732295",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which risky surface does it touch (CI, dependencies, auth, schema, secrets, external calls), or none?",
+      "evidence": [
+        "tests/e2e_private_dm_doc_report.py:275"
+      ],
+      "id": "q5",
+      "key": [
+        "external calls"
+      ],
+      "type": "set_or_none"
+    },
+    "answer": [
+      "CI"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr19/c5"
+  },
+  {
+    "pr": 5,
+    "condition": "c1",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr5.json",
+    "key_sha256": "fa2ff0a4a97f84016393b9e00c412949c96a8c24d082df3f704552d79753ad6e",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/google_doc_report.py:113"
+      ],
+      "id": "q7",
+      "key": "src/linkedin_mdp_mcp/google_doc_report.py :: GoogleDocPublisher",
+      "type": "location"
+    },
+    "answer": "src/linkedin_mdp_mcp/client.py::LinkedInAPIError.__init__",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr5/c1"
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr5.json",
+    "key_sha256": "fa2ff0a4a97f84016393b9e00c412949c96a8c24d082df3f704552d79753ad6e",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/google_doc_report.py:113"
+      ],
+      "id": "q7",
+      "key": "src/linkedin_mdp_mcp/google_doc_report.py :: GoogleDocPublisher",
+      "type": "location"
+    },
+    "answer": "src/linkedin_mdp_mcp/client.py::LinkedInAPIError.__init__",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr5/c2"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr5.json",
+    "key_sha256": "fa2ff0a4a97f84016393b9e00c412949c96a8c24d082df3f704552d79753ad6e",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_doc_report.py:141",
+        "docs/google-docs-report.md:49"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/client.py",
+        "scripts/report_connections_doc.py",
+        "tests/e2e_doc_report.py",
+        "docs/google-docs-report.md",
+        ".github/workflows/morning-report.yml",
+        ".github/workflows/report-tests.yml",
+        ".github/workflows/sync-connections.yml",
+        "artifacts/doc-report-e2e-evidence.json",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "google_doc_report.py",
+      "google-docs-report.md",
+      "e2e_doc_report.py",
+      "workflow"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr5/c3"
+  },
+  {
+    "pr": 5,
+    "condition": "c3",
+    "question": "q7",
+    "type": "location",
+    "keys": "pr5.json",
+    "key_sha256": "fa2ff0a4a97f84016393b9e00c412949c96a8c24d082df3f704552d79753ad6e",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/google_doc_report.py:113"
+      ],
+      "id": "q7",
+      "key": "src/linkedin_mdp_mcp/google_doc_report.py :: GoogleDocPublisher",
+      "type": "location"
+    },
+    "answer": "src/linkedin_mdp_mcp/client.py::SNAPSHOT_EXHAUSTED_MESSAGES",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr5/c3"
+  },
+  {
+    "pr": 7,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr7.json",
+    "key_sha256": "b25490db23eeb427621a3e5f5c141991b4806bdd6076b72742db9bef6a3cf4bf",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/test_invitation_sync_e2e.py:111",
+        ".github/workflows/sync-invitations.yml:4"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/client.py",
+        "scripts/sync_invitations.py",
+        "scripts/verify_invitation_sync.py",
+        "tests/test_invitation_sync_e2e.py",
+        ".github/workflows/sync-invitations.yml",
+        "artifacts/invitation_sync_verification.json",
+        "infographic/invitation-history-reconciliation/structured-content.md",
+        "README.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "sync-invitations.yml",
+      "test_invitation_sync_e2e.py"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr7/c3"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr8.json",
+    "key_sha256": "b53ba764e222cdaae2bd0e88babdbbaab0ec47d6be2e7b097b1b5fd48c7676bc",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What is the old default versus the new explicit behaviour for writes?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/inbox_sync.py:357"
+      ],
+      "id": "q3",
+      "key": "if not dry_run:",
+      "type": "exact_code"
+    },
+    "answer": "dry_run=True; dry_run=False",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr8/c3"
+  },
+  {
+    "pr": 8,
+    "condition": "c3",
+    "question": "q4",
+    "type": "set",
+    "keys": "pr8.json",
+    "key_sha256": "b53ba764e222cdaae2bd0e88babdbbaab0ec47d6be2e7b097b1b5fd48c7676bc",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/e2e_inbox_sync.py:115",
+        "docs/inbox-evidence.md:3"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/client.py",
+        "scripts/sync_inbox.py",
+        "tests/e2e_inbox_sync.py",
+        "tests/e2e_inbox_review.py",
+        "tests/test_inbox_sync_e2e.py",
+        "tests/test_inbox_review_e2e.py",
+        "docs/inbox-evidence.md",
+        "docs/action-report-contract.md",
+        "artifacts/inbox-e2e-evidence.json",
+        "diagnostics/verify_inbox_live.py",
+        "infographic/unicode-profile-identity/structured-content.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    "answer": [
+      "e2e_inbox_sync.py",
+      "inbox-evidence.md"
+    ],
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr8/c3"
+  },
+  {
+    "pr": 8,
+    "condition": "c4",
+    "question": "q3",
+    "type": "exact_code",
+    "keys": "pr8.json",
+    "key_sha256": "b53ba764e222cdaae2bd0e88babdbbaab0ec47d6be2e7b097b1b5fd48c7676bc",
+    "verdict": "wrong",
+    "question_data": {
+      "ask": "What is the old default versus the new explicit behaviour for writes?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/inbox_sync.py:357"
+      ],
+      "id": "q3",
+      "key": "if not dry_run:",
+      "type": "exact_code"
+    },
+    "answer": "dry_run: bool = True; if not dry_run:",
+    "packet": "/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/packets/pr8/c4"
+  }
+]

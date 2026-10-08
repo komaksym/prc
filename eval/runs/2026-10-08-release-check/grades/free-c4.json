@@ -1,0 +1,174 @@
+{
+  "grades": [
+    {
+      "pr": 10,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies company capacity counting each person once across history. Omits the lifetime three-person cap, canonical citation binding, ASCII-safe hashing, and strict legacy reconciliation."
+    },
+    {
+      "pr": 10,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies deduplicated all-history capacity. Omits that historical rows without source dates still count against the mapped employer."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies exact created_at values for prospect rows. Omits preservation through pagination and encryption, and that missing values remain missing."
+    },
+    {
+      "pr": 11,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States that exact prospect created_at values survive across pages, matching the keyed test behavior."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies date_added from matched prospect created_at and unknown values when missing. Omits unique canonical matching, other invalid timestamps, fixed reasons, and independence from selection and capacity."
+    },
+    {
+      "pr": 12,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "States that invalid and future date_added values stay unknown. Omits the safe evidence pointer required by the keyed test."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies offline manual action queues from verified inbox evidence. Omits exact identity and direction, withholding ambiguous evidence, unknown read status, and absence of provider requests or database writes."
+    },
+    {
+      "pr": 13,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies outbound follow-ups and separation of invitation notes from DMs. Omits the 72-hour threshold, absence of later inbound messages, and exactly one follow-up."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies changelog inclusion and rejection of an injected startTime. Omits bounded events, observation timestamps, unknown freshness, identity validation before encryption, and rejection before a second request."
+    },
+    {
+      "pr": 14,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States that caller startTime survives pagination, matching the keyed behavior."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies offline combination of invitation and DM planner outputs. Omits preserved evidence and withheld states, Google-only publication, marker and revision safeguards, and explicit absence of writes or sends."
+    },
+    {
+      "pr": 15,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States complete composition across real upstream outputs and preservation of sources, covering completion and provenance."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies staging activity and duplicate-safe persistence with explicit apply. Omits complete staging before one batch, dry-run and replay behavior, uncertain writes, and withholding uncertain DM evidence."
+    },
+    {
+      "pr": 16,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "Explicitly states that dry-run staging makes zero store posts."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "States that selection requires capacity at every present employer. Omits counting once per employer, withholding incomplete employer sets, and preservation of existing identity, ranking, exclusions, and date_added."
+    },
+    {
+      "pr": 17,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States that a full second employer blocks selection and selected people consume capacity at every current employer."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies separate owner-only first-DM and follow-up documents. Omits validated planner and retained-evidence binding, marker rejection, dual preflight, and revision-checked replacement."
+    },
+    {
+      "pr": 19,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "States document completion, convergent reruns, and fail-closed second conflicts. Mentions dual preflight but omits refusal of preflight violations."
+    },
+    {
+      "pr": 5,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies a private marked Google Docs section and preserved operator notes. Omits revision guards, owner-only permission checks, exact terminal no-data handling, and preservation of genuine failures."
+    },
+    {
+      "pr": 5,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "States that later-page terminal no-data retains collected rows. Omits exact-message matching and blocking first-page or unrecognized 404 responses."
+    },
+    {
+      "pr": 7,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies durable duplicate-safe history for matched outbound invitations. Omits the disabled-by-default opt-in workflow and absence of migration or live backfill."
+    },
+    {
+      "pr": 7,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States complete multipage history matching, deduplication, and idempotent replay, covering the keyed test."
+    },
+    {
+      "pr": 8,
+      "condition": "c4",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies validated persisted inbox evidence and default dry-run behavior. Omits complete snapshots, exact Unicode identities, preserved message metadata and uncertainty, and withholding ambiguous threads."
+    },
+    {
+      "pr": 8,
+      "condition": "c4",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "Explicitly identifies persistence of Unicode profile identity, matching the keyed test behavior."
+    }
+  ],
+  "input_sha256": "b4696bce92c3ee774dc0531811d12f9949c5f1df5a9b19e787de652324ffde4b",
+  "input_count": 24
+}

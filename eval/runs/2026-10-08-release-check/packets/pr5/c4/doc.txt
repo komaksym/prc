@@ -1,0 +1,165 @@
+PULL REQUEST WALKTHROUGH
+
+feat(report): publish private morning reports to Google Docs
+
+komaksym/linkedin-mdp#5
+
+AUTHOR komaksym
+
+HEAD 5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe commit
+
+Watch the 56 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner had no private morning report.
+
+This change publishes one to Google Docs.
+
+OPEN PULL REQUEST
+feat(report): publish private morning reports to Google Docs
++999 −5 · 10 files · komaksym/linkedin-mdp#5
+linkedin-mdp #5 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+The reporter updates one marked section in an owner-only doc.
+
+The schedule stays gated until the owner enables it, and operator notes stay intact.
+
+MORNING REPORT
+owner-only Google Doc
+marker
+WORKFLOW
+daily schedule
+daily
+linkedin-mdp #5 · komaksym
+RECEIPTS
+docs/google-docs-report.md#L3
+docs/google-docs-report.md#L41
+src/linkedin_mdp_mcp/google_doc_report.py#L13
+SCENE 3 OF 7 · GROUPS
+
+GoogleDocPublisher replaces only the marked paragraphs.
+
+Later-page terminal message cases complete with rows retained.
+
+BEFORE
+marker-owned region
+publisher
+AFTER
+rows retained
+snapshot
+linkedin-mdp #5 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/google_doc_report.py#L113
+src/linkedin_mdp_mcp/google_doc_report.py#L114
+src/linkedin_mdp_mcp/client.py#L15
+SCENE 4 OF 7 · DIFF
+
+The client names the exact terminal no-data message.
+
+It keeps the provider message while the public error text stays stable.
+
+The change, line for line
+src/linkedin_mdp_mcp/client.py
+14
++
+SNAPSHOT_EXHAUSTED_MESSAGES = frozenset({
+15
++
+    "No data found for this domain and memberId",
+16
++
+    "No data found for this memberId",
+⋯
+21
+    def __init__(self, status_code: int, message: str, 
+service_error_code: int | None = None):
+22
++
+        """Keep the provider message available while preserving the 
+public error text."""
+message kept, text stable
+linkedin-mdp #5 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/client.py#L15
+src/linkedin_mdp_mcp/client.py#L22
+src/linkedin_mdp_mcp/client.py#L14
+src/linkedin_mdp_mcp/client.py#L16
+src/linkedin_mdp_mcp/client.py#L21
+SCENE 5 OF 7 · LIST
+
+A scenario script exercises exhaustion handling.
+
+0
+new tests
+ok
+exhaustion_domain
+e2e_doc_report.py:141
+linkedin-mdp #5 · komaksym
+RECEIPTS
+tests/e2e_doc_report.py#L141
+SCENE 6 OF 7 · STATS
+
+A scenario script guards the report pipeline.
+
+Changed functions carry the publish path.
+
+0
+new tests
+30
+changed functions
+linkedin-mdp #5 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+Private morning reports publish to one marked Google Docs section.
+Start review at GoogleDocPublisher in google_doc_report.py.
+prc map github.com/komaksym/linkedin-mdp/pull/5
+undefined
+linkedin-mdp #5 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+.github/workflows/morning-report.yml config
+.github/workflows/report-tests.yml config
+.github/workflows/sync-connections.yml config
+PLANS.md docs
+docs/images/google-doc-report.jpg opaque
+scripts/report_connections_doc.py code
+CHANGED SYMBOLS NOT SHOWN
+_SnapshotStage scripts/report_connections_doc.py
+_SnapshotStage.__init__ scripts/report_connections_doc.py
+_SnapshotStage.snapshot scripts/report_connections_doc.py
+main scripts/report_connections_doc.py
+run scripts/report_connections_doc.py
+LinkedInMDPClient._get_paged src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.changelog src/linkedin_mdp_mcp/client.py
+GoogleDocConfig src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocConfig.from_env src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.__init__ src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._access_token src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._json_object src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._preflight src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._preflight_and_read src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._read_document src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._request src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._require_success src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.aclose src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.prepare src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.publish src/linkedin_mdp_mcp/google_doc_report.py
+GoogleReportError src/linkedin_mdp_mcp/google_doc_report.py
+ReportCounts src/linkedin_mdp_mcp/google_doc_report.py
+ReportResult src/linkedin_mdp_mcp/google_doc_report.py
+ReportResult.__post_init__ src/linkedin_mdp_mcp/google_doc_report.py
+_is_revision_conflict src/linkedin_mdp_mcp/google_doc_report.py
+_report_range src/linkedin_mdp_mcp/google_doc_report.py
+as_counts src/linkedin_mdp_mcp/google_doc_report.py
+render_report src/linkedin_mdp_mcp/google_doc_report.py
+
+Built by prc explain from the checked board.
+
+5f4440d25698af4ea0e2fbf559859e8fd5f4c3fe

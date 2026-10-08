@@ -1,0 +1,2241 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-D4jBG4i5Sc92KlDXv5B1S0MjUEuTVABa3lDYdE5Gbqc='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="referrer" content="no-referrer"><link rel="icon" href="data:,"><title>PR map</title><style>:root {
+  color-scheme: dark;
+  --bg: #08090c;
+  --dot: rgba(255, 255, 255, 0.07);
+  --panel: rgba(14, 16, 21, 0.88);
+  --panel-solid: #0e1015;
+  --raise: #12151b;
+  --card: #13161d;
+  --card-ctx: #0e1015;
+  --border: #22262f;
+  --border-strong: #2f3440;
+  --band: rgba(255, 255, 255, 0.018);
+  --text: #eceef3;
+  --muted: #959cab;
+  --faint: #5d6473;
+  --green: #3fd68a;
+  --amber: #f2b33d;
+  --red: #f4676f;
+  --grey: #5f6676;
+  --accent: #8d9bff;
+  --edge: #4a505e;
+  --add-bg: rgba(63, 214, 138, 0.11);
+  --del-bg: rgba(244, 103, 111, 0.11);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --dot: rgba(15, 23, 42, 0.09);
+    --panel: rgba(255, 255, 255, 0.9);
+    --panel-solid: #ffffff;
+    --raise: #ffffff;
+    --card: #ffffff;
+    --card-ctx: #f9fafb;
+    --border: #e1e4ea;
+    --border-strong: #cfd4dc;
+    --band: rgba(15, 23, 42, 0.022);
+    --text: #0f1420;
+    --muted: #5b6372;
+    --faint: #8b93a1;
+    --green: #129b5a;
+    --amber: #c27c0e;
+    --red: #d6363f;
+    --grey: #9aa1ad;
+    --accent: #4f5bd5;
+    --edge: #a3a9b5;
+    --add-bg: rgba(18, 155, 90, 0.1);
+    --del-bg: rgba(214, 54, 63, 0.09);
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 6px 20px rgba(15, 23, 42, 0.07);
+    --shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.18);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh;
+}
+
+.st-added { --st: var(--green); }
+.st-modified { --st: var(--amber); }
+.st-deleted { --st: var(--red); }
+.st-context { --st: var(--grey); }
+
+/* Header */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-solid);
+  position: relative;
+  z-index: 5;
+}
+
+.headline { min-width: 0; flex: 1 1 0; }
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.logo {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 2px;
+  align-items: center;
+}
+
+.logo i {
+  display: block;
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--green);
+}
+
+.logo i:nth-child(2) { height: 8px; background: var(--amber); }
+.logo i:nth-child(3) { height: 5px; background: var(--red); }
+
+.brand-name {
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.meta { overflow: hidden; text-overflow: ellipsis; }
+.meta .sep { color: var(--faint); margin: 0 6px; }
+.meta .mono { font-family: var(--mono); font-size: 11.5px; }
+
+.meta a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.meta a:hover { text-decoration: underline; }
+
+h1 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 72px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--raise);
+  white-space: nowrap;
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat.good .stat-value { color: var(--green); }
+.stat.bad .stat-value { color: var(--red); }
+.stat.warn .stat-value { color: var(--amber); }
+.stat.none .stat-value { color: var(--muted); }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.play {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.play:hover { opacity: 0.9; }
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-left: 9px solid currentColor;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.playing .play-icon {
+  width: 10px;
+  height: 12px;
+  border: 0;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+/* Canvas */
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.viewport.dragging { cursor: grabbing; }
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.band {
+  position: absolute;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: var(--band);
+}
+
+.band-label {
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.edges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.e {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.5;
+  transition: opacity 160ms ease;
+}
+
+.e-added {
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 8 6;
+  animation: flow 1s linear infinite;
+}
+
+.e-removed {
+  stroke: var(--red);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 5;
+  opacity: 0.85;
+}
+
+.e-name {
+  stroke-dasharray: 1 6;
+  stroke-linecap: round;
+  stroke-width: 2.25;
+}
+
+.e-added.e-name { stroke-width: 2.5; }
+
+.arrow-added { fill: var(--green); }
+.arrow-removed { fill: var(--red); }
+.arrow-kept { fill: var(--edge); }
+
+@keyframes flow {
+  to { stroke-dashoffset: -28; }
+}
+
+/* Nodes */
+
+.node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 160ms ease, border-color 120ms ease, box-shadow 160ms ease;
+}
+
+.node:hover { border-color: var(--border-strong); }
+.node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.node .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--st);
+}
+
+.node.st-context {
+  background: var(--card-ctx);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.node.st-context .bar { opacity: 0.6; }
+
+.n-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.glyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font: 600 10.5px/1 var(--mono);
+}
+
+.name {
+  min-width: 0;
+  flex: 1 1 auto;
+  font: 600 13px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-context .name { color: var(--muted); font-weight: 500; }
+
+.st-deleted .name {
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  color: var(--muted);
+}
+
+.pill {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--st);
+  background: color-mix(in srgb, var(--st) 14%, transparent);
+}
+
+.path {
+  font: 11px/1.35 var(--mono);
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+}
+
+.path > span { direction: ltr; unicode-bidi: isolate; }
+
+.n-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.n-row > .path { flex: 1 1 auto; min-width: 0; }
+
+.n-row > .sites {
+  flex: none;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.delta { font: 600 11.5px/1 var(--mono); }
+.plus { color: var(--green); }
+.minus { color: var(--red); }
+
+.badge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}
+
+.chip {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 12px 0 16px;
+  border-radius: 999px;
+}
+
+.chip .bar { width: 3px; }
+
+.chip .name { flex: 0 1 auto; font-weight: 500; font-size: 12.5px; }
+.chip.st-deleted .name { color: var(--muted); }
+
+/* Grouped overview */
+
+.fedges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ge {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 2;
+}
+
+.ge-added { stroke: var(--green); }
+.ge-removed { stroke: var(--red); }
+
+.fcard {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 14px 10px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+}
+
+.fcard:hover { border-color: var(--border-strong); }
+.fcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.f-name {
+  font: 600 13px/1.3 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.f-counts {
+  font: 11px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.flist {
+  display: none;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+  gap: 2px;
+  overflow: auto;
+}
+
+.fcard.open {
+  justify-content: flex-start;
+  height: auto !important;
+  max-height: 360px;
+  z-index: 5;
+}
+
+.fcard.open .flist { display: grid; }
+
+.fmem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+
+.fmem:hover { background: var(--band); }
+
+.fmem-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 12px/1.35 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fmem-tag {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.world.grouped .node.concealed { opacity: 0; }
+
+.dense .sym {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.dense .sym .bar { width: 3px; }
+.dense .sym .name { font-size: 12px; }
+.dense .sym .glyph { width: 16px; height: 16px; font-size: 9.5px; }
+.dense .sym .pill { padding: 0 5px; font-size: 9px; }
+
+.flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font: 700 10px/1 var(--sans);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+}
+
+.group {
+  position: absolute;
+  padding: 6px 4px 0;
+  font: 11px/1.3 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  pointer-events: none;
+}
+
+.group > span { direction: ltr; unicode-bidi: isolate; }
+
+body:not(.touring) .dense .e:not(.lit) { opacity: 0; }
+
+.empty {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.risk {
+  flex: none;
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 35%, transparent);
+  white-space: nowrap;
+}
+
+.world.far .path,
+.world.far .sites { display: none; }
+.world.far .name { font-size: 16px; }
+.world.far .pill { font-size: 12px; }
+
+.hovering .node:not(.lit),
+.hovering .e:not(.lit) { opacity: 0.14; }
+
+.hovering .e.lit { stroke-width: 2.5; }
+
+.node.lit { border-color: var(--border-strong); }
+
+.node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent), var(--shadow);
+}
+
+.node.focus {
+  border-color: var(--st);
+  box-shadow: 0 0 0 1px var(--st), 0 0 40px color-mix(in srgb, var(--st) 40%, transparent), var(--shadow);
+}
+
+/* Tour */
+
+.touring .node,
+.touring .e { transition: none; }
+
+.touring .e-added { animation: none; }
+
+.spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 40%, transparent 35%, color-mix(in srgb, var(--bg) 82%, transparent) 100%);
+}
+
+.touring .spot { opacity: 1; }
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  display: none;
+}
+
+.touring .progress { display: block; }
+
+#progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: min(760px, calc(100% - 48px));
+  transform: translateX(-50%);
+  padding: 16px 24px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .caption { display: block; }
+
+.cap-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cap-count { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+.cap-main {
+  margin-top: 6px;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.cap-main .code { font-family: var(--mono); font-size: 20px; }
+
+.cap-sub {
+  margin-top: 6px;
+  font: 12.5px/1.4 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(720px, calc(100% - 48px));
+  transform: translate(-50%, -50%);
+  padding: 32px 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .summary { display: block; }
+
+.sum-kicker {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sum-title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.sum-cell {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--raise);
+}
+
+.sum-num {
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sum-label { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.sum-cell.good .sum-num { color: var(--green); }
+.sum-cell.bad .sum-num { color: var(--red); }
+.sum-cell.warn .sum-num { color: var(--amber); }
+
+.sum-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sum-brand {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* Floating controls */
+
+.legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 11.5px;
+  color: var(--muted);
+  box-shadow: var(--shadow);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.sw {
+  width: 10px;
+  height: 10px;
+  margin-left: 6px;
+  border-radius: 3px;
+  background: var(--st);
+}
+
+.sw:first-child, .ls:first-child { margin-left: 0; }
+.ls { width: 32px; height: 8px; margin-left: 8px; overflow: visible; }
+
+.zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.zoom button {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.zoom button:last-child { border-right: 0; }
+.zoom button:hover { color: var(--text); background: var(--band); }
+
+.touring .legend,
+.touring .zoom { opacity: 0; pointer-events: none; }
+
+/* Drawer */
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 92vw);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--panel-solid);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(104%);
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 4;
+  cursor: auto;
+  user-select: text;
+}
+
+.drawer[aria-hidden="false"] { transform: none; }
+
+.d-head {
+  position: relative;
+  padding: 20px 56px 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.d-head .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--st);
+}
+
+.d-tags { display: flex; align-items: center; gap: 8px; }
+
+.d-kind {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.d-name {
+  margin: 8px 0 4px;
+  font: 650 18px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+
+.st-deleted .d-name { text-decoration: line-through; text-decoration-color: var(--red); }
+
+.d-path { font: 12px/1.4 var(--mono); color: var(--muted); word-break: break-all; }
+
+.d-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.d-close:hover { color: var(--text); border-color: var(--border-strong); }
+
+.d-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fact {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.fact.warn { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, transparent); }
+.fact.bad { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+.d-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px 0 24px;
+}
+
+.d-section { padding: 16px 24px 0; }
+
+.d-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.d-empty { font-size: 12.5px; color: var(--faint); }
+
+.diff {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+  background: var(--bg);
+  font: 12px/20px var(--mono);
+}
+
+.diff-rows { width: max-content; min-width: 100%; }
+
+.hunk-head {
+  padding: 2px 12px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+.diff-rows .hunk-head:first-child { border-top: 0; }
+
+.dl {
+  display: grid;
+  grid-template-columns: 40px 40px 20px auto;
+  white-space: pre;
+}
+
+.dl .ln {
+  padding-right: 8px;
+  text-align: right;
+  color: var(--faint);
+  user-select: none;
+}
+
+.dl .sg { text-align: center; user-select: none; }
+.dl .code { padding-right: 16px; }
+.dl.add { background: var(--add-bg); }
+.dl.add .sg { color: var(--green); }
+.dl.del { background: var(--del-bg); }
+.dl.del .sg { color: var(--red); }
+
+.links { display: grid; gap: 4px; }
+
+.link {
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--raise);
+  text-align: left;
+  overflow: hidden;
+}
+
+.link:hover { border-color: var(--border-strong); }
+.link .bar { height: 100%; min-height: 32px; background: var(--st); border-radius: 0 2px 2px 0; }
+.link-text { min-width: 0; }
+.link-name { display: block; font: 600 12.5px/1.35 var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-path { display: block; font: 11px/1.35 var(--mono); color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.etag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.etag.added { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); }
+.etag.removed { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+/* Footer */
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-solid);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.brand-line { font-weight: 550; color: var(--text); opacity: 0.8; }
+.hints { color: var(--faint); overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 1440px) {
+  .top { gap: 16px; }
+  .stat { min-width: 0; padding: 6px 10px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 10.5px; }
+}
+
+@media (max-width: 1100px) {
+  .top { flex-wrap: wrap; }
+  .stats { order: 3; flex-basis: 100%; overflow-x: auto; }
+  .hints { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .e-added { animation: none; }
+  .drawer { transition: none; }
+}
+</style></head><body><div class="app"><header class="top"><div class="headline"><div class="eyebrow"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">PR map</span><span id="meta" class="meta"></span></div><h1 id="title"></h1></div><div id="stats" class="stats"></div><button id="play" class="play" type="button"><span class="play-icon" aria-hidden="true"></span><span id="play-label">Play tour</span></button></header><main id="viewport" class="viewport"><div id="world" class="world"></div><div class="spot" aria-hidden="true"></div><div id="progress" class="progress" aria-hidden="true"><div id="progress-bar"></div></div><div id="caption" class="caption" aria-live="polite"></div><div id="summary" class="summary"></div><div class="legend" aria-label="Legend"><div class="legend-row"><span class="sw st-added"></span>added<span class="sw st-modified"></span>modified<span class="sw st-deleted"></span>deleted<span class="sw st-context"></span>unchanged</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-added" d="M2 4H38"/></svg>new call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-removed" d="M2 4H38"/></svg>removed call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept" d="M2 4H38"/></svg>call</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept e-name" d="M2 4H38"/></svg>dotted: matched by name only, no import proves it</div></div><div class="zoom"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-fit" type="button">Fit</button></div><aside id="drawer" class="drawer" aria-hidden="true"></aside></main><footer class="foot"><span class="brand-line">PR map · computed from the code, no AI drew this</span><span class="hints">Click a node for its diff · Drag to pan, pinch or Ctrl+scroll to zoom · Space steps the tour · F fits</span></footer></div><script type="application/json" id="map-data">{"author":"komaksym","base_sha":"9b8662189a592a85adc76d7691b42e553989e03b","brief":{"checks":[{"name":"synthetic-e2e","state":"passed"}],"files":[{"added":21,"kind":"docs","named":false,"path":"PLANS.md","removed":0,"sensitive":null},{"added":6,"kind":"docs","named":false,"path":"PR10-present-employer-e2e-matrix.md","removed":0,"sensitive":null},{"added":8,"kind":"config","named":false,"path":"artifacts/invitation-shortlist-e2e-evidence.json","removed":2,"sensitive":null},{"added":2,"kind":"docs","named":false,"path":"docs/invitation-shortlist.md","removed":0,"sensitive":null},{"added":1,"kind":"docs","named":false,"path":"infographic/prospect-date-added/analysis.md","removed":0,"sensitive":null},{"added":0,"kind":"opaque","named":false,"path":"infographic/prospect-date-added/infographic.png","removed":0,"sensitive":null},{"added":11,"kind":"docs","named":false,"path":"infographic/prospect-date-added/prompts/01-infographic-date-added.md","removed":0,"sensitive":null},{"added":13,"kind":"docs","named":false,"path":"infographic/prospect-date-added/source.md","removed":0,"sensitive":null},{"added":3,"kind":"docs","named":false,"path":"infographic/prospect-date-added/structured-content.md","removed":0,"sensitive":null},{"added":47,"kind":"code","named":false,"path":"src/linkedin_mdp_mcp/invitation_shortlist.py","removed":0,"sensitive":null},{"added":86,"kind":"test","named":false,"path":"tests/e2e_invitation_shortlist.py","removed":2,"sensitive":null},{"added":6,"kind":"test","named":false,"path":"tests/test_invitation_shortlist_e2e.py","removed":0,"sensitive":null}],"head_sha":"0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7","look_first":[{"lines":[],"path":"src/linkedin_mdp_mcp/invitation_shortlist.py","reason":"largest code change (+47 −0)"}],"mismatches":[],"pr":"komaksym/linkedin-mdp#12","title":"feat(report): show date added"},"edges":[{"resolution":"exact","source":"scripts/build_invitation_shortlist.py::main","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"},{"resolution":"exact","source":"scripts/build_invitation_shortlist.py::main","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added","status":"added","target":"src/linkedin_mdp_mcp/inbox_sync.py::normalize_profile_url"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added","status":"added","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/inbox_sync.py::normalize_profile_url"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"added","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::run","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout","status":"kept","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout","status":"kept","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"}],"files":[{"added":21,"hunks":[{"lines":[{"new":31,"old":31,"op":" ","text":"The live verification utility compares complete stored payloads and all event timestamps, preserving earlier observation times on idempotent replay. Its missing-credentials path emits only a fixed failure message. The approved live run https://github.com/komaksym/linkedin-mdp/actions/runs/36985062303 verified persistence, full private readback, and duplicate-free frozen-snapshot replay at revision `5cc23814450c14b4a8d3312c682b5f65fa87e22c`. Updated PR CI run 36985032311 passed. Actual DM queue readiness remains pending reliable message classification and coverage checks. A pytest entry point repeats the existing E2E runner in PR CI without changing workflow infrastructure."},{"new":32,"old":32,"op":" ","text":""},{"new":33,"old":33,"op":" ","text":"Applied principles: Model the Domain keeps event bodies in `InboxSyncPlan` and sanitized counts in `InboxSyncSummary`. Sequence Work into Verifiable Units makes inbox evidence the first slice before ranking, research, and action publication."},{"new":34,"old":null,"op":"+","text":""},{"new":35,"old":null,"op":"+","text":"### Prospect date-added report enrichment"},{"new":36,"old":null,"op":"+","text":""},{"new":37,"old":null,"op":"+","text":"Summary: expose the existing Supabase prospect `created_at` value as report-only `date_added`. This is the database row creation time; it is not a LinkedIn connection or acceptance date. It must not affect qualification, exclusions, rank, or company capacity."},{"new":38,"old":null,"op":"+","text":""},{"new":39,"old":null,"op":"+","text":"Failure modes to reject before implementation:"},{"new":40,"old":null,"op":"+","text":""},{"new":41,"old":null,"op":"+","text":"- Missing `created_at`, null, wrong-type, malformed, or timezone-naive values must remain unknown, never be replaced with collection time or another date."},{"new":42,"old":null,"op":"+","text":"- A future timestamp must remain unknown rather than being rendered as a valid creation date."},{"new":43,"old":null,"op":"+","text":"- A timestamp string with a valid timezone and no future instant must be preserved byte-for-byte in JSON and Markdown."},{"new":44,"old":null,"op":"+","text":"- Qualification input must not spoof or override the source prospect timestamp."},{"new":45,"old":null,"op":"+","text":"- Profile aliases must join through the same canonical profile normalizer, while zero or multiple source rows must not attach an ambiguous prospect ID or pointer."},{"new":46,"old":null,"op":"+","text":"- One uniquely matched row with invalid/missing time must retain its stable prospect ID and source pointer with a fixed reason, without leaking the invalid raw value."},{"new":47,"old":null,"op":"+","text":"- Adding or removing `created_at` must not change shortlist membership, ranking, exclusion counts, or company-cap results."},{"new":48,"old":null,"op":"+","text":"- The private CLI must still emit only fixed stdout and create only private JSON/Markdown files whose date-added values and source pointers match the pure result."},{"new":49,"old":null,"op":"+","text":""},{"new":50,"old":null,"op":"+","text":"Implementation is one late output-enrichment helper over validated source prospects, preserving existing qualification and ranking decisions. Red-first verification must use the existing whole-CLI E2E matrix before production edits; no schema, workflow, live source call, or new dependency is needed."},{"new":51,"old":null,"op":"+","text":""},{"new":52,"old":null,"op":"+","text":"Verification, 2026-10-02: all eight new date-added behavior assertions failed against the unchanged implementation; 83 of the existing 84 matrix scenarios remained green. The corrected implementation passes all 91 matrix scenarios, the CLI artifact wrapper, and the full 22-check repository suite. The selected row preserves an exact offset/fraction timestamp and source pointer in JSON/Markdown, while missing, invalid, naive, or future timestamps remain unknown without affecting membership or ranking. Scoped Ruff and strict mypy on the touched module pass; full-source mypy passes across nine modules. Sdist and wheel builds pass. An unfiltered E501 scan reports only pre-existing long lines outside the added sections. The generated artifact contains aggregate verdicts only."},{"new":53,"old":34,"op":" ","text":""},{"new":54,"old":35,"op":" ","text":"## Google Docs morning report"},{"new":55,"old":36,"op":" ","text":""}],"new_start":31,"old_start":31},{"lines":[{"new":213,"old":194,"op":" ","text":"PR10 fresh review audit corrections: six invalid canonical-alias scenarios and one distinct unsupported-key queue scenario failed before production fixes. Queued profiles no longer retain resolved current employer assignments or capacity attribution. Every employer queue entry retains a stable opaque key ID and source pointer.82 scenario matrix plus wrapper,22 full-suite checks, scoped strict Ruff,12-file mypy and package builds pass. No report publication or database writes occurred."},{"new":214,"old":195,"op":" ","text":""},{"new":215,"old":196,"op":" ","text":"PR10 Unicode repair verification before publication: 84 scenarios plus wrapper, 22 full-suite checks, strict scoped Ruff, 12-file mypy and builds passed before the usage pause. Pending diff inspected on resume; no source behavior changed since that validation. Separate synthetic CLI proof and independent review requested. Fixed fresh CodeRabbit wording finding by spacing adjacent counts in the matrix record."},{"new":216,"old":null,"op":"+","text":""},{"new":217,"old":null,"op":"+","text":"PR12 review correction: two UTC conversion overflow boundaries and the Markdown prospect-ID provenance assertion failed before the fix (3 failed, 90 passed). The correction catches overflow as invalid_timestamp and prints the prospect ID beside the source pointer. All 93 E2E scenarios, the full 22-test suite, scoped Ruff, 9-file default source mypy and source/wheel builds pass. Independent read-only review found no actionable issue."}],"new_start":213,"old_start":194}],"kind":"docs","language":null,"path":"PLANS.md","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":6,"hunks":[{"lines":[{"new":12,"old":12,"op":" ","text":"| Historical invitation has unsupported identity or absent/unregistered mapping | Withhold the global shortlist and retain an explicit queue item. |"},{"new":13,"old":13,"op":" ","text":"| Recommendation report is built | No recommendation event plan or persistence key is emitted. |"},{"new":14,"old":14,"op":" ","text":"| Existing sent/accepted/connectivity/suppression, ranking, exact identity, and transport freshness rules | Preserve prior behavior. |"},{"new":15,"old":null,"op":"+","text":"| Valid source `created_at` with timezone and fractional seconds | Preserve the exact value with prospect ID and source pointer in JSON and Markdown. |"},{"new":16,"old":null,"op":"+","text":"| Missing, null, wrong-type, malformed, timezone-naive, or future `created_at` | Render unknown, retain only safe pointer/ID for one unique source row, and do not leak invalid values. |"},{"new":17,"old":null,"op":"+","text":"| Canonical profile URL alias or qualification-provided `date_added` | Join the source row canonically; ignore qualification timestamp and preserve eligibility/ranking. |"},{"new":18,"old":null,"op":"+","text":"| No unique source prospect row | Keep date and provenance unknown; preserve existing identity-withhold behavior. |"},{"new":19,"old":15,"op":" ","text":""},{"new":20,"old":16,"op":" ","text":"## Red-first evidence"},{"new":21,"old":17,"op":" ","text":""}],"new_start":12,"old_start":12},{"lines":[{"new":35,"old":31,"op":" ","text":"## Unicode key repair"},{"new":36,"old":32,"op":" ","text":""},{"new":37,"old":33,"op":" ","text":"Two JSON-decoded unpaired surrogate key cases failed before the repair because raw UTF-8 hashing raised UnicodeEncodeError before unresolved evidence was recorded. Current-employer key IDs now hash ASCII-escaped JSON bytes. Identity normalization stays unchanged, and invalid keys remain unresolved without exposing them. The 84-scenario matrix plus wrapper, 22 full-suite checks, scoped strict Ruff, 12-file mypy and source/wheel builds pass. Surrogate fixtures use distinct numeric codepoints without a lint suppression."},{"new":38,"old":null,"op":"+","text":""},{"new":39,"old":null,"op":"+","text":"PR12 review correction: two UTC conversion overflow boundaries and the Markdown prospect-ID provenance assertion failed before the fix (3 failed, 90 passed). The correction catches overflow as invalid_timestamp and prints the prospect ID beside the source pointer. All 93 E2E scenarios, the full 22-test suite, scoped Ruff, 9-file default source mypy and source/wheel builds pass. Independent read-only review found no actionable issue."}],"new_start":35,"old_start":31}],"kind":"docs","language":null,"path":"PR10-present-employer-e2e-matrix.md","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":8,"hunks":[{"lines":[{"new":1,"old":1,"op":" ","text":"{"},{"new":2,"old":2,"op":" ","text":"  \"schema_version\": 1,"},{"new":null,"old":3,"op":"-","text":"  \"scenario_count\": 88,"},{"new":3,"old":null,"op":"+","text":"  \"scenario_count\": 97,"},{"new":4,"old":4,"op":" ","text":"  \"all_scenarios_passed\": true,"},{"new":5,"old":5,"op":" ","text":"  \"red_first_failures_reproduced\": ["},{"new":6,"old":6,"op":" ","text":"    \"provider-local invitation dates lost to ISO-only parsing\","}],"new_start":1,"old_start":1},{"lines":[{"new":23,"old":23,"op":" ","text":"    \"invalid canonical employer aliases left contradictory resolved audit entries\","},{"new":24,"old":24,"op":" ","text":"    \"distinct invalid employer identity keys collapsed without source pointers\","},{"new":25,"old":25,"op":" ","text":"    \"unpaired Unicode employer keys failed before unresolved queue recording\","},{"new":26,"old":null,"op":"+","text":"    \"report omitted a valid exact-profile prospect creation timestamp\","},{"new":27,"old":null,"op":"+","text":"    \"invalid or future creation timestamps were not withheld as unknown\","},{"new":28,"old":null,"op":"+","text":"    \"creation timestamp or qualification spoof changed ranking or membership\","},{"new":29,"old":null,"op":"+","text":"    \"private Markdown omitted creation-time provenance\","},{"new":30,"old":null,"op":"+","text":"    \"UTC conversion overflow aborted timestamp enrichment\","},{"new":31,"old":null,"op":"+","text":"    \"private Markdown omitted the creation-time prospect ID\","},{"new":32,"old":26,"op":" ","text":"    \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","},{"new":33,"old":27,"op":" ","text":"    \"candidate qualification citation attested a different profile\""},{"new":34,"old":28,"op":" ","text":"  ],"},{"new":null,"old":29,"op":"-","text":"  \"artifact_digest\": \"2dabc51de56f7b9d802c8441f279d3d1239107f719426e0a5cafcf5e69afa59f\""},{"new":35,"old":null,"op":"+","text":"  \"artifact_digest\": \"2c976cad44b739cc1f27e0a616a51099bbd0dbd5725d64b2bb2c71a1792650d2\""},{"new":36,"old":30,"op":" ","text":"}"}],"new_start":23,"old_start":23}],"kind":"config","language":null,"path":"artifacts/invitation-shortlist-e2e-evidence.json","removed":2,"sensitive":null,"status":"modified","symbols":[]},{"added":2,"hunks":[{"lines":[{"new":59,"old":59,"op":" ","text":""},{"new":60,"old":60,"op":" ","text":"The priority heuristic is versioned as `invitation-priority-v1`. It awards up to 4 points for observed exact-person activity, 3 for mutual connections, 2 for connection count, and 1 for a profile photo. Activity must be at most 30 days old. Other ranking signals must be at most 90 days old. Numeric inputs are capped at 20 mutual connections and 500 total connections for scoring. Missing or stale signals stay unknown and do not produce an all-unknown zero score. The score is a sorting aid, not an acceptance probability. Stable ties use the canonical profile URL. Eligibility and remaining lifetime company slots apply before the report selects at most 25 rows."},{"new":61,"old":61,"op":" ","text":""},{"new":62,"old":null,"op":"+","text":"Each selected invitation row may also show `date_added`, read only from `created_at` on exactly one canonical-profile-matched Supabase prospect row. This is the database record creation timestamp, not a LinkedIn connection or acceptance date. Preserve a valid timezone-aware ISO string exactly and show its `prospects.rows[i].created_at` source pointer. Missing, malformed, naive, or future timestamps remain `unknown`; the report retains the unique source row ID and a fixed reason without copying an invalid value. Zero or multiple matching prospect rows have no source provenance. Qualification data cannot override this field, and it never affects shortlist eligibility, ranking, exclusions, or capacity."},{"new":63,"old":null,"op":"+","text":""},{"new":64,"old":62,"op":" ","text":"The report preserves existing exact identity checks, suppression handling, connected and previously invited exclusions, candidate qualification checks, ranking behavior, and transport freshness rules. The report includes no event plan, persistence key, draft, or hypothetical Supabase event."},{"new":65,"old":63,"op":" ","text":""},{"new":66,"old":64,"op":" ","text":"Run with private files and a new output directory:"}],"new_start":59,"old_start":59}],"kind":"docs","language":null,"path":"docs/invitation-shortlist.md","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":1,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Technical system scope: existing Supabase insertion timestamp through approved collector to private invitation report. Presentation metadata does not change priority, eligibility or capacity. English structural-breakdown, technical-schematic, landscape16:9, native imagegen; saved backend auto. No live database verification or invented sample rows."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-date-added/analysis.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":0,"hunks":[],"kind":"opaque","language":null,"path":"infographic/prospect-date-added/infographic.png","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":11,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Use case: infographic-diagram"},{"new":2,"old":null,"op":"+","text":"Create a small high-level technical system infographic, English landscape 16:9, structural-breakdown exploded layers in technical-schematic style. Opaque neutral pale-gray canvas with visible dark border, charcoal high-contrast large sans-serif labels, restrained teal/blue accents, ample whitespace. Three exploded layers representing a database, read-only collector, and private report card. Blank document icons carry teal lines, never sample rows or dates. A side callout connects missing/invalid data to unknown display, separate from the retained timestamp path."},{"new":3,"old":null,"op":"+","text":"Text verbatim only:"},{"new":4,"old":null,"op":"+","text":"Title \"Invitation report date added\""},{"new":5,"old":null,"op":"+","text":"Layer1 \"Supabase\" and \"Existing created_at\""},{"new":6,"old":null,"op":"+","text":"Layer2 \"Collector\" and \"Fetch existing field\""},{"new":7,"old":null,"op":"+","text":"Layer3 \"Private invitation report\" and \"Exact date_added and evidence pointer\""},{"new":8,"old":null,"op":"+","text":"Callout \"Missing or invalid\" and \"Show unknown\""},{"new":9,"old":null,"op":"+","text":"Meaning line \"First added to Supabase\""},{"new":10,"old":null,"op":"+","text":"Bottom scope band \"Read-only report\", \"No new column\", \"No invented dates\""},{"new":11,"old":null,"op":"+","text":"No additional text, dates, numbers, person names, URLs, logos or invented row data. Do not imply the live database was queried or a Google Doc was published. This is an exploded component illustration, not a generic DAG/node graph."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-date-added/prompts/01-infographic-date-added.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":13,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Invitation report date added"},{"new":2,"old":null,"op":"+","text":"Supabase"},{"new":3,"old":null,"op":"+","text":"Existing created_at"},{"new":4,"old":null,"op":"+","text":"Collector"},{"new":5,"old":null,"op":"+","text":"Fetch existing field"},{"new":6,"old":null,"op":"+","text":"Private invitation report"},{"new":7,"old":null,"op":"+","text":"Exact date_added and evidence pointer"},{"new":8,"old":null,"op":"+","text":"Missing or invalid"},{"new":9,"old":null,"op":"+","text":"Show unknown"},{"new":10,"old":null,"op":"+","text":"First added to Supabase"},{"new":11,"old":null,"op":"+","text":"Read-only report"},{"new":12,"old":null,"op":"+","text":"No new column"},{"new":13,"old":null,"op":"+","text":"No invented dates"}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-date-added/source.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":3,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# Invitation report date added"},{"new":2,"old":null,"op":"+","text":""},{"new":3,"old":null,"op":"+","text":"Learning objective: show source-backed insertion time separately from outreach eligibility. Three system layers Supabase existing created_at, Collector fetch existing field, Private invitation report exact date_added and evidence pointer. Missing or invalid shows unknown. Meaning: first added to Supabase. Scope: read-only report, no new column, no invented dates."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/prospect-date-added/structured-content.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":47,"hunks":[{"lines":[{"new":438,"old":438,"op":" ","text":"    return ids_by_url, conflicts"},{"new":439,"old":439,"op":" ","text":""},{"new":440,"old":440,"op":" ","text":""},{"new":441,"old":null,"op":"+","text":"def _date_added("},{"new":442,"old":null,"op":"+","text":"    profile_url: str,"},{"new":443,"old":null,"op":"+","text":"    prospects: Sequence[Mapping[str, Any]],"},{"new":444,"old":null,"op":"+","text":"    now: datetime,"},{"new":445,"old":null,"op":"+","text":") -\u003e dict[str, Any]:"},{"new":446,"old":null,"op":"+","text":"    \"\"\"Enrich one report row from a unique exact-profile prospect creation timestamp.\"\"\""},{"new":447,"old":null,"op":"+","text":"    canonical_url = normalize_profile_url(profile_url)"},{"new":448,"old":null,"op":"+","text":"    matches = ["},{"new":449,"old":null,"op":"+","text":"        (index, row)"},{"new":450,"old":null,"op":"+","text":"        for index, row in enumerate(prospects)"},{"new":451,"old":null,"op":"+","text":"        if normalize_profile_url(row.get(\"linkedin_url\")) == canonical_url"},{"new":452,"old":null,"op":"+","text":"    ] if canonical_url else []"},{"new":453,"old":null,"op":"+","text":"    if len(matches) != 1:"},{"new":454,"old":null,"op":"+","text":"        reason = \"missing\" if not matches else \"source_identity_ambiguous\""},{"new":455,"old":null,"op":"+","text":"        return {"},{"new":456,"old":null,"op":"+","text":"            \"date_added\": None,"},{"new":457,"old":null,"op":"+","text":"            \"date_added_source\": {\"prospect_id\": None, \"source_ref\": None, \"reason\": reason},"},{"new":458,"old":null,"op":"+","text":"        }"},{"new":459,"old":null,"op":"+","text":""},{"new":460,"old":null,"op":"+","text":"    index, row = matches[0]"},{"new":461,"old":null,"op":"+","text":"    provenance = {"},{"new":462,"old":null,"op":"+","text":"        \"prospect_id\": row.get(\"id\"),"},{"new":463,"old":null,"op":"+","text":"        \"source_ref\": f\"prospects.rows[{index}].created_at\","},{"new":464,"old":null,"op":"+","text":"        \"reason\": None,"},{"new":465,"old":null,"op":"+","text":"    }"},{"new":466,"old":null,"op":"+","text":"    value = row.get(\"created_at\")"},{"new":467,"old":null,"op":"+","text":"    if value is None:"},{"new":468,"old":null,"op":"+","text":"        provenance[\"reason\"] = \"missing\""},{"new":469,"old":null,"op":"+","text":"        return {\"date_added\": None, \"date_added_source\": provenance}"},{"new":470,"old":null,"op":"+","text":"    try:"},{"new":471,"old":null,"op":"+","text":"        parsed = _timestamp(value, \"source_created_at_invalid\")"},{"new":472,"old":null,"op":"+","text":"    except (ShortlistInputError, OverflowError):"},{"new":473,"old":null,"op":"+","text":"        provenance[\"reason\"] = \"invalid_timestamp\""},{"new":474,"old":null,"op":"+","text":"        return {\"date_added\": None, \"date_added_source\": provenance}"},{"new":475,"old":null,"op":"+","text":"    if parsed \u003e now:"},{"new":476,"old":null,"op":"+","text":"        provenance[\"reason\"] = \"future_timestamp\""},{"new":477,"old":null,"op":"+","text":"        return {\"date_added\": None, \"date_added_source\": provenance}"},{"new":478,"old":null,"op":"+","text":"    return {\"date_added\": value, \"date_added_source\": provenance}"},{"new":479,"old":null,"op":"+","text":""},{"new":480,"old":null,"op":"+","text":""},{"new":481,"old":441,"op":" ","text":"def _stable_hash(value: Any) -\u003e str:"},{"new":482,"old":442,"op":" ","text":"    \"\"\"Return a deterministic opaque identifier for a JSON value.\"\"\""},{"new":483,"old":443,"op":" ","text":"    encoded = json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(\",\", \":\"))"}],"new_start":438,"old_start":438},{"lines":[{"new":778,"old":738,"op":" ","text":"                f\"{item['role']} at {item['company_name']}. Priority score {item['score'] if item['score'] is not None else 'unknown'} ({item['score_version']}); this is not an acceptance probability.\","},{"new":779,"old":739,"op":" ","text":"                \"\","},{"new":780,"old":740,"op":" ","text":"                f\"Reason: {item['reason']}.\","},{"new":781,"old":null,"op":"+","text":"                \"\","},{"new":782,"old":null,"op":"+","text":"                f\"Date added: {item['date_added'] or 'unknown'} \""},{"new":783,"old":null,"op":"+","text":"                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""},{"new":784,"old":null,"op":"+","text":"                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""},{"new":785,"old":null,"op":"+","text":"                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","},{"new":786,"old":741,"op":" ","text":"                \"\","},{"new":787,"old":742,"op":" ","text":"                f\"Action: {item['action']}.\","},{"new":788,"old":743,"op":" ","text":"                \"\","}],"new_start":778,"old_start":738},{"lines":[{"new":1027,"old":982,"op":" ","text":"        slots = remaining_slots"},{"new":1028,"old":983,"op":" ","text":"    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"},{"new":1029,"old":984,"op":" ","text":"    rows_out = [_candidate_json(item) for item in selected]"},{"new":1030,"old":null,"op":"+","text":"    for row in rows_out:"},{"new":1031,"old":null,"op":"+","text":"        row.update(_date_added(row[\"profile_url\"], prospects, now))"},{"new":1032,"old":985,"op":" ","text":"    company_usage: dict[str, dict[str, Any]] = {}"},{"new":1033,"old":986,"op":" ","text":"    for company_id in sorted(registry):"},{"new":1034,"old":987,"op":" ","text":"        usage: dict[str, Any] = {"}],"new_start":1027,"old_start":982}],"kind":"code","language":"python","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","removed":0,"sensitive":null,"status":"modified","symbols":["src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added","src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown","src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp","src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"]},{"added":86,"hunks":[{"lines":[{"new":2,"old":2,"op":" ","text":""},{"new":3,"old":3,"op":" ","text":"from __future__ import annotations"},{"new":4,"old":4,"op":" ","text":""},{"new":5,"old":null,"op":"+","text":"import hashlib"},{"new":6,"old":5,"op":" ","text":"import json"},{"new":7,"old":6,"op":" ","text":"import os"},{"new":8,"old":7,"op":" ","text":"import stat"}],"new_start":2,"old_start":2},{"lines":[{"new":617,"old":616,"op":" ","text":"        source_path = temp_path / \"source.json\""},{"new":618,"old":617,"op":" ","text":"        qualification_path = temp_path / \"qualification.json\""},{"new":619,"old":618,"op":" ","text":"        output_path = temp_path / \"out\""},{"new":null,"old":619,"op":"-","text":"        source_path.write_text(json.dumps(source_export()), encoding=\"utf-8\")"},{"new":620,"old":null,"op":"+","text":"        source = source_export()"},{"new":621,"old":null,"op":"+","text":"        created_at = \"2026-09-30T14:12:13.123456+02:00\""},{"new":622,"old":null,"op":"+","text":"        source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"},{"new":623,"old":null,"op":"+","text":"        source_path.write_text(json.dumps(source), encoding=\"utf-8\")"},{"new":624,"old":620,"op":" ","text":"        qualification_path.write_text(json.dumps(qualification()), encoding=\"utf-8\")"},{"new":625,"old":621,"op":" ","text":"        os.chmod(source_path, 0o600)"},{"new":626,"old":622,"op":" ","text":"        os.chmod(qualification_path, 0o600)"}],"new_start":617,"old_start":616},{"lines":[{"new":646,"old":642,"op":" ","text":"        assert stat.S_IMODE(markdown_path.stat().st_mode) == 0o600"},{"new":647,"old":643,"op":" ","text":"        report = json.loads(report_path.read_text(encoding=\"utf-8\"))"},{"new":648,"old":644,"op":" ","text":"        assert report[\"invitations\"][0][\"profile_url\"] == PROFILE_A"},{"new":null,"old":645,"op":"-","text":"        assert \"Synthetic Person\" in markdown_path.read_text(encoding=\"utf-8\")"},{"new":649,"old":null,"op":"+","text":"        row = report[\"invitations\"][0]"},{"new":650,"old":null,"op":"+","text":"        assert row[\"date_added\"] == created_at"},{"new":651,"old":null,"op":"+","text":"        assert row[\"date_added_source\"] == {"},{"new":652,"old":null,"op":"+","text":"            \"prospect_id\": \"tracked-a\","},{"new":653,"old":null,"op":"+","text":"            \"source_ref\": \"prospects.rows[0].created_at\","},{"new":654,"old":null,"op":"+","text":"            \"reason\": None,"},{"new":655,"old":null,"op":"+","text":"        }"},{"new":656,"old":null,"op":"+","text":"        markdown = markdown_path.read_text(encoding=\"utf-8\")"},{"new":657,"old":null,"op":"+","text":"        assert \"Synthetic Person\" in markdown"},{"new":658,"old":null,"op":"+","text":"        assert f\"Date added: {created_at}\" in markdown"},{"new":659,"old":null,"op":"+","text":"        assert \"source: prospects.rows[0].created_at; prospect: tracked-a; reason: none\" in markdown"},{"new":660,"old":646,"op":" ","text":"        assert not any(name in process.stdout for name in (\"Synthetic Person\", PROFILE_A))"},{"new":661,"old":null,"op":"+","text":"        digest_input = dict(report)"},{"new":662,"old":null,"op":"+","text":"        digest = digest_input.pop(\"output_digest\")"},{"new":663,"old":null,"op":"+","text":"        assert digest == hashlib.sha256("},{"new":664,"old":null,"op":"+","text":"            json.dumps(digest_input, ensure_ascii=False, sort_keys=True, separators=(\",\", \":\")).encode(\"utf-8\")"},{"new":665,"old":null,"op":"+","text":"        ).hexdigest()"},{"new":666,"old":null,"op":"+","text":""},{"new":667,"old":null,"op":"+","text":""},{"new":668,"old":null,"op":"+","text":"def test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking() -\u003e None:"},{"new":669,"old":null,"op":"+","text":"    \"\"\"An exact URL alias may enrich output, but its source time cannot affect selection.\"\"\""},{"new":670,"old":null,"op":"+","text":"    source = source_export()"},{"new":671,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""},{"new":672,"old":null,"op":"+","text":"    created_at = \"2026-09-30T14:12:13.123456+02:00\""},{"new":673,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"},{"new":674,"old":null,"op":"+","text":"    qualification_data = qualification()"},{"new":675,"old":null,"op":"+","text":"    qualification_data[\"candidates\"][0][\"date_added\"] = \"2099-01-01T00:00:00Z\""},{"new":676,"old":null,"op":"+","text":""},{"new":677,"old":null,"op":"+","text":"    result = run(source, qualification_data)"},{"new":678,"old":null,"op":"+","text":"    without_source_time = source_export()"},{"new":679,"old":null,"op":"+","text":"    without_source_time[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""},{"new":680,"old":null,"op":"+","text":"    baseline = run(without_source_time, qualification())"},{"new":681,"old":null,"op":"+","text":""},{"new":682,"old":null,"op":"+","text":"    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == ["},{"new":683,"old":null,"op":"+","text":"        item[\"profile_url\"] for item in baseline[\"invitations\"]"},{"new":684,"old":null,"op":"+","text":"    ]"},{"new":685,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"score\"] == baseline[\"invitations\"][0][\"score\"]"},{"new":686,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added\"] == created_at"},{"new":687,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added_source\"][\"prospect_id\"] == \"tracked-a\""},{"new":688,"old":null,"op":"+","text":""},{"new":689,"old":null,"op":"+","text":""},{"new":690,"old":null,"op":"+","text":"@pytest.mark.parametrize("},{"new":691,"old":null,"op":"+","text":"    (\"created_at\", \"reason\"),"},{"new":692,"old":null,"op":"+","text":"    ["},{"new":693,"old":null,"op":"+","text":"        (None, \"missing\"),"},{"new":694,"old":null,"op":"+","text":"        (42, \"invalid_timestamp\"),"},{"new":695,"old":null,"op":"+","text":"        (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"),"},{"new":696,"old":null,"op":"+","text":"        (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"),"},{"new":697,"old":null,"op":"+","text":"        (\"not-a-timestamp\", \"invalid_timestamp\"),"},{"new":698,"old":null,"op":"+","text":"        (\"2026-09-30T14:12:13\", \"invalid_timestamp\"),"},{"new":699,"old":null,"op":"+","text":"        (\"2026-10-03T00:00:00Z\", \"future_timestamp\"),"},{"new":700,"old":null,"op":"+","text":"    ],"},{"new":701,"old":null,"op":"+","text":")"},{"new":702,"old":null,"op":"+","text":"def test_invalid_or_future_date_added_stays_unknown_with_safe_pointer(created_at: Any, reason: str) -\u003e None:"},{"new":703,"old":null,"op":"+","text":"    \"\"\"Invalid values stay unknown and never leak their raw timestamp into output.\"\"\""},{"new":704,"old":null,"op":"+","text":"    source = source_export()"},{"new":705,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"},{"new":706,"old":null,"op":"+","text":""},{"new":707,"old":null,"op":"+","text":"    result = run(source, qualification())"},{"new":708,"old":null,"op":"+","text":"    row = result[\"invitations\"][0]"},{"new":709,"old":null,"op":"+","text":""},{"new":710,"old":null,"op":"+","text":"    assert row[\"date_added\"] is None"},{"new":711,"old":null,"op":"+","text":"    assert row[\"date_added_source\"] == {"},{"new":712,"old":null,"op":"+","text":"        \"prospect_id\": \"tracked-a\","},{"new":713,"old":null,"op":"+","text":"        \"source_ref\": \"prospects.rows[0].created_at\","},{"new":714,"old":null,"op":"+","text":"        \"reason\": reason,"},{"new":715,"old":null,"op":"+","text":"    }"},{"new":716,"old":null,"op":"+","text":"    assert str(created_at) not in json.dumps(row)"},{"new":717,"old":null,"op":"+","text":""},{"new":718,"old":null,"op":"+","text":""},{"new":719,"old":null,"op":"+","text":"def test_missing_date_added_stays_unknown_and_does_not_change_membership() -\u003e None:"},{"new":720,"old":null,"op":"+","text":"    \"\"\"A missing creation time is not inferred and cannot alter eligibility.\"\"\""},{"new":721,"old":null,"op":"+","text":"    source = source_export()"},{"new":722,"old":null,"op":"+","text":"    baseline = run(source, qualification())"},{"new":723,"old":null,"op":"+","text":"    expected_membership = [item[\"profile_url\"] for item in baseline[\"invitations\"]]"},{"new":724,"old":null,"op":"+","text":""},{"new":725,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0].pop(\"created_at\", None)"},{"new":726,"old":null,"op":"+","text":"    result = run(source, qualification())"},{"new":727,"old":null,"op":"+","text":""},{"new":728,"old":null,"op":"+","text":"    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == expected_membership"},{"new":729,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added\"] is None"},{"new":730,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added_source\"][\"reason\"] == \"missing\""},{"new":731,"old":647,"op":" ","text":""},{"new":732,"old":648,"op":" ","text":""},{"new":733,"old":649,"op":" ","text":"def test_cli_refuses_to_overwrite_existing_outputs() -\u003e None:"}],"new_start":646,"old_start":642}],"kind":"test","language":"python","path":"tests/e2e_invitation_shortlist.py","removed":2,"sensitive":null,"status":"modified","symbols":["tests/e2e_invitation_shortlist.py::qualification","tests/e2e_invitation_shortlist.py::run","tests/e2e_invitation_shortlist.py::source_export","tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout","tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership","tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm"]},{"added":6,"hunks":[{"lines":[{"new":65,"old":65,"op":" ","text":"            \"invalid canonical employer aliases left contradictory resolved audit entries\","},{"new":66,"old":66,"op":" ","text":"            \"distinct invalid employer identity keys collapsed without source pointers\","},{"new":67,"old":67,"op":" ","text":"            \"unpaired Unicode employer keys failed before unresolved queue recording\","},{"new":68,"old":null,"op":"+","text":"            \"report omitted a valid exact-profile prospect creation timestamp\","},{"new":69,"old":null,"op":"+","text":"            \"invalid or future creation timestamps were not withheld as unknown\","},{"new":70,"old":null,"op":"+","text":"            \"creation timestamp or qualification spoof changed ranking or membership\","},{"new":71,"old":null,"op":"+","text":"            \"private Markdown omitted creation-time provenance\","},{"new":72,"old":null,"op":"+","text":"            \"UTC conversion overflow aborted timestamp enrichment\","},{"new":73,"old":null,"op":"+","text":"            \"private Markdown omitted the creation-time prospect ID\","},{"new":74,"old":68,"op":" ","text":"            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","},{"new":75,"old":69,"op":" ","text":"            \"candidate qualification citation attested a different profile\","},{"new":76,"old":70,"op":" ","text":"        ],"}],"new_start":65,"old_start":65}],"kind":"test","language":"python","path":"tests/test_invitation_shortlist_e2e.py","removed":0,"sensitive":null,"status":"modified","symbols":["tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e"]}],"head_sha":"0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7","pr":"komaksym/linkedin-mdp#12","symbols":[{"added":0,"base_span":[61,85],"call_sites":1,"hunks":[],"id":"scripts/build_invitation_shortlist.py::main","kind":"function","path":"scripts/build_invitation_shortlist.py","qualname":"main","removed":0,"span":[61,85],"status":"context"},{"added":0,"base_span":[50,88],"call_sites":23,"hunks":[],"id":"src/linkedin_mdp_mcp/inbox_sync.py::normalize_profile_url","kind":"function","path":"src/linkedin_mdp_mcp/inbox_sync.py","qualname":"normalize_profile_url","removed":0,"span":[50,88],"status":"context"},{"added":38,"base_span":null,"call_sites":1,"hunks":[{"lines":[{"new":441,"old":null,"op":"+","text":"def _date_added("},{"new":442,"old":null,"op":"+","text":"    profile_url: str,"},{"new":443,"old":null,"op":"+","text":"    prospects: Sequence[Mapping[str, Any]],"},{"new":444,"old":null,"op":"+","text":"    now: datetime,"},{"new":445,"old":null,"op":"+","text":") -\u003e dict[str, Any]:"},{"new":446,"old":null,"op":"+","text":"    \"\"\"Enrich one report row from a unique exact-profile prospect creation timestamp.\"\"\""},{"new":447,"old":null,"op":"+","text":"    canonical_url = normalize_profile_url(profile_url)"},{"new":448,"old":null,"op":"+","text":"    matches = ["},{"new":449,"old":null,"op":"+","text":"        (index, row)"},{"new":450,"old":null,"op":"+","text":"        for index, row in enumerate(prospects)"},{"new":451,"old":null,"op":"+","text":"        if normalize_profile_url(row.get(\"linkedin_url\")) == canonical_url"},{"new":452,"old":null,"op":"+","text":"    ] if canonical_url else []"},{"new":453,"old":null,"op":"+","text":"    if len(matches) != 1:"},{"new":454,"old":null,"op":"+","text":"        reason = \"missing\" if not matches else \"source_identity_ambiguous\""},{"new":455,"old":null,"op":"+","text":"        return {"},{"new":456,"old":null,"op":"+","text":"            \"date_added\": None,"},{"new":457,"old":null,"op":"+","text":"            \"date_added_source\": {\"prospect_id\": None, \"source_ref\": None, \"reason\": reason},"},{"new":458,"old":null,"op":"+","text":"        }"},{"new":459,"old":null,"op":"+","text":""},{"new":460,"old":null,"op":"+","text":"    index, row = matches[0]"},{"new":461,"old":null,"op":"+","text":"    provenance = {"},{"new":462,"old":null,"op":"+","text":"        \"prospect_id\": row.get(\"id\"),"},{"new":463,"old":null,"op":"+","text":"        \"source_ref\": f\"prospects.rows[{index}].created_at\","},{"new":464,"old":null,"op":"+","text":"        \"reason\": None,"},{"new":465,"old":null,"op":"+","text":"    }"},{"new":466,"old":null,"op":"+","text":"    value = row.get(\"created_at\")"},{"new":467,"old":null,"op":"+","text":"    if value is None:"},{"new":468,"old":null,"op":"+","text":"        provenance[\"reason\"] = \"missing\""},{"new":469,"old":null,"op":"+","text":"        return {\"date_added\": None, \"date_added_source\": provenance}"},{"new":470,"old":null,"op":"+","text":"    try:"},{"new":471,"old":null,"op":"+","text":"        parsed = _timestamp(value, \"source_created_at_invalid\")"},{"new":472,"old":null,"op":"+","text":"    except (ShortlistInputError, OverflowError):"},{"new":473,"old":null,"op":"+","text":"        provenance[\"reason\"] = \"invalid_timestamp\""},{"new":474,"old":null,"op":"+","text":"        return {\"date_added\": None, \"date_added_source\": provenance}"},{"new":475,"old":null,"op":"+","text":"    if parsed \u003e now:"},{"new":476,"old":null,"op":"+","text":"        provenance[\"reason\"] = \"future_timestamp\""},{"new":477,"old":null,"op":"+","text":"        return {\"date_added\": None, \"date_added_source\": provenance}"},{"new":478,"old":null,"op":"+","text":"    return {\"date_added\": value, \"date_added_source\": provenance}"}],"new_start":441,"old_start":441}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_date_added","removed":0,"span":[441,478],"status":"added"},{"added":5,"base_span":[727,777],"call_sites":1,"hunks":[{"lines":[{"new":778,"old":738,"op":" ","text":"                f\"{item['role']} at {item['company_name']}. Priority score {item['score'] if item['score'] is not None else 'unknown'} ({item['score_version']}); this is not an acceptance probability.\","},{"new":779,"old":739,"op":" ","text":"                \"\","},{"new":780,"old":740,"op":" ","text":"                f\"Reason: {item['reason']}.\","},{"new":781,"old":null,"op":"+","text":"                \"\","},{"new":782,"old":null,"op":"+","text":"                f\"Date added: {item['date_added'] or 'unknown'} \""},{"new":783,"old":null,"op":"+","text":"                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""},{"new":784,"old":null,"op":"+","text":"                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""},{"new":785,"old":null,"op":"+","text":"                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","},{"new":786,"old":741,"op":" ","text":"                \"\","},{"new":787,"old":742,"op":" ","text":"                f\"Action: {item['action']}.\","},{"new":788,"old":743,"op":" ","text":"                \"\","}],"new_start":778,"old_start":738}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_make_markdown","removed":0,"span":[767,822],"status":"modified"},{"added":0,"base_span":[136,146],"call_sites":5,"hunks":[],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_timestamp","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_timestamp","removed":0,"span":[136,146],"status":"context"},{"added":2,"base_span":[816,1028],"call_sites":3,"hunks":[{"lines":[{"new":1027,"old":982,"op":" ","text":"        slots = remaining_slots"},{"new":1028,"old":983,"op":" ","text":"    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"},{"new":1029,"old":984,"op":" ","text":"    rows_out = [_candidate_json(item) for item in selected]"},{"new":1030,"old":null,"op":"+","text":"    for row in rows_out:"},{"new":1031,"old":null,"op":"+","text":"        row.update(_date_added(row[\"profile_url\"], prospects, now))"},{"new":1032,"old":985,"op":" ","text":"    company_usage: dict[str, dict[str, Any]] = {}"},{"new":1033,"old":986,"op":" ","text":"    for company_id in sorted(registry):"},{"new":1034,"old":987,"op":" ","text":"        usage: dict[str, Any] = {"}],"new_start":1027,"old_start":982}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"build_invitation_shortlist","removed":0,"span":[861,1075],"status":"modified"},{"added":0,"base_span":[94,117],"call_sites":57,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::qualification","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"qualification","removed":0,"span":[95,118],"status":"context"},{"added":0,"base_span":[157,159],"call_sites":54,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::run","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"run","removed":0,"span":[158,160],"status":"context"},{"added":0,"base_span":[47,91],"call_sites":56,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::source_export","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"source_export","removed":0,"span":[48,92],"status":"context"},{"added":20,"base_span":[612,646],"call_sites":0,"hunks":[{"lines":[{"new":617,"old":616,"op":" ","text":"        source_path = temp_path / \"source.json\""},{"new":618,"old":617,"op":" ","text":"        qualification_path = temp_path / \"qualification.json\""},{"new":619,"old":618,"op":" ","text":"        output_path = temp_path / \"out\""},{"new":null,"old":619,"op":"-","text":"        source_path.write_text(json.dumps(source_export()), encoding=\"utf-8\")"},{"new":620,"old":null,"op":"+","text":"        source = source_export()"},{"new":621,"old":null,"op":"+","text":"        created_at = \"2026-09-30T14:12:13.123456+02:00\""},{"new":622,"old":null,"op":"+","text":"        source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"},{"new":623,"old":null,"op":"+","text":"        source_path.write_text(json.dumps(source), encoding=\"utf-8\")"},{"new":624,"old":620,"op":" ","text":"        qualification_path.write_text(json.dumps(qualification()), encoding=\"utf-8\")"},{"new":625,"old":621,"op":" ","text":"        os.chmod(source_path, 0o600)"},{"new":626,"old":622,"op":" ","text":"        os.chmod(qualification_path, 0o600)"}],"new_start":617,"old_start":616},{"lines":[{"new":646,"old":642,"op":" ","text":"        assert stat.S_IMODE(markdown_path.stat().st_mode) == 0o600"},{"new":647,"old":643,"op":" ","text":"        report = json.loads(report_path.read_text(encoding=\"utf-8\"))"},{"new":648,"old":644,"op":" ","text":"        assert report[\"invitations\"][0][\"profile_url\"] == PROFILE_A"},{"new":null,"old":645,"op":"-","text":"        assert \"Synthetic Person\" in markdown_path.read_text(encoding=\"utf-8\")"},{"new":649,"old":null,"op":"+","text":"        row = report[\"invitations\"][0]"},{"new":650,"old":null,"op":"+","text":"        assert row[\"date_added\"] == created_at"},{"new":651,"old":null,"op":"+","text":"        assert row[\"date_added_source\"] == {"},{"new":652,"old":null,"op":"+","text":"            \"prospect_id\": \"tracked-a\","},{"new":653,"old":null,"op":"+","text":"            \"source_ref\": \"prospects.rows[0].created_at\","},{"new":654,"old":null,"op":"+","text":"            \"reason\": None,"},{"new":655,"old":null,"op":"+","text":"        }"},{"new":656,"old":null,"op":"+","text":"        markdown = markdown_path.read_text(encoding=\"utf-8\")"},{"new":657,"old":null,"op":"+","text":"        assert \"Synthetic Person\" in markdown"},{"new":658,"old":null,"op":"+","text":"        assert f\"Date added: {created_at}\" in markdown"},{"new":659,"old":null,"op":"+","text":"        assert \"source: prospects.rows[0].created_at; prospect: tracked-a; reason: none\" in markdown"},{"new":660,"old":646,"op":" ","text":"        assert not any(name in process.stdout for name in (\"Synthetic Person\", PROFILE_A))"},{"new":661,"old":null,"op":"+","text":"        digest_input = dict(report)"},{"new":662,"old":null,"op":"+","text":"        digest = digest_input.pop(\"output_digest\")"},{"new":663,"old":null,"op":"+","text":"        assert digest == hashlib.sha256("},{"new":664,"old":null,"op":"+","text":"            json.dumps(digest_input, ensure_ascii=False, sort_keys=True, separators=(\",\", \":\")).encode(\"utf-8\")"},{"new":665,"old":null,"op":"+","text":"        ).hexdigest()"}],"new_start":646,"old_start":642}],"id":"tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_cli_writes_private_outputs_and_sanitized_stdout","removed":2,"span":[613,665],"status":"modified"},{"added":20,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":668,"old":null,"op":"+","text":"def test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking() -\u003e None:"},{"new":669,"old":null,"op":"+","text":"    \"\"\"An exact URL alias may enrich output, but its source time cannot affect selection.\"\"\""},{"new":670,"old":null,"op":"+","text":"    source = source_export()"},{"new":671,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""},{"new":672,"old":null,"op":"+","text":"    created_at = \"2026-09-30T14:12:13.123456+02:00\""},{"new":673,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"},{"new":674,"old":null,"op":"+","text":"    qualification_data = qualification()"},{"new":675,"old":null,"op":"+","text":"    qualification_data[\"candidates\"][0][\"date_added\"] = \"2099-01-01T00:00:00Z\""},{"new":676,"old":null,"op":"+","text":""},{"new":677,"old":null,"op":"+","text":"    result = run(source, qualification_data)"},{"new":678,"old":null,"op":"+","text":"    without_source_time = source_export()"},{"new":679,"old":null,"op":"+","text":"    without_source_time[\"prospects\"][\"rows\"][0][\"linkedin_url\"] = \"https://linkedin.com/in/person-a/\""},{"new":680,"old":null,"op":"+","text":"    baseline = run(without_source_time, qualification())"},{"new":681,"old":null,"op":"+","text":""},{"new":682,"old":null,"op":"+","text":"    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == ["},{"new":683,"old":null,"op":"+","text":"        item[\"profile_url\"] for item in baseline[\"invitations\"]"},{"new":684,"old":null,"op":"+","text":"    ]"},{"new":685,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"score\"] == baseline[\"invitations\"][0][\"score\"]"},{"new":686,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added\"] == created_at"},{"new":687,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added_source\"][\"prospect_id\"] == \"tracked-a\""}],"new_start":668,"old_start":647}],"id":"tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","removed":0,"span":[668,687],"status":"added"},{"added":27,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":690,"old":null,"op":"+","text":"@pytest.mark.parametrize("},{"new":691,"old":null,"op":"+","text":"    (\"created_at\", \"reason\"),"},{"new":692,"old":null,"op":"+","text":"    ["},{"new":693,"old":null,"op":"+","text":"        (None, \"missing\"),"},{"new":694,"old":null,"op":"+","text":"        (42, \"invalid_timestamp\"),"},{"new":695,"old":null,"op":"+","text":"        (\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\"),"},{"new":696,"old":null,"op":"+","text":"        (\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\"),"},{"new":697,"old":null,"op":"+","text":"        (\"not-a-timestamp\", \"invalid_timestamp\"),"},{"new":698,"old":null,"op":"+","text":"        (\"2026-09-30T14:12:13\", \"invalid_timestamp\"),"},{"new":699,"old":null,"op":"+","text":"        (\"2026-10-03T00:00:00Z\", \"future_timestamp\"),"},{"new":700,"old":null,"op":"+","text":"    ],"},{"new":701,"old":null,"op":"+","text":")"},{"new":702,"old":null,"op":"+","text":"def test_invalid_or_future_date_added_stays_unknown_with_safe_pointer(created_at: Any, reason: str) -\u003e None:"},{"new":703,"old":null,"op":"+","text":"    \"\"\"Invalid values stay unknown and never leak their raw timestamp into output.\"\"\""},{"new":704,"old":null,"op":"+","text":"    source = source_export()"},{"new":705,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0][\"created_at\"] = created_at"},{"new":706,"old":null,"op":"+","text":""},{"new":707,"old":null,"op":"+","text":"    result = run(source, qualification())"},{"new":708,"old":null,"op":"+","text":"    row = result[\"invitations\"][0]"},{"new":709,"old":null,"op":"+","text":""},{"new":710,"old":null,"op":"+","text":"    assert row[\"date_added\"] is None"},{"new":711,"old":null,"op":"+","text":"    assert row[\"date_added_source\"] == {"},{"new":712,"old":null,"op":"+","text":"        \"prospect_id\": \"tracked-a\","},{"new":713,"old":null,"op":"+","text":"        \"source_ref\": \"prospects.rows[0].created_at\","},{"new":714,"old":null,"op":"+","text":"        \"reason\": reason,"},{"new":715,"old":null,"op":"+","text":"    }"},{"new":716,"old":null,"op":"+","text":"    assert str(created_at) not in json.dumps(row)"}],"new_start":690,"old_start":647}],"id":"tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","removed":0,"span":[690,716],"status":"added"},{"added":12,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":719,"old":null,"op":"+","text":"def test_missing_date_added_stays_unknown_and_does_not_change_membership() -\u003e None:"},{"new":720,"old":null,"op":"+","text":"    \"\"\"A missing creation time is not inferred and cannot alter eligibility.\"\"\""},{"new":721,"old":null,"op":"+","text":"    source = source_export()"},{"new":722,"old":null,"op":"+","text":"    baseline = run(source, qualification())"},{"new":723,"old":null,"op":"+","text":"    expected_membership = [item[\"profile_url\"] for item in baseline[\"invitations\"]]"},{"new":724,"old":null,"op":"+","text":""},{"new":725,"old":null,"op":"+","text":"    source[\"prospects\"][\"rows\"][0].pop(\"created_at\", None)"},{"new":726,"old":null,"op":"+","text":"    result = run(source, qualification())"},{"new":727,"old":null,"op":"+","text":""},{"new":728,"old":null,"op":"+","text":"    assert [item[\"profile_url\"] for item in result[\"invitations\"]] == expected_membership"},{"new":729,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added\"] is None"},{"new":730,"old":null,"op":"+","text":"    assert result[\"invitations\"][0][\"date_added_source\"][\"reason\"] == \"missing\""}],"new_start":719,"old_start":647}],"id":"tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_missing_date_added_stays_unknown_and_does_not_change_membership","removed":0,"span":[719,730],"status":"added"},{"added":0,"base_span":[578,581],"call_sites":0,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_real_cap_policy_is_explicit_and_never_defaults_to_crm","removed":0,"span":[579,582],"status":"context"},{"added":6,"base_span":[14,76],"call_sites":0,"hunks":[{"lines":[{"new":65,"old":65,"op":" ","text":"            \"invalid canonical employer aliases left contradictory resolved audit entries\","},{"new":66,"old":66,"op":" ","text":"            \"distinct invalid employer identity keys collapsed without source pointers\","},{"new":67,"old":67,"op":" ","text":"            \"unpaired Unicode employer keys failed before unresolved queue recording\","},{"new":68,"old":null,"op":"+","text":"            \"report omitted a valid exact-profile prospect creation timestamp\","},{"new":69,"old":null,"op":"+","text":"            \"invalid or future creation timestamps were not withheld as unknown\","},{"new":70,"old":null,"op":"+","text":"            \"creation timestamp or qualification spoof changed ranking or membership\","},{"new":71,"old":null,"op":"+","text":"            \"private Markdown omitted creation-time provenance\","},{"new":72,"old":null,"op":"+","text":"            \"UTC conversion overflow aborted timestamp enrichment\","},{"new":73,"old":null,"op":"+","text":"            \"private Markdown omitted the creation-time prospect ID\","},{"new":74,"old":68,"op":" ","text":"            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","},{"new":75,"old":69,"op":" ","text":"            \"candidate qualification citation attested a different profile\","},{"new":76,"old":70,"op":" ","text":"        ],"}],"new_start":65,"old_start":65}],"id":"tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e","kind":"function","path":"tests/test_invitation_shortlist_e2e.py","qualname":"test_invitation_shortlist_e2e","removed":0,"span":[14,82],"status":"modified"}],"title":"feat(report): show date added","tour":[{"focus":[],"kind":"overview","via":null},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"],"kind":"entry","via":null},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"],"kind":"entry","via":null},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added"],"kind":"callee","via":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"},{"focus":["tests/e2e_invitation_shortlist.py::test_cli_writes_private_outputs_and_sanitized_stdout","tests/e2e_invitation_shortlist.py::test_date_added_uses_exact_canonical_source_match_and_never_changes_ranking","tests/e2e_invitation_shortlist.py::test_invalid_or_future_date_added_stays_unknown_with_safe_pointer","tests/e2e_invitation_shortlist.py::test_missing_date_added_stays_unknown_and_does_not_change_membership","tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e"],"kind":"test","via":null},{"focus":[],"kind":"summary","via":null}],"url":"https://github.com/komaksym/linkedin-mdp/pull/12"}</script><script>const LAYOUT = {"w":1376,"h":720,"bands":[["files",24,24,1328,152],["callers",24,192,272,232],["changed",376,192,624,232],["callees",1080,192,272,232],["tests",24,464,1328,232]],"symbols":[["callers",40,288,240,56],["callees",1096,256,240,56],["changed",744,280,240,80],["changed",392,232,240,80],["callees",1096,328,240,56],["changed",392,328,240,80],["tests",568,504,240,80],["tests",40,504,240,80],["tests",832,504,240,80],["tests",1096,504,240,80],["tests",40,600,240,80],["tests",304,600,240,80],["tests",568,600,240,80],["tests",304,504,240,80],["tests",832,600,240,80]],"files":[["files",40,64,128,40],["files",184,64,320,40],["files",520,64,344,40],["files",880,64,232,40],["files",1128,64,144,40],["files",40,120,168,40],["files",224,120,272,40],["files",512,120,128,40],["files",656,120,216,40],null,null,null],"groups":[],"dense":false,"edges":["M280 310.4C336 310.4 336 272 392 272","M280 321.6C336 321.6 336 356 392 356","M984 312C1040 312 1040 278.4 1096 278.4","M984 328C1040 328 1040 350.4 1096 350.4","M632 356C682 356 682 372 732 372C864 372 864 372 996 372C1046 372 1046 289.6 1096 289.6","M632 368C688 368 688 320 744 320","M632 380C682 380 682 372 732 372C864 372 864 372 996 372C1046 372 1046 361.6 1096 361.6","M40 544C34 544 28 538 28 532C28 512 28 512 28 492C28 456 368 456 368 420C368 406 368 406 368 392C368 380 380 368 392 368","M1192 504C1192 492 1076.8 480 961.6 480C846.4 480 731.2 492 731.2 504","M1240 504C1240 492 1178.8 480 1117.6 480C1056.4 480 995.2 492 995.2 504","M160 600C160 540 281.2 480 402.4 480C523.6 480 644.8 492 644.8 504","M124 600C124 540 124 480 124 480C124 480 124 492 124 504","M196 600C196 540 374.2 480 552.4 480C730.6 480 908.8 492 908.8 504","M424 600C424 540 486.4 480 548.8 480C611.2 480 673.6 492 673.6 504","M388 600C388 540 331 480 274 480C217 480 160 492 160 504","M460 600C460 540 579.4 480 698.8 480C818.2 480 937.6 492 937.6 504","M688 600C688 540 691.6 480 695.2 480C698.8 480 702.4 492 702.4 504","M652 600C652 540 538 480 424 480C310 480 196 492 196 504","M724 600C724 540 784.6 480 845.2 480C905.8 480 966.4 492 966.4 504","M304 544C298 544 292 538 292 532C292 512 292 512 292 492C292 456 376 456 376 420C376 412 376 412 376 404C376 392 384 380 392 380"],"folders":[],"folderInfo":[],"folderEdges":[]};
+(() => {
+  "use strict";
+
+  const MAP = JSON.parse(document.getElementById("map-data").textContent);
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const STATUSES = new Set(["added", "modified", "deleted", "context"]);
+  const EDGE_STATUSES = new Set(["added", "removed", "kept"]);
+  const GLYPH = { function: "f", method: "m", class: "C" };
+  const PILL = { added: "new", modified: "modified", deleted: "deleted" };
+  const LANE_LABEL = {
+    files: "Other changed files",
+    folders: "Folders",
+    callers: "Callers",
+    changed: "Changed code",
+    callees: "Callees",
+    tests: "Tests",
+  };
+  const MINUS = "\u2212";
+  const DOT = " \u00b7 ";
+  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6, folder: 3.2 };
+  const MAX_TOUR = 60;
+  const MIN_STEP = 1.6;
+  const MOVE = 1.0;
+  const DIM_NODE = 0.13;
+  const DIM_EDGE = 0.05;
+  const BEHIND_SUMMARY = 0.35;
+  const LEGIBLE = 0.55;
+  const NO_TEST = "no direct test";
+  const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const status = (s) => (STATUSES.has(s) ? s : "context");
+  const edgeStatus = (s) => (EDGE_STATUSES.has(s) ? s : "kept");
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const basename = (path) => path.slice(path.lastIndexOf("/") + 1) || path;
+
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function add(parent, ...children) {
+    for (const child of children) if (child) parent.appendChild(child);
+    return parent;
+  }
+
+  function svg(tag, cls) {
+    const node = document.createElementNS(SVGNS, tag);
+    if (cls) node.setAttribute("class", cls);
+    return node;
+  }
+
+  /* Model */
+
+  const nodes = [];
+  const symbolNode = new Map();
+  const fileNode = new Map();
+  const fileByPath = new Map(MAP.files.map((f) => [f.path, f]));
+  const briefFile = new Map(MAP.brief.files.map((f) => [f.path, f]));
+
+  MAP.symbols.forEach((sym, i) => {
+    const box = LAYOUT.symbols[i];
+    if (!box || symbolNode.has(sym.id)) return;
+    const node = {
+      key: `s${i}`, kind: "symbol", sym, status: status(sym.status), name: sym.qualname,
+      path: sym.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    symbolNode.set(sym.id, node);
+  });
+
+  MAP.files.forEach((file, i) => {
+    const box = LAYOUT.files[i];
+    if (!box || fileNode.has(file.path)) return;
+    const node = {
+      key: `f${i}`, kind: "file", file, status: file.status === "modified" ? "modified" : status(file.status),
+      name: basename(file.path), path: file.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    fileNode.set(file.path, node);
+  });
+
+  const edges = [];
+
+  const folderNodes = [];
+  const folderByIndex = new Map();
+
+  for (let i = 0; i < (LAYOUT.folders || []).length; i++) {
+    const box = LAYOUT.folders[i];
+    const info = (LAYOUT.folderInfo || [])[i];
+    if (!box || !info) continue;
+    const members = (info.members || [])
+      .map((si) => symbolNode.get((MAP.symbols[si] || {}).id))
+      .filter(Boolean);
+    const folder = {
+      key: `g${i}`, index: i, info, members,
+      x: box[1], y: box[2], w: box[3], h: box[4],
+    };
+    folderNodes.push(folder);
+    folderByIndex.set(i, folder);
+  }
+
+  const grouped = folderNodes.length > 0;
+
+  MAP.edges.forEach((edge, i) => {
+    const src = symbolNode.get(edge.source);
+    const dst = symbolNode.get(edge.target);
+    const route = LAYOUT.edges[i];
+    if (!src || !dst || typeof route !== "string") return;
+    const item = { key: `e${i}`, src, dst, route, status: edgeStatus(edge.status), byName: edge.resolution === "name" };
+    edges.push(item);
+    src.out.push(item);
+    dst.in.push(item);
+    src.near.add(dst);
+    dst.near.add(src);
+  });
+
+  const isTest = (node) => node.lane === "tests";
+  const live = (edge) => edge.status !== "removed";
+
+  for (const node of nodes) {
+    node.untested =
+      node.lane === "changed" && node.status !== "deleted" && !node.in.some((e) => isTest(e.src) && live(e));
+  }
+
+  const changed = nodes.filter((n) => n.kind === "symbol" && n.status !== "context");
+  const changedCode = changed.filter((n) => n.lane === "changed");
+  const testsTouched = changed.filter(isTest);
+  const untested = changedCode.filter((n) => n.untested);
+  const callSites = changedCode.reduce((sum, n) => sum + (n.sym.call_sites || 0), 0);
+  const added = edges.filter((e) => e.status === "added").length;
+  const removed = edges.filter((e) => e.status === "removed").length;
+  const risky = MAP.brief.files.filter((f) => f.sensitive);
+
+  function ciState() {
+    const checks = MAP.brief.checks;
+    const failed = checks.filter((c) => c.state === "failed");
+    if (!checks.length) return { cls: "none", label: "no CI", word: "none" };
+    if (failed.length) return { cls: "bad", label: "CI failed", word: "failed", failed };
+    if (checks.some((c) => c.state === "pending")) return { cls: "warn", label: "CI pending", word: "pending" };
+    return { cls: "good", label: "CI passed", word: "passed" };
+  }
+
+  const ci = ciState();
+
+  /* Header */
+
+  document.title = `${MAP.title} \u00b7 PR map`;
+  $("title").textContent = MAP.title;
+
+  (() => {
+    const meta = $("meta");
+    const sep = () => el("span", "sep", "\u00b7");
+    add(meta, sep(), el("span", "", MAP.pr), sep(), el("span", "", `by ${MAP.author}`), sep(),
+      el("span", "mono", `${MAP.base_sha.slice(0, 7)} \u2192 ${MAP.head_sha.slice(0, 7)}`));
+    if (typeof MAP.url === "string" && GITHUB_PR.test(MAP.url)) {
+      const link = el("a", "", "Open on GitHub");
+      link.setAttribute("href", MAP.url);
+      link.setAttribute("rel", "noopener noreferrer");
+      link.setAttribute("target", "_blank");
+      add(meta, sep(), link);
+    }
+
+    const stats = $("stats");
+    const stat = (value, label, cls, dot) => {
+      const box = el("div", `stat ${cls || ""}`);
+      const val = el("div", "stat-value");
+      if (dot) val.appendChild(el("span", "dot"));
+      val.appendChild(el("span", "", value));
+      return add(box, val, el("div", "stat-label", label));
+    };
+    add(stats,
+      stat(MAP.files.length, MAP.files.length === 1 ? "file" : "files"),
+      stat(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      stat(callSites, "call sites affected"),
+      stat(testsTouched.length, testsTouched.length === 1 ? "test touched" : "tests touched",
+        testsTouched.length ? "" : "warn"),
+      stat(ci.word, "CI on head", ci.cls, true),
+      stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
+  })();
+
+  /* Canvas */
+
+  const viewport = $("viewport");
+  const world = $("world");
+  world.style.width = `${LAYOUT.w}px`;
+  world.style.height = `${LAYOUT.h}px`;
+
+  if (LAYOUT.dense) world.classList.add("dense");
+  if (grouped) world.classList.add("grouped");
+
+  for (const band of LAYOUT.bands) {
+    const box = el("div", "band");
+    box.style.left = `${band[1]}px`;
+    box.style.top = `${band[2]}px`;
+    box.style.width = `${band[3]}px`;
+    box.style.height = `${band[4]}px`;
+    box.appendChild(el("div", "band-label", LANE_LABEL[band[0]] || ""));
+    world.appendChild(box);
+  }
+
+  for (const group of LAYOUT.groups) {
+    const sym = MAP.symbols[group[5]];
+    if (!sym) continue;
+    const label = add(el("div", "group"), el("span", "", sym.path));
+    label.style.left = `${group[1]}px`;
+    label.style.top = `${group[2]}px`;
+    label.style.width = `${group[3]}px`;
+    label.style.height = `${group[4]}px`;
+    label.setAttribute("title", sym.path);
+    world.appendChild(label);
+  }
+
+  if (!MAP.symbols.length) {
+    viewport.appendChild(el("div", "empty", "No function or class changed in a parsed file."));
+  }
+
+  const edgeLayer = svg("svg", "edges");
+  edgeLayer.setAttribute("width", String(LAYOUT.w));
+  edgeLayer.setAttribute("height", String(LAYOUT.h));
+  edgeLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+  const defs = svg("defs");
+
+  for (const kind of EDGE_STATUSES) {
+    const marker = svg("marker");
+    marker.setAttribute("id", `arrow-${kind}`);
+    marker.setAttribute("viewBox", "0 0 10 10");
+    marker.setAttribute("refX", "9");
+    marker.setAttribute("refY", "5");
+    marker.setAttribute("markerWidth", "8");
+    marker.setAttribute("markerHeight", "8");
+    marker.setAttribute("markerUnits", "userSpaceOnUse");
+    marker.setAttribute("orient", "auto");
+    const tip = svg("path", `arrow-${kind}`);
+    tip.setAttribute("d", "M1 1L9 5L1 9z");
+    marker.appendChild(tip);
+    defs.appendChild(marker);
+  }
+
+  edgeLayer.appendChild(defs);
+  world.appendChild(edgeLayer);
+
+  function folderPath(p, q, across) {
+    const bend = across ? Math.max(24, Math.abs(q[0] - p[0]) / 2) : 0;
+    const drop = across ? 0 : Math.max(24, Math.abs(q[1] - p[1]) / 2);
+    const r = (v) => Math.round(v * 10) / 10;
+    return `M${r(p[0])} ${r(p[1])}C${r(p[0] + bend)} ${r(p[1] + drop)} ` +
+      `${r(q[0] - bend)} ${r(q[1] - drop)} ${r(q[0])} ${r(q[1])}`;
+  }
+
+  function folderPorts(a, b) {
+    if (a.x + a.w <= b.x) return [[a.x + a.w, a.y + a.h / 2], [b.x, b.y + b.h / 2], true];
+    if (b.x + b.w <= a.x) return [[a.x, a.y + a.h / 2], [b.x + b.w, b.y + b.h / 2], true];
+    if (a.y + a.h <= b.y) return [[a.x + a.w / 2, a.y + a.h], [b.x + b.w / 2, b.y], false];
+    if (b.y + b.h <= a.y) return [[a.x + a.w / 2, a.y], [b.x + b.w / 2, b.y + b.h], false];
+    return [[a.x + a.w / 2, a.y + a.h / 2], [b.x + b.w / 2, b.y + b.h / 2], true];
+  }
+
+  if (grouped) {
+    const folderLayer = svg("svg", "fedges");
+    folderLayer.setAttribute("width", String(LAYOUT.w));
+    folderLayer.setAttribute("height", String(LAYOUT.h));
+    folderLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+    world.appendChild(folderLayer);
+
+    for (const [a, b, count, raw] of (LAYOUT.folderEdges || [])) {
+      const from = folderByIndex.get(a);
+      const to = folderByIndex.get(b);
+      if (!from || !to) continue;
+      const st = edgeStatus(raw);
+      const [p, q, across] = folderPorts(from, to);
+      const line = svg("path", `ge ge-${st}`);
+      line.setAttribute("d", folderPath(p, q, across));
+      line.setAttribute("marker-end", `url(#arrow-${st})`);
+      line.setAttribute("data-folder-edge", `${from.key}-${to.key}`);
+      line.setAttribute("data-count", String(count));
+      line.setAttribute("stroke-width", String(Math.min(10, Math.round((1.5 + 2 * Math.sqrt(count)) * 10) / 10)));
+      folderLayer.appendChild(line);
+    }
+  }
+
+  const round = (v) => Math.round(v * 10) / 10;
+
+  const drawOrder = { kept: 0, removed: 1, added: 2 };
+
+  for (const edge of [...edges].sort((p, q) => drawOrder[p.status] - drawOrder[q.status])) {
+    const path = svg("path", `e e-${edge.status}${edge.byName ? " e-name" : ""}`);
+    path.setAttribute("d", edge.route);
+    path.setAttribute("marker-end", `url(#arrow-${edge.status})`);
+    path.setAttribute("data-edge", edge.key);
+    edge.el = path;
+    edgeLayer.appendChild(path);
+  }
+
+  function pathLine(path) {
+    const box = el("div", "path");
+    box.appendChild(el("span", "", path));
+    return box;
+  }
+
+  function rowCard(node) {
+    add(node.el, el("div", "bar"), el("span", "glyph", GLYPH[node.sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) node.el.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.untested) node.el.appendChild(el("span", "flag", "!"));
+    node.el.setAttribute("title", node.untested ? `${node.name} · ${NO_TEST}` : node.name);
+  }
+
+  function symbolCard(node) {
+    if (LAYOUT.dense) return rowCard(node);
+    const sym = node.sym;
+    const card = node.el;
+    const head = el("div", "n-row");
+    add(head, el("span", "glyph", GLYPH[sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) head.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.status === "context") {
+      const sub = add(el("div", "n-row"), pathLine(node.path));
+      if (sym.call_sites) sub.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+      add(card, el("div", "bar"), head, sub);
+      return;
+    }
+    add(card, el("div", "bar"), head, pathLine(node.path));
+    const foot = el("div", "n-foot");
+    const delta = el("span", "delta");
+    add(delta, el("span", "plus", `+${sym.added}`), document.createTextNode(" "), el("span", "minus", `${MINUS}${sym.removed}`));
+    add(foot, delta);
+    if (node.status !== "deleted" && !isTest(node)) foot.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+    if (node.untested) foot.appendChild(el("span", "badge", NO_TEST));
+    card.appendChild(foot);
+  }
+
+  function fileCard(node) {
+    const card = node.el;
+    add(card, el("div", "bar"), el("span", "name", node.name));
+    if (node.file.sensitive) card.appendChild(el("span", "risk", node.file.sensitive));
+    card.setAttribute("title", node.path);
+  }
+
+  const expanded = new Set();
+  const memberFolder = new Map();
+
+  for (const folder of folderNodes) {
+    for (const member of folder.members) memberFolder.set(member, folder.index);
+  }
+
+  function countsLine(info) {
+    return `${info.added} added${DOT}${info.modified} modified${DOT}` +
+      `${info.deleted} deleted${DOT}${info.tests} tests`;
+  }
+
+  function folderBounds() {
+    return bounds(folderNodes);
+  }
+
+  function applyConceal() {
+    for (const [member, fi] of memberFolder) {
+      member.el.classList.toggle("concealed", !expanded.has(fi));
+    }
+    for (const folder of folderNodes) {
+      const open = expanded.has(folder.index);
+      folder.el.classList.toggle("open", open);
+      folder.el.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+  }
+
+  function toggleFolder(folder) {
+    if (touring) exitTour();
+    if (expanded.has(folder.index)) expanded.delete(folder.index);
+    else expanded.add(folder.index);
+    applyConceal();
+    flyTo(fitTo(
+      expanded.has(folder.index) ? bounds([...folder.members, ...folderNodes]) : folderBounds(),
+      viewArea(),
+      1.25,
+    ));
+  }
+
+  function collapseAll() {
+    expanded.clear();
+    applyConceal();
+    userMoved = false;
+    flyTo(fitTo(folderBounds(), viewArea(), 1.1));
+  }
+
+  for (const folder of folderNodes) {
+    const card = el("button", "fcard");
+    card.setAttribute("data-folder", folder.key);
+    card.setAttribute("type", "button");
+    card.setAttribute("aria-expanded", "false");
+    card.setAttribute("title", folder.info.label);
+    card.style.left = `${folder.x}px`;
+    card.style.top = `${folder.y}px`;
+    card.style.width = `${folder.w}px`;
+    card.style.height = `${folder.h}px`;
+    add(card, el("div", "f-name", folder.info.label), el("div", "f-counts", countsLine(folder.info)));
+    const list = el("div", "flist");
+    for (const member of folder.members) {
+      const row = el("button", `fmem st-${member.status}`);
+      row.setAttribute("type", "button");
+      add(row, el("span", "fmem-name", member.name), el("span", "fmem-tag", member.status));
+      row.addEventListener("click", (event) => {
+        event.stopPropagation();
+        select(member, true);
+      });
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    card.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (!dragged) toggleFolder(folder);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      toggleFolder(folder);
+    });
+    folder.el = card;
+    world.appendChild(card);
+  }
+
+  for (const node of nodes) {
+    const card = el("div", `node ${node.kind === "file" ? "chip" : "sym"} st-${node.status}`);
+    card.setAttribute("data-node", node.key);
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.style.left = `${node.x}px`;
+    card.style.top = `${node.y}px`;
+    card.style.width = `${node.w}px`;
+    card.style.height = `${node.h}px`;
+    node.el = card;
+    if (node.kind === "symbol") symbolCard(node);
+    else fileCard(node);
+    world.appendChild(card);
+  }
+
+  if (grouped) applyConceal();
+
+  /* Camera */
+
+  const cam = { x: 0, y: 0, k: 1 };
+  const all = { x: 0, y: 0, w: LAYOUT.w, h: LAYOUT.h };
+  let userMoved = false;
+
+  function applyCamera() {
+    world.style.transform = `translate(${round(cam.x)}px, ${round(cam.y)}px) scale(${cam.k.toFixed(4)})`;
+    viewport.style.backgroundPosition = `${round(cam.x)}px ${round(cam.y)}px`;
+    viewport.style.backgroundSize = `${round(24 * cam.k)}px ${round(24 * cam.k)}px`;
+    world.classList.toggle("far", cam.k < 0.55);
+  }
+
+  function bounds(list) {
+    if (!list.length) return all;
+    const x = Math.min(...list.map((n) => n.x));
+    const y = Math.min(...list.map((n) => n.y));
+    return { x, y, w: Math.max(...list.map((n) => n.x + n.w)) - x, h: Math.max(...list.map((n) => n.y + n.h)) - y };
+  }
+
+  function fitTo(box, area, maxK) {
+    const pad = 32;
+    const k = clamp(Math.min(area.w / (box.w + 2 * pad), area.h / (box.h + 2 * pad)), 0.12, maxK);
+    return {
+      k,
+      x: area.x + area.w / 2 - (box.x + box.w / 2) * k,
+      y: area.y + area.h / 2 - (box.y + box.h / 2) * k,
+    };
+  }
+
+  function viewArea() {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const drawer = drawerOpen() ? Math.min(520, w * 0.92) : 0;
+    return { x: 16, y: 16, w: Math.max(200, w - 32 - drawer), h: Math.max(200, h - 88) };
+  }
+
+  function fit() {
+    Object.assign(cam, fitTo(all, viewArea(), 1.1));
+    applyCamera();
+  }
+
+  function open() {
+    if (grouped) {
+      Object.assign(cam, fitTo(folderBounds(), viewArea(), 1.1));
+      applyCamera();
+      return;
+    }
+    const area = viewArea();
+    const whole = fitTo(all, area, 1.1);
+    const band = LAYOUT.bands.find((b) => b[0] === "changed");
+    if (whole.k >= LEGIBLE || !band) {
+      Object.assign(cam, whole);
+    } else {
+      const box = { x: band[1], y: band[2], w: band[3], h: band[4] };
+      const lane = fitTo(box, area, 1.1);
+      if (lane.k >= LEGIBLE) Object.assign(cam, lane);
+      else Object.assign(cam, {
+        k: LEGIBLE,
+        x: box.w * LEGIBLE <= area.w ? area.x + area.w / 2 - (box.x + box.w / 2) * LEGIBLE : area.x - box.x * LEGIBLE,
+        y: area.y - box.y * LEGIBLE,
+      });
+    }
+    applyCamera();
+  }
+
+  let flight = 0;
+
+  function flyTo(target) {
+    const from = { ...cam };
+    const start = performance.now();
+    const id = ++flight;
+    const step = (now) => {
+      if (id !== flight) return;
+      const p = ease(clamp((now - start) / 420, 0, 1));
+      const k = from.k * Math.pow(target.k / from.k, p);
+      const cx = lerp(centreX(from), centreX(target), p);
+      const cy = lerp(centreY(from), centreY(target), p);
+      Object.assign(cam, { k, x: viewport.clientWidth / 2 - cx * k, y: viewport.clientHeight / 2 - cy * k });
+      applyCamera();
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const centreX = (c) => (viewport.clientWidth / 2 - c.x) / c.k;
+  const centreY = (c) => (viewport.clientHeight / 2 - c.y) / c.k;
+
+  function zoomAt(factor, sx, sy) {
+    const k = clamp(cam.k * factor, 0.12, 2.5);
+    cam.x = sx - ((sx - cam.x) * k) / cam.k;
+    cam.y = sy - ((sy - cam.y) * k) / cam.k;
+    cam.k = k;
+    userMoved = true;
+    applyCamera();
+  }
+
+  let drag = null;
+  let dragged = false;
+
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || $("drawer").contains(event.target) || event.target.closest(".zoom")) return;
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, cx: cam.x, cy: cam.y, captured: false };
+    dragged = false;
+  });
+
+  viewport.addEventListener("pointermove", (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.captured && Math.hypot(dx, dy) < 4) return;
+    if (!drag.captured) {
+      drag.captured = true;
+      dragged = true;
+      viewport.setPointerCapture(event.pointerId);
+      viewport.classList.add("dragging");
+      pause();
+    }
+    flight++;
+    cam.x = drag.cx + dx;
+    cam.y = drag.cy + dy;
+    userMoved = true;
+    applyCamera();
+  });
+
+  const endDrag = () => {
+    drag = null;
+    viewport.classList.remove("dragging");
+  };
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
+
+  viewport.addEventListener("wheel", (event) => {
+    if ($("drawer").contains(event.target)) return;
+    event.preventDefault();
+    flight++;
+    pause();
+    const rect = viewport.getBoundingClientRect();
+    if (event.ctrlKey || event.metaKey) {
+      zoomAt(Math.exp(-event.deltaY * 0.01), event.clientX - rect.left, event.clientY - rect.top);
+    } else {
+      cam.x -= event.deltaX;
+      cam.y -= event.deltaY;
+      userMoved = true;
+      applyCamera();
+    }
+  }, { passive: false });
+
+  viewport.addEventListener("click", (event) => {
+    if (dragged || touring) return;
+    if (event.target === viewport || event.target === world || event.target.classList.contains("band")) {
+      select(null);
+    }
+  });
+
+  $("zoom-in").addEventListener("click", () => zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-out").addEventListener("click", () => zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-fit").addEventListener("click", () => {
+    userMoved = false;
+    fit();
+  });
+
+  /* Hover and selection */
+
+  let selected = null;
+
+  function light(node) {
+    world.classList.toggle("hovering", Boolean(node));
+    for (const n of nodes) n.el.classList.toggle("lit", Boolean(node) && (n === node || node.near.has(n)));
+    for (const e of edges) e.el.classList.toggle("lit", Boolean(node) && (e.src === node || e.dst === node));
+  }
+
+  for (const node of nodes) {
+    node.el.addEventListener("pointerenter", () => {
+      if (!touring && !drag) light(node);
+    });
+    node.el.addEventListener("pointerleave", () => {
+      if (!touring) light(selected);
+    });
+    node.el.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      select(node);
+    });
+    node.el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (dragged) return;
+      select(node);
+    });
+  }
+
+  const drawer = $("drawer");
+  const drawerOpen = () => drawer.getAttribute("aria-hidden") === "false";
+
+  function select(node, centre) {
+    if (touring) exitTour();
+    if (selected) selected.el.classList.remove("selected");
+    selected = node;
+    light(node);
+    if (!node) {
+      drawer.setAttribute("aria-hidden", "true");
+      return;
+    }
+    node.el.classList.add("selected");
+    fillDrawer(node);
+    drawer.setAttribute("aria-hidden", "false");
+    if (centre) {
+      const area = viewArea();
+      const k = Math.max(cam.k, 0.8);
+      flyTo({ k, x: area.x + area.w / 2 - (node.x + node.w / 2) * k, y: area.y + area.h / 2 - (node.y + node.h / 2) * k });
+    }
+  }
+
+  function section(title, body) {
+    return add(el("section", "d-section"), el("h3", "d-title", title), body);
+  }
+
+  function diffView(hunks) {
+    if (!hunks.length) return el("div", "d-empty", "No line changes recorded for this item.");
+    const box = el("div", "diff");
+    const rows = el("div", "diff-rows");
+    for (const hunk of hunks) {
+      rows.appendChild(el("div", "hunk-head", `@@ ${MINUS}${hunk.old_start} +${hunk.new_start} @@`));
+      for (const line of hunk.lines) {
+        const kind = line.op === "+" ? "add" : line.op === "-" ? "del" : "ctx";
+        add(rows, add(el("div", `dl ${kind}`),
+          el("span", "ln", line.old === null ? "" : line.old),
+          el("span", "ln", line.new === null ? "" : line.new),
+          el("span", "sg", kind === "add" ? "+" : kind === "del" ? MINUS : ""),
+          el("span", "code", line.text)));
+      }
+    }
+    return add(box, rows);
+  }
+
+  const EDGE_TAG = { added: "new call", removed: "removed call", kept: "call" };
+
+  function linkList(items, empty) {
+    if (!items.length) return el("div", "d-empty", empty);
+    const list = el("div", "links");
+    for (const { node, tag, tagClass } of items) {
+      const row = el("button", `link st-${node.status}`);
+      row.setAttribute("type", "button");
+      const text = el("span", "link-text");
+      add(text, el("span", "link-name", node.name), el("span", "link-path", node.path));
+      add(row, el("span", "bar"), text, tag ? el("span", `etag ${tagClass || ""}`, tag) : null);
+      row.addEventListener("click", () => select(node, true));
+      list.appendChild(row);
+    }
+    return list;
+  }
+
+  const edgeItem = (edge, other) => ({
+    node: other,
+    tag: `${EDGE_TAG[edge.status]}${edge.byName ? " \u00b7 by name" : ""}`,
+    tagClass: edge.status,
+  });
+
+  function fillDrawer(node) {
+    drawer.replaceChildren();
+    drawer.className = `drawer st-${node.status}`;
+    const head = el("div", "d-head");
+    const tags = el("div", "d-tags");
+    if (PILL[node.status]) tags.appendChild(el("span", "pill", PILL[node.status]));
+    tags.appendChild(el("span", "d-kind", node.kind === "file" ? `${node.file.kind} file` : node.sym.kind));
+    const close = el("button", "d-close", "\u00d7");
+    close.setAttribute("type", "button");
+    close.setAttribute("aria-label", "Close");
+    close.addEventListener("click", () => select(null));
+    add(head, el("div", "bar"), tags, el("div", "d-name", node.kind === "file" ? node.path : node.name),
+      node.kind === "file" ? null : el("div", "d-path", node.path), close);
+
+    const facts = el("div", "d-facts");
+    const body = el("div", "d-body");
+
+    if (node.kind === "file") {
+      const file = node.file;
+      add(facts, el("span", "fact", `+${file.added} ${MINUS}${file.removed}`));
+      if (file.sensitive) facts.appendChild(el("span", "fact bad", file.sensitive));
+      const brief = briefFile.get(file.path);
+      if (file.sensitive && brief && !brief.named) facts.appendChild(el("span", "fact warn", "not mentioned in the description"));
+      if (file.language === null && file.kind === "code") facts.appendChild(el("span", "fact", "not parsed"));
+      add(body, section("Diff", diffView(file.hunks)));
+      const inside = file.symbols.map((id) => symbolNode.get(id)).filter(Boolean);
+      if (inside.length) body.appendChild(section("Symbols", linkList(inside.map((n) => ({ node: n })), "")));
+    } else {
+      const sym = node.sym;
+      if (node.status !== "context") add(facts, el("span", "fact", `+${sym.added} ${MINUS}${sym.removed}`));
+      facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
+      if (sym.span) facts.appendChild(el("span", "fact", `lines ${sym.span[0]}\u2013${sym.span[1]}`));
+      else if (sym.base_span) facts.appendChild(el("span", "fact", `was lines ${sym.base_span[0]}\u2013${sym.base_span[1]}`));
+      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no test in this map calls it`));
+      const callers = node.in.filter((e) => !isTest(e.src));
+      const tests = node.in.filter((e) => isTest(e.src));
+      add(body,
+        section("Diff", node.status === "context" ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.") : diffView(sym.hunks)),
+        section("Callers", linkList(callers.map((e) => edgeItem(e, e.src)), "No caller in the map.")),
+        section("Callees", linkList(node.out.map((e) => edgeItem(e, e.dst)), "Calls nothing in the map.")),
+        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test calls this directly.")));
+    }
+
+    head.appendChild(facts);
+    add(drawer, head, body);
+  }
+
+  /* Tour */
+
+  const names = (list) => {
+    const shown = list.slice(0, 2).map((n) => n.name);
+    return list.length > 2 ? `${shown.join(", ")} +${list.length - 2} more` : shown.join(" and ");
+  };
+
+  function focusNodes(ids) {
+    const found = [];
+    for (const id of ids) {
+      const node = symbolNode.get(id) || fileNode.get(id);
+      if (node) found.push(node);
+      else if (fileByPath.has(id)) {
+        for (const sid of fileByPath.get(id).symbols) if (symbolNode.has(sid)) found.push(symbolNode.get(sid));
+      }
+    }
+    return found;
+  }
+
+  function symbolFacts(node) {
+    const sym = node.sym;
+    const parts = [node.path, `+${sym.added} ${MINUS}${sym.removed}`];
+    if (node.status !== "deleted" && !isTest(node)) parts.push(plural(sym.call_sites, "call site", "call sites"));
+    if (node.untested) parts.push(NO_TEST);
+    return parts.join(DOT);
+  }
+
+  function describe(step, index, total) {
+    const count = `${index + 1} / ${total}`;
+    const focus = focusNodes(step.focus);
+    const node = focus[0];
+    const via = step.via ? symbolNode.get(step.via) : null;
+
+    if (step.kind === "overview") {
+      return {
+        kicker: "Overview", count, main: MAP.title,
+        sub: [plural(MAP.files.length, "file", "files"), plural(changed.length, "symbol changed", "symbols changed"),
+          plural(added, "call added", "calls added"), `${removed} removed`].join(DOT),
+      };
+    }
+
+    if (step.kind === "risky_file") {
+      const path = step.focus[0] || "";
+      const file = fileByPath.get(path);
+      const brief = briefFile.get(path);
+      const reason = (file && file.sensitive) || (brief && brief.sensitive) || "Sensitive file";
+      const unnamed = brief && !brief.named ? `${DOT}not mentioned in the description` : "";
+      return { kicker: "Risky surface", count, main: `${reason} changed${unnamed}`, sub: path };
+    }
+
+    if (step.kind === "summary") return { kicker: "Summary", count, main: "", sub: "" };
+
+    if (step.kind === "folder") {
+      const folder = folderByIndex.get(step.folder);
+      const info = folder ? folder.info : { added: 0, modified: 0, deleted: 0, tests: 0 };
+      return {
+        kicker: "Group", count, main: folder ? folder.info.label : "",
+        sub: [plural(focus.length, "symbol", "symbols"),
+          `${info.added} added`, `${info.modified} modified`,
+          `${info.deleted} deleted`, `${info.tests} tests`].join(DOT),
+      };
+    }
+
+    if (!node || node.kind !== "symbol") return { kicker: step.kind, count, main: step.focus.join(", "), sub: "" };
+
+    const word = node.sym.kind;
+    const name = node.name;
+
+    if (step.kind === "test") {
+      const targets = node.out.filter(live).map((e) => e.dst);
+      const covers = targets.length ? `${DOT}covers ${names(targets)}` : "";
+      const main = node.status === "added" ? `New test ${name}${covers}`
+        : node.status === "deleted" ? `Deleted test ${name}` : `Test ${name} changed${covers}`;
+      return { kicker: "Test", count, main, sub: symbolFacts(node) };
+    }
+
+    if (step.kind === "callee" && via) {
+      const link = node.in.find((e) => e.src === via);
+      let main;
+      if (node.status === "deleted") main = `Deleted ${name}${DOT}${via.name} no longer calls it`;
+      else if (node.status === "added") main = `New ${word} ${name}${DOT}called by ${via.name}`;
+      else if (link && link.status === "added") main = `${via.name} now calls ${name}`;
+      else if (link && link.status === "removed") main = `${via.name} no longer calls ${name}`;
+      else main = `${name} changed${DOT}called by ${via.name}`;
+      return { kicker: `Called from ${via.name}`, count, main, sub: symbolFacts(node) };
+    }
+
+    const callers = node.in.filter((e) => live(e) && !isTest(e.src)).map((e) => e.src);
+    let main;
+    if (node.status === "deleted") {
+      const former = node.in.filter((e) => !isTest(e.src)).map((e) => e.src);
+      main = `Deleted ${name}${former.length ? `${DOT}${names(former)} no longer ${former.length === 1 ? "calls" : "call"} it` : ""}`;
+    } else if (node.status === "added") {
+      main = `New ${word} ${name}${callers.length ? `${DOT}called by ${names(callers)}` : `${DOT}nothing calls it yet`}`;
+    } else {
+      main = `${name} changed${callers.length ? `${DOT}called by ${names(callers)}` : ""}`;
+    }
+    return { kicker: step.kind === "entry" ? "Entry point" : "Changed", count, main, sub: symbolFacts(node) };
+  }
+
+  const timeline = (() => {
+    const plan = grouped && MAP.tour.length >= 2 ? [
+      MAP.tour[0],
+      ...folderNodes.map((folder) => ({
+        kind: "folder",
+        folder: folder.index,
+        focus: folder.members.map((member) => member.sym.id),
+        via: null,
+      })),
+      ...MAP.tour.slice(1),
+    ] : MAP.tour;
+    const base = plan.map((s) => STEP_SECONDS[s.kind] || 3);
+    const fixed = plan.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
+    const middle = base.reduce((sum, v) => sum + v, 0) - fixed;
+    const scale = middle > 0 && fixed + middle > MAX_TOUR ? Math.max((MAX_TOUR - fixed) / middle, 0) : 1;
+    let start = 0;
+    return plan.map((step, i) => {
+      const plain = step.kind === "overview" || step.kind === "summary";
+      const duration = Math.round((plain ? base[i] : Math.max(base[i] * scale, MIN_STEP)) * 1000) / 1000;
+      const focus = focusNodes(step.focus);
+      const via = step.via ? symbolNode.get(step.via) : null;
+      const lit = new Set(focus);
+      if (via) lit.add(via);
+      if (step.kind !== "risky_file" && step.kind !== "folder") for (const n of focus) for (const m of n.near) lit.add(m);
+      const item = {
+        kind: step.kind, focus: step.focus, via: step.via, folder: step.folder ?? null,
+        start: Math.round(start * 1000) / 1000, duration,
+        caption: describe(step, i, plan.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
+      };
+      start += duration;
+      return item;
+    });
+  })();
+
+  const duration = Math.round(timeline.reduce((sum, s) => sum + s.duration, 0) * 1000) / 1000;
+
+  function tourCamera(step) {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const area = { x: 48, y: 32, w: Math.max(200, w - 96), h: Math.max(160, h - 32 - 176) };
+    if (step.folder !== undefined && step.folder !== null) {
+      const folder = folderByIndex.get(step.folder);
+      const box = folder
+        ? { x: folder.x - 16, y: folder.y - 16, w: folder.w + 32, h: folder.h + 32 }
+        : all;
+      return fitTo(box, area, 1.25);
+    }
+    if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
+    const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
+    const wide = fitTo(bounds([...step.lit]), area, 1.25);
+    return wide.k >= 0.62 ? wide : fitTo(bounds(core), area, 1.25);
+  }
+
+  let cameras = null;
+
+  function camerasFor() {
+    const size = `${viewport.clientWidth}x${viewport.clientHeight}`;
+    if (!cameras || cameras.size !== size) cameras = { size, list: timeline.map(tourCamera) };
+    return cameras.list;
+  }
+
+  const plainLevel = (step) => (step.kind === "summary" ? BEHIND_SUMMARY : 1);
+  const nodeLevel = (step, node) => (step.plain ? plainLevel(step) : step.lit.has(node) ? 1 : DIM_NODE);
+  const hidden = LAYOUT.dense ? 0 : DIM_EDGE;
+  const edgeLevel = (step, edge) => {
+    if (step.plain) return LAYOUT.dense ? 0 : plainLevel(step);
+    return step.nodes.includes(edge.src) || step.nodes.includes(edge.dst) ? 1 : hidden;
+  };
+
+  const caption = $("caption");
+  const summary = $("summary");
+  let captionFor = -1;
+
+  function fillCaption(index) {
+    if (captionFor === index) return;
+    captionFor = index;
+    const text = timeline[index].caption;
+    const kicker = add(el("div", "cap-kicker"), el("span", "", text.kicker), el("span", "cap-count", text.count));
+    caption.replaceChildren(kicker, el("div", "cap-main", text.main), el("div", "cap-sub", text.sub));
+  }
+
+  function fillSummary() {
+    summary.replaceChildren();
+    const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
+    const grid = add(el("div", "sum-grid"),
+      cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
+      cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
+      cell(callSites, "call sites affected"),
+      cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
+      cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
+    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
+    const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
+    const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+    add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
+      el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
+  }
+
+  fillSummary();
+
+  let touring = false;
+
+  function enterTour() {
+    if (touring) return;
+    select(null);
+    light(null);
+    touring = true;
+    document.body.classList.add("touring");
+  }
+
+  function exitTour() {
+    pause();
+    if (!touring) return;
+    touring = false;
+    document.body.classList.remove("touring");
+    for (const n of nodes) {
+      n.el.style.opacity = "";
+      n.el.classList.remove("focus");
+    }
+    for (const e of edges) {
+      e.el.style.opacity = "";
+      e.el.style.strokeDashoffset = "";
+    }
+    captionFor = -1;
+  }
+
+  function stepAt(t) {
+    let index = 0;
+    while (index + 1 < timeline.length && timeline[index + 1].start <= t) index++;
+    return index;
+  }
+
+  function seek(time) {
+    if (!timeline.length) return;
+    const t = clamp(Number(time) || 0, 0, duration);
+    enterTour();
+    const index = stepAt(t);
+    const step = timeline[index];
+    const prev = timeline[Math.max(index - 1, 0)];
+    const u = t - step.start;
+    const p = index === 0 ? 1 : ease(clamp(u / MOVE, 0, 1));
+    const cams = camerasFor();
+    const from = cams[Math.max(index - 1, 0)];
+    const to = cams[index];
+    const k = from.k * Math.pow(to.k / from.k, p);
+    const vw = viewport.clientWidth / 2;
+    const vh = viewport.clientHeight / 2;
+    const cx = lerp((vw - from.x) / from.k, (vw - to.x) / to.k, p);
+    const cy = lerp((vh - from.y) / from.k, (vh - to.y) / to.k, p);
+    Object.assign(cam, { k, x: vw - cx * k, y: vh - cy * k });
+    applyCamera();
+
+    for (const n of nodes) {
+      n.el.style.opacity = String(round(lerp(nodeLevel(prev, n), nodeLevel(step, n), p) * 100) / 100);
+      n.el.classList.toggle("focus", !step.plain && step.nodes.includes(n));
+    }
+    const offset = String(-round((t * 28) % 28));
+    for (const e of edges) {
+      e.el.style.opacity = String(round(lerp(edgeLevel(prev, e), edgeLevel(step, e), p) * 100) / 100);
+      if (e.status === "added") e.el.style.strokeDashoffset = offset;
+    }
+
+    const last = index === timeline.length - 1;
+    const fadeIn = clamp((u - 0.25) / 0.45, 0, 1);
+    const fadeOut = last ? 1 : clamp((step.duration - u) / 0.35, 0, 1);
+    fillCaption(index);
+    caption.style.opacity = step.kind === "summary" ? "0" : String(round(Math.min(fadeIn, fadeOut) * 100) / 100);
+    summary.style.opacity = step.kind === "summary" ? String(round(clamp((u - 0.3) / 0.6, 0, 1) * 100) / 100) : "0";
+    $("progress-bar").style.width = `${round((t / duration) * 1000) / 10}%`;
+  }
+
+  /* Playback */
+
+  const player = { t: 0, playing: false, until: null, last: 0 };
+
+  function setPlaying(on) {
+    player.playing = on;
+    document.body.classList.toggle("playing", on);
+    $("play-label").textContent = on ? "Pause" : player.t >= duration && touring ? "Replay" : "Play tour";
+  }
+
+  function frame(now) {
+    if (!player.playing) return;
+    player.t = Math.min(duration, player.t + (now - player.last) / 1000);
+    player.last = now;
+    if (player.until !== null && player.t >= player.until) player.t = player.until;
+    seek(player.t);
+    if (player.t >= duration || (player.until !== null && player.t >= player.until)) setPlaying(false);
+    else requestAnimationFrame(frame);
+  }
+
+  function run(from, until) {
+    flight++;
+    player.t = from;
+    player.until = until;
+    player.last = performance.now();
+    seek(from);
+    setPlaying(true);
+    requestAnimationFrame(frame);
+  }
+
+  function pause() {
+    if (player.playing) setPlaying(false);
+  }
+
+  function goto(index) {
+    const i = clamp(index, 0, timeline.length - 1);
+    const step = timeline[i];
+    run(step.start, step.start + Math.min(step.duration - 0.4, MOVE + 0.6));
+  }
+
+  function next() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) + 1);
+  }
+
+  function prev() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) - 1);
+  }
+
+  $("play").addEventListener("click", () => {
+    if (player.playing) return pause();
+    const from = touring && player.t < duration ? player.t : 0;
+    run(from, null);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const key = event.key;
+    if (key === "Escape") {
+      if (drawerOpen()) select(null);
+      else if (grouped && expanded.size) collapseAll();
+      else if (touring) exitTour();
+    } else if (key === "ArrowRight" || key === " " || key === "PageDown") {
+      next();
+    } else if (key === "ArrowLeft" || key === "PageUp") {
+      prev();
+    } else if (key === "f" || key === "F") {
+      if (touring) exitTour();
+      userMoved = false;
+      fit();
+    } else if (key === "+" || key === "=") {
+      zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else if (key === "-" || key === "_") {
+      zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else {
+      return;
+    }
+    event.preventDefault();
+  });
+
+  window.addEventListener("resize", () => {
+    if (touring) seek(player.t);
+    else if (!userMoved) open();
+  });
+
+  open();
+
+  window.prcTour = Object.freeze({
+    duration,
+    steps: timeline.map((s) => Object.freeze({
+      kind: s.kind, focus: [...s.focus], via: s.via, start: s.start, duration: s.duration,
+      caption: Object.freeze({ ...s.caption }),
+    })),
+    seek: (t) => {
+      pause();
+      player.t = clamp(Number(t) || 0, 0, duration);
+      seek(player.t);
+    },
+  });
+})();
+</script></body></html>

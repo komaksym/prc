@@ -1,5 +1,7 @@
 # prc explain
 
+[Product and repository status](docs/mvp/STATUS.md) records verified behavior and unfinished release gates.
+
 `prc explain` turns a pull request and an agent-authored board into a local video, written walkthrough, map, card, and comment draft.
 
 Code rows come from the captured diff. Your coding agent writes the explanation.
@@ -58,7 +60,8 @@ With a valid board and the rendering dependencies available, `explain` writes th
 | PR comment draft | `comment.md` | Review text and a computed Mermaid diagram before posting. |
 
 The folder also contains `map.json`, the checked `board.json`, and `run.json`.
-`run.json` records the map source, board check, voice backend, timings, and layout warnings.
+`run.json` records the map source, board check, voice backend, media estimates, video duration, and layout warnings.
+These values do not measure each pipeline step's wall time.
 Output folders include the PR identity and the first 12 characters of the captured head SHA.
 Each successful rerun replaces the complete generated folder. A boardless rerun removes earlier video and walkthrough files.
 Handled rendering failures leave the prior successful folder intact. Treat that folder as generated output, not a place for manual files.
@@ -115,6 +118,12 @@ Without those blobs, the renderer uses the stored diff for highlighting.
 prc computes symbols, call relationships, diff rows, and statistics from captured code and provider data.
 The parser supports Python, JavaScript, TypeScript, and TSX. Static call analysis can miss dynamic calls or use name-only matches.
 A missing direct test link does not prove that a function has no test coverage.
+Stored maps are reconciled once. Board checks and all outputs use the same file classifications and computed facts.
+The card and comment lead with symbols displayed in the diff, then symbols cited in the board.
+They show a file-level entry when a quoted change falls outside a parsed symbol.
+Files named `e2e_*` count as tests, including diagnostic checks.
+External-call warnings apply to code, including automation scripts, and exclude tests, diagnostics, and documentation.
+The card shows up to three risky files and reports additional files with an overflow count.
 
 The agent authors the scene order, narration, titles, labels, notes, and interpretation of behavior.
 `board check` checks cited lines, exact substrings, supported symbols and edges, cue references, and explicit numeric assertions.

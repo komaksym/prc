@@ -1,0 +1,41 @@
+{
+  "input_sha256": "ee596c1c6986d79a551dc80be84101d185b6127d7daa7a6c3fb53fcb131e7518",
+  "input_count": 5,
+  "grades": [
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q1",
+      "verdict": "wrong",
+      "reason": "Mentions the date display but gives no required fact about its source, invalid values, or independence from shortlist decisions."
+    },
+    {
+      "pr": 12,
+      "condition": "c5",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies invalid timestamp handling. Omits future timestamps, the unknown result, and the safe pointer required by the keyed test."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies counting every present employer. Omits once-per-employer counting, capacity required at every employer, withheld claims, and preserved behavior."
+    },
+    {
+      "pr": 17,
+      "condition": "c5",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies counting every present employer. Does not state that selection requires and consumes a capacity slot at every company."
+    },
+    {
+      "pr": 19,
+      "condition": "c5",
+      "question": "q1",
+      "verdict": "wrong",
+      "reason": "Legacy evidence reconciliation does not establish validated planner and retained-evidence rendering, managed-marker rejection, or dual preflight with revision checks."
+    }
+  ]
+}

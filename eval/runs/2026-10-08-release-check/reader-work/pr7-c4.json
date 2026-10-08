@@ -1,0 +1,56 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The invitation-history owner gains durable, duplicate-safe history events for matched past outbound invitations."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_invitations"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        ".github/workflows/sync-invitations.yml",
+        "tests/test_invitation_sync_e2e.py",
+        "PLANS.md",
+        "README.md",
+        "artifacts/invitation_change_summary.md",
+        "artifacts/invitation_eligibility_acceptance.md",
+        "artifacts/invitation_production_baseline.json",
+        "artifacts/invitation_sync_verification.json",
+        "infographic/invitation-history-reconciliation/analysis.md",
+        "infographic/invitation-history-reconciliation/infographic.png",
+        "infographic/invitation-history-reconciliation/prompts/01-technical-system.md",
+        "infographic/invitation-history-reconciliation/source.md",
+        "infographic/invitation-history-reconciliation/structured-content.md",
+        "scripts/sync_invitations.py",
+        "scripts/verify_invitation_sync.py",
+        "src/linkedin_mdp_mcp/client.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "CI",
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "Complete multipage invitation history is matched, deduplicated, and remains idempotent on replay."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/invitation_sync.py::reconcile_invitations"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

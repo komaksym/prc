@@ -1,0 +1,146 @@
+{
+  "grades": [
+    {
+      "pr": 11,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies creation timestamps in prospect report rows. Omits exact preservation through pagination and encryption and the rule against fabricating missing values."
+    },
+    {
+      "pr": 11,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies creation timestamps in collected prospect rows. Omits exact preservation through pagination and encryption and the rule against fabricating missing values."
+    },
+    {
+      "pr": 12,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies the displayed date added. Omits its unique canonical Supabase source, unknown-date rules, and independence from shortlist decisions."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies the displayed date added. Omits its unique canonical Supabase source, unknown-date rules, and independence from shortlist decisions."
+    },
+    {
+      "pr": 12,
+      "condition": "c2",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies invalid and future dates remaining unknown. Does not establish the safe pointer required by the frozen test key."
+    },
+    {
+      "pr": 17,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies capacity accounting for every current employer. Omits counting each profile once, requiring every employer slot, withholding unsafe sets, and preserving other fields."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies capacity accounting once at each current employer. Omits requiring capacity at every employer, withholding unsafe sets, and preserving other fields."
+    },
+    {
+      "pr": 17,
+      "condition": "c2",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies present-employer capacity charging. Does not specify that selection requires and consumes a slot at every employer."
+    },
+    {
+      "pr": 19,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies separate owner-only documents for the two DM reports. Omits validated planner and retained evidence, marker rejection, dual preflight, and revision checks."
+    },
+    {
+      "pr": 19,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies separate owner-only documents for the two DM reports. Omits validated planner and retained evidence, marker rejection, dual preflight, and revision checks."
+    },
+    {
+      "pr": 5,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies publication to one marked Google Docs section. Omits revision and permission checks, preservation of operator notes, and terminal-response row retention."
+    },
+    {
+      "pr": 8,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies validated inbox evidence and the default dry run. Omits complete snapshots, exact Unicode identities, preserved message details and uncertainty, and ambiguity withholding."
+    },
+    {
+      "pr": 8,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies validated inbox evidence and the default dry run. Omits complete snapshots, exact Unicode identities, preserved message details and uncertainty, and ambiguity withholding."
+    },
+    {
+      "pr": 10,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies counting all invitation history once per person. Omits the lifetime cap, cited current employers, canonical citation binding, hashing, and strict legacy reconciliation."
+    },
+    {
+      "pr": 10,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies counting all invitation history once per person. Omits the lifetime cap, cited current employers, canonical citation binding, hashing, and strict legacy reconciliation."
+    },
+    {
+      "pr": 13,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies evidence-based manual reply, follow-up, and first-DM queues. Omits offline exact-identity and direction checks, ambiguity withholding, unknown read status, and absence of provider requests or database writes."
+    },
+    {
+      "pr": 14,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies changelog collection in the private bundle. Omits bounds, observation timestamps, unknown provider freshness, member validation before encryption, and pagination drift rejection."
+    },
+    {
+      "pr": 14,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies changelog collection in the private bundle. Omits bounds, observation timestamps, unknown provider freshness, member validation before encryption, and pagination drift rejection."
+    },
+    {
+      "pr": 15,
+      "condition": "c1",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies combining invitation and DM outputs offline. Omits preservation of evidence, uncertainty and withheld states, and safeguarded Google-only publication."
+    },
+    {
+      "pr": 15,
+      "condition": "c2",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies combining invitation and DM outputs offline. Omits preservation of evidence, uncertainty and withheld states, and safeguarded Google-only publication."
+    }
+  ],
+  "input_sha256": "85ac95edfca5a61f593ce5ec834c06548814911c2e178ff28ee22c8870310745",
+  "input_count": 20
+}

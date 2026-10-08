@@ -183,6 +183,15 @@ def render_comment(
     """comment.md in PLAN order. PR strings via span(); Mermaid labels never."""
     b = _brief_of(m, brief)
     changed = [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
+    test_paths = (
+        {f.path for f in brief.files if f.kind == "test"}
+        if brief is not None and not isinstance(brief, dict)
+        else {
+            f["path"]
+            for f in (brief or m.get("brief", {})).get("files", [])
+            if f.get("kind") == "test"
+        }
+    )
     missing = untested(m, brief if brief is not None else m.get("brief"))
     lines = [f"# {span(headline(m, board))}", ""]
     lines += [
@@ -194,7 +203,7 @@ def render_comment(
     ]
     if len(changed) > MAX_NODES:
         lines += [f"Showing {MAX_NODES} of {len(changed)} changed symbols. Full map: map.html", ""]
-    entries = look_first(m, brief if brief is not None else m.get("brief"))
+    entries = look_first(m, brief if brief is not None else m.get("brief"), 3, board)
     lines += ["## Look here first", ""]
     if entries:
         lines += [f"- {span(e.name)} in {span(e.path)}" for e in entries]
@@ -217,6 +226,8 @@ def render_comment(
     lines += ["", "## Not covered by tests", ""]
     if not changed:
         lines += ["No code symbols changed."]
+    elif all(s.get("path") in test_paths for s in changed):
+        lines += ["No production symbols changed."]
     elif missing:
         lines += [f"- {span(u.name)} in {span(u.path)}" for u in missing]
     else:

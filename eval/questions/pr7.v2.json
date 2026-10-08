@@ -1,0 +1,100 @@
+{
+  "head_sha": "1f2f010c57e12cb3fa58f83fdcd5b46b37349cc4",
+  "pr": 7,
+  "questions": [
+    {
+      "ask": "What behaviour changes for the owner of the invitation history, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_sync.py:170",
+        ".github/workflows/sync-invitations.yml:11"
+      ],
+      "id": "q1",
+      "key": "Past outbound invitations gain durable history evidence through invitation-specific planning and duplicate-safe reconciliation, but the manual workflow stays disabled unless the main-branch opt-in gate is enabled.",
+      "key_facts": [
+        "invitation-specific planning and duplicate-safe reconciliation for existing prospects",
+        "manual workflow disabled unless the opt-in gate is enabled",
+        "no migration or live backfill included"
+      ],
+      "type": "free"
+    },
+    {
+      "ask": "Which function carries the main change?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_sync.py:170"
+      ],
+      "id": "q2",
+      "key": "reconcile_invitations",
+      "type": "exact"
+    },
+    {
+      "ask": "What is the new opt-in gate for the manual workflow?",
+      "evidence": [
+        ".github/workflows/sync-invitations.yml:11"
+      ],
+      "id": "q3",
+      "key": "vars.INVITATIONS_RECONCILIATION_ENABLED == 'true'",
+      "type": "exact_code"
+    },
+    {
+      "ask": "Which other files or areas change besides the main source module?",
+      "evidence": [
+        "tests/test_invitation_sync_e2e.py:111",
+        ".github/workflows/sync-invitations.yml:4"
+      ],
+      "id": "q4",
+      "key": [
+        "src/linkedin_mdp_mcp/client.py",
+        "scripts/sync_invitations.py",
+        "scripts/verify_invitation_sync.py",
+        "tests/test_invitation_sync_e2e.py",
+        ".github/workflows/sync-invitations.yml",
+        "artifacts/invitation_sync_verification.json",
+        "infographic/invitation-history-reconciliation/structured-content.md",
+        "README.md",
+        "PLANS.md"
+      ],
+      "type": "set"
+    },
+    {
+      "ask": "Which risky surface does it touch (CI, dependencies, auth, schema, secrets, external calls), or none?",
+      "evidence": [
+        ".github/workflows/sync-invitations.yml:4",
+        "src/linkedin_mdp_mcp/invitation_sync.py:177"
+      ],
+      "id": "q5",
+      "key": [
+        "CI",
+        "external calls"
+      ],
+      "type": "set_or_none"
+    },
+    {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/test_invitation_sync_e2e.py:111"
+      ],
+      "id": "q6",
+      "key": "test_complete_multipage_history_is_matched_deduped_and_idempotent",
+      "type": "name_or_free"
+    },
+    {
+      "ask": "Where should a reviewer start reading?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_sync.py:170"
+      ],
+      "id": "q7",
+      "key": "src/linkedin_mdp_mcp/invitation_sync.py :: reconcile_invitations",
+      "type": "location"
+    },
+    {
+      "ask": "True or false: the new workflow runs automatically on every push without any gate.",
+      "evidence": [
+        ".github/workflows/sync-invitations.yml:4"
+      ],
+      "id": "q8",
+      "key": "false",
+      "type": "bool"
+    }
+  ],
+  "version": 2
+}

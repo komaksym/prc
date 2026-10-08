@@ -17,6 +17,9 @@ def test_failed_release_runs_keep_separate_evidence(tmp_path: Path) -> None:
     (root / "scripts").mkdir(parents=True)
     script = root / "scripts/verify-release.sh"
     script.write_bytes((ROOT / "scripts/verify-release.sh").read_bytes())
+    test = root / "tests/test_card_receipts.py"
+    test.parent.mkdir()
+    test.write_text('"""Release regression sentinel."""\n')
     for name in ("eval/runs/2026-10-06-full", "docs/media"):
         (root / name).mkdir(parents=True)
     subprocess.run(["git", "init", "--quiet", str(root)], check=True)
@@ -34,6 +37,9 @@ def test_failed_release_runs_keep_separate_evidence(tmp_path: Path) -> None:
     logs = list(proof.rglob("sync.log"))
     assert len(logs) == 2, f"expected two preserved run logs, found {logs}"
     assert all("stopped-before-sync" in log.read_text() for log in logs)
+    for path in proof.glob("run-*/checkout.txt"):
+        checkout = Path(path.read_text().strip())
+        assert (checkout / "tests/test_card_receipts.py").read_text() == test.read_text()
     assert not (proof / "latest-success.txt").exists()
 
 

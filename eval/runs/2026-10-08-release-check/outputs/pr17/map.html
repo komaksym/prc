@@ -1,0 +1,2241 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gF5zFximAIPRH2ovXVavg+t092BfC/UXNhYkMoHU2Ww='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="referrer" content="no-referrer"><link rel="icon" href="data:,"><title>PR map</title><style>:root {
+  color-scheme: dark;
+  --bg: #08090c;
+  --dot: rgba(255, 255, 255, 0.07);
+  --panel: rgba(14, 16, 21, 0.88);
+  --panel-solid: #0e1015;
+  --raise: #12151b;
+  --card: #13161d;
+  --card-ctx: #0e1015;
+  --border: #22262f;
+  --border-strong: #2f3440;
+  --band: rgba(255, 255, 255, 0.018);
+  --text: #eceef3;
+  --muted: #959cab;
+  --faint: #5d6473;
+  --green: #3fd68a;
+  --amber: #f2b33d;
+  --red: #f4676f;
+  --grey: #5f6676;
+  --accent: #8d9bff;
+  --edge: #4a505e;
+  --add-bg: rgba(63, 214, 138, 0.11);
+  --del-bg: rgba(244, 103, 111, 0.11);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9;
+    --dot: rgba(15, 23, 42, 0.09);
+    --panel: rgba(255, 255, 255, 0.9);
+    --panel-solid: #ffffff;
+    --raise: #ffffff;
+    --card: #ffffff;
+    --card-ctx: #f9fafb;
+    --border: #e1e4ea;
+    --border-strong: #cfd4dc;
+    --band: rgba(15, 23, 42, 0.022);
+    --text: #0f1420;
+    --muted: #5b6372;
+    --faint: #8b93a1;
+    --green: #129b5a;
+    --amber: #c27c0e;
+    --red: #d6363f;
+    --grey: #9aa1ad;
+    --accent: #4f5bd5;
+    --edge: #a3a9b5;
+    --add-bg: rgba(18, 155, 90, 0.1);
+    --del-bg: rgba(214, 54, 63, 0.09);
+    --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 6px 20px rgba(15, 23, 42, 0.07);
+    --shadow-lg: 0 24px 64px rgba(15, 23, 42, 0.18);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh;
+}
+
+.st-added { --st: var(--green); }
+.st-modified { --st: var(--amber); }
+.st-deleted { --st: var(--red); }
+.st-context { --st: var(--grey); }
+
+/* Header */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-solid);
+  position: relative;
+  z-index: 5;
+}
+
+.headline { min-width: 0; flex: 1 1 0; }
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.logo {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 2px;
+  align-items: center;
+}
+
+.logo i {
+  display: block;
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--green);
+}
+
+.logo i:nth-child(2) { height: 8px; background: var(--amber); }
+.logo i:nth-child(3) { height: 5px; background: var(--red); }
+
+.brand-name {
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.meta { overflow: hidden; text-overflow: ellipsis; }
+.meta .sep { color: var(--faint); margin: 0 6px; }
+.meta .mono { font-family: var(--mono); font-size: 11.5px; }
+
+.meta a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.meta a:hover { text-decoration: underline; }
+
+h1 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 72px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--raise);
+  white-space: nowrap;
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat.good .stat-value { color: var(--green); }
+.stat.bad .stat-value { color: var(--red); }
+.stat.warn .stat-value { color: var(--amber); }
+.stat.none .stat-value { color: var(--muted); }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+}
+
+.play {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.play:hover { opacity: 0.9; }
+
+.play-icon {
+  width: 0;
+  height: 0;
+  border-left: 9px solid currentColor;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+.playing .play-icon {
+  width: 10px;
+  height: 12px;
+  border: 0;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+}
+
+/* Canvas */
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.viewport.dragging { cursor: grabbing; }
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.band {
+  position: absolute;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: var(--band);
+}
+
+.band-label {
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.edges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.e {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.5;
+  transition: opacity 160ms ease;
+}
+
+.e-added {
+  stroke: var(--green);
+  stroke-width: 2;
+  stroke-dasharray: 8 6;
+  animation: flow 1s linear infinite;
+}
+
+.e-removed {
+  stroke: var(--red);
+  stroke-width: 1.75;
+  stroke-dasharray: 5 5;
+  opacity: 0.85;
+}
+
+.e-name {
+  stroke-dasharray: 1 6;
+  stroke-linecap: round;
+  stroke-width: 2.25;
+}
+
+.e-added.e-name { stroke-width: 2.5; }
+
+.arrow-added { fill: var(--green); }
+.arrow-removed { fill: var(--red); }
+.arrow-kept { fill: var(--edge); }
+
+@keyframes flow {
+  to { stroke-dashoffset: -28; }
+}
+
+/* Nodes */
+
+.node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 160ms ease, border-color 120ms ease, box-shadow 160ms ease;
+}
+
+.node:hover { border-color: var(--border-strong); }
+.node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.node .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--st);
+}
+
+.node.st-context {
+  background: var(--card-ctx);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.node.st-context .bar { opacity: 0.6; }
+
+.n-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.glyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font: 600 10.5px/1 var(--mono);
+}
+
+.name {
+  min-width: 0;
+  flex: 1 1 auto;
+  font: 600 13px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.st-context .name { color: var(--muted); font-weight: 500; }
+
+.st-deleted .name {
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 1.5px;
+  color: var(--muted);
+}
+
+.pill {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--st);
+  background: color-mix(in srgb, var(--st) 14%, transparent);
+}
+
+.path {
+  font: 11px/1.35 var(--mono);
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+}
+
+.path > span { direction: ltr; unicode-bidi: isolate; }
+
+.n-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.n-row > .path { flex: 1 1 auto; min-width: 0; }
+
+.n-row > .sites {
+  flex: none;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.delta { font: 600 11.5px/1 var(--mono); }
+.plus { color: var(--green); }
+.minus { color: var(--red); }
+
+.badge {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}
+
+.chip {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 12px 0 16px;
+  border-radius: 999px;
+}
+
+.chip .bar { width: 3px; }
+
+.chip .name { flex: 0 1 auto; font-weight: 500; font-size: 12.5px; }
+.chip.st-deleted .name { color: var(--muted); }
+
+/* Grouped overview */
+
+.fedges {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ge {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 2;
+}
+
+.ge-added { stroke: var(--green); }
+.ge-removed { stroke: var(--red); }
+
+.fcard {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 14px 10px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+}
+
+.fcard:hover { border-color: var(--border-strong); }
+.fcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.f-name {
+  font: 600 13px/1.3 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.f-counts {
+  font: 11px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.flist {
+  display: none;
+  margin-top: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 6px;
+  gap: 2px;
+  overflow: auto;
+}
+
+.fcard.open {
+  justify-content: flex-start;
+  height: auto !important;
+  max-height: 360px;
+  z-index: 5;
+}
+
+.fcard.open .flist { display: grid; }
+
+.fmem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+}
+
+.fmem:hover { background: var(--band); }
+
+.fmem-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 12px/1.35 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fmem-tag {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.world.grouped .node.concealed { opacity: 0; }
+
+.dense .sym {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 8px 0 12px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.dense .sym .bar { width: 3px; }
+.dense .sym .name { font-size: 12px; }
+.dense .sym .glyph { width: 16px; height: 16px; font-size: 9.5px; }
+.dense .sym .pill { padding: 0 5px; font-size: 9px; }
+
+.flag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font: 700 10px/1 var(--sans);
+  color: var(--amber);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+}
+
+.group {
+  position: absolute;
+  padding: 6px 4px 0;
+  font: 11px/1.3 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+  pointer-events: none;
+}
+
+.group > span { direction: ltr; unicode-bidi: isolate; }
+
+body:not(.touring) .dense .e:not(.lit) { opacity: 0; }
+
+.empty {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.risk {
+  flex: none;
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red) 35%, transparent);
+  white-space: nowrap;
+}
+
+.world.far .path,
+.world.far .sites { display: none; }
+.world.far .name { font-size: 16px; }
+.world.far .pill { font-size: 12px; }
+
+.hovering .node:not(.lit),
+.hovering .e:not(.lit) { opacity: 0.14; }
+
+.hovering .e.lit { stroke-width: 2.5; }
+
+.node.lit { border-color: var(--border-strong); }
+
+.node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent), var(--shadow);
+}
+
+.node.focus {
+  border-color: var(--st);
+  box-shadow: 0 0 0 1px var(--st), 0 0 40px color-mix(in srgb, var(--st) 40%, transparent), var(--shadow);
+}
+
+/* Tour */
+
+.touring .node,
+.touring .e { transition: none; }
+
+.touring .e-added { animation: none; }
+
+.spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 40%, transparent 35%, color-mix(in srgb, var(--bg) 82%, transparent) 100%);
+}
+
+.touring .spot { opacity: 1; }
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  display: none;
+}
+
+.touring .progress { display: block; }
+
+#progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+}
+
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  width: min(760px, calc(100% - 48px));
+  transform: translateX(-50%);
+  padding: 16px 24px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .caption { display: block; }
+
+.cap-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.cap-count { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+.cap-main {
+  margin-top: 6px;
+  font-size: 22px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.cap-main .code { font-family: var(--mono); font-size: 20px; }
+
+.cap-sub {
+  margin-top: 6px;
+  font: 12.5px/1.4 var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(720px, calc(100% - 48px));
+  transform: translate(-50%, -50%);
+  padding: 32px 40px;
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  background: var(--panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  pointer-events: none;
+}
+
+.touring .summary { display: block; }
+
+.sum-kicker {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sum-title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.sum-cell {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--raise);
+}
+
+.sum-num {
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.sum-label { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.sum-cell.good .sum-num { color: var(--green); }
+.sum-cell.bad .sum-num { color: var(--red); }
+.sum-cell.warn .sum-num { color: var(--amber); }
+
+.sum-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sum-brand {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* Floating controls */
+
+.legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 11.5px;
+  color: var(--muted);
+  box-shadow: var(--shadow);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.sw {
+  width: 10px;
+  height: 10px;
+  margin-left: 6px;
+  border-radius: 3px;
+  background: var(--st);
+}
+
+.sw:first-child, .ls:first-child { margin-left: 0; }
+.ls { width: 32px; height: 8px; margin-left: 8px; overflow: visible; }
+
+.zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.zoom button {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.zoom button:last-child { border-right: 0; }
+.zoom button:hover { color: var(--text); background: var(--band); }
+
+.touring .legend,
+.touring .zoom { opacity: 0; pointer-events: none; }
+
+/* Drawer */
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 92vw);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--panel-solid);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(104%);
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 4;
+  cursor: auto;
+  user-select: text;
+}
+
+.drawer[aria-hidden="false"] { transform: none; }
+
+.d-head {
+  position: relative;
+  padding: 20px 56px 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.d-head .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--st);
+}
+
+.d-tags { display: flex; align-items: center; gap: 8px; }
+
+.d-kind {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.d-name {
+  margin: 8px 0 4px;
+  font: 650 18px/1.3 var(--mono);
+  letter-spacing: -0.01em;
+  word-break: break-all;
+}
+
+.st-deleted .d-name { text-decoration: line-through; text-decoration-color: var(--red); }
+
+.d-path { font: 12px/1.4 var(--mono); color: var(--muted); word-break: break-all; }
+
+.d-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.d-close:hover { color: var(--text); border-color: var(--border-strong); }
+
+.d-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fact {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.fact.warn { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, transparent); }
+.fact.bad { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+.d-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px 0 24px;
+}
+
+.d-section { padding: 16px 24px 0; }
+
+.d-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.d-empty { font-size: 12.5px; color: var(--faint); }
+
+.diff {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: auto;
+  background: var(--bg);
+  font: 12px/20px var(--mono);
+}
+
+.diff-rows { width: max-content; min-width: 100%; }
+
+.hunk-head {
+  padding: 2px 12px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+.diff-rows .hunk-head:first-child { border-top: 0; }
+
+.dl {
+  display: grid;
+  grid-template-columns: 40px 40px 20px auto;
+  white-space: pre;
+}
+
+.dl .ln {
+  padding-right: 8px;
+  text-align: right;
+  color: var(--faint);
+  user-select: none;
+}
+
+.dl .sg { text-align: center; user-select: none; }
+.dl .code { padding-right: 16px; }
+.dl.add { background: var(--add-bg); }
+.dl.add .sg { color: var(--green); }
+.dl.del { background: var(--del-bg); }
+.dl.del .sg { color: var(--red); }
+
+.links { display: grid; gap: 4px; }
+
+.link {
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--raise);
+  text-align: left;
+  overflow: hidden;
+}
+
+.link:hover { border-color: var(--border-strong); }
+.link .bar { height: 100%; min-height: 32px; background: var(--st); border-radius: 0 2px 2px 0; }
+.link-text { min-width: 0; }
+.link-name { display: block; font: 600 12.5px/1.35 var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-path { display: block; font: 11px/1.35 var(--mono); color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.etag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.etag.added { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); }
+.etag.removed { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); }
+
+/* Footer */
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-solid);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.brand-line { font-weight: 550; color: var(--text); opacity: 0.8; }
+.hints { color: var(--faint); overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 1440px) {
+  .top { gap: 16px; }
+  .stat { min-width: 0; padding: 6px 10px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 10.5px; }
+}
+
+@media (max-width: 1100px) {
+  .top { flex-wrap: wrap; }
+  .stats { order: 3; flex-basis: 100%; overflow-x: auto; }
+  .hints { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .e-added { animation: none; }
+  .drawer { transition: none; }
+}
+</style></head><body><div class="app"><header class="top"><div class="headline"><div class="eyebrow"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">PR map</span><span id="meta" class="meta"></span></div><h1 id="title"></h1></div><div id="stats" class="stats"></div><button id="play" class="play" type="button"><span class="play-icon" aria-hidden="true"></span><span id="play-label">Play tour</span></button></header><main id="viewport" class="viewport"><div id="world" class="world"></div><div class="spot" aria-hidden="true"></div><div id="progress" class="progress" aria-hidden="true"><div id="progress-bar"></div></div><div id="caption" class="caption" aria-live="polite"></div><div id="summary" class="summary"></div><div class="legend" aria-label="Legend"><div class="legend-row"><span class="sw st-added"></span>added<span class="sw st-modified"></span>modified<span class="sw st-deleted"></span>deleted<span class="sw st-context"></span>unchanged</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-added" d="M2 4H38"/></svg>new call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-removed" d="M2 4H38"/></svg>removed call<svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept" d="M2 4H38"/></svg>call</div><div class="legend-row"><svg class="ls" viewBox="0 0 40 8" aria-hidden="true"><path class="e e-kept e-name" d="M2 4H38"/></svg>dotted: matched by name only, no import proves it</div></div><div class="zoom"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="zoom-fit" type="button">Fit</button></div><aside id="drawer" class="drawer" aria-hidden="true"></aside></main><footer class="foot"><span class="brand-line">PR map · computed from the code, no AI drew this</span><span class="hints">Click a node for its diff · Drag to pan, pinch or Ctrl+scroll to zoom · Space steps the tour · F fits</span></footer></div><script type="application/json" id="map-data">{"author":"komaksym","base_sha":"0c54c1ae2f0cc3d652e7a5a84fcefb625178fcb7","brief":{"checks":[{"name":"synthetic-e2e","state":"passed"}],"files":[{"added":17,"kind":"docs","named":false,"path":"PLANS.md","removed":0,"sensitive":null},{"added":7,"kind":"config","named":false,"path":"artifacts/invitation-shortlist-e2e-evidence.json","removed":2,"sensitive":null},{"added":10,"kind":"docs","named":false,"path":"docs/invitation-shortlist.md","removed":2,"sensitive":null},{"added":1,"kind":"docs","named":false,"path":"infographic/present-employer-sets/analysis.md","removed":0,"sensitive":null},{"added":0,"kind":"opaque","named":false,"path":"infographic/present-employer-sets/infographic.png","removed":0,"sensitive":null},{"added":10,"kind":"docs","named":false,"path":"infographic/present-employer-sets/prompts/01-infographic-present-employers.md","removed":0,"sensitive":null},{"added":9,"kind":"docs","named":false,"path":"infographic/present-employer-sets/source.md","removed":0,"sensitive":null},{"added":6,"kind":"docs","named":false,"path":"infographic/present-employer-sets/structured-content.md","removed":0,"sensitive":null},{"added":56,"kind":"code","named":false,"path":"src/linkedin_mdp_mcp/invitation_shortlist.py","removed":35,"sensitive":null},{"added":87,"kind":"test","named":false,"path":"tests/e2e_invitation_shortlist.py","removed":0,"sensitive":null},{"added":16,"kind":"test","named":false,"path":"tests/test_invitation_shortlist_e2e.py","removed":0,"sensitive":null}],"head_sha":"537a16de03f9fad8ffe0def188494037991b275a","look_first":[{"lines":[],"path":"src/linkedin_mdp_mcp/invitation_shortlist.py","reason":"largest code change (+56 −35)"}],"mismatches":[],"pr":"komaksym/linkedin-mdp#17","title":"feat(report): count every present employer"},"edges":[{"resolution":"exact","source":"scripts/build_invitation_shortlist.py::main","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"},{"resolution":"exact","source":"scripts/build_invitation_shortlist.py::main","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","status":"added","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","status":"added","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_array"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_list"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_object"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_array"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_json"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers"},{"resolution":"exact","source":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::_object"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::employer_set","status":"added","target":"tests/e2e_invitation_shortlist.py::citation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::run","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","status":"added","target":"tests/e2e_invitation_shortlist.py::invitation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","status":"added","target":"tests/e2e_invitation_shortlist.py::invitation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","status":"added","target":"tests/e2e_invitation_shortlist.py::invitation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","status":"added","target":"tests/e2e_invitation_shortlist.py::citation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","status":"added","target":"tests/e2e_invitation_shortlist.py::invitation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","status":"added","target":"tests/e2e_invitation_shortlist.py::invitation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","status":"added","target":"tests/e2e_invitation_shortlist.py::employer_set"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","status":"added","target":"tests/e2e_invitation_shortlist.py::invitation"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","status":"added","target":"tests/e2e_invitation_shortlist.py::prospect_row"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","status":"added","target":"tests/e2e_invitation_shortlist.py::qualification"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","status":"added","target":"tests/e2e_invitation_shortlist.py::run"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","status":"added","target":"tests/e2e_invitation_shortlist.py::source_export"},{"resolution":"exact","source":"tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm","status":"kept","target":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"}],"files":[{"added":17,"hunks":[{"lines":[{"new":215,"old":215,"op":" ","text":"PR10 Unicode repair verification before publication: 84 scenarios plus wrapper, 22 full-suite checks, strict scoped Ruff, 12-file mypy and builds passed before the usage pause. Pending diff inspected on resume; no source behavior changed since that validation. Separate synthetic CLI proof and independent review requested. Fixed fresh CodeRabbit wording finding by spacing adjacent counts in the matrix record."},{"new":216,"old":216,"op":" ","text":""},{"new":217,"old":217,"op":" ","text":"PR12 review correction: two UTC conversion overflow boundaries and the Markdown prospect-ID provenance assertion failed before the fix (3 failed, 90 passed). The correction catches overflow as invalid_timestamp and prints the prospect ID beside the source pointer. All 93 E2E scenarios, the full 22-test suite, scoped Ruff, 9-file default source mypy and source/wheel builds pass. Independent read-only review found no actionable issue."},{"new":218,"old":null,"op":"+","text":""},{"new":219,"old":null,"op":"+","text":"## Present employer sets"},{"new":220,"old":null,"op":"+","text":""},{"new":221,"old":null,"op":"+","text":"Summary: preserve single-employer input while charging each exact historical profile once per explicitly present company, without inventing a primary employer."},{"new":222,"old":null,"op":"+","text":""},{"new":223,"old":null,"op":"+","text":"- [x] Ground/sketch: prior private design compares singular selection with conservative set accounting; owner selected cited assignments sets."},{"new":224,"old":null,"op":"+","text":"- [x] Blocking first steps: isolate branch and integrate PR10 metadata-hash correction; no live state."},{"new":225,"old":null,"op":"+","text":"- [x] Independent workstreams: n/a coupled parsing/counting/audit contract has one exclusive owner."},{"new":226,"old":null,"op":"+","text":"- [x] Shared mutable state: new checkout; private bindings stay outside Git."},{"new":227,"old":null,"op":"+","text":"- [x] Smallest safe decomposition: one module with source-boundary parsing and existing planner consumers."},{"new":228,"old":null,"op":"+","text":"- [x] Red-first matrix: seven new cases failed on the singleton implementation; secondary-cap selection also failed before correction. Nine set cases plus inherited checks pass."},{"new":229,"old":null,"op":"+","text":"- [x] Implement and validate: 105 E2E cases, 22 full-suite tests, scoped Ruff, 10-file mypy, source/wheel builds and diffcheck. Synthetic private CLI and existing combined renderer accept flat multi-employer rows."},{"new":230,"old":null,"op":"+","text":"- [ ] Parent owns review, infographic/publication and commits; no deployment."},{"new":231,"old":null,"op":"+","text":""},{"new":232,"old":null,"op":"+","text":"Contract clarification: incomplete sets retain a research reason but are omitted from resolved assignment audits; original qualification retains their positive evidence. This keeps the established unresolved-alias exclusion contract and narrows the preliminary private design's partial-positive audit proposal."},{"new":233,"old":null,"op":"+","text":""},{"new":234,"old":null,"op":"+","text":"Parent inspected present-set parser, aliases/conflicts, all-history per-company counts and all-employer selection capacity.105E2E/22fulltests/scopedlint/10-filetypes/sourcewheelpassed. Existing combinedrenderer compatibility and private synthetic CLI verified by writer. Inspected native raster copied; private realpeoplebindings excluded. No liveproposaleligibility/publication/storagewrite."}],"new_start":215,"old_start":215}],"kind":"docs","language":null,"path":"PLANS.md","removed":0,"sensitive":null,"status":"modified","symbols":[]},{"added":7,"hunks":[{"lines":[{"new":1,"old":1,"op":" ","text":"{"},{"new":2,"old":2,"op":" ","text":"  \"schema_version\": 1,"},{"new":null,"old":3,"op":"-","text":"  \"scenario_count\": 97,"},{"new":3,"old":null,"op":"+","text":"  \"scenario_count\": 107,"},{"new":4,"old":4,"op":" ","text":"  \"all_scenarios_passed\": true,"},{"new":5,"old":5,"op":" ","text":"  \"red_first_failures_reproduced\": ["},{"new":6,"old":6,"op":" ","text":"    \"provider-local invitation dates lost to ISO-only parsing\","}],"new_start":1,"old_start":1},{"lines":[{"new":30,"old":30,"op":" ","text":"    \"UTC conversion overflow aborted timestamp enrichment\","},{"new":31,"old":31,"op":" ","text":"    \"private Markdown omitted the creation-time prospect ID\","},{"new":32,"old":32,"op":" ","text":"    \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","},{"new":33,"old":null,"op":"+","text":"    \"explicit concurrent employers could not charge each historical company once\","},{"new":34,"old":null,"op":"+","text":"    \"complete employer sets could not admit qualified-company membership\","},{"new":35,"old":null,"op":"+","text":"    \"conflicting canonical sets lacked an explicit conflict reason\","},{"new":36,"old":null,"op":"+","text":"    \"secondary employer at capacity admitted an invitation\","},{"new":37,"old":null,"op":"+","text":"    \"legacy employer rows ignored incomplete coverage metadata\","},{"new":38,"old":33,"op":" ","text":"    \"candidate qualification citation attested a different profile\""},{"new":39,"old":34,"op":" ","text":"  ],"},{"new":null,"old":35,"op":"-","text":"  \"artifact_digest\": \"2c976cad44b739cc1f27e0a616a51099bbd0dbd5725d64b2bb2c71a1792650d2\""},{"new":40,"old":null,"op":"+","text":"  \"artifact_digest\": \"a05d63363632e731cc6046e235d9f2fb850cd18321cfa4671f0eb201c0bdf197\""},{"new":41,"old":36,"op":" ","text":"}"}],"new_start":30,"old_start":30}],"kind":"config","language":null,"path":"artifacts/invitation-shortlist-e2e-evidence.json","removed":2,"sensitive":null,"status":"modified","symbols":[]},{"added":10,"hunks":[{"lines":[{"new":12,"old":12,"op":" ","text":""},{"new":13,"old":13,"op":" ","text":"Qualification facts bind to exact canonical LinkedIn profile URLs. Current name, role, US country, and PVF employer require an HTTP citation with timezone-aware `retrieved_at` no older than 90 days plus a `profile_url` attestation that normalizes to the candidate's exact profile. The caller attests that the cited fact was researched. The builder validates citation shape, retrieval freshness, and this exact-profile binding, but does not fetch webpage contents."},{"new":14,"old":14,"op":" ","text":""},{"new":null,"old":15,"op":"-","text":"The `current_employers` object maps raw profile URL keys to a registered company ID and citations. URLs normalize with the same Unicode-preserving identity normalizer used for inbox participants. Multiple keys that normalize to one profile may repeat the same company assignment. Conflicting assignments, unregistered companies, invalid citations, or unsupported identities enter the private queue and withhold all capacity claims. The owner's explicit assumption is that each person's latest known employer is present. Citation retrieval time must be recent; source publication or indexing date does not determine historical employer eligibility."},{"new":15,"old":null,"op":"+","text":"The `current_employers` object maps raw profile URL keys to cited registered present employers (legacy single company or explicit set). URLs normalize with the same Unicode-preserving identity normalizer used for inbox participants. Multiple keys that normalize to one profile may repeat the same company assignment. Conflicting assignments, unregistered companies, invalid citations, or unsupported identities enter the private queue and withhold all capacity claims. The owner's explicit assumption is that each explicitly cited current job is present. Citation retrieval time must be recent; source publication or indexing date does not determine historical employer eligibility."},{"new":16,"old":16,"op":" ","text":""},{"new":17,"old":17,"op":" ","text":"Each unresolved employer key retains a stable opaque evidence ID and input key index pointer. An invalid assignment for any canonical alias removes that person from resolved employer and capacity audit entries."},{"new":18,"old":18,"op":" ","text":""}],"new_start":12,"old_start":12},{"lines":[{"new":49,"old":49,"op":" ","text":""},{"new":50,"old":50,"op":" ","text":"## All-history capacity"},{"new":51,"old":51,"op":" ","text":""},{"new":null,"old":52,"op":"-","text":"The CLI and pure function require `--cap-scope all_history`. Every outgoing invitation source is grouped by normalized exact profile identity. The report counts each person once against their mapped latest-known employer across provider invitations, explicit CRM sent facts, and actual Supabase invitation events. Historical invitation dates and previous employer claims remain audit data. They do not gate capacity or change the mapped employer."},{"new":52,"old":null,"op":"+","text":"The CLI and pure function require `--cap-scope all_history`. Every outgoing invitation source is grouped by normalized exact profile identity. Each historical person consumes one invitation slot at each company in their complete present-employer set, regardless of whether the evidence comes from provider invitations, explicit CRM sent facts, or actual Supabase invitation events. Historical invitation dates and previous employer claims remain audit data. They do not gate capacity or change the present-employer set."},{"new":53,"old":53,"op":" ","text":""},{"new":54,"old":54,"op":" ","text":"The JSON audit retains each source evidence ID, source row pointer, observed event date when available, profile URL, and the current-employer citations. Unknown or unsupported invitation identities and profiles without a valid current-employer mapping enter `research_queue`. Any unresolved queue row withholds the entire shortlist and all remaining-slot claims. The `Company` field in CRM is never employer proof. Accepted dates and connections do not consume invitation slots. They still exclude people from recommendations under the existing eligibility rules."},{"new":55,"old":55,"op":" ","text":""}],"new_start":49,"old_start":49},{"lines":[{"new":76,"old":76,"op":" ","text":"Input files must be regular files with no group or world permissions. The CLI creates the new output directory with mode `0700` and both reports with mode `0600`. It refuses existing output directories. Standard output contains only a fixed completion status. Validation errors never include row content, names, URLs, or message text. `tests/e2e_invitation_shortlist.py` covers synthetic source boundaries. `tests/test_invitation_shortlist_e2e.py` runs the matrix and writes a sanitized artifact with fixed verdicts and a digest."},{"new":77,"old":77,"op":" ","text":""},{"new":78,"old":78,"op":" ","text":"A successfully fetched empty provider page may have zero snapshot elements when its status and exported rows prove completeness. CRM opt-out fields treat explicit negative values (`false`, `no`, `0`, empty, or absent) as negative. Affirmative or uninterpretable nonempty values suppress a prospect."},{"new":79,"old":null,"op":"+","text":""},{"new":80,"old":null,"op":"+","text":"### Concurrent present employers"},{"new":81,"old":null,"op":"+","text":""},{"new":82,"old":null,"op":"+","text":"Legacy `{ \"company_id\": \"co-a\", \"citations\": [...] }` assignments remain valid singleton claims. For explicit concurrent jobs, use `{ \"assignments\": [{ \"company_id\": \"co-a\", \"citations\": [...] }, { \"company_id\": \"co-b\", \"citations\": [...] }], \"coverage\": \"complete\", \"unknown_reasons\": [] }`. Each company needs its own dated citations. Duplicate same-company roles and citations collapse without consuming extra capacity. No primary employer or corporate alias is inferred. Do not mix singleton fields with `assignments`."},{"new":83,"old":null,"op":"+","text":""},{"new":84,"old":null,"op":"+","text":"Under the owner's all-jobs-present assumption, every historical outgoing profile counts once per assigned company across all history. A candidate's qualified company must belong to its present set. Selection requires room in every present company and consumes one slot in each. A person still appears once in the invitation list. Distinct canonical URL keys may repeat an identical complete company set; different sets remain conflicting instead of being silently unioned. Empty, unregistered, partial or unnamed assignments retain explicit research reasons and withhold global capacity claims. Incomplete sets are omitted from resolved assignment and capacity audits; their cited positives remain in the original qualification input, not asserted as complete report assignments."},{"new":85,"old":null,"op":"+","text":""},{"new":86,"old":null,"op":"+","text":"`current_employer_assignments` keeps its existing flat profile/company/citations rows, with multiple rows for concurrent employers. The additive `current_employer_sets` audit lists each resolved profile's company IDs and complete coverage. `company_usage.remaining_slots` retains its historical-capacity meaning; `remaining_slots_after_selection` additionally shows remaining capacity after all proposed invitations. Neither a proposal nor an assignment records an actual send. Existing combined report rendering accepts the flat rows without a schema change."}],"new_start":76,"old_start":76}],"kind":"docs","language":null,"path":"docs/invitation-shortlist.md","removed":2,"sensitive":null,"status":"modified","symbols":[]},{"added":1,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Technical system PR infographic; explain profile-to-many-companies accounting and invitation capacity. Defaults structural-breakdown / technical-schematic / 16:9 / English / native imagegen. Saved backend auto. No private names, dates, test counts or deployed-state claims."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/present-employer-sets/analysis.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":0,"hunks":[],"kind":"opaque","language":null,"path":"infographic/present-employer-sets/infographic.png","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":10,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"Use case: infographic-diagram"},{"new":2,"old":null,"op":"+","text":"Asset type: GitHub PR raster infographic."},{"new":3,"old":null,"op":"+","text":"Create an English landscape16:9 structural-breakdown technical-schematic infographic. Opaque neutral light-gray background, clearly visible dark-gray outer border, high-contrast dark sans-serif text, restrained blue/teal accents, generous whitespace. Three coherent horizontal sections, large readable text. No private person/company names, numeric test counts, timestamps, logos or deployments."},{"new":4,"old":null,"op":"+","text":"Title exact: \"One person, every present employer\""},{"new":5,"old":null,"op":"+","text":"Left card exact text: \"EXACT PROFILE\", \"Explicit present employer set\", \"Legacy singleton supported\""},{"new":6,"old":null,"op":"+","text":"Left profile branches into two clearly separate simple company cards labeled \"Company A\" and \"Company B\". Both feed the middle capacity card."},{"new":7,"old":null,"op":"+","text":"Middle exact text: \"LIFETIME HISTORY\", \"Count once per person per company\", \"Duplicate rows add zero\", \"Three per company across all history\""},{"new":8,"old":null,"op":"+","text":"Right exact text: \"NEW RECOMMENDATION\", \"All employers need capacity\", \"Use one slot at each employer\", \"One recommendation per person\""},{"new":9,"old":null,"op":"+","text":"Bottom boundary exact text: \"Unknown employers withhold\", \"Report remains read-only\", \"Owner sends invitations\""},{"new":10,"old":null,"op":"+","text":"All arrows and labels inside canvas, no clutter. Render text verbatim. This is a system-level explanation, not an active send or deployed workflow."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/present-employer-sets/prompts/01-infographic-present-employers.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":9,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# Present employer sets"},{"new":2,"old":null,"op":"+","text":"One exact LinkedIn profile may have multiple explicitly present employers."},{"new":3,"old":null,"op":"+","text":"Legacy single-employer input remains supported."},{"new":4,"old":null,"op":"+","text":"One historical recipient counts once against each named present company."},{"new":5,"old":null,"op":"+","text":"Repeated invitation rows and repeated roles do not add duplicate counts."},{"new":6,"old":null,"op":"+","text":"A new recommendation requires capacity at every present employer and consumes one slot at each."},{"new":7,"old":null,"op":"+","text":"The lifetime invitation limit stays three per company across all outgoing history."},{"new":8,"old":null,"op":"+","text":"Unknown employers withhold capacity claims."},{"new":9,"old":null,"op":"+","text":"No historical employer date is invented. No report data is written to Supabase and no invitation is sent."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/present-employer-sets/source.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":6,"hunks":[{"lines":[{"new":1,"old":null,"op":"+","text":"# One person, every present employer"},{"new":2,"old":null,"op":"+","text":"Learning objective: a second current job also consumes company invitation capacity."},{"new":3,"old":null,"op":"+","text":"Input: one exact profile, explicit present employer set, legacy singleton supported."},{"new":4,"old":null,"op":"+","text":"History: once per person per company, duplicate rows add zero."},{"new":5,"old":null,"op":"+","text":"Selection: all companies need capacity, each recommendation uses one slot at each."},{"new":6,"old":null,"op":"+","text":"Boundaries: three per company across all history, unknown employers withhold, report remains read-only."}],"new_start":1,"old_start":0}],"kind":"docs","language":null,"path":"infographic/present-employer-sets/structured-content.md","removed":0,"sensitive":null,"status":"added","symbols":[]},{"added":56,"hunks":[{"lines":[{"new":67,"old":67,"op":" ","text":""},{"new":68,"old":68,"op":" ","text":"@dataclass(frozen=True)"},{"new":69,"old":69,"op":" ","text":"class CurrentEmployer:"},{"new":null,"old":70,"op":"-","text":"    \"\"\"Represent one exact profile's owner-approved latest-known employer.\"\"\""},{"new":70,"old":null,"op":"+","text":"    \"\"\"Represent the cited companies simultaneously present for one exact profile.\"\"\""},{"new":71,"old":71,"op":" ","text":""},{"new":72,"old":72,"op":" ","text":"    profile_url: str"},{"new":null,"old":73,"op":"-","text":"    company_id: str"},{"new":null,"old":74,"op":"-","text":"    citations: tuple[Citation, ...]"},{"new":73,"old":null,"op":"+","text":"    assignments: Mapping[str, tuple[Citation, ...]]"},{"new":74,"old":75,"op":" ","text":""},{"new":75,"old":76,"op":" ","text":""},{"new":76,"old":77,"op":" ","text":"@dataclass(frozen=True)"}],"new_start":67,"old_start":67},{"lines":[{"new":257,"old":258,"op":" ","text":"            queue.append({**pointer, \"reason\": \"current_employer_assignment_invalid\"})"},{"new":258,"old":259,"op":" ","text":"            continue"},{"new":259,"old":260,"op":" ","text":"        assignment = raw_assignment"},{"new":null,"old":261,"op":"-","text":"        company_id = assignment.get(\"company_id\")"},{"new":null,"old":262,"op":"-","text":"        if not isinstance(company_id, str) or company_id not in registry:"},{"new":null,"old":263,"op":"-","text":"            queue.append({**pointer, \"reason\": \"current_employer_unregistered\"})"},{"new":null,"old":264,"op":"-","text":"            continue"},{"new":260,"old":265,"op":" ","text":"        try:"},{"new":null,"old":266,"op":"-","text":"            citations = _citation_list("},{"new":null,"old":267,"op":"-","text":"                assignment.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False"},{"new":null,"old":268,"op":"-","text":"            )"},{"new":261,"old":null,"op":"+","text":"            if \"assignments\" in assignment:"},{"new":262,"old":null,"op":"+","text":"                if \"company_id\" in assignment or \"citations\" in assignment:"},{"new":263,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"},{"new":264,"old":null,"op":"+","text":"                reasons = assignment.get(\"unknown_reasons\")"},{"new":265,"old":null,"op":"+","text":"                if assignment.get(\"coverage\") != \"complete\" or reasons != []:"},{"new":266,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_coverage_incomplete\")"},{"new":267,"old":null,"op":"+","text":"                rows = _array(assignment[\"assignments\"], \"current_employer_assignment_invalid\")"},{"new":268,"old":null,"op":"+","text":"                if not rows:"},{"new":269,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"},{"new":270,"old":null,"op":"+","text":"            else:"},{"new":271,"old":null,"op":"+","text":"                if \"coverage\" in assignment or \"unknown_reasons\" in assignment:"},{"new":272,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"},{"new":273,"old":null,"op":"+","text":"                rows = [assignment]"},{"new":274,"old":null,"op":"+","text":"            companies: dict[str, tuple[Citation, ...]] = {}"},{"new":275,"old":null,"op":"+","text":"            for raw in rows:"},{"new":276,"old":null,"op":"+","text":"                row = _object(raw, \"current_employer_assignment_invalid\")"},{"new":277,"old":null,"op":"+","text":"                company_id = row.get(\"company_id\")"},{"new":278,"old":null,"op":"+","text":"                if not isinstance(company_id, str) or company_id not in registry:"},{"new":279,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_unregistered\")"},{"new":280,"old":null,"op":"+","text":"                citations = _citation_list(row.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False)"},{"new":281,"old":null,"op":"+","text":"                companies[company_id] = tuple(dict.fromkeys((*companies.get(company_id, ()), *citations)))"},{"new":282,"old":269,"op":" ","text":"        except ShortlistInputError as exc:"},{"new":283,"old":270,"op":" ","text":"            queue.append({**pointer, \"reason\": exc.code})"},{"new":284,"old":271,"op":" ","text":"            continue"},{"new":285,"old":272,"op":" ","text":"        existing = assignments.get(profile_url)"},{"new":null,"old":273,"op":"-","text":"        if existing and existing.company_id != company_id:"},{"new":286,"old":null,"op":"+","text":"        if existing and existing.assignments.keys() != companies.keys():"},{"new":287,"old":274,"op":" ","text":"            queue.append({**pointer, \"reason\": \"conflicting_current_employer_assignments\"})"},{"new":288,"old":275,"op":" ","text":"            assignments.pop(profile_url, None)"},{"new":289,"old":276,"op":" ","text":"            continue"},{"new":null,"old":277,"op":"-","text":"        if existing is None:"},{"new":null,"old":278,"op":"-","text":"            assignments[profile_url] = CurrentEmployer(profile_url, company_id, citations)"},{"new":null,"old":279,"op":"-","text":"        else:"},{"new":null,"old":280,"op":"-","text":"            assignments[profile_url] = CurrentEmployer(profile_url, company_id, (*existing.citations, *citations))"},{"new":290,"old":null,"op":"+","text":"        if existing:"},{"new":291,"old":null,"op":"+","text":"            companies = {key: tuple(dict.fromkeys((*existing.assignments[key], *citations))) for key, citations in companies.items()}"},{"new":292,"old":null,"op":"+","text":"        assignments[profile_url] = CurrentEmployer(profile_url, companies)"},{"new":293,"old":281,"op":" ","text":"    unresolved = {item[\"profile_url\"] for item in queue if item[\"profile_url\"] is not None}"},{"new":294,"old":282,"op":" ","text":"    for profile_url in unresolved:"},{"new":295,"old":283,"op":" ","text":"        assignments.pop(profile_url, None)"}],"new_start":257,"old_start":258},{"lines":[{"new":791,"old":779,"op":" ","text":"                \"\","},{"new":792,"old":780,"op":" ","text":"                f\"Reason: {item['reason']}.\","},{"new":793,"old":781,"op":" ","text":"                \"\","},{"new":null,"old":782,"op":"-","text":"                f\"Date added: {item['date_added'] or 'unknown'} \""},{"new":794,"old":null,"op":"+","text":"                (f\"Date added: {item['date_added'] or 'unknown'} \""},{"new":795,"old":783,"op":" ","text":"                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""},{"new":796,"old":784,"op":" ","text":"                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""},{"new":null,"old":785,"op":"-","text":"                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","},{"new":797,"old":null,"op":"+","text":"                f\"reason: {item['date_added_source']['reason'] or 'none'}).\"),"},{"new":798,"old":786,"op":" ","text":"                \"\","},{"new":799,"old":787,"op":" ","text":"                f\"Action: {item['action']}.\","},{"new":800,"old":788,"op":" ","text":"                \"\","}],"new_start":791,"old_start":779},{"lines":[{"new":830,"old":818,"op":" ","text":"            )"},{"new":831,"old":819,"op":" ","text":"            lines.append(f\"- {pointer}: {row['reason']}.\")"},{"new":832,"old":820,"op":" ","text":"        lines.append(\"\")"},{"new":null,"old":821,"op":"-","text":"    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved latest-known-present assumption. No invitation was sent.\", \"\"])"},{"new":833,"old":null,"op":"+","text":"    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved all-jobs-present assumption. No invitation was sent.\", \"\"])"},{"new":834,"old":822,"op":" ","text":"    return \"\\n\".join(lines)"},{"new":835,"old":823,"op":" ","text":""},{"new":836,"old":824,"op":" ","text":""}],"new_start":830,"old_start":818},{"lines":[{"new":931,"old":919,"op":" ","text":"            withheld_counts[\"identity_conflict\"] += 1"},{"new":932,"old":920,"op":" ","text":"            continue"},{"new":933,"old":921,"op":" ","text":"        employer = employers.get(url)"},{"new":null,"old":922,"op":"-","text":"        if employer is None or employer.company_id != candidate_row.company_id:"},{"new":934,"old":null,"op":"+","text":"        if employer is None or candidate_row.company_id not in employer.assignments:"},{"new":935,"old":923,"op":" ","text":"            withheld_counts[\"current_employer_conflict\"] += 1"},{"new":936,"old":924,"op":" ","text":"            continue"},{"new":937,"old":925,"op":" ","text":"        prospect_ids = {"}],"new_start":931,"old_start":919},{"lines":[{"new":997,"old":985,"op":" ","text":"                \"reason\": \"current_employer_missing\","},{"new":998,"old":986,"op":" ","text":"            } for evidence in evidence_rows)"},{"new":999,"old":987,"op":" ","text":"            continue"},{"new":null,"old":988,"op":"-","text":"        company_counts[employer.company_id] += 1"},{"new":null,"old":989,"op":"-","text":"        cap_evidence_by_company[employer.company_id].extend({"},{"new":null,"old":990,"op":"-","text":"            \"evidence_id\": evidence.evidence_id,"},{"new":null,"old":991,"op":"-","text":"            \"profile_url\": profile_url,"},{"new":null,"old":992,"op":"-","text":"            \"source_ref\": evidence.source_ref,"},{"new":null,"old":993,"op":"-","text":"            \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"},{"new":null,"old":994,"op":"-","text":"            \"source_time\": evidence.source_time,"},{"new":null,"old":995,"op":"-","text":"            \"time_precision\": evidence.time_precision,"},{"new":null,"old":996,"op":"-","text":"            \"timezone\": evidence.timezone,"},{"new":null,"old":997,"op":"-","text":"        } for evidence in evidence_rows)"},{"new":1000,"old":null,"op":"+","text":"        for company_id in employer.assignments:"},{"new":1001,"old":null,"op":"+","text":"            company_counts[company_id] += 1"},{"new":1002,"old":null,"op":"+","text":"            cap_evidence_by_company[company_id].extend({"},{"new":1003,"old":null,"op":"+","text":"                \"evidence_id\": evidence.evidence_id,"},{"new":1004,"old":null,"op":"+","text":"                \"profile_url\": profile_url,"},{"new":1005,"old":null,"op":"+","text":"                \"source_ref\": evidence.source_ref,"},{"new":1006,"old":null,"op":"+","text":"                \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"},{"new":1007,"old":null,"op":"+","text":"                \"source_time\": evidence.source_time,"},{"new":1008,"old":null,"op":"+","text":"                \"time_precision\": evidence.time_precision,"},{"new":1009,"old":null,"op":"+","text":"                \"timezone\": evidence.timezone,"},{"new":1010,"old":null,"op":"+","text":"            } for evidence in evidence_rows)"},{"new":1011,"old":998,"op":" ","text":"    history_queue.extend(employer_queue)"},{"new":1012,"old":999,"op":" ","text":"    research_queue = history_queue"},{"new":1013,"old":1000,"op":" ","text":"    unique_queue: list[dict[str, Any]] = []"}],"new_start":997,"old_start":985},{"lines":[{"new":1028,"old":1015,"op":" ","text":"        eligible.sort(key=lambda item: (-(sum(_factor_score(item.factors[name], name) for name in item.factors) if item.factors else -math.inf), item.profile_url))"},{"new":1029,"old":1016,"op":" ","text":"        selected = []"},{"new":1030,"old":1017,"op":" ","text":"        for candidate_row in eligible:"},{"new":null,"old":1018,"op":"-","text":"            if slots[candidate_row.company_id] \u003c= 0:"},{"new":1031,"old":null,"op":"+","text":"            if any(slots[company_id] \u003c= 0 for company_id in employers[candidate_row.profile_url].assignments):"},{"new":1032,"old":1019,"op":" ","text":"                continue"},{"new":1033,"old":1020,"op":" ","text":"            selected.append(candidate_row)"},{"new":null,"old":1021,"op":"-","text":"            slots[candidate_row.company_id] -= 1"},{"new":1034,"old":null,"op":"+","text":"            for company_id in employers[candidate_row.profile_url].assignments:"},{"new":1035,"old":null,"op":"+","text":"                slots[company_id] -= 1"},{"new":1036,"old":1022,"op":" ","text":"            if len(selected) == 25:"},{"new":1037,"old":1023,"op":" ","text":"                break"},{"new":1038,"old":1024,"op":" ","text":"        remaining_slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"},{"new":1039,"old":1025,"op":" ","text":"        for candidate_row in selected:"},{"new":null,"old":1026,"op":"-","text":"            remaining_slots[candidate_row.company_id] -= 1"},{"new":1040,"old":null,"op":"+","text":"            for company_id in employers[candidate_row.profile_url].assignments:"},{"new":1041,"old":null,"op":"+","text":"                remaining_slots[company_id] -= 1"},{"new":1042,"old":1027,"op":" ","text":"        slots = remaining_slots"},{"new":1043,"old":1028,"op":" ","text":"    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"},{"new":1044,"old":1029,"op":" ","text":"    rows_out = [_candidate_json(item) for item in selected]"}],"new_start":1028,"old_start":1015},{"lines":[{"new":1049,"old":1034,"op":" ","text":"        usage: dict[str, Any] = {"},{"new":1050,"old":1035,"op":" ","text":"            \"recorded\": company_counts[company_id] if status == \"ready\" else None,"},{"new":1051,"old":1036,"op":" ","text":"            \"remaining_slots\": max(0, 3 - company_counts[company_id]) if status == \"ready\" else None,"},{"new":1052,"old":null,"op":"+","text":"            \"remaining_slots_after_selection\": slots[company_id] if status == \"ready\" else None,"},{"new":1053,"old":1037,"op":" ","text":"            \"evidence\": cap_evidence_by_company[company_id],"},{"new":1054,"old":1038,"op":" ","text":"        }"},{"new":1055,"old":1039,"op":" ","text":"        company_usage[company_id] = usage"}],"new_start":1049,"old_start":1034},{"lines":[{"new":1058,"old":1042,"op":" ","text":"        \"status\": status,"},{"new":1059,"old":1043,"op":" ","text":"        \"cap_scope\": cap_scope,"},{"new":1060,"old":1044,"op":" ","text":"        \"score_version\": _SCORE_VERSION,"},{"new":null,"old":1045,"op":"-","text":"        \"evidence_validation\": \"current employer is an owner-approved latest-known-present assumption; citations are retained but external page contents are not fetched\","},{"new":1061,"old":null,"op":"+","text":"        \"evidence_validation\": \"current employers use the owner-approved all-jobs-present assumption; citations are retained but external page contents are not fetched\","},{"new":1062,"old":1046,"op":" ","text":"        \"source_freshness\": {"},{"new":1063,"old":1047,"op":" ","text":"            \"acquisition\": \"fresh\","},{"new":1064,"old":1048,"op":" ","text":"            \"collected_at\": collected_at.isoformat(),"}],"new_start":1058,"old_start":1042},{"lines":[{"new":1078,"old":1062,"op":" ","text":"        \"current_employer_assignments\": ["},{"new":1079,"old":1063,"op":" ","text":"            {"},{"new":1080,"old":1064,"op":" ","text":"                \"profile_url\": item.profile_url,"},{"new":null,"old":1065,"op":"-","text":"                \"company_id\": item.company_id,"},{"new":null,"old":1066,"op":"-","text":"                \"citations\": [_citation_json(citation) for citation in item.citations],"},{"new":1081,"old":null,"op":"+","text":"                \"company_id\": company_id,"},{"new":1082,"old":null,"op":"+","text":"                \"citations\": [_citation_json(citation) for citation in citations],"},{"new":1083,"old":1067,"op":" ","text":"            }"},{"new":1084,"old":null,"op":"+","text":"            for item in sorted(employers.values(), key=lambda item: item.profile_url)"},{"new":1085,"old":null,"op":"+","text":"            for company_id, citations in sorted(item.assignments.items())"},{"new":1086,"old":null,"op":"+","text":"        ],"},{"new":1087,"old":null,"op":"+","text":"        \"current_employer_sets\": ["},{"new":1088,"old":null,"op":"+","text":"            {\"profile_url\": item.profile_url, \"company_ids\": sorted(item.assignments), \"coverage\": \"complete\"}"},{"new":1089,"old":1068,"op":" ","text":"            for item in sorted(employers.values(), key=lambda item: item.profile_url)"},{"new":1090,"old":1069,"op":" ","text":"        ],"},{"new":1091,"old":1070,"op":" ","text":"        \"company_usage\": company_usage,"}],"new_start":1078,"old_start":1062}],"kind":"code","language":"python","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","removed":35,"sensitive":null,"status":"modified","symbols":["src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer","src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError","src/linkedin_mdp_mcp/invitation_shortlist.py::_array","src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_json","src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_list","src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown","src/linkedin_mdp_mcp/invitation_shortlist.py::_object","src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"]},{"added":87,"hunks":[{"lines":[{"new":978,"old":978,"op":" ","text":"    assert queued[0][\"evidence_id\"].startswith(\"current-employer-key-sha256:\")"},{"new":979,"old":979,"op":" ","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":980,"old":980,"op":" ","text":"    json.dumps(result, ensure_ascii=False).encode(\"utf-8\")"},{"new":981,"old":null,"op":"+","text":""},{"new":982,"old":null,"op":"+","text":""},{"new":983,"old":null,"op":"+","text":"def employer_set(*company_ids: str, coverage: str = \"complete\") -\u003e dict[str, Any]:"},{"new":984,"old":null,"op":"+","text":"    \"\"\"Create explicit cited concurrent-company claims without a primary employer.\"\"\""},{"new":985,"old":null,"op":"+","text":"    return {\"assignments\": [{\"company_id\": key, \"citations\": [citation(\"employer-\" + key)]} for key in company_ids], \"coverage\": coverage, \"unknown_reasons\": [] if coverage == \"complete\" else [\"unnamed_current_role\"]}"},{"new":986,"old":null,"op":"+","text":""},{"new":987,"old":null,"op":"+","text":""},{"new":988,"old":null,"op":"+","text":"def test_present_set_charges_each_company_once_and_keeps_flat_audit() -\u003e None:"},{"new":989,"old":null,"op":"+","text":"    \"\"\"Replayed invitation facts charge one profile once to every present employer.\"\"\""},{"new":990,"old":null,"op":"+","text":"    data = qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\"), PROFILE_B: employer_set(\"co-a\", \"co-b\")})"},{"new":991,"old":null,"op":"+","text":"    data[\"current_employers\"][PROFILE_B][\"assignments\"].append(deepcopy(data[\"current_employers\"][PROFILE_B][\"assignments\"][0]))"},{"new":992,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B), {**invitation(PROFILE_B), \"Sent At\": \"9/01/26, 12:00 PM\"}]), data)"},{"new":993,"old":null,"op":"+","text":"    assert result[\"status\"] == \"ready\""},{"new":994,"old":null,"op":"+","text":"    assert [row[\"profile_url\"] for row in result[\"invitations\"]] == [PROFILE_A]"},{"new":995,"old":null,"op":"+","text":"    assert {key: row[\"recorded\"] for key, row in result[\"company_usage\"].items()} == {\"co-a\": 1, \"co-b\": 1}"},{"new":996,"old":null,"op":"+","text":"    assert len(result[\"current_employer_assignments\"]) == 4"},{"new":997,"old":null,"op":"+","text":"    assert all(len(row[\"citations\"]) == 1 for row in result[\"current_employer_assignments\"])"},{"new":998,"old":null,"op":"+","text":"    assert result[\"current_employer_sets\"][0][\"company_ids\"] == [\"co-a\", \"co-b\"]"},{"new":999,"old":null,"op":"+","text":""},{"new":1000,"old":null,"op":"+","text":""},{"new":1001,"old":null,"op":"+","text":"def test_present_set_membership_does_not_invent_primary_employer() -\u003e None:"},{"new":1002,"old":null,"op":"+","text":"    \"\"\"A qualified employer anywhere in the set is valid, and outside the set is withheld.\"\"\""},{"new":1003,"old":null,"op":"+","text":"    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\", \"co-a\")}))"},{"new":1004,"old":null,"op":"+","text":"    assert len(result[\"invitations\"]) == 1"},{"new":1005,"old":null,"op":"+","text":"    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\")}))"},{"new":1006,"old":null,"op":"+","text":"    assert result[\"withheld_counts\"][\"current_employer_conflict\"] == 1"},{"new":1007,"old":null,"op":"+","text":""},{"new":1008,"old":null,"op":"+","text":""},{"new":1009,"old":null,"op":"+","text":"@pytest.mark.parametrize(\"value,reason\", ["},{"new":1010,"old":null,"op":"+","text":"    (employer_set(), \"current_employer_assignment_invalid\"),"},{"new":1011,"old":null,"op":"+","text":"    (employer_set(\"unknown\"), \"current_employer_unregistered\"),"},{"new":1012,"old":null,"op":"+","text":"    (employer_set(\"co-a\", coverage=\"partial\"), \"current_employer_coverage_incomplete\"),"},{"new":1013,"old":null,"op":"+","text":"    ({**employer_set(\"co-a\"), \"company_id\": \"co-b\"}, \"current_employer_assignment_invalid\"),"},{"new":1014,"old":null,"op":"+","text":"])"},{"new":1015,"old":null,"op":"+","text":"def test_invalid_present_sets_keep_global_withholding(value: dict[str, Any], reason: str) -\u003e None:"},{"new":1016,"old":null,"op":"+","text":"    \"\"\"Unbounded or contradictory claims cannot create company capacity.\"\"\""},{"new":1017,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers={PROFILE_A: employer_set(\"co-a\"), PROFILE_B: value}))"},{"new":1018,"old":null,"op":"+","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":1019,"old":null,"op":"+","text":"    assert result[\"invitations\"] == []"},{"new":1020,"old":null,"op":"+","text":"    assert any(row[\"reason\"] == reason for row in result[\"research_queue\"])"},{"new":1021,"old":null,"op":"+","text":"    assert all(row[\"recorded\"] is None for row in result[\"company_usage\"].values())"},{"new":1022,"old":null,"op":"+","text":""},{"new":1023,"old":null,"op":"+","text":""},{"new":1024,"old":null,"op":"+","text":"def test_legacy_employer_rows_reject_completeness_metadata() -\u003e None:"},{"new":1025,"old":null,"op":"+","text":"    legacy = {"},{"new":1026,"old":null,"op":"+","text":"        \"company_id\": \"co-a\","},{"new":1027,"old":null,"op":"+","text":"        \"citations\": [citation(\"employer-a\")],"},{"new":1028,"old":null,"op":"+","text":"        \"coverage\": \"partial\","},{"new":1029,"old":null,"op":"+","text":"        \"unknown_reasons\": [\"unnamed_current_role\"],"},{"new":1030,"old":null,"op":"+","text":"    }"},{"new":1031,"old":null,"op":"+","text":"    result = run("},{"new":1032,"old":null,"op":"+","text":"        source_export(invitations=[invitation(PROFILE_B)]),"},{"new":1033,"old":null,"op":"+","text":"        qualification(current_employers={PROFILE_A: legacy, PROFILE_B: employer_set(\"co-b\")}),"},{"new":1034,"old":null,"op":"+","text":"    )"},{"new":1035,"old":null,"op":"+","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":1036,"old":null,"op":"+","text":"    assert result[\"invitations\"] == []"},{"new":1037,"old":null,"op":"+","text":"    assert any(row[\"reason\"] == \"current_employer_assignment_invalid\" for row in result[\"research_queue\"])"},{"new":1038,"old":null,"op":"+","text":""},{"new":1039,"old":null,"op":"+","text":""},{"new":1040,"old":null,"op":"+","text":"def test_conflicting_canonical_present_sets_are_not_unioned() -\u003e None:"},{"new":1041,"old":null,"op":"+","text":"    \"\"\"Distinct normalized-key records claiming different complete sets remain unresolved.\"\"\""},{"new":1042,"old":null,"op":"+","text":"    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-a\")}"},{"new":1043,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"},{"new":1044,"old":null,"op":"+","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":1045,"old":null,"op":"+","text":"    assert any(row[\"reason\"] == \"conflicting_current_employer_assignments\" for row in result[\"research_queue\"])"},{"new":1046,"old":null,"op":"+","text":""},{"new":1047,"old":null,"op":"+","text":""},{"new":1048,"old":null,"op":"+","text":"def test_identical_canonical_present_sets_merge_citations_only() -\u003e None:"},{"new":1049,"old":null,"op":"+","text":"    \"\"\"Equivalent complete inputs collapse aliases, order and duplicate citation facts.\"\"\""},{"new":1050,"old":null,"op":"+","text":"    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-b\", \"co-a\")}"},{"new":1051,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"},{"new":1052,"old":null,"op":"+","text":"    assert result[\"status\"] == \"ready\""},{"new":1053,"old":null,"op":"+","text":"    rows = [row for row in result[\"current_employer_assignments\"] if row[\"profile_url\"] == PROFILE_B]"},{"new":1054,"old":null,"op":"+","text":"    assert len(rows) == 2 and all(len(row[\"citations\"]) == 1 for row in rows)"},{"new":1055,"old":null,"op":"+","text":""},{"new":1056,"old":null,"op":"+","text":""},{"new":1057,"old":null,"op":"+","text":"def test_present_set_selection_requires_and_consumes_every_company_slot() -\u003e None:"},{"new":1058,"old":null,"op":"+","text":"    \"\"\"A second employer at capacity blocks the person, and selected people charge every job.\"\"\""},{"new":1059,"old":null,"op":"+","text":"    profiles = [PROFILE_B, PROFILE_C, \"https://www.linkedin.com/in/person-d\"]"},{"new":1060,"old":null,"op":"+","text":"    prospects = [prospect_row(PROFILE_A, \"p-a\"), *[prospect_row(url, f\"p-{i}\") for i, url in enumerate(profiles)]]"},{"new":1061,"old":null,"op":"+","text":"    claims = {PROFILE_A: employer_set(\"co-a\", \"co-b\"), **{url: employer_set(\"co-b\") for url in profiles}}"},{"new":1062,"old":null,"op":"+","text":"    result = run(source_export(prospects=prospects, invitations=[invitation(url) for url in profiles]), qualification(current_employers=claims))"},{"new":1063,"old":null,"op":"+","text":"    assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3"},{"new":1064,"old":null,"op":"+","text":"    assert result[\"invitations\"] == []"},{"new":1065,"old":null,"op":"+","text":"    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\")}))"},{"new":1066,"old":null,"op":"+","text":"    assert result[\"company_usage\"][\"co-a\"][\"remaining_slots_after_selection\"] == 2"},{"new":1067,"old":null,"op":"+","text":"    assert result[\"company_usage\"][\"co-b\"][\"remaining_slots_after_selection\"] == 2"}],"new_start":978,"old_start":978}],"kind":"test","language":"python","path":"tests/e2e_invitation_shortlist.py","removed":0,"sensitive":null,"status":"modified","symbols":["tests/e2e_invitation_shortlist.py::citation","tests/e2e_invitation_shortlist.py::employer_set","tests/e2e_invitation_shortlist.py::invitation","tests/e2e_invitation_shortlist.py::prospect_row","tests/e2e_invitation_shortlist.py::qualification","tests/e2e_invitation_shortlist.py::run","tests/e2e_invitation_shortlist.py::source_export","tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer","tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm"]},{"added":16,"hunks":[{"lines":[{"new":38,"old":38,"op":" ","text":"        check=False,"},{"new":39,"old":39,"op":" ","text":"    )"},{"new":40,"old":40,"op":" ","text":"    assert collection.returncode == 0, collection.stdout + collection.stderr"},{"new":41,"old":null,"op":"+","text":"    required_present_employer_regressions = {"},{"new":42,"old":null,"op":"+","text":"        \"test_present_set_charges_each_company_once_and_keeps_flat_audit\","},{"new":43,"old":null,"op":"+","text":"        \"test_present_set_membership_does_not_invent_primary_employer\","},{"new":44,"old":null,"op":"+","text":"        \"test_conflicting_canonical_present_sets_are_not_unioned\","},{"new":45,"old":null,"op":"+","text":"        \"test_present_set_selection_requires_and_consumes_every_company_slot\","},{"new":46,"old":null,"op":"+","text":"        \"test_legacy_employer_rows_reject_completeness_metadata\","},{"new":47,"old":null,"op":"+","text":"    }"},{"new":48,"old":null,"op":"+","text":"    missing_regressions = sorted("},{"new":49,"old":null,"op":"+","text":"        test_name for test_name in required_present_employer_regressions if test_name not in collection.stdout"},{"new":50,"old":null,"op":"+","text":"    )"},{"new":51,"old":null,"op":"+","text":"    assert not missing_regressions, f\"missing red-first regression coverage: {missing_regressions}\""},{"new":52,"old":41,"op":" ","text":"    assert \"test_candidate_citations_must_attest_exact_profile\" in collection.stdout"},{"new":53,"old":42,"op":" ","text":""},{"new":54,"old":43,"op":" ","text":"    body = {"}],"new_start":38,"old_start":38},{"lines":[{"new":83,"old":72,"op":" ","text":"            \"UTC conversion overflow aborted timestamp enrichment\","},{"new":84,"old":73,"op":" ","text":"            \"private Markdown omitted the creation-time prospect ID\","},{"new":85,"old":74,"op":" ","text":"            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","},{"new":86,"old":null,"op":"+","text":"            \"explicit concurrent employers could not charge each historical company once\","},{"new":87,"old":null,"op":"+","text":"            \"complete employer sets could not admit qualified-company membership\","},{"new":88,"old":null,"op":"+","text":"            \"conflicting canonical sets lacked an explicit conflict reason\","},{"new":89,"old":null,"op":"+","text":"            \"secondary employer at capacity admitted an invitation\","},{"new":90,"old":null,"op":"+","text":"            \"legacy employer rows ignored incomplete coverage metadata\","},{"new":91,"old":75,"op":" ","text":"            \"candidate qualification citation attested a different profile\","},{"new":92,"old":76,"op":" ","text":"        ],"},{"new":93,"old":77,"op":" ","text":"    }"}],"new_start":83,"old_start":72}],"kind":"test","language":"python","path":"tests/test_invitation_shortlist_e2e.py","removed":0,"sensitive":null,"status":"modified","symbols":["tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e"]}],"head_sha":"537a16de03f9fad8ffe0def188494037991b275a","pr":"komaksym/linkedin-mdp#17","symbols":[{"added":0,"base_span":[61,85],"call_sites":1,"hunks":[],"id":"scripts/build_invitation_shortlist.py::main","kind":"function","path":"scripts/build_invitation_shortlist.py","qualname":"main","removed":0,"span":[61,85],"status":"context"},{"added":2,"base_span":[68,74],"call_sites":1,"hunks":[{"lines":[{"new":68,"old":68,"op":" ","text":"@dataclass(frozen=True)"},{"new":69,"old":69,"op":" ","text":"class CurrentEmployer:"},{"new":null,"old":70,"op":"-","text":"    \"\"\"Represent one exact profile's owner-approved latest-known employer.\"\"\""},{"new":70,"old":null,"op":"+","text":"    \"\"\"Represent the cited companies simultaneously present for one exact profile.\"\"\""},{"new":71,"old":71,"op":" ","text":""},{"new":72,"old":72,"op":" ","text":"    profile_url: str"},{"new":null,"old":73,"op":"-","text":"    company_id: str"},{"new":null,"old":74,"op":"-","text":"    citations: tuple[Citation, ...]"},{"new":73,"old":null,"op":"+","text":"    assignments: Mapping[str, tuple[Citation, ...]]"}],"new_start":68,"old_start":68}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer","kind":"class","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"CurrentEmployer","removed":3,"span":[68,73],"status":"modified"},{"added":0,"base_span":[19,25],"call_sites":51,"hunks":[],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::ShortlistInputError","kind":"class","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"ShortlistInputError","removed":0,"span":[19,25],"status":"context"},{"added":0,"base_span":[129,133],"call_sites":9,"hunks":[],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_array","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_array","removed":0,"span":[128,132],"status":"context"},{"added":0,"base_span":[725,731],"call_sites":3,"hunks":[],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_json","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_citation_json","removed":0,"span":[737,743],"status":"context"},{"added":0,"base_span":[162,205],"call_sites":3,"hunks":[],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_citation_list","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_citation_list","removed":0,"span":[161,204],"status":"context"},{"added":25,"base_span":[238,284],"call_sites":1,"hunks":[{"lines":[{"new":257,"old":258,"op":" ","text":"            queue.append({**pointer, \"reason\": \"current_employer_assignment_invalid\"})"},{"new":258,"old":259,"op":" ","text":"            continue"},{"new":259,"old":260,"op":" ","text":"        assignment = raw_assignment"},{"new":null,"old":261,"op":"-","text":"        company_id = assignment.get(\"company_id\")"},{"new":null,"old":262,"op":"-","text":"        if not isinstance(company_id, str) or company_id not in registry:"},{"new":null,"old":263,"op":"-","text":"            queue.append({**pointer, \"reason\": \"current_employer_unregistered\"})"},{"new":null,"old":264,"op":"-","text":"            continue"},{"new":260,"old":265,"op":" ","text":"        try:"},{"new":null,"old":266,"op":"-","text":"            citations = _citation_list("},{"new":null,"old":267,"op":"-","text":"                assignment.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False"},{"new":null,"old":268,"op":"-","text":"            )"},{"new":261,"old":null,"op":"+","text":"            if \"assignments\" in assignment:"},{"new":262,"old":null,"op":"+","text":"                if \"company_id\" in assignment or \"citations\" in assignment:"},{"new":263,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"},{"new":264,"old":null,"op":"+","text":"                reasons = assignment.get(\"unknown_reasons\")"},{"new":265,"old":null,"op":"+","text":"                if assignment.get(\"coverage\") != \"complete\" or reasons != []:"},{"new":266,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_coverage_incomplete\")"},{"new":267,"old":null,"op":"+","text":"                rows = _array(assignment[\"assignments\"], \"current_employer_assignment_invalid\")"},{"new":268,"old":null,"op":"+","text":"                if not rows:"},{"new":269,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"},{"new":270,"old":null,"op":"+","text":"            else:"},{"new":271,"old":null,"op":"+","text":"                if \"coverage\" in assignment or \"unknown_reasons\" in assignment:"},{"new":272,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_assignment_invalid\")"},{"new":273,"old":null,"op":"+","text":"                rows = [assignment]"},{"new":274,"old":null,"op":"+","text":"            companies: dict[str, tuple[Citation, ...]] = {}"},{"new":275,"old":null,"op":"+","text":"            for raw in rows:"},{"new":276,"old":null,"op":"+","text":"                row = _object(raw, \"current_employer_assignment_invalid\")"},{"new":277,"old":null,"op":"+","text":"                company_id = row.get(\"company_id\")"},{"new":278,"old":null,"op":"+","text":"                if not isinstance(company_id, str) or company_id not in registry:"},{"new":279,"old":null,"op":"+","text":"                    raise ShortlistInputError(\"current_employer_unregistered\")"},{"new":280,"old":null,"op":"+","text":"                citations = _citation_list(row.get(\"citations\"), now, max_age=_QUALIFICATION_MAX_AGE, check_source_date=False)"},{"new":281,"old":null,"op":"+","text":"                companies[company_id] = tuple(dict.fromkeys((*companies.get(company_id, ()), *citations)))"},{"new":282,"old":269,"op":" ","text":"        except ShortlistInputError as exc:"},{"new":283,"old":270,"op":" ","text":"            queue.append({**pointer, \"reason\": exc.code})"},{"new":284,"old":271,"op":" ","text":"            continue"},{"new":285,"old":272,"op":" ","text":"        existing = assignments.get(profile_url)"},{"new":null,"old":273,"op":"-","text":"        if existing and existing.company_id != company_id:"},{"new":286,"old":null,"op":"+","text":"        if existing and existing.assignments.keys() != companies.keys():"},{"new":287,"old":274,"op":" ","text":"            queue.append({**pointer, \"reason\": \"conflicting_current_employer_assignments\"})"},{"new":288,"old":275,"op":" ","text":"            assignments.pop(profile_url, None)"},{"new":289,"old":276,"op":" ","text":"            continue"},{"new":null,"old":277,"op":"-","text":"        if existing is None:"},{"new":null,"old":278,"op":"-","text":"            assignments[profile_url] = CurrentEmployer(profile_url, company_id, citations)"},{"new":null,"old":279,"op":"-","text":"        else:"},{"new":null,"old":280,"op":"-","text":"            assignments[profile_url] = CurrentEmployer(profile_url, company_id, (*existing.citations, *citations))"},{"new":290,"old":null,"op":"+","text":"        if existing:"},{"new":291,"old":null,"op":"+","text":"            companies = {key: tuple(dict.fromkeys((*existing.assignments[key], *citations))) for key, citations in companies.items()}"},{"new":292,"old":null,"op":"+","text":"        assignments[profile_url] = CurrentEmployer(profile_url, companies)"},{"new":293,"old":281,"op":" ","text":"    unresolved = {item[\"profile_url\"] for item in queue if item[\"profile_url\"] is not None}"},{"new":294,"old":282,"op":" ","text":"    for profile_url in unresolved:"},{"new":295,"old":283,"op":" ","text":"        assignments.pop(profile_url, None)"}],"new_start":257,"old_start":258}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_current_employers","removed":12,"span":[237,296],"status":"modified"},{"added":3,"base_span":[767,822],"call_sites":1,"hunks":[{"lines":[{"new":791,"old":779,"op":" ","text":"                \"\","},{"new":792,"old":780,"op":" ","text":"                f\"Reason: {item['reason']}.\","},{"new":793,"old":781,"op":" ","text":"                \"\","},{"new":null,"old":782,"op":"-","text":"                f\"Date added: {item['date_added'] or 'unknown'} \""},{"new":794,"old":null,"op":"+","text":"                (f\"Date added: {item['date_added'] or 'unknown'} \""},{"new":795,"old":783,"op":" ","text":"                f\"(source: {item['date_added_source']['source_ref'] or 'unknown'}; \""},{"new":796,"old":784,"op":" ","text":"                f\"prospect: {item['date_added_source']['prospect_id'] or 'unknown'}; \""},{"new":null,"old":785,"op":"-","text":"                f\"reason: {item['date_added_source']['reason'] or 'none'}).\","},{"new":797,"old":null,"op":"+","text":"                f\"reason: {item['date_added_source']['reason'] or 'none'}).\"),"},{"new":798,"old":786,"op":" ","text":"                \"\","},{"new":799,"old":787,"op":" ","text":"                f\"Action: {item['action']}.\","},{"new":800,"old":788,"op":" ","text":"                \"\","}],"new_start":791,"old_start":779},{"lines":[{"new":830,"old":818,"op":" ","text":"            )"},{"new":831,"old":819,"op":" ","text":"            lines.append(f\"- {pointer}: {row['reason']}.\")"},{"new":832,"old":820,"op":" ","text":"        lines.append(\"\")"},{"new":null,"old":821,"op":"-","text":"    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved latest-known-present assumption. No invitation was sent.\", \"\"])"},{"new":833,"old":null,"op":"+","text":"    lines.extend([\"## Audit\", \"\", f\"Score version: `{_SCORE_VERSION}`. Current employers use the owner-approved all-jobs-present assumption. No invitation was sent.\", \"\"])"},{"new":834,"old":822,"op":" ","text":"    return \"\\n\".join(lines)"}],"new_start":830,"old_start":818}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_make_markdown","removed":3,"span":[779,834],"status":"modified"},{"added":0,"base_span":[122,126],"call_sites":11,"hunks":[],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::_object","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"_object","removed":0,"span":[121,125],"status":"context"},{"added":26,"base_span":[861,1075],"call_sites":3,"hunks":[{"lines":[{"new":931,"old":919,"op":" ","text":"            withheld_counts[\"identity_conflict\"] += 1"},{"new":932,"old":920,"op":" ","text":"            continue"},{"new":933,"old":921,"op":" ","text":"        employer = employers.get(url)"},{"new":null,"old":922,"op":"-","text":"        if employer is None or employer.company_id != candidate_row.company_id:"},{"new":934,"old":null,"op":"+","text":"        if employer is None or candidate_row.company_id not in employer.assignments:"},{"new":935,"old":923,"op":" ","text":"            withheld_counts[\"current_employer_conflict\"] += 1"},{"new":936,"old":924,"op":" ","text":"            continue"},{"new":937,"old":925,"op":" ","text":"        prospect_ids = {"}],"new_start":931,"old_start":919},{"lines":[{"new":997,"old":985,"op":" ","text":"                \"reason\": \"current_employer_missing\","},{"new":998,"old":986,"op":" ","text":"            } for evidence in evidence_rows)"},{"new":999,"old":987,"op":" ","text":"            continue"},{"new":null,"old":988,"op":"-","text":"        company_counts[employer.company_id] += 1"},{"new":null,"old":989,"op":"-","text":"        cap_evidence_by_company[employer.company_id].extend({"},{"new":null,"old":990,"op":"-","text":"            \"evidence_id\": evidence.evidence_id,"},{"new":null,"old":991,"op":"-","text":"            \"profile_url\": profile_url,"},{"new":null,"old":992,"op":"-","text":"            \"source_ref\": evidence.source_ref,"},{"new":null,"old":993,"op":"-","text":"            \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"},{"new":null,"old":994,"op":"-","text":"            \"source_time\": evidence.source_time,"},{"new":null,"old":995,"op":"-","text":"            \"time_precision\": evidence.time_precision,"},{"new":null,"old":996,"op":"-","text":"            \"timezone\": evidence.timezone,"},{"new":null,"old":997,"op":"-","text":"        } for evidence in evidence_rows)"},{"new":1000,"old":null,"op":"+","text":"        for company_id in employer.assignments:"},{"new":1001,"old":null,"op":"+","text":"            company_counts[company_id] += 1"},{"new":1002,"old":null,"op":"+","text":"            cap_evidence_by_company[company_id].extend({"},{"new":1003,"old":null,"op":"+","text":"                \"evidence_id\": evidence.evidence_id,"},{"new":1004,"old":null,"op":"+","text":"                \"profile_url\": profile_url,"},{"new":1005,"old":null,"op":"+","text":"                \"source_ref\": evidence.source_ref,"},{"new":1006,"old":null,"op":"+","text":"                \"event_date\": evidence.event_date.isoformat() if evidence.event_date else None,"},{"new":1007,"old":null,"op":"+","text":"                \"source_time\": evidence.source_time,"},{"new":1008,"old":null,"op":"+","text":"                \"time_precision\": evidence.time_precision,"},{"new":1009,"old":null,"op":"+","text":"                \"timezone\": evidence.timezone,"},{"new":1010,"old":null,"op":"+","text":"            } for evidence in evidence_rows)"},{"new":1011,"old":998,"op":" ","text":"    history_queue.extend(employer_queue)"},{"new":1012,"old":999,"op":" ","text":"    research_queue = history_queue"},{"new":1013,"old":1000,"op":" ","text":"    unique_queue: list[dict[str, Any]] = []"}],"new_start":997,"old_start":985},{"lines":[{"new":1028,"old":1015,"op":" ","text":"        eligible.sort(key=lambda item: (-(sum(_factor_score(item.factors[name], name) for name in item.factors) if item.factors else -math.inf), item.profile_url))"},{"new":1029,"old":1016,"op":" ","text":"        selected = []"},{"new":1030,"old":1017,"op":" ","text":"        for candidate_row in eligible:"},{"new":null,"old":1018,"op":"-","text":"            if slots[candidate_row.company_id] \u003c= 0:"},{"new":1031,"old":null,"op":"+","text":"            if any(slots[company_id] \u003c= 0 for company_id in employers[candidate_row.profile_url].assignments):"},{"new":1032,"old":1019,"op":" ","text":"                continue"},{"new":1033,"old":1020,"op":" ","text":"            selected.append(candidate_row)"},{"new":null,"old":1021,"op":"-","text":"            slots[candidate_row.company_id] -= 1"},{"new":1034,"old":null,"op":"+","text":"            for company_id in employers[candidate_row.profile_url].assignments:"},{"new":1035,"old":null,"op":"+","text":"                slots[company_id] -= 1"},{"new":1036,"old":1022,"op":" ","text":"            if len(selected) == 25:"},{"new":1037,"old":1023,"op":" ","text":"                break"},{"new":1038,"old":1024,"op":" ","text":"        remaining_slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"},{"new":1039,"old":1025,"op":" ","text":"        for candidate_row in selected:"},{"new":null,"old":1026,"op":"-","text":"            remaining_slots[candidate_row.company_id] -= 1"},{"new":1040,"old":null,"op":"+","text":"            for company_id in employers[candidate_row.profile_url].assignments:"},{"new":1041,"old":null,"op":"+","text":"                remaining_slots[company_id] -= 1"},{"new":1042,"old":1027,"op":" ","text":"        slots = remaining_slots"},{"new":1043,"old":1028,"op":" ","text":"    research_queue.sort(key=lambda item: (item.get(\"evidence_id\", \"\"), item[\"reason\"]))"},{"new":1044,"old":1029,"op":" ","text":"    rows_out = [_candidate_json(item) for item in selected]"}],"new_start":1028,"old_start":1015},{"lines":[{"new":1049,"old":1034,"op":" ","text":"        usage: dict[str, Any] = {"},{"new":1050,"old":1035,"op":" ","text":"            \"recorded\": company_counts[company_id] if status == \"ready\" else None,"},{"new":1051,"old":1036,"op":" ","text":"            \"remaining_slots\": max(0, 3 - company_counts[company_id]) if status == \"ready\" else None,"},{"new":1052,"old":null,"op":"+","text":"            \"remaining_slots_after_selection\": slots[company_id] if status == \"ready\" else None,"},{"new":1053,"old":1037,"op":" ","text":"            \"evidence\": cap_evidence_by_company[company_id],"},{"new":1054,"old":1038,"op":" ","text":"        }"},{"new":1055,"old":1039,"op":" ","text":"        company_usage[company_id] = usage"}],"new_start":1049,"old_start":1034},{"lines":[{"new":1058,"old":1042,"op":" ","text":"        \"status\": status,"},{"new":1059,"old":1043,"op":" ","text":"        \"cap_scope\": cap_scope,"},{"new":1060,"old":1044,"op":" ","text":"        \"score_version\": _SCORE_VERSION,"},{"new":null,"old":1045,"op":"-","text":"        \"evidence_validation\": \"current employer is an owner-approved latest-known-present assumption; citations are retained but external page contents are not fetched\","},{"new":1061,"old":null,"op":"+","text":"        \"evidence_validation\": \"current employers use the owner-approved all-jobs-present assumption; citations are retained but external page contents are not fetched\","},{"new":1062,"old":1046,"op":" ","text":"        \"source_freshness\": {"},{"new":1063,"old":1047,"op":" ","text":"            \"acquisition\": \"fresh\","},{"new":1064,"old":1048,"op":" ","text":"            \"collected_at\": collected_at.isoformat(),"}],"new_start":1058,"old_start":1042},{"lines":[{"new":1078,"old":1062,"op":" ","text":"        \"current_employer_assignments\": ["},{"new":1079,"old":1063,"op":" ","text":"            {"},{"new":1080,"old":1064,"op":" ","text":"                \"profile_url\": item.profile_url,"},{"new":null,"old":1065,"op":"-","text":"                \"company_id\": item.company_id,"},{"new":null,"old":1066,"op":"-","text":"                \"citations\": [_citation_json(citation) for citation in item.citations],"},{"new":1081,"old":null,"op":"+","text":"                \"company_id\": company_id,"},{"new":1082,"old":null,"op":"+","text":"                \"citations\": [_citation_json(citation) for citation in citations],"},{"new":1083,"old":1067,"op":" ","text":"            }"},{"new":1084,"old":null,"op":"+","text":"            for item in sorted(employers.values(), key=lambda item: item.profile_url)"},{"new":1085,"old":null,"op":"+","text":"            for company_id, citations in sorted(item.assignments.items())"},{"new":1086,"old":null,"op":"+","text":"        ],"},{"new":1087,"old":null,"op":"+","text":"        \"current_employer_sets\": ["},{"new":1088,"old":null,"op":"+","text":"            {\"profile_url\": item.profile_url, \"company_ids\": sorted(item.assignments), \"coverage\": \"complete\"}"},{"new":1089,"old":1068,"op":" ","text":"            for item in sorted(employers.values(), key=lambda item: item.profile_url)"},{"new":1090,"old":1069,"op":" ","text":"        ],"},{"new":1091,"old":1070,"op":" ","text":"        \"company_usage\": company_usage,"}],"new_start":1078,"old_start":1062}],"id":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist","kind":"function","path":"src/linkedin_mdp_mcp/invitation_shortlist.py","qualname":"build_invitation_shortlist","removed":17,"span":[873,1096],"status":"modified"},{"added":0,"base_span":[31,40],"call_sites":26,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::citation","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"citation","removed":0,"span":[31,40],"status":"context"},{"added":3,"base_span":null,"call_sites":19,"hunks":[{"lines":[{"new":983,"old":null,"op":"+","text":"def employer_set(*company_ids: str, coverage: str = \"complete\") -\u003e dict[str, Any]:"},{"new":984,"old":null,"op":"+","text":"    \"\"\"Create explicit cited concurrent-company claims without a primary employer.\"\"\""},{"new":985,"old":null,"op":"+","text":"    return {\"assignments\": [{\"company_id\": key, \"citations\": [citation(\"employer-\" + key)]} for key in company_ids], \"coverage\": coverage, \"unknown_reasons\": [] if coverage == \"complete\" else [\"unnamed_current_role\"]}"}],"new_start":983,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::employer_set","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"employer_set","removed":0,"span":[983,985],"status":"added"},{"added":0,"base_span":[153,155],"call_sites":16,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::invitation","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"invitation","removed":0,"span":[153,155],"status":"context"},{"added":0,"base_span":[43,45],"call_sites":21,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::prospect_row","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"prospect_row","removed":0,"span":[43,45],"status":"context"},{"added":0,"base_span":[95,118],"call_sites":66,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::qualification","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"qualification","removed":0,"span":[95,118],"status":"context"},{"added":0,"base_span":[158,160],"call_sites":63,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::run","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"run","removed":0,"span":[158,160],"status":"context"},{"added":0,"base_span":[48,92],"call_sites":65,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::source_export","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"source_export","removed":0,"span":[48,92],"status":"context"},{"added":6,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":1040,"old":null,"op":"+","text":"def test_conflicting_canonical_present_sets_are_not_unioned() -\u003e None:"},{"new":1041,"old":null,"op":"+","text":"    \"\"\"Distinct normalized-key records claiming different complete sets remain unresolved.\"\"\""},{"new":1042,"old":null,"op":"+","text":"    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-a\")}"},{"new":1043,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"},{"new":1044,"old":null,"op":"+","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":1045,"old":null,"op":"+","text":"    assert any(row[\"reason\"] == \"conflicting_current_employer_assignments\" for row in result[\"research_queue\"])"}],"new_start":1040,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_conflicting_canonical_present_sets_are_not_unioned","removed":0,"span":[1040,1045],"status":"added"},{"added":7,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":1048,"old":null,"op":"+","text":"def test_identical_canonical_present_sets_merge_citations_only() -\u003e None:"},{"new":1049,"old":null,"op":"+","text":"    \"\"\"Equivalent complete inputs collapse aliases, order and duplicate citation facts.\"\"\""},{"new":1050,"old":null,"op":"+","text":"    claims = {PROFILE_A: employer_set(\"co-a\"), PROFILE_B: employer_set(\"co-a\", \"co-b\"), \"https://linkedin.com/in/person-b/\": employer_set(\"co-b\", \"co-a\")}"},{"new":1051,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers=claims))"},{"new":1052,"old":null,"op":"+","text":"    assert result[\"status\"] == \"ready\""},{"new":1053,"old":null,"op":"+","text":"    rows = [row for row in result[\"current_employer_assignments\"] if row[\"profile_url\"] == PROFILE_B]"},{"new":1054,"old":null,"op":"+","text":"    assert len(rows) == 2 and all(len(row[\"citations\"]) == 1 for row in rows)"}],"new_start":1048,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_identical_canonical_present_sets_merge_citations_only","removed":0,"span":[1048,1054],"status":"added"},{"added":13,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":1009,"old":null,"op":"+","text":"@pytest.mark.parametrize(\"value,reason\", ["},{"new":1010,"old":null,"op":"+","text":"    (employer_set(), \"current_employer_assignment_invalid\"),"},{"new":1011,"old":null,"op":"+","text":"    (employer_set(\"unknown\"), \"current_employer_unregistered\"),"},{"new":1012,"old":null,"op":"+","text":"    (employer_set(\"co-a\", coverage=\"partial\"), \"current_employer_coverage_incomplete\"),"},{"new":1013,"old":null,"op":"+","text":"    ({**employer_set(\"co-a\"), \"company_id\": \"co-b\"}, \"current_employer_assignment_invalid\"),"},{"new":1014,"old":null,"op":"+","text":"])"},{"new":1015,"old":null,"op":"+","text":"def test_invalid_present_sets_keep_global_withholding(value: dict[str, Any], reason: str) -\u003e None:"},{"new":1016,"old":null,"op":"+","text":"    \"\"\"Unbounded or contradictory claims cannot create company capacity.\"\"\""},{"new":1017,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B)]), qualification(current_employers={PROFILE_A: employer_set(\"co-a\"), PROFILE_B: value}))"},{"new":1018,"old":null,"op":"+","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":1019,"old":null,"op":"+","text":"    assert result[\"invitations\"] == []"},{"new":1020,"old":null,"op":"+","text":"    assert any(row[\"reason\"] == reason for row in result[\"research_queue\"])"},{"new":1021,"old":null,"op":"+","text":"    assert all(row[\"recorded\"] is None for row in result[\"company_usage\"].values())"}],"new_start":1009,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_invalid_present_sets_keep_global_withholding","removed":0,"span":[1009,1021],"status":"added"},{"added":14,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":1024,"old":null,"op":"+","text":"def test_legacy_employer_rows_reject_completeness_metadata() -\u003e None:"},{"new":1025,"old":null,"op":"+","text":"    legacy = {"},{"new":1026,"old":null,"op":"+","text":"        \"company_id\": \"co-a\","},{"new":1027,"old":null,"op":"+","text":"        \"citations\": [citation(\"employer-a\")],"},{"new":1028,"old":null,"op":"+","text":"        \"coverage\": \"partial\","},{"new":1029,"old":null,"op":"+","text":"        \"unknown_reasons\": [\"unnamed_current_role\"],"},{"new":1030,"old":null,"op":"+","text":"    }"},{"new":1031,"old":null,"op":"+","text":"    result = run("},{"new":1032,"old":null,"op":"+","text":"        source_export(invitations=[invitation(PROFILE_B)]),"},{"new":1033,"old":null,"op":"+","text":"        qualification(current_employers={PROFILE_A: legacy, PROFILE_B: employer_set(\"co-b\")}),"},{"new":1034,"old":null,"op":"+","text":"    )"},{"new":1035,"old":null,"op":"+","text":"    assert result[\"status\"] == \"withheld_current_employer_assignments\""},{"new":1036,"old":null,"op":"+","text":"    assert result[\"invitations\"] == []"},{"new":1037,"old":null,"op":"+","text":"    assert any(row[\"reason\"] == \"current_employer_assignment_invalid\" for row in result[\"research_queue\"])"}],"new_start":1024,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_legacy_employer_rows_reject_completeness_metadata","removed":0,"span":[1024,1037],"status":"added"},{"added":11,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":988,"old":null,"op":"+","text":"def test_present_set_charges_each_company_once_and_keeps_flat_audit() -\u003e None:"},{"new":989,"old":null,"op":"+","text":"    \"\"\"Replayed invitation facts charge one profile once to every present employer.\"\"\""},{"new":990,"old":null,"op":"+","text":"    data = qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\"), PROFILE_B: employer_set(\"co-a\", \"co-b\")})"},{"new":991,"old":null,"op":"+","text":"    data[\"current_employers\"][PROFILE_B][\"assignments\"].append(deepcopy(data[\"current_employers\"][PROFILE_B][\"assignments\"][0]))"},{"new":992,"old":null,"op":"+","text":"    result = run(source_export(invitations=[invitation(PROFILE_B), {**invitation(PROFILE_B), \"Sent At\": \"9/01/26, 12:00 PM\"}]), data)"},{"new":993,"old":null,"op":"+","text":"    assert result[\"status\"] == \"ready\""},{"new":994,"old":null,"op":"+","text":"    assert [row[\"profile_url\"] for row in result[\"invitations\"]] == [PROFILE_A]"},{"new":995,"old":null,"op":"+","text":"    assert {key: row[\"recorded\"] for key, row in result[\"company_usage\"].items()} == {\"co-a\": 1, \"co-b\": 1}"},{"new":996,"old":null,"op":"+","text":"    assert len(result[\"current_employer_assignments\"]) == 4"},{"new":997,"old":null,"op":"+","text":"    assert all(len(row[\"citations\"]) == 1 for row in result[\"current_employer_assignments\"])"},{"new":998,"old":null,"op":"+","text":"    assert result[\"current_employer_sets\"][0][\"company_ids\"] == [\"co-a\", \"co-b\"]"}],"new_start":988,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_present_set_charges_each_company_once_and_keeps_flat_audit","removed":0,"span":[988,998],"status":"added"},{"added":6,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":1001,"old":null,"op":"+","text":"def test_present_set_membership_does_not_invent_primary_employer() -\u003e None:"},{"new":1002,"old":null,"op":"+","text":"    \"\"\"A qualified employer anywhere in the set is valid, and outside the set is withheld.\"\"\""},{"new":1003,"old":null,"op":"+","text":"    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\", \"co-a\")}))"},{"new":1004,"old":null,"op":"+","text":"    assert len(result[\"invitations\"]) == 1"},{"new":1005,"old":null,"op":"+","text":"    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-b\")}))"},{"new":1006,"old":null,"op":"+","text":"    assert result[\"withheld_counts\"][\"current_employer_conflict\"] == 1"}],"new_start":1001,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_present_set_membership_does_not_invent_primary_employer","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_present_set_membership_does_not_invent_primary_employer","removed":0,"span":[1001,1006],"status":"added"},{"added":11,"base_span":null,"call_sites":0,"hunks":[{"lines":[{"new":1057,"old":null,"op":"+","text":"def test_present_set_selection_requires_and_consumes_every_company_slot() -\u003e None:"},{"new":1058,"old":null,"op":"+","text":"    \"\"\"A second employer at capacity blocks the person, and selected people charge every job.\"\"\""},{"new":1059,"old":null,"op":"+","text":"    profiles = [PROFILE_B, PROFILE_C, \"https://www.linkedin.com/in/person-d\"]"},{"new":1060,"old":null,"op":"+","text":"    prospects = [prospect_row(PROFILE_A, \"p-a\"), *[prospect_row(url, f\"p-{i}\") for i, url in enumerate(profiles)]]"},{"new":1061,"old":null,"op":"+","text":"    claims = {PROFILE_A: employer_set(\"co-a\", \"co-b\"), **{url: employer_set(\"co-b\") for url in profiles}}"},{"new":1062,"old":null,"op":"+","text":"    result = run(source_export(prospects=prospects, invitations=[invitation(url) for url in profiles]), qualification(current_employers=claims))"},{"new":1063,"old":null,"op":"+","text":"    assert result[\"company_usage\"][\"co-b\"][\"recorded\"] == 3"},{"new":1064,"old":null,"op":"+","text":"    assert result[\"invitations\"] == []"},{"new":1065,"old":null,"op":"+","text":"    result = run(source_export(), qualification(current_employers={PROFILE_A: employer_set(\"co-a\", \"co-b\")}))"},{"new":1066,"old":null,"op":"+","text":"    assert result[\"company_usage\"][\"co-a\"][\"remaining_slots_after_selection\"] == 2"},{"new":1067,"old":null,"op":"+","text":"    assert result[\"company_usage\"][\"co-b\"][\"remaining_slots_after_selection\"] == 2"}],"new_start":1057,"old_start":981}],"id":"tests/e2e_invitation_shortlist.py::test_present_set_selection_requires_and_consumes_every_company_slot","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_present_set_selection_requires_and_consumes_every_company_slot","removed":0,"span":[1057,1067],"status":"added"},{"added":0,"base_span":[579,582],"call_sites":0,"hunks":[],"id":"tests/e2e_invitation_shortlist.py::test_real_cap_policy_is_explicit_and_never_defaults_to_crm","kind":"function","path":"tests/e2e_invitation_shortlist.py","qualname":"test_real_cap_policy_is_explicit_and_never_defaults_to_crm","removed":0,"span":[579,582],"status":"context"},{"added":16,"base_span":[14,82],"call_sites":0,"hunks":[{"lines":[{"new":38,"old":38,"op":" ","text":"        check=False,"},{"new":39,"old":39,"op":" ","text":"    )"},{"new":40,"old":40,"op":" ","text":"    assert collection.returncode == 0, collection.stdout + collection.stderr"},{"new":41,"old":null,"op":"+","text":"    required_present_employer_regressions = {"},{"new":42,"old":null,"op":"+","text":"        \"test_present_set_charges_each_company_once_and_keeps_flat_audit\","},{"new":43,"old":null,"op":"+","text":"        \"test_present_set_membership_does_not_invent_primary_employer\","},{"new":44,"old":null,"op":"+","text":"        \"test_conflicting_canonical_present_sets_are_not_unioned\","},{"new":45,"old":null,"op":"+","text":"        \"test_present_set_selection_requires_and_consumes_every_company_slot\","},{"new":46,"old":null,"op":"+","text":"        \"test_legacy_employer_rows_reject_completeness_metadata\","},{"new":47,"old":null,"op":"+","text":"    }"},{"new":48,"old":null,"op":"+","text":"    missing_regressions = sorted("},{"new":49,"old":null,"op":"+","text":"        test_name for test_name in required_present_employer_regressions if test_name not in collection.stdout"},{"new":50,"old":null,"op":"+","text":"    )"},{"new":51,"old":null,"op":"+","text":"    assert not missing_regressions, f\"missing red-first regression coverage: {missing_regressions}\""},{"new":52,"old":41,"op":" ","text":"    assert \"test_candidate_citations_must_attest_exact_profile\" in collection.stdout"},{"new":53,"old":42,"op":" ","text":""},{"new":54,"old":43,"op":" ","text":"    body = {"}],"new_start":38,"old_start":38},{"lines":[{"new":83,"old":72,"op":" ","text":"            \"UTC conversion overflow aborted timestamp enrichment\","},{"new":84,"old":73,"op":" ","text":"            \"private Markdown omitted the creation-time prospect ID\","},{"new":85,"old":74,"op":" ","text":"            \"escaped surrogate snapshot metadata blocked complete matching raw and exported rows\","},{"new":86,"old":null,"op":"+","text":"            \"explicit concurrent employers could not charge each historical company once\","},{"new":87,"old":null,"op":"+","text":"            \"complete employer sets could not admit qualified-company membership\","},{"new":88,"old":null,"op":"+","text":"            \"conflicting canonical sets lacked an explicit conflict reason\","},{"new":89,"old":null,"op":"+","text":"            \"secondary employer at capacity admitted an invitation\","},{"new":90,"old":null,"op":"+","text":"            \"legacy employer rows ignored incomplete coverage metadata\","},{"new":91,"old":75,"op":" ","text":"            \"candidate qualification citation attested a different profile\","},{"new":92,"old":76,"op":" ","text":"        ],"},{"new":93,"old":77,"op":" ","text":"    }"}],"new_start":83,"old_start":72}],"id":"tests/test_invitation_shortlist_e2e.py::test_invitation_shortlist_e2e","kind":"function","path":"tests/test_invitation_shortlist_e2e.py","qualname":"test_invitation_shortlist_e2e","removed":0,"span":[14,98],"status":"modified"}],"title":"feat(report): count every present employer","tour":[{"focus":[],"kind":"overview","via":null},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"],"kind":"entry","via":null},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers"],"kind":"callee","via":"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::CurrentEmployer"],"kind":"callee","via":"src/linkedin_mdp_mcp/invitation_shortlist.py::_current_employers"},{"focus":["src/linkedin_mdp_mcp/invitation_shortlist.py::_make_markdown"],"kind":"entry","via":null},{"focus":["tests/e2e_invitation_shortlist.py::employer_set","tests/e2e_invitation_shortlist.py::test_conflicting_canonical_present_sets_are_not_unioned","tests/e2e_invitation_shortlist.py::test_identical_canonical_present_sets_merge_citations_only","tests/e2e_invitation_shortlist.py::test_invalid_present_sets_keep_global_withholding","tests/e2e_invitation_shortlist.py::test_legacy_employer_rows_reject_completeness_metadata","tests/e2e_invitation_shortlist.py::test_present_set_charges_each_company_once_and_keeps_flat_audit"],"kind":"test","via":null},{"focus":[],"kind":"summary","via":null}],"url":"https://github.com/komaksym/linkedin-mdp/pull/17"}</script><script>const LAYOUT = {"w":1728,"h":984,"bands":[["files",24,24,1680,152],["callers",24,192,272,400],["changed",376,192,976,400],["callees",1432,192,272,400],["tests",24,632,1680,328]],"symbols":[["callers",40,376,240,56],["changed",1096,360,240,80],["callees",1448,304,240,56],["callees",1448,448,240,56],["callees",1448,232,240,56],["callees",1448,520,240,56],["changed",744,360,240,80],["changed",392,408,240,80],["callees",1448,376,240,56],["changed",392,312,240,80],["tests",568,672,240,80],["tests",832,672,240,80],["tests",1096,672,240,80],["tests",1360,672,240,80],["tests",40,768,240,80],["tests",40,672,240,80],["tests",304,768,240,80],["tests",568,768,240,80],["tests",832,768,240,80],["tests",1096,768,240,80],["tests",1360,768,240,80],["tests",40,864,240,80],["tests",304,864,240,80],["tests",568,864,240,80],["tests",304,672,240,80],["tests",832,864,240,80]],"files":[["files",40,64,128,40],["files",184,64,344,40],["files",544,64,232,40],["files",792,64,144,40],["files",952,64,168,40],["files",1136,64,320,40],["files",1472,64,128,40],["files",40,120,216,40],null,null,null],"groups":[],"dense":false,"edges":["M280 409.6C336 409.6 336 448 392 448","M280 398.4C336 398.4 336 340 392 340","M984 392C1040 392 1040 400 1096 400","M984 384C1034 384 1034 348 1084 348C1216 348 1216 348 1348 348C1398 348 1398 337.6 1448 337.6","M984 408C1034 408 1034 452 1084 452C1216 452 1216 452 1348 452C1398 452 1398 481.6 1448 481.6","M984 416C1034 416 1034 482 1084 482C1216 482 1216 482 1348 482C1398 482 1398 548 1448 548","M984 400C1034 400 1034 452 1084 452C1216 452 1216 452 1348 452C1398 452 1398 409.6 1448 409.6","M632 344C682 344 682 339 732 339C864 339 864 339 996 339C1040 339 1040 332.9 1084 332.9C1216 332.9 1216 332.9 1348 332.9C1398 332.9 1398 326.4 1448 326.4","M632 368C682 368 682 348 732 348C864 348 864 348 996 348C1040 348 1040 452 1084 452C1216 452 1216 452 1348 452C1398 452 1398 470.4 1448 470.4","M632 336C682 336 682 314.4 732 314.4C864 314.4 864 314.4 996 314.4C1040 314.4 1040 287.9 1084 287.9C1216 287.9 1216 287.9 1348 287.9C1398 287.9 1398 260 1448 260","M632 352C688 352 688 400 744 400","M632 360C682 360 682 348 732 348C864 348 864 348 996 348C1040 348 1040 348 1084 348C1216 348 1216 348 1348 348C1398 348 1398 398.4 1448 398.4","M928 672C928 660 862 648 796 648C730 648 664 660 664 672","M40 712C34 712 28 706 28 700C28 680 28 680 28 660C28 624 368 624 368 588C368 482 368 482 368 376C368 364 380 352 392 352","M712 768C712 708 770 648 828 648C886 648 944 660 944 672","M736 768C736 708 848.3 648 960.5 648C1072.8 648 1185.1 660 1185.1 672","M640 768C640 756 515.5 744 391 744C266.5 744 142 756 142 768","M664 768C664 708 533.5 648 403 648C272.5 648 142 660 142 672","M688 768C688 756 617.5 744 547 744C476.5 744 406 756 406 768","M976 768C976 708 976 648 976 648C976 648 976 660 976 672","M1000 768C1000 708 1056.6 648 1113.2 648C1169.7 648 1226.3 660 1226.3 672","M904 768C904 756 722.5 744 541 744C359.5 744 178 756 178 768","M928 768C928 708 740.5 648 553 648C365.5 648 178 660 178 672","M952 768C952 756 824.5 744 697 744C569.5 744 442 756 442 768","M1240 768C1240 708 1178 648 1116 648C1054 648 992 660 992 672","M1264 768C1264 708 1259.7 648 1255.5 648C1251.2 648 1246.9 660 1246.9 672","M1168 768C1168 756 925 744 682 744C439 744 196 756 196 768","M1192 768C1192 708 943 648 694 648C445 648 196 660 196 672","M1216 768C1216 756 1027 744 838 744C649 744 460 756 460 768","M1490.3 768C1490.3 708 1295.7 648 1101.2 648C906.6 648 712 660 712 672","M1510.9 768C1510.9 708 1385.2 648 1259.5 648C1133.7 648 1008 660 1008 672","M1531.4 768C1531.4 708 1465.4 648 1399.4 648C1333.4 648 1267.4 660 1267.4 672","M1428.6 768C1428.6 756 1124.9 744 821.3 744C517.6 744 214 756 214 768","M1449.1 768C1449.1 708 1140.3 648 831.5 648C522.8 648 214 660 214 672","M1469.7 768C1469.7 756 1221.8 744 973.9 744C725.9 744 478 756 478 768","M184 864C184 756 362 648 540 648C718 648 896 660 896 672","M208 864C208 756 447.1 648 686.3 648C925.4 648 1164.6 660 1164.6 672","M112 864C112 804 110.5 744 109 744C107.5 744 106 756 106 768","M136 864C136 756 128.5 648 121 648C113.5 648 106 660 106 672","M160 864C160 804 212.5 744 265 744C317.5 744 370 756 370 768","M467.2 864C467.2 756 578.4 648 689.6 648C800.8 648 912 660 912 672","M380.8 864C380.8 804 316.6 744 252.4 744C188.2 744 124 756 124 768","M409.6 864C409.6 756 338.2 648 266.8 648C195.4 648 124 660 124 672","M438.4 864C438.4 804 425.8 744 413.2 744C400.6 744 388 756 388 768","M698.3 864C698.3 756 763.7 648 829.1 648C894.6 648 960 660 960 672","M718.9 864C718.9 756 840.6 648 962.3 648C1084 648 1205.7 660 1205.7 672","M739.4 864C739.4 756 924.5 648 1109.7 648C1294.8 648 1480 660 1480 672","M636.6 864C636.6 804 517.5 744 398.3 744C279.1 744 160 756 160 768","M657.1 864C657.1 756 532.8 648 408.6 648C284.3 648 160 660 160 672","M677.7 864C677.7 804 614.3 744 550.9 744C487.4 744 424 756 424 768","M304 712C298 712 292 706 292 700C292 680 292 680 292 660C292 624 376 624 376 588C376 488 376 488 376 388C376 376 384 364 392 364"],"folders":[],"folderInfo":[],"folderEdges":[]};
+(() => {
+  "use strict";
+
+  const MAP = JSON.parse(document.getElementById("map-data").textContent);
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const STATUSES = new Set(["added", "modified", "deleted", "context"]);
+  const EDGE_STATUSES = new Set(["added", "removed", "kept"]);
+  const GLYPH = { function: "f", method: "m", class: "C" };
+  const PILL = { added: "new", modified: "modified", deleted: "deleted" };
+  const LANE_LABEL = {
+    files: "Other changed files",
+    folders: "Folders",
+    callers: "Callers",
+    changed: "Changed code",
+    callees: "Callees",
+    tests: "Tests",
+  };
+  const MINUS = "\u2212";
+  const DOT = " \u00b7 ";
+  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6, folder: 3.2 };
+  const MAX_TOUR = 60;
+  const MIN_STEP = 1.6;
+  const MOVE = 1.0;
+  const DIM_NODE = 0.13;
+  const DIM_EDGE = 0.05;
+  const BEHIND_SUMMARY = 0.35;
+  const LEGIBLE = 0.55;
+  const NO_TEST = "no direct test";
+  const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  const status = (s) => (STATUSES.has(s) ? s : "context");
+  const edgeStatus = (s) => (EDGE_STATUSES.has(s) ? s : "kept");
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const basename = (path) => path.slice(path.lastIndexOf("/") + 1) || path;
+
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function add(parent, ...children) {
+    for (const child of children) if (child) parent.appendChild(child);
+    return parent;
+  }
+
+  function svg(tag, cls) {
+    const node = document.createElementNS(SVGNS, tag);
+    if (cls) node.setAttribute("class", cls);
+    return node;
+  }
+
+  /* Model */
+
+  const nodes = [];
+  const symbolNode = new Map();
+  const fileNode = new Map();
+  const fileByPath = new Map(MAP.files.map((f) => [f.path, f]));
+  const briefFile = new Map(MAP.brief.files.map((f) => [f.path, f]));
+
+  MAP.symbols.forEach((sym, i) => {
+    const box = LAYOUT.symbols[i];
+    if (!box || symbolNode.has(sym.id)) return;
+    const node = {
+      key: `s${i}`, kind: "symbol", sym, status: status(sym.status), name: sym.qualname,
+      path: sym.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    symbolNode.set(sym.id, node);
+  });
+
+  MAP.files.forEach((file, i) => {
+    const box = LAYOUT.files[i];
+    if (!box || fileNode.has(file.path)) return;
+    const node = {
+      key: `f${i}`, kind: "file", file, status: file.status === "modified" ? "modified" : status(file.status),
+      name: basename(file.path), path: file.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
+      out: [], in: [], near: new Set(),
+    };
+    nodes.push(node);
+    fileNode.set(file.path, node);
+  });
+
+  const edges = [];
+
+  const folderNodes = [];
+  const folderByIndex = new Map();
+
+  for (let i = 0; i < (LAYOUT.folders || []).length; i++) {
+    const box = LAYOUT.folders[i];
+    const info = (LAYOUT.folderInfo || [])[i];
+    if (!box || !info) continue;
+    const members = (info.members || [])
+      .map((si) => symbolNode.get((MAP.symbols[si] || {}).id))
+      .filter(Boolean);
+    const folder = {
+      key: `g${i}`, index: i, info, members,
+      x: box[1], y: box[2], w: box[3], h: box[4],
+    };
+    folderNodes.push(folder);
+    folderByIndex.set(i, folder);
+  }
+
+  const grouped = folderNodes.length > 0;
+
+  MAP.edges.forEach((edge, i) => {
+    const src = symbolNode.get(edge.source);
+    const dst = symbolNode.get(edge.target);
+    const route = LAYOUT.edges[i];
+    if (!src || !dst || typeof route !== "string") return;
+    const item = { key: `e${i}`, src, dst, route, status: edgeStatus(edge.status), byName: edge.resolution === "name" };
+    edges.push(item);
+    src.out.push(item);
+    dst.in.push(item);
+    src.near.add(dst);
+    dst.near.add(src);
+  });
+
+  const isTest = (node) => node.lane === "tests";
+  const live = (edge) => edge.status !== "removed";
+
+  for (const node of nodes) {
+    node.untested =
+      node.lane === "changed" && node.status !== "deleted" && !node.in.some((e) => isTest(e.src) && live(e));
+  }
+
+  const changed = nodes.filter((n) => n.kind === "symbol" && n.status !== "context");
+  const changedCode = changed.filter((n) => n.lane === "changed");
+  const testsTouched = changed.filter(isTest);
+  const untested = changedCode.filter((n) => n.untested);
+  const callSites = changedCode.reduce((sum, n) => sum + (n.sym.call_sites || 0), 0);
+  const added = edges.filter((e) => e.status === "added").length;
+  const removed = edges.filter((e) => e.status === "removed").length;
+  const risky = MAP.brief.files.filter((f) => f.sensitive);
+
+  function ciState() {
+    const checks = MAP.brief.checks;
+    const failed = checks.filter((c) => c.state === "failed");
+    if (!checks.length) return { cls: "none", label: "no CI", word: "none" };
+    if (failed.length) return { cls: "bad", label: "CI failed", word: "failed", failed };
+    if (checks.some((c) => c.state === "pending")) return { cls: "warn", label: "CI pending", word: "pending" };
+    return { cls: "good", label: "CI passed", word: "passed" };
+  }
+
+  const ci = ciState();
+
+  /* Header */
+
+  document.title = `${MAP.title} \u00b7 PR map`;
+  $("title").textContent = MAP.title;
+
+  (() => {
+    const meta = $("meta");
+    const sep = () => el("span", "sep", "\u00b7");
+    add(meta, sep(), el("span", "", MAP.pr), sep(), el("span", "", `by ${MAP.author}`), sep(),
+      el("span", "mono", `${MAP.base_sha.slice(0, 7)} \u2192 ${MAP.head_sha.slice(0, 7)}`));
+    if (typeof MAP.url === "string" && GITHUB_PR.test(MAP.url)) {
+      const link = el("a", "", "Open on GitHub");
+      link.setAttribute("href", MAP.url);
+      link.setAttribute("rel", "noopener noreferrer");
+      link.setAttribute("target", "_blank");
+      add(meta, sep(), link);
+    }
+
+    const stats = $("stats");
+    const stat = (value, label, cls, dot) => {
+      const box = el("div", `stat ${cls || ""}`);
+      const val = el("div", "stat-value");
+      if (dot) val.appendChild(el("span", "dot"));
+      val.appendChild(el("span", "", value));
+      return add(box, val, el("div", "stat-label", label));
+    };
+    add(stats,
+      stat(MAP.files.length, MAP.files.length === 1 ? "file" : "files"),
+      stat(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      stat(callSites, "call sites affected"),
+      stat(testsTouched.length, testsTouched.length === 1 ? "test touched" : "tests touched",
+        testsTouched.length ? "" : "warn"),
+      stat(ci.word, "CI on head", ci.cls, true),
+      stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
+  })();
+
+  /* Canvas */
+
+  const viewport = $("viewport");
+  const world = $("world");
+  world.style.width = `${LAYOUT.w}px`;
+  world.style.height = `${LAYOUT.h}px`;
+
+  if (LAYOUT.dense) world.classList.add("dense");
+  if (grouped) world.classList.add("grouped");
+
+  for (const band of LAYOUT.bands) {
+    const box = el("div", "band");
+    box.style.left = `${band[1]}px`;
+    box.style.top = `${band[2]}px`;
+    box.style.width = `${band[3]}px`;
+    box.style.height = `${band[4]}px`;
+    box.appendChild(el("div", "band-label", LANE_LABEL[band[0]] || ""));
+    world.appendChild(box);
+  }
+
+  for (const group of LAYOUT.groups) {
+    const sym = MAP.symbols[group[5]];
+    if (!sym) continue;
+    const label = add(el("div", "group"), el("span", "", sym.path));
+    label.style.left = `${group[1]}px`;
+    label.style.top = `${group[2]}px`;
+    label.style.width = `${group[3]}px`;
+    label.style.height = `${group[4]}px`;
+    label.setAttribute("title", sym.path);
+    world.appendChild(label);
+  }
+
+  if (!MAP.symbols.length) {
+    viewport.appendChild(el("div", "empty", "No function or class changed in a parsed file."));
+  }
+
+  const edgeLayer = svg("svg", "edges");
+  edgeLayer.setAttribute("width", String(LAYOUT.w));
+  edgeLayer.setAttribute("height", String(LAYOUT.h));
+  edgeLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+  const defs = svg("defs");
+
+  for (const kind of EDGE_STATUSES) {
+    const marker = svg("marker");
+    marker.setAttribute("id", `arrow-${kind}`);
+    marker.setAttribute("viewBox", "0 0 10 10");
+    marker.setAttribute("refX", "9");
+    marker.setAttribute("refY", "5");
+    marker.setAttribute("markerWidth", "8");
+    marker.setAttribute("markerHeight", "8");
+    marker.setAttribute("markerUnits", "userSpaceOnUse");
+    marker.setAttribute("orient", "auto");
+    const tip = svg("path", `arrow-${kind}`);
+    tip.setAttribute("d", "M1 1L9 5L1 9z");
+    marker.appendChild(tip);
+    defs.appendChild(marker);
+  }
+
+  edgeLayer.appendChild(defs);
+  world.appendChild(edgeLayer);
+
+  function folderPath(p, q, across) {
+    const bend = across ? Math.max(24, Math.abs(q[0] - p[0]) / 2) : 0;
+    const drop = across ? 0 : Math.max(24, Math.abs(q[1] - p[1]) / 2);
+    const r = (v) => Math.round(v * 10) / 10;
+    return `M${r(p[0])} ${r(p[1])}C${r(p[0] + bend)} ${r(p[1] + drop)} ` +
+      `${r(q[0] - bend)} ${r(q[1] - drop)} ${r(q[0])} ${r(q[1])}`;
+  }
+
+  function folderPorts(a, b) {
+    if (a.x + a.w <= b.x) return [[a.x + a.w, a.y + a.h / 2], [b.x, b.y + b.h / 2], true];
+    if (b.x + b.w <= a.x) return [[a.x, a.y + a.h / 2], [b.x + b.w, b.y + b.h / 2], true];
+    if (a.y + a.h <= b.y) return [[a.x + a.w / 2, a.y + a.h], [b.x + b.w / 2, b.y], false];
+    if (b.y + b.h <= a.y) return [[a.x + a.w / 2, a.y], [b.x + b.w / 2, b.y + b.h], false];
+    return [[a.x + a.w / 2, a.y + a.h / 2], [b.x + b.w / 2, b.y + b.h / 2], true];
+  }
+
+  if (grouped) {
+    const folderLayer = svg("svg", "fedges");
+    folderLayer.setAttribute("width", String(LAYOUT.w));
+    folderLayer.setAttribute("height", String(LAYOUT.h));
+    folderLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
+    world.appendChild(folderLayer);
+
+    for (const [a, b, count, raw] of (LAYOUT.folderEdges || [])) {
+      const from = folderByIndex.get(a);
+      const to = folderByIndex.get(b);
+      if (!from || !to) continue;
+      const st = edgeStatus(raw);
+      const [p, q, across] = folderPorts(from, to);
+      const line = svg("path", `ge ge-${st}`);
+      line.setAttribute("d", folderPath(p, q, across));
+      line.setAttribute("marker-end", `url(#arrow-${st})`);
+      line.setAttribute("data-folder-edge", `${from.key}-${to.key}`);
+      line.setAttribute("data-count", String(count));
+      line.setAttribute("stroke-width", String(Math.min(10, Math.round((1.5 + 2 * Math.sqrt(count)) * 10) / 10)));
+      folderLayer.appendChild(line);
+    }
+  }
+
+  const round = (v) => Math.round(v * 10) / 10;
+
+  const drawOrder = { kept: 0, removed: 1, added: 2 };
+
+  for (const edge of [...edges].sort((p, q) => drawOrder[p.status] - drawOrder[q.status])) {
+    const path = svg("path", `e e-${edge.status}${edge.byName ? " e-name" : ""}`);
+    path.setAttribute("d", edge.route);
+    path.setAttribute("marker-end", `url(#arrow-${edge.status})`);
+    path.setAttribute("data-edge", edge.key);
+    edge.el = path;
+    edgeLayer.appendChild(path);
+  }
+
+  function pathLine(path) {
+    const box = el("div", "path");
+    box.appendChild(el("span", "", path));
+    return box;
+  }
+
+  function rowCard(node) {
+    add(node.el, el("div", "bar"), el("span", "glyph", GLYPH[node.sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) node.el.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.untested) node.el.appendChild(el("span", "flag", "!"));
+    node.el.setAttribute("title", node.untested ? `${node.name} · ${NO_TEST}` : node.name);
+  }
+
+  function symbolCard(node) {
+    if (LAYOUT.dense) return rowCard(node);
+    const sym = node.sym;
+    const card = node.el;
+    const head = el("div", "n-row");
+    add(head, el("span", "glyph", GLYPH[sym.kind] || "f"), el("span", "name", node.name));
+    if (PILL[node.status]) head.appendChild(el("span", "pill", PILL[node.status]));
+    if (node.status === "context") {
+      const sub = add(el("div", "n-row"), pathLine(node.path));
+      if (sym.call_sites) sub.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+      add(card, el("div", "bar"), head, sub);
+      return;
+    }
+    add(card, el("div", "bar"), head, pathLine(node.path));
+    const foot = el("div", "n-foot");
+    const delta = el("span", "delta");
+    add(delta, el("span", "plus", `+${sym.added}`), document.createTextNode(" "), el("span", "minus", `${MINUS}${sym.removed}`));
+    add(foot, delta);
+    if (node.status !== "deleted" && !isTest(node)) foot.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
+    if (node.untested) foot.appendChild(el("span", "badge", NO_TEST));
+    card.appendChild(foot);
+  }
+
+  function fileCard(node) {
+    const card = node.el;
+    add(card, el("div", "bar"), el("span", "name", node.name));
+    if (node.file.sensitive) card.appendChild(el("span", "risk", node.file.sensitive));
+    card.setAttribute("title", node.path);
+  }
+
+  const expanded = new Set();
+  const memberFolder = new Map();
+
+  for (const folder of folderNodes) {
+    for (const member of folder.members) memberFolder.set(member, folder.index);
+  }
+
+  function countsLine(info) {
+    return `${info.added} added${DOT}${info.modified} modified${DOT}` +
+      `${info.deleted} deleted${DOT}${info.tests} tests`;
+  }
+
+  function folderBounds() {
+    return bounds(folderNodes);
+  }
+
+  function applyConceal() {
+    for (const [member, fi] of memberFolder) {
+      member.el.classList.toggle("concealed", !expanded.has(fi));
+    }
+    for (const folder of folderNodes) {
+      const open = expanded.has(folder.index);
+      folder.el.classList.toggle("open", open);
+      folder.el.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+  }
+
+  function toggleFolder(folder) {
+    if (touring) exitTour();
+    if (expanded.has(folder.index)) expanded.delete(folder.index);
+    else expanded.add(folder.index);
+    applyConceal();
+    flyTo(fitTo(
+      expanded.has(folder.index) ? bounds([...folder.members, ...folderNodes]) : folderBounds(),
+      viewArea(),
+      1.25,
+    ));
+  }
+
+  function collapseAll() {
+    expanded.clear();
+    applyConceal();
+    userMoved = false;
+    flyTo(fitTo(folderBounds(), viewArea(), 1.1));
+  }
+
+  for (const folder of folderNodes) {
+    const card = el("button", "fcard");
+    card.setAttribute("data-folder", folder.key);
+    card.setAttribute("type", "button");
+    card.setAttribute("aria-expanded", "false");
+    card.setAttribute("title", folder.info.label);
+    card.style.left = `${folder.x}px`;
+    card.style.top = `${folder.y}px`;
+    card.style.width = `${folder.w}px`;
+    card.style.height = `${folder.h}px`;
+    add(card, el("div", "f-name", folder.info.label), el("div", "f-counts", countsLine(folder.info)));
+    const list = el("div", "flist");
+    for (const member of folder.members) {
+      const row = el("button", `fmem st-${member.status}`);
+      row.setAttribute("type", "button");
+      add(row, el("span", "fmem-name", member.name), el("span", "fmem-tag", member.status));
+      row.addEventListener("click", (event) => {
+        event.stopPropagation();
+        select(member, true);
+      });
+      list.appendChild(row);
+    }
+    card.appendChild(list);
+    card.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (!dragged) toggleFolder(folder);
+    });
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      toggleFolder(folder);
+    });
+    folder.el = card;
+    world.appendChild(card);
+  }
+
+  for (const node of nodes) {
+    const card = el("div", `node ${node.kind === "file" ? "chip" : "sym"} st-${node.status}`);
+    card.setAttribute("data-node", node.key);
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.style.left = `${node.x}px`;
+    card.style.top = `${node.y}px`;
+    card.style.width = `${node.w}px`;
+    card.style.height = `${node.h}px`;
+    node.el = card;
+    if (node.kind === "symbol") symbolCard(node);
+    else fileCard(node);
+    world.appendChild(card);
+  }
+
+  if (grouped) applyConceal();
+
+  /* Camera */
+
+  const cam = { x: 0, y: 0, k: 1 };
+  const all = { x: 0, y: 0, w: LAYOUT.w, h: LAYOUT.h };
+  let userMoved = false;
+
+  function applyCamera() {
+    world.style.transform = `translate(${round(cam.x)}px, ${round(cam.y)}px) scale(${cam.k.toFixed(4)})`;
+    viewport.style.backgroundPosition = `${round(cam.x)}px ${round(cam.y)}px`;
+    viewport.style.backgroundSize = `${round(24 * cam.k)}px ${round(24 * cam.k)}px`;
+    world.classList.toggle("far", cam.k < 0.55);
+  }
+
+  function bounds(list) {
+    if (!list.length) return all;
+    const x = Math.min(...list.map((n) => n.x));
+    const y = Math.min(...list.map((n) => n.y));
+    return { x, y, w: Math.max(...list.map((n) => n.x + n.w)) - x, h: Math.max(...list.map((n) => n.y + n.h)) - y };
+  }
+
+  function fitTo(box, area, maxK) {
+    const pad = 32;
+    const k = clamp(Math.min(area.w / (box.w + 2 * pad), area.h / (box.h + 2 * pad)), 0.12, maxK);
+    return {
+      k,
+      x: area.x + area.w / 2 - (box.x + box.w / 2) * k,
+      y: area.y + area.h / 2 - (box.y + box.h / 2) * k,
+    };
+  }
+
+  function viewArea() {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const drawer = drawerOpen() ? Math.min(520, w * 0.92) : 0;
+    return { x: 16, y: 16, w: Math.max(200, w - 32 - drawer), h: Math.max(200, h - 88) };
+  }
+
+  function fit() {
+    Object.assign(cam, fitTo(all, viewArea(), 1.1));
+    applyCamera();
+  }
+
+  function open() {
+    if (grouped) {
+      Object.assign(cam, fitTo(folderBounds(), viewArea(), 1.1));
+      applyCamera();
+      return;
+    }
+    const area = viewArea();
+    const whole = fitTo(all, area, 1.1);
+    const band = LAYOUT.bands.find((b) => b[0] === "changed");
+    if (whole.k >= LEGIBLE || !band) {
+      Object.assign(cam, whole);
+    } else {
+      const box = { x: band[1], y: band[2], w: band[3], h: band[4] };
+      const lane = fitTo(box, area, 1.1);
+      if (lane.k >= LEGIBLE) Object.assign(cam, lane);
+      else Object.assign(cam, {
+        k: LEGIBLE,
+        x: box.w * LEGIBLE <= area.w ? area.x + area.w / 2 - (box.x + box.w / 2) * LEGIBLE : area.x - box.x * LEGIBLE,
+        y: area.y - box.y * LEGIBLE,
+      });
+    }
+    applyCamera();
+  }
+
+  let flight = 0;
+
+  function flyTo(target) {
+    const from = { ...cam };
+    const start = performance.now();
+    const id = ++flight;
+    const step = (now) => {
+      if (id !== flight) return;
+      const p = ease(clamp((now - start) / 420, 0, 1));
+      const k = from.k * Math.pow(target.k / from.k, p);
+      const cx = lerp(centreX(from), centreX(target), p);
+      const cy = lerp(centreY(from), centreY(target), p);
+      Object.assign(cam, { k, x: viewport.clientWidth / 2 - cx * k, y: viewport.clientHeight / 2 - cy * k });
+      applyCamera();
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const centreX = (c) => (viewport.clientWidth / 2 - c.x) / c.k;
+  const centreY = (c) => (viewport.clientHeight / 2 - c.y) / c.k;
+
+  function zoomAt(factor, sx, sy) {
+    const k = clamp(cam.k * factor, 0.12, 2.5);
+    cam.x = sx - ((sx - cam.x) * k) / cam.k;
+    cam.y = sy - ((sy - cam.y) * k) / cam.k;
+    cam.k = k;
+    userMoved = true;
+    applyCamera();
+  }
+
+  let drag = null;
+  let dragged = false;
+
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || $("drawer").contains(event.target) || event.target.closest(".zoom")) return;
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, cx: cam.x, cy: cam.y, captured: false };
+    dragged = false;
+  });
+
+  viewport.addEventListener("pointermove", (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (!drag.captured && Math.hypot(dx, dy) < 4) return;
+    if (!drag.captured) {
+      drag.captured = true;
+      dragged = true;
+      viewport.setPointerCapture(event.pointerId);
+      viewport.classList.add("dragging");
+      pause();
+    }
+    flight++;
+    cam.x = drag.cx + dx;
+    cam.y = drag.cy + dy;
+    userMoved = true;
+    applyCamera();
+  });
+
+  const endDrag = () => {
+    drag = null;
+    viewport.classList.remove("dragging");
+  };
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
+
+  viewport.addEventListener("wheel", (event) => {
+    if ($("drawer").contains(event.target)) return;
+    event.preventDefault();
+    flight++;
+    pause();
+    const rect = viewport.getBoundingClientRect();
+    if (event.ctrlKey || event.metaKey) {
+      zoomAt(Math.exp(-event.deltaY * 0.01), event.clientX - rect.left, event.clientY - rect.top);
+    } else {
+      cam.x -= event.deltaX;
+      cam.y -= event.deltaY;
+      userMoved = true;
+      applyCamera();
+    }
+  }, { passive: false });
+
+  viewport.addEventListener("click", (event) => {
+    if (dragged || touring) return;
+    if (event.target === viewport || event.target === world || event.target.classList.contains("band")) {
+      select(null);
+    }
+  });
+
+  $("zoom-in").addEventListener("click", () => zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-out").addEventListener("click", () => zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2));
+  $("zoom-fit").addEventListener("click", () => {
+    userMoved = false;
+    fit();
+  });
+
+  /* Hover and selection */
+
+  let selected = null;
+
+  function light(node) {
+    world.classList.toggle("hovering", Boolean(node));
+    for (const n of nodes) n.el.classList.toggle("lit", Boolean(node) && (n === node || node.near.has(n)));
+    for (const e of edges) e.el.classList.toggle("lit", Boolean(node) && (e.src === node || e.dst === node));
+  }
+
+  for (const node of nodes) {
+    node.el.addEventListener("pointerenter", () => {
+      if (!touring && !drag) light(node);
+    });
+    node.el.addEventListener("pointerleave", () => {
+      if (!touring) light(selected);
+    });
+    node.el.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.stopPropagation();
+      select(node);
+    });
+    node.el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (dragged) return;
+      select(node);
+    });
+  }
+
+  const drawer = $("drawer");
+  const drawerOpen = () => drawer.getAttribute("aria-hidden") === "false";
+
+  function select(node, centre) {
+    if (touring) exitTour();
+    if (selected) selected.el.classList.remove("selected");
+    selected = node;
+    light(node);
+    if (!node) {
+      drawer.setAttribute("aria-hidden", "true");
+      return;
+    }
+    node.el.classList.add("selected");
+    fillDrawer(node);
+    drawer.setAttribute("aria-hidden", "false");
+    if (centre) {
+      const area = viewArea();
+      const k = Math.max(cam.k, 0.8);
+      flyTo({ k, x: area.x + area.w / 2 - (node.x + node.w / 2) * k, y: area.y + area.h / 2 - (node.y + node.h / 2) * k });
+    }
+  }
+
+  function section(title, body) {
+    return add(el("section", "d-section"), el("h3", "d-title", title), body);
+  }
+
+  function diffView(hunks) {
+    if (!hunks.length) return el("div", "d-empty", "No line changes recorded for this item.");
+    const box = el("div", "diff");
+    const rows = el("div", "diff-rows");
+    for (const hunk of hunks) {
+      rows.appendChild(el("div", "hunk-head", `@@ ${MINUS}${hunk.old_start} +${hunk.new_start} @@`));
+      for (const line of hunk.lines) {
+        const kind = line.op === "+" ? "add" : line.op === "-" ? "del" : "ctx";
+        add(rows, add(el("div", `dl ${kind}`),
+          el("span", "ln", line.old === null ? "" : line.old),
+          el("span", "ln", line.new === null ? "" : line.new),
+          el("span", "sg", kind === "add" ? "+" : kind === "del" ? MINUS : ""),
+          el("span", "code", line.text)));
+      }
+    }
+    return add(box, rows);
+  }
+
+  const EDGE_TAG = { added: "new call", removed: "removed call", kept: "call" };
+
+  function linkList(items, empty) {
+    if (!items.length) return el("div", "d-empty", empty);
+    const list = el("div", "links");
+    for (const { node, tag, tagClass } of items) {
+      const row = el("button", `link st-${node.status}`);
+      row.setAttribute("type", "button");
+      const text = el("span", "link-text");
+      add(text, el("span", "link-name", node.name), el("span", "link-path", node.path));
+      add(row, el("span", "bar"), text, tag ? el("span", `etag ${tagClass || ""}`, tag) : null);
+      row.addEventListener("click", () => select(node, true));
+      list.appendChild(row);
+    }
+    return list;
+  }
+
+  const edgeItem = (edge, other) => ({
+    node: other,
+    tag: `${EDGE_TAG[edge.status]}${edge.byName ? " \u00b7 by name" : ""}`,
+    tagClass: edge.status,
+  });
+
+  function fillDrawer(node) {
+    drawer.replaceChildren();
+    drawer.className = `drawer st-${node.status}`;
+    const head = el("div", "d-head");
+    const tags = el("div", "d-tags");
+    if (PILL[node.status]) tags.appendChild(el("span", "pill", PILL[node.status]));
+    tags.appendChild(el("span", "d-kind", node.kind === "file" ? `${node.file.kind} file` : node.sym.kind));
+    const close = el("button", "d-close", "\u00d7");
+    close.setAttribute("type", "button");
+    close.setAttribute("aria-label", "Close");
+    close.addEventListener("click", () => select(null));
+    add(head, el("div", "bar"), tags, el("div", "d-name", node.kind === "file" ? node.path : node.name),
+      node.kind === "file" ? null : el("div", "d-path", node.path), close);
+
+    const facts = el("div", "d-facts");
+    const body = el("div", "d-body");
+
+    if (node.kind === "file") {
+      const file = node.file;
+      add(facts, el("span", "fact", `+${file.added} ${MINUS}${file.removed}`));
+      if (file.sensitive) facts.appendChild(el("span", "fact bad", file.sensitive));
+      const brief = briefFile.get(file.path);
+      if (file.sensitive && brief && !brief.named) facts.appendChild(el("span", "fact warn", "not mentioned in the description"));
+      if (file.language === null && file.kind === "code") facts.appendChild(el("span", "fact", "not parsed"));
+      add(body, section("Diff", diffView(file.hunks)));
+      const inside = file.symbols.map((id) => symbolNode.get(id)).filter(Boolean);
+      if (inside.length) body.appendChild(section("Symbols", linkList(inside.map((n) => ({ node: n })), "")));
+    } else {
+      const sym = node.sym;
+      if (node.status !== "context") add(facts, el("span", "fact", `+${sym.added} ${MINUS}${sym.removed}`));
+      facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
+      if (sym.span) facts.appendChild(el("span", "fact", `lines ${sym.span[0]}\u2013${sym.span[1]}`));
+      else if (sym.base_span) facts.appendChild(el("span", "fact", `was lines ${sym.base_span[0]}\u2013${sym.base_span[1]}`));
+      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no test in this map calls it`));
+      const callers = node.in.filter((e) => !isTest(e.src));
+      const tests = node.in.filter((e) => isTest(e.src));
+      add(body,
+        section("Diff", node.status === "context" ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.") : diffView(sym.hunks)),
+        section("Callers", linkList(callers.map((e) => edgeItem(e, e.src)), "No caller in the map.")),
+        section("Callees", linkList(node.out.map((e) => edgeItem(e, e.dst)), "Calls nothing in the map.")),
+        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test calls this directly.")));
+    }
+
+    head.appendChild(facts);
+    add(drawer, head, body);
+  }
+
+  /* Tour */
+
+  const names = (list) => {
+    const shown = list.slice(0, 2).map((n) => n.name);
+    return list.length > 2 ? `${shown.join(", ")} +${list.length - 2} more` : shown.join(" and ");
+  };
+
+  function focusNodes(ids) {
+    const found = [];
+    for (const id of ids) {
+      const node = symbolNode.get(id) || fileNode.get(id);
+      if (node) found.push(node);
+      else if (fileByPath.has(id)) {
+        for (const sid of fileByPath.get(id).symbols) if (symbolNode.has(sid)) found.push(symbolNode.get(sid));
+      }
+    }
+    return found;
+  }
+
+  function symbolFacts(node) {
+    const sym = node.sym;
+    const parts = [node.path, `+${sym.added} ${MINUS}${sym.removed}`];
+    if (node.status !== "deleted" && !isTest(node)) parts.push(plural(sym.call_sites, "call site", "call sites"));
+    if (node.untested) parts.push(NO_TEST);
+    return parts.join(DOT);
+  }
+
+  function describe(step, index, total) {
+    const count = `${index + 1} / ${total}`;
+    const focus = focusNodes(step.focus);
+    const node = focus[0];
+    const via = step.via ? symbolNode.get(step.via) : null;
+
+    if (step.kind === "overview") {
+      return {
+        kicker: "Overview", count, main: MAP.title,
+        sub: [plural(MAP.files.length, "file", "files"), plural(changed.length, "symbol changed", "symbols changed"),
+          plural(added, "call added", "calls added"), `${removed} removed`].join(DOT),
+      };
+    }
+
+    if (step.kind === "risky_file") {
+      const path = step.focus[0] || "";
+      const file = fileByPath.get(path);
+      const brief = briefFile.get(path);
+      const reason = (file && file.sensitive) || (brief && brief.sensitive) || "Sensitive file";
+      const unnamed = brief && !brief.named ? `${DOT}not mentioned in the description` : "";
+      return { kicker: "Risky surface", count, main: `${reason} changed${unnamed}`, sub: path };
+    }
+
+    if (step.kind === "summary") return { kicker: "Summary", count, main: "", sub: "" };
+
+    if (step.kind === "folder") {
+      const folder = folderByIndex.get(step.folder);
+      const info = folder ? folder.info : { added: 0, modified: 0, deleted: 0, tests: 0 };
+      return {
+        kicker: "Group", count, main: folder ? folder.info.label : "",
+        sub: [plural(focus.length, "symbol", "symbols"),
+          `${info.added} added`, `${info.modified} modified`,
+          `${info.deleted} deleted`, `${info.tests} tests`].join(DOT),
+      };
+    }
+
+    if (!node || node.kind !== "symbol") return { kicker: step.kind, count, main: step.focus.join(", "), sub: "" };
+
+    const word = node.sym.kind;
+    const name = node.name;
+
+    if (step.kind === "test") {
+      const targets = node.out.filter(live).map((e) => e.dst);
+      const covers = targets.length ? `${DOT}covers ${names(targets)}` : "";
+      const main = node.status === "added" ? `New test ${name}${covers}`
+        : node.status === "deleted" ? `Deleted test ${name}` : `Test ${name} changed${covers}`;
+      return { kicker: "Test", count, main, sub: symbolFacts(node) };
+    }
+
+    if (step.kind === "callee" && via) {
+      const link = node.in.find((e) => e.src === via);
+      let main;
+      if (node.status === "deleted") main = `Deleted ${name}${DOT}${via.name} no longer calls it`;
+      else if (node.status === "added") main = `New ${word} ${name}${DOT}called by ${via.name}`;
+      else if (link && link.status === "added") main = `${via.name} now calls ${name}`;
+      else if (link && link.status === "removed") main = `${via.name} no longer calls ${name}`;
+      else main = `${name} changed${DOT}called by ${via.name}`;
+      return { kicker: `Called from ${via.name}`, count, main, sub: symbolFacts(node) };
+    }
+
+    const callers = node.in.filter((e) => live(e) && !isTest(e.src)).map((e) => e.src);
+    let main;
+    if (node.status === "deleted") {
+      const former = node.in.filter((e) => !isTest(e.src)).map((e) => e.src);
+      main = `Deleted ${name}${former.length ? `${DOT}${names(former)} no longer ${former.length === 1 ? "calls" : "call"} it` : ""}`;
+    } else if (node.status === "added") {
+      main = `New ${word} ${name}${callers.length ? `${DOT}called by ${names(callers)}` : `${DOT}nothing calls it yet`}`;
+    } else {
+      main = `${name} changed${callers.length ? `${DOT}called by ${names(callers)}` : ""}`;
+    }
+    return { kicker: step.kind === "entry" ? "Entry point" : "Changed", count, main, sub: symbolFacts(node) };
+  }
+
+  const timeline = (() => {
+    const plan = grouped && MAP.tour.length >= 2 ? [
+      MAP.tour[0],
+      ...folderNodes.map((folder) => ({
+        kind: "folder",
+        folder: folder.index,
+        focus: folder.members.map((member) => member.sym.id),
+        via: null,
+      })),
+      ...MAP.tour.slice(1),
+    ] : MAP.tour;
+    const base = plan.map((s) => STEP_SECONDS[s.kind] || 3);
+    const fixed = plan.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
+    const middle = base.reduce((sum, v) => sum + v, 0) - fixed;
+    const scale = middle > 0 && fixed + middle > MAX_TOUR ? Math.max((MAX_TOUR - fixed) / middle, 0) : 1;
+    let start = 0;
+    return plan.map((step, i) => {
+      const plain = step.kind === "overview" || step.kind === "summary";
+      const duration = Math.round((plain ? base[i] : Math.max(base[i] * scale, MIN_STEP)) * 1000) / 1000;
+      const focus = focusNodes(step.focus);
+      const via = step.via ? symbolNode.get(step.via) : null;
+      const lit = new Set(focus);
+      if (via) lit.add(via);
+      if (step.kind !== "risky_file" && step.kind !== "folder") for (const n of focus) for (const m of n.near) lit.add(m);
+      const item = {
+        kind: step.kind, focus: step.focus, via: step.via, folder: step.folder ?? null,
+        start: Math.round(start * 1000) / 1000, duration,
+        caption: describe(step, i, plan.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
+      };
+      start += duration;
+      return item;
+    });
+  })();
+
+  const duration = Math.round(timeline.reduce((sum, s) => sum + s.duration, 0) * 1000) / 1000;
+
+  function tourCamera(step) {
+    const w = viewport.clientWidth;
+    const h = viewport.clientHeight;
+    const area = { x: 48, y: 32, w: Math.max(200, w - 96), h: Math.max(160, h - 32 - 176) };
+    if (step.folder !== undefined && step.folder !== null) {
+      const folder = folderByIndex.get(step.folder);
+      const box = folder
+        ? { x: folder.x - 16, y: folder.y - 16, w: folder.w + 32, h: folder.h + 32 }
+        : all;
+      return fitTo(box, area, 1.25);
+    }
+    if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
+    const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
+    const wide = fitTo(bounds([...step.lit]), area, 1.25);
+    return wide.k >= 0.62 ? wide : fitTo(bounds(core), area, 1.25);
+  }
+
+  let cameras = null;
+
+  function camerasFor() {
+    const size = `${viewport.clientWidth}x${viewport.clientHeight}`;
+    if (!cameras || cameras.size !== size) cameras = { size, list: timeline.map(tourCamera) };
+    return cameras.list;
+  }
+
+  const plainLevel = (step) => (step.kind === "summary" ? BEHIND_SUMMARY : 1);
+  const nodeLevel = (step, node) => (step.plain ? plainLevel(step) : step.lit.has(node) ? 1 : DIM_NODE);
+  const hidden = LAYOUT.dense ? 0 : DIM_EDGE;
+  const edgeLevel = (step, edge) => {
+    if (step.plain) return LAYOUT.dense ? 0 : plainLevel(step);
+    return step.nodes.includes(edge.src) || step.nodes.includes(edge.dst) ? 1 : hidden;
+  };
+
+  const caption = $("caption");
+  const summary = $("summary");
+  let captionFor = -1;
+
+  function fillCaption(index) {
+    if (captionFor === index) return;
+    captionFor = index;
+    const text = timeline[index].caption;
+    const kicker = add(el("div", "cap-kicker"), el("span", "", text.kicker), el("span", "cap-count", text.count));
+    caption.replaceChildren(kicker, el("div", "cap-main", text.main), el("div", "cap-sub", text.sub));
+  }
+
+  function fillSummary() {
+    summary.replaceChildren();
+    const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
+    const grid = add(el("div", "sum-grid"),
+      cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
+      cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
+      cell(callSites, "call sites affected"),
+      cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
+      cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
+    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
+    const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
+    const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+    add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
+      el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
+  }
+
+  fillSummary();
+
+  let touring = false;
+
+  function enterTour() {
+    if (touring) return;
+    select(null);
+    light(null);
+    touring = true;
+    document.body.classList.add("touring");
+  }
+
+  function exitTour() {
+    pause();
+    if (!touring) return;
+    touring = false;
+    document.body.classList.remove("touring");
+    for (const n of nodes) {
+      n.el.style.opacity = "";
+      n.el.classList.remove("focus");
+    }
+    for (const e of edges) {
+      e.el.style.opacity = "";
+      e.el.style.strokeDashoffset = "";
+    }
+    captionFor = -1;
+  }
+
+  function stepAt(t) {
+    let index = 0;
+    while (index + 1 < timeline.length && timeline[index + 1].start <= t) index++;
+    return index;
+  }
+
+  function seek(time) {
+    if (!timeline.length) return;
+    const t = clamp(Number(time) || 0, 0, duration);
+    enterTour();
+    const index = stepAt(t);
+    const step = timeline[index];
+    const prev = timeline[Math.max(index - 1, 0)];
+    const u = t - step.start;
+    const p = index === 0 ? 1 : ease(clamp(u / MOVE, 0, 1));
+    const cams = camerasFor();
+    const from = cams[Math.max(index - 1, 0)];
+    const to = cams[index];
+    const k = from.k * Math.pow(to.k / from.k, p);
+    const vw = viewport.clientWidth / 2;
+    const vh = viewport.clientHeight / 2;
+    const cx = lerp((vw - from.x) / from.k, (vw - to.x) / to.k, p);
+    const cy = lerp((vh - from.y) / from.k, (vh - to.y) / to.k, p);
+    Object.assign(cam, { k, x: vw - cx * k, y: vh - cy * k });
+    applyCamera();
+
+    for (const n of nodes) {
+      n.el.style.opacity = String(round(lerp(nodeLevel(prev, n), nodeLevel(step, n), p) * 100) / 100);
+      n.el.classList.toggle("focus", !step.plain && step.nodes.includes(n));
+    }
+    const offset = String(-round((t * 28) % 28));
+    for (const e of edges) {
+      e.el.style.opacity = String(round(lerp(edgeLevel(prev, e), edgeLevel(step, e), p) * 100) / 100);
+      if (e.status === "added") e.el.style.strokeDashoffset = offset;
+    }
+
+    const last = index === timeline.length - 1;
+    const fadeIn = clamp((u - 0.25) / 0.45, 0, 1);
+    const fadeOut = last ? 1 : clamp((step.duration - u) / 0.35, 0, 1);
+    fillCaption(index);
+    caption.style.opacity = step.kind === "summary" ? "0" : String(round(Math.min(fadeIn, fadeOut) * 100) / 100);
+    summary.style.opacity = step.kind === "summary" ? String(round(clamp((u - 0.3) / 0.6, 0, 1) * 100) / 100) : "0";
+    $("progress-bar").style.width = `${round((t / duration) * 1000) / 10}%`;
+  }
+
+  /* Playback */
+
+  const player = { t: 0, playing: false, until: null, last: 0 };
+
+  function setPlaying(on) {
+    player.playing = on;
+    document.body.classList.toggle("playing", on);
+    $("play-label").textContent = on ? "Pause" : player.t >= duration && touring ? "Replay" : "Play tour";
+  }
+
+  function frame(now) {
+    if (!player.playing) return;
+    player.t = Math.min(duration, player.t + (now - player.last) / 1000);
+    player.last = now;
+    if (player.until !== null && player.t >= player.until) player.t = player.until;
+    seek(player.t);
+    if (player.t >= duration || (player.until !== null && player.t >= player.until)) setPlaying(false);
+    else requestAnimationFrame(frame);
+  }
+
+  function run(from, until) {
+    flight++;
+    player.t = from;
+    player.until = until;
+    player.last = performance.now();
+    seek(from);
+    setPlaying(true);
+    requestAnimationFrame(frame);
+  }
+
+  function pause() {
+    if (player.playing) setPlaying(false);
+  }
+
+  function goto(index) {
+    const i = clamp(index, 0, timeline.length - 1);
+    const step = timeline[i];
+    run(step.start, step.start + Math.min(step.duration - 0.4, MOVE + 0.6));
+  }
+
+  function next() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) + 1);
+  }
+
+  function prev() {
+    if (!touring) return goto(0);
+    goto(stepAt(player.t) - 1);
+  }
+
+  $("play").addEventListener("click", () => {
+    if (player.playing) return pause();
+    const from = touring && player.t < duration ? player.t : 0;
+    run(from, null);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const key = event.key;
+    if (key === "Escape") {
+      if (drawerOpen()) select(null);
+      else if (grouped && expanded.size) collapseAll();
+      else if (touring) exitTour();
+    } else if (key === "ArrowRight" || key === " " || key === "PageDown") {
+      next();
+    } else if (key === "ArrowLeft" || key === "PageUp") {
+      prev();
+    } else if (key === "f" || key === "F") {
+      if (touring) exitTour();
+      userMoved = false;
+      fit();
+    } else if (key === "+" || key === "=") {
+      zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else if (key === "-" || key === "_") {
+      zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2);
+    } else {
+      return;
+    }
+    event.preventDefault();
+  });
+
+  window.addEventListener("resize", () => {
+    if (touring) seek(player.t);
+    else if (!userMoved) open();
+  });
+
+  open();
+
+  window.prcTour = Object.freeze({
+    duration,
+    steps: timeline.map((s) => Object.freeze({
+      kind: s.kind, focus: [...s.focus], via: s.via, start: s.start, duration: s.duration,
+      caption: Object.freeze({ ...s.caption }),
+    })),
+    seek: (t) => {
+      pause();
+      player.t = clamp(Number(t) || 0, 0, duration);
+      seek(player.t);
+    },
+  });
+})();
+</script></body></html>

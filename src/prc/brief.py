@@ -112,7 +112,7 @@ KIND_RULES: tuple[Rule, ...] = (
     ),
     (
         _path(
-            r"(^|/)(tests?|__tests__|spec|specs|testdata|__mocks__|__fixtures__)/|(^|/)test_[^/]*$|_tests?\.[a-z]+$"
+            r"(^|/)(tests?|__tests__|spec|specs|testdata|__mocks__|__fixtures__)/|(^|/)(test_|e2e_)[^/]*$|_tests?\.[a-z]+$"
             r"|\.(test|spec)\.[a-z]+$|(^|/)conftest\.py$|Tests?\.(java|kt|cs)$"
         ),
         "test",
@@ -208,6 +208,16 @@ def calls_external(diff: str, head: str) -> bool:
             text,
         )
     )
+
+
+_SCRATCH_RX = re.compile(r"(^|/)diagnostics/|(^|/)e2e_[^/]*$")
+
+
+def is_shipped_code(path: str) -> bool:
+    """Test fixtures and diagnostics scaffolding never count as shipped surface."""
+    if _SCRATCH_RX.search(path):
+        return False
+    return kind_of(Delta(path, False, 0, 0, "", "")) == "code"
 
 
 _FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
@@ -556,7 +566,7 @@ def _manifest_lines(delta: Delta) -> tuple[str, ...]:
     return tuple(line for line in added if line and not line.startswith("++"))[:MANIFEST_LINES]
 
 
-def _pointers(files: tuple[FileChange, ...], deltas: dict[str, Delta]) -> tuple[Pointer, ...]:
+def pointers_of(files: tuple[FileChange, ...], deltas: dict[str, Delta]) -> tuple[Pointer, ...]:
     live = tuple(f for f in files if f.kind != "generated")
     sensitive = _largest(f for f in live if f.sensitive)
     groups: tuple[tuple[tuple[FileChange, ...], Callable[[FileChange], str]], ...] = (
@@ -606,7 +616,12 @@ def brief_of(
             d.added,
             d.removed,
             _is_named(d, tokens, words, flat, idents),
-            reason_of(d.path) or ("external calls" if calls_external(d.diff, d.head) else None),
+            reason_of(d.path)
+            or (
+                "external calls"
+                if is_shipped_code(d.path) and calls_external(d.diff, d.head)
+                else None
+            ),
         )
         for d in sorted(deltas, key=lambda d: d.path)
     )
@@ -619,7 +634,7 @@ def brief_of(
         files,
         checks,
         mismatches,
-        _pointers(files, {d.path: d for d in deltas}),
+        pointers_of(files, {d.path: d for d in deltas}),
     )
 
 

@@ -268,6 +268,241 @@ def test_card_look_first_shows_three_tour_symbols_with_files() -> None:
         assert entry.path in html
 
 
+def test_test_only_symbols_do_not_claim_production_test_coverage() -> None:
+    m: dict[str, Any] = {
+        "symbols": [
+            {
+                "id": "tests/e2e.py::run",
+                "qualname": "run",
+                "path": "tests/e2e.py",
+                "status": "added",
+                "added": 10,
+                "removed": 0,
+                "call_sites": 0,
+            }
+        ],
+        "edges": [],
+        "brief": {"files": [{"path": "tests/e2e.py", "kind": "test"}]},
+        "pr": "o/r#1",
+        "head_sha": "abc",
+    }
+    html = card.build_card_html(m)
+    text = comment.render_comment(m)
+    assert "Every changed symbol has a direct test." not in html
+    assert "Every changed symbol has a direct test." not in text
+    assert "No production symbols changed." in html
+    assert "No production symbols changed." in text
+
+
+def test_look_first_prefers_board_quoted_files() -> None:
+    m: dict[str, Any] = {
+        "symbols": [
+            {
+                "id": "s0",
+                "qualname": "exercise",
+                "path": "e2e.py",
+                "status": "added",
+                "added": 100,
+                "removed": 0,
+                "call_sites": 0,
+            },
+            {
+                "id": "s1",
+                "qualname": "read_table",
+                "path": "collector.py",
+                "status": "modified",
+                "added": 1,
+                "removed": 1,
+                "call_sites": 0,
+            },
+        ],
+        "edges": [],
+        "brief": {"files": []},
+    }
+    assert [e.name for e in card.look_first(m)] == ["exercise", "read_table"]
+    board = {"scenes": [{"type": "diff", "file": "collector.py", "lines": ["1"]}]}
+    assert [e.name for e in card.look_first(m, None, 3, board)] == ["read_table", "exercise"]
+
+
+@pytest.mark.parametrize("receipt", ["cite", "diff-string", "diff-object"])
+def test_look_first_prefers_cited_symbol_over_busy_neighbors(receipt: str) -> None:
+    m: dict[str, Any] = {
+        "symbols": [
+            {
+                "id": "d::CarrierError",
+                "qualname": "CarrierError",
+                "path": "d.py",
+                "status": "added",
+                "added": 2,
+                "removed": 0,
+                "call_sites": 0,
+                "span": [22, 23],
+            },
+            {
+                "id": "d::build_carrier",
+                "qualname": "build_carrier",
+                "path": "d.py",
+                "status": "added",
+                "added": 11,
+                "removed": 0,
+                "call_sites": 0,
+                "span": [46, 56],
+            },
+        ],
+        "edges": [{"source": f"c{i}", "target": "d::CarrierError"} for i in range(12)],
+        "brief": {"files": []},
+    }
+    m["symbols"].append(
+        {
+            "id": "d::prepare_all",
+            "qualname": "prepare_all",
+            "path": "d.py",
+            "status": "modified",
+            "added": 80,
+            "removed": 0,
+            "span": [70, 149],
+        }
+    )
+    board = {
+        "scenes": [
+            {
+                "type": "diff",
+                "file": "d.py",
+                "cite": [{"line": "d.py:46", "match": "build_carrier"}],
+            }
+        ]
+    }
+    scene = board["scenes"][0]
+    if receipt != "cite":
+        scene.pop("cite")
+        scene["lines"] = ["46"] if receipt == "diff-string" else [{"ref": "46", "step": 1}]
+    assert [e.name for e in card.look_first(m, None, 3, board)][0] == "build_carrier"
+
+
+def test_look_first_orders_quoted_files_by_changed_lines_first() -> None:
+    m: dict[str, Any] = {
+        "symbols": [
+            {
+                "id": "i::build_list",
+                "qualname": "build_list",
+                "path": "i.py",
+                "status": "modified",
+                "added": 2,
+                "removed": 0,
+                "call_sites": 0,
+            },
+            {
+                "id": "i::_helper",
+                "qualname": "_helper",
+                "path": "i.py",
+                "status": "modified",
+                "added": 30,
+                "removed": 8,
+                "call_sites": 0,
+            },
+        ],
+        "edges": [
+            {"source": "t::test_build", "target": "i::build_list"},
+            {"source": "x::a", "target": "i::build_list"},
+            {"source": "x::b", "target": "i::build_list"},
+            {"source": "x::c", "target": "i::_helper"},
+        ],
+        "brief": {"files": [{"path": "t.py", "kind": "test"}]},
+    }
+    m["symbols"].append(
+        {
+            "id": "t::test_build",
+            "qualname": "test_build",
+            "path": "t.py",
+            "status": "added",
+            "added": 5,
+            "removed": 0,
+            "call_sites": 0,
+        }
+    )
+    board = {"scenes": [{"type": "diff", "file": "i.py"}]}
+    assert [e.name for e in card.look_first(m, None, 3, board)] == ["_helper", "build_list"]
+
+
+def test_look_first_falls_back_to_quoted_file_without_symbols() -> None:
+    m: dict[str, Any] = {
+        "symbols": [
+            {
+                "id": "e::exercise",
+                "qualname": "exercise",
+                "path": "e.py",
+                "status": "added",
+                "added": 18,
+                "removed": 0,
+                "call_sites": 0,
+            },
+        ],
+        "edges": [],
+        "brief": {
+            "files": [
+                {"path": "c.py", "kind": "code", "added": 1, "removed": 1},
+                {"path": "e.py", "kind": "code", "added": 18, "removed": 0},
+            ]
+        },
+    }
+    board = {"scenes": [{"type": "diff", "file": "c.py"}]}
+    entries = card.look_first(m, None, 3, board)
+    assert entries[0].path == "c.py"
+    assert entries[0].name != "exercise"
+
+
+def test_card_caps_risky_surfaces_with_overflow_count() -> None:
+    files = [{"path": f"src/mod{i}.py", "sensitive": "external calls"} for i in range(5)]
+    m: dict[str, Any] = {
+        "symbols": [],
+        "edges": [],
+        "brief": {"files": files},
+        "pr": "o/r#1",
+        "head_sha": "abc",
+    }
+    html = card.build_card_html(m, m["brief"], None)
+    assert html.count("external calls") == 3
+    assert "+2 more" in html
+
+
+def test_risky_surfaces_round_robin_reasons() -> None:
+    files = [
+        {"path": ".github/workflows/a.yml", "sensitive": "CI workflow"},
+        {"path": ".github/workflows/b.yml", "sensitive": "CI workflow"},
+        {"path": "src/a.py", "sensitive": "external calls"},
+        {"path": "src/b.py", "sensitive": "external calls"},
+    ]
+    m: dict[str, Any] = {"symbols": [], "edges": [], "brief": {"files": files}}
+    assert [(r.path, r.reason) for r in card.risky(m)] == [
+        (".github/workflows/a.yml", "CI workflow"),
+        ("src/a.py", "external calls"),
+        (".github/workflows/b.yml", "CI workflow"),
+        ("src/b.py", "external calls"),
+    ]
+
+
+def test_card_overflow_names_entirely_hidden_reasons() -> None:
+    files = [
+        {"path": path, "sensitive": reason}
+        for i in range(2)
+        for path, reason in (
+            (f"w{i}.yml", "CI workflow"),
+            (f"s{i}.py", "external calls"),
+            (f"m{i}", "dependency manifest"),
+            (f"d{i}", "Docker or infrastructure"),
+        )
+    ]
+    m: dict[str, Any] = {
+        "symbols": [],
+        "edges": [],
+        "brief": {"files": files},
+        "pr": "o/r#1",
+        "head_sha": "abc",
+    }
+    html = card.build_card_html(m, m["brief"], None)
+    assert "+5 more: Docker or infrastructure" in html
+
+
 # --- Comment order, span(), Mermaid never via span() ---
 
 
@@ -402,3 +637,56 @@ def test_card_png_renders_and_ocr_finds_stats_and_names(tmp_path: Path) -> None:
     names += [u.name for u in card.untested(m)[:3]]
     for name in names:
         assert_readable(found, name)
+
+
+def test_card_keeps_long_risky_paths_visible(tmp_path: Path) -> None:
+    pytest.importorskip("playwright.sync_api")
+    from playwright.sync_api import sync_playwright
+
+    m = shop_dict()
+    long_path = "diagnostics/action-report-private-source-20261002/collect_private_source.py"
+    for symbol in m["symbols"]:
+        if symbol["status"] in card.CHANGED:
+            symbol["path"] = long_path
+    m["brief"]["files"] = [
+        {
+            "path": "src/linkedin_mdp_mcp/google_doc_report.py",
+            "kind": "code",
+            "sensitive": "external calls",
+        },
+        {
+            "path": "diagnostics/action-report-private-source-20261002/collect_private_source.py",
+            "kind": "code",
+            "sensitive": "auth or security path",
+        },
+        {
+            "path": ".github/workflows/morning-report.yml",
+            "kind": "config",
+            "sensitive": "CI workflow",
+        },
+    ]
+    path = tmp_path / "card.html"
+    path.write_text(card.build_card_html(m))
+    proof = ROOT / "artifacts" / "e2e" / "card-paths"
+    proof.mkdir(parents=True, exist_ok=True)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1200, "height": 630})
+        page.goto(path.as_uri())
+        page.screenshot(path=str(proof / "card.png"))
+        clipped = page.locator("#risky li, #look-first li").evaluate_all(
+            """items => items.flatMap(item => {
+                const text = item.querySelector('.path') || item.querySelector('.name');
+                if (!text) return [];
+                const range = document.createRange();
+                range.selectNodeContents(text);
+                const box = item.getBoundingClientRect();
+                const footer = document.querySelector('footer').getBoundingClientRect();
+                return [...range.getClientRects()].some(rect =>
+                    rect.right > box.right + 1 || rect.left < box.left ||
+                    rect.bottom > footer.top)
+                    ? [text.textContent] : [];
+            })"""
+        )
+        browser.close()
+    assert clipped == [], f"Risk paths are clipped: {clipped}"

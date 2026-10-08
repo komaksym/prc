@@ -267,6 +267,16 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             c.get("do") == NEEDS[s["type"]] for c in s.get("cues", [])
         ):
             ck.fail(f"scene {i}: a {s['type']} scene needs a {NEEDS[s['type']]!r} cue")
+        if s["type"] == "stats":
+            shown = {c.get("i") for c in s.get("cues", []) if c.get("do") == "card"}
+            for index in range(len(s["cards"])):
+                if index not in shown:
+                    ck.fail(f"scene {i}: card {index} needs a reveal cue")
+        if s["type"] == "outro":
+            shown = {c.get("do") for c in s.get("cues", [])}
+            for verb in ("l1", "l2", "cmd"):
+                if verb not in shown:
+                    ck.fail(f"scene {i}: outro needs a {verb!r} cue")
         for c in s.get("cues", []):
             verb = c.get("do", "claim" if "claim" in c else None)
             if verb not in VERBS[s["type"]]:

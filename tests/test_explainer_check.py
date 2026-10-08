@@ -101,3 +101,31 @@ def test_planted_mistake_fails_with_its_message(want: str) -> None:
         verify_board(b, m)
 
     assert want in str(error.value)
+
+
+@pytest.mark.parametrize("missing", ["card:0", "card:1", "l1", "l2", "cmd"])
+def test_final_scene_elements_require_reveal_cues(missing: str) -> None:
+    b, m = load("mdp12", "pr12")
+    stats: dict[str, Any] = {
+        "type": "stats",
+        "say": ["Tests guard the change."],
+        "cards": [
+            {"value": "{tests_added}", "label": "new tests"},
+            {"value": "{changed}", "label": "changed functions"},
+        ],
+        "cues": [
+            {"at": [0, 0.0], "do": "card", "i": 0},
+            {"at": [0, 0.5], "do": "card", "i": 1},
+        ],
+    }
+    b["scenes"].insert(-1, stats)
+    if missing.startswith("card:"):
+        index = int(missing.split(":")[1])
+        stats["cues"] = [c for c in stats["cues"] if c["i"] != index]
+        message = f"card {index} needs a reveal cue"
+    else:
+        outro = scene(b, "outro")
+        outro["cues"] = [c for c in outro["cues"] if c["do"] != missing]
+        message = f"outro needs a {missing!r} cue"
+    with pytest.raises(SystemExit, match=message):
+        verify_board(b, m)

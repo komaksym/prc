@@ -1,0 +1,137 @@
+[
+  {
+    "pr": 11,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:19",
+        "diagnostics/action-report-private-source-20261002/README.md:3"
+      ],
+      "id": "q1",
+      "key": "The private collector now selects the existing prospects.created_at column and preserves its exact value through pagination and CMS encryption, so exported rows keep their creation timestamp.",
+      "key_facts": [
+        "the prospects projection gains created_at",
+        "the exact value survives pagination and encryption",
+        "a missing value stays missing and is never fabricated"
+      ],
+      "type": "free"
+    },
+    "answer": "Prospect rows now carry their creation timestamps in the private source collection."
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:62",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:441"
+      ],
+      "id": "q1",
+      "key": "Each selected invitation row shows a read-only date_added taken from the matched Supabase prospect row, so the report reader sees when the prospect was first added.",
+      "key_facts": [
+        "date_added is read only from created_at on exactly one canonical-profile-matched Supabase prospect row",
+        "missing, malformed, timezone-naive or future timestamps stay unknown with a fixed reason",
+        "it never affects shortlist eligibility, ranking, exclusions or capacity"
+      ],
+      "type": "free"
+    },
+    "answer": "Each row in the private invitation report now shows its date added for the reviewer."
+  },
+  {
+    "pr": 12,
+    "condition": "c2",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:702"
+      ],
+      "id": "q6",
+      "key": "test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "type": "name_or_free"
+    },
+    "answer": "New tests pin exact canonical source matching for date_added and that invalid, future, or missing dates stay unknown."
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:70",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:833"
+      ],
+      "id": "q1",
+      "key": "A prospect with several present employers now consumes invitation capacity at every current employer, so the report reader sees capacity accounted once per employer instead of one latest-known employer.",
+      "key_facts": [
+        "each profile is counted once per employer and selection requires capacity at every employer",
+        "incomplete, contradictory or unregistered employer sets withhold capacity claims",
+        "identities, exclusions, ranking and date_added are preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "Capacity counts each current employer once in the invitation report."
+  },
+  {
+    "pr": 17,
+    "condition": "c2",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:1057"
+      ],
+      "id": "q6",
+      "key": "test_present_set_selection_requires_and_consumes_every_company_slot",
+      "type": "name_or_free"
+    },
+    "answer": "Tests pin present-set employer_set charging, merging, and withholding."
+  },
+  {
+    "pr": 19,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private DM reports, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+        "src/linkedin_mdp_mcp/dm_doc_report.py:54"
+      ],
+      "id": "q1",
+      "key": "The owner gets three-doc publication: owner-only Google Docs for connections, first-time DMs and follow-ups through one marker-safe, revision-checked publisher with dual preflight and retained-evidence binding.",
+      "key_facts": [
+        "renders separate first-DM and follow-up bodies from validated planner plus retained evidence",
+        "refuses bodies containing managed markers",
+        "dual preflight and revision-checked replacement per document"
+      ],
+      "type": "free"
+    },
+    "answer": "The owner now receives two private DM reports published to separate owner-only docs."
+  },
+  {
+    "pr": 5,
+    "condition": "c2",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the connection reports, and for whom?",
+      "evidence": [
+        "docs/google-docs-report.md:45",
+        "docs/google-docs-report.md:49"
+      ],
+      "id": "q1",
+      "key": "The owner gets a private repeatable morning report: one revision-guarded marker-owned Google Docs section published after owner-only permission checks, preserving operator notes, with fetched snapshot rows retained on the exact terminal no-data response.",
+      "key_facts": [
+        "one revision-guarded marker-owned section after owner-only permission checks",
+        "operator notes outside the managed region are preserved",
+        "fetched rows retained on the exact known terminal no-data response; genuine failures preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "Private morning connection reports publish to one marked Google Docs section for the connection report owner."
+  }
+]

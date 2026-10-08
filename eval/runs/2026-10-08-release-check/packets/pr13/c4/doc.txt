@@ -1,0 +1,173 @@
+PULL REQUEST WALKTHROUGH
+
+feat(report): plan DM actions
+
+komaksym/linkedin-mdp#13
+
+AUTHOR komaksym
+
+HEAD f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439 commit
+
+Watch the 63 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner had no offline plan for inbox messages.
+
+This change queues manual reply, follow-up, and first-DM actions.
+
+OPEN PULL REQUEST
+feat(report): plan DM actions
++1403 −3 · 15 files · komaksym/linkedin-mdp#13
+linkedin-mdp #13 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+A verified outbound message sits unanswered for days.
+
+Anonymous rows nearby follow a time-scoped rule.
+
+PERSON INBOX
+one verified message
+outbound
+ACTION QUEUE
+time-scoped rule
+unknown
+linkedin-mdp #13 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/dm_actions.py#L471
+src/linkedin_mdp_mcp/dm_actions.py#L505
+src/linkedin_mdp_mcp/dm_actions.py#L508
+docs/private-dm-actions.md#L3
+SCENE 3 OF 7 · GROUPS
+
+A verified outbound message of that age still earns a follow-up.
+
+Recent ambiguous history withholds the action, and the owner still writes every word.
+
+PERSON INBOX
+verified evidence only
+outbound
+ACTION QUEUE
+ambiguous rows wait
+unknown
+owner sends everything
+linkedin-mdp #13 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/dm_actions.py#L471
+src/linkedin_mdp_mcp/dm_actions.py#L508
+src/linkedin_mdp_mcp/dm_actions.py#L511
+src/linkedin_mdp_mcp/dm_actions.py#L503
+SCENE 4 OF 7 · DIFF
+
+A newer inbound message after the last outbound queues a reply.
+
+An old outbound message with no later reply queues a follow-up.
+
+Recent ambiguous history withholds the action instead.
+
+The change, line for line
+src/linkedin_mdp_mcp/dm_actions.py
+500
++
+if latest_in and (not latest_out or latest_in.occurred_at > 
+latest_out.occurred_at):
+⋯
+505
++
+if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) 
+and (not latest_in or latest_in.occurred_at < latest_out.
+occurred_at):
+⋯
+511
++
+    report["withheld"].append({**common, "reason": "
+message_history_ambiguous_or_action_not_due"})
+linkedin-mdp #13 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/dm_actions.py#L500
+src/linkedin_mdp_mcp/dm_actions.py#L505
+src/linkedin_mdp_mcp/dm_actions.py#L511
+SCENE 5 OF 7 · LIST
+
+New tests pin follow-up, reply, and invitation-note separation.
+
+1
+new tests
+ok
+verified_outbound_followup
+e2e_private_dm_actions.py:130
+ok
+verified_inbound_reply
+e2e_private_dm_actions.py:131
+ok
+invitation_note_not_dm
+e2e_private_dm_actions.py:134
+linkedin-mdp #13 · komaksym
+RECEIPTS
+tests/e2e_private_dm_actions.py#L130
+tests/e2e_private_dm_actions.py#L131
+tests/e2e_private_dm_actions.py#L134
+SCENE 6 OF 7 · STATS
+
+New tests guard the DM action queues.
+
+Changed functions carry the planning logic.
+
+1
+new tests
+23
+changed functions
+linkedin-mdp #13 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+Verified inbox evidence queues manual reply, follow-up, and first-DM actions.
+Start review at plan_dm_actions in dm_actions.py.
+prc map github.com/komaksym/linkedin-mdp/pull/13
+undefined
+linkedin-mdp #13 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+artifacts/dm-uncertainty-scope-e2e-evidence.json config
+artifacts/private-dm-actions-e2e-evidence.json config
+docs/action-report-contract.md docs
+infographic/private-dm-actions/analysis.md docs
+infographic/private-dm-actions/infographic.png opaque
+infographic/private-dm-actions/prompts/01-infographic-private-dm-actions.md docs
+infographic/private-dm-actions/source.md docs
+infographic/private-dm-actions/structured-content.md docs
+scripts/build_private_dm_actions.py code
+tests/e2e_dm_uncertainty_scope.py test
+tests/test_private_dm_actions_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+_Parser scripts/build_private_dm_actions.py
+_Parser.error scripts/build_private_dm_actions.py
+_markdown scripts/build_private_dm_actions.py
+_read scripts/build_private_dm_actions.py
+_write scripts/build_private_dm_actions.py
+main scripts/build_private_dm_actions.py
+DmEvidence src/linkedin_mdp_mcp/dm_actions.py
+DmMessage src/linkedin_mdp_mcp/dm_actions.py
+DmUnknown src/linkedin_mdp_mcp/dm_actions.py
+_aware_time src/linkedin_mdp_mcp/dm_actions.py
+_citation_url src/linkedin_mdp_mcp/dm_actions.py
+_connection_day src/linkedin_mdp_mcp/dm_actions.py
+_content src/linkedin_mdp_mcp/dm_actions.py
+_date_added src/linkedin_mdp_mcp/dm_actions.py
+_event_time src/linkedin_mdp_mcp/dm_actions.py
+_fingerprint src/linkedin_mdp_mcp/dm_actions.py
+_qualified src/linkedin_mdp_mcp/dm_actions.py
+_row_identity src/linkedin_mdp_mcp/dm_actions.py
+_row_time src/linkedin_mdp_mcp/dm_actions.py
+_saved_draft src/linkedin_mdp_mcp/dm_actions.py
+_thread_suffix src/linkedin_mdp_mcp/dm_actions.py
+classify_dm_evidence src/linkedin_mdp_mcp/dm_actions.py
+
+Built by prc explain from the checked board.
+
+f59b09a1eb2e7d91a3abb0c0eaf72ca2bd016439

@@ -1,0 +1,1 @@
+These exploratory readers saw one condition across several PRs. They do not meet the fresh-reader-per-packet release protocol. Keep their observations, but exclude their grades from release acceptance.

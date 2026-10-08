@@ -1,0 +1,39 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Private morning reports publish to one marked Google Docs section."
+    },
+    {
+      "id": "q2",
+      "answer": "GoogleDocPublisher"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "CI",
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py::LinkedInAPIError.__init__"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "answers": [
+    {"id": "q1", "answer": "For the invitation-history owner, matched outbound invitation rows become durable, duplicate-safe history events."},
+    {"id": "q2", "answer": "reconcile_invitations"},
+    {"id": "q3", "answer": "CANNOT TELL"},
+    {"id": "q4", "answer": ["sync-invitations.yml", "test_invitation_sync_e2e.py"]},
+    {"id": "q5", "answer": ["CI", "external calls"]},
+    {"id": "q6", "answer": "test_complete_multipage_history_is_matched_deduped_and_idempotent"},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/invitation_sync.py::reconcile_invitations"},
+    {"id": "q8", "answer": false}
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private report owner gets one guarded document that combines invitation and DM planner outputs offline."
+    },
+    {
+      "id": "q2",
+      "answer": "combine_action_reports"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "docs/combined-action-report.md",
+        "tests/e2e_combined_action_report.py",
+        "PLANS.md",
+        "artifacts/combined-action-report-e2e-evidence.json",
+        "infographic/combined-action-report/analysis.md",
+        "infographic/combined-action-report/infographic.png",
+        "infographic/combined-action-report/prompts/01-infographic-combined-report.md",
+        "infographic/combined-action-report/source.md",
+        "infographic/combined-action-report/structured-content.md",
+        "scripts/build_combined_action_report.py",
+        "scripts/publish_combined_action_report.py",
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "tests/test_combined_action_report_e2e.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "The tests pin complete composition across real upstream shapes and source preservation when message text is empty."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/combined_action_report.py::combine_action_reports"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

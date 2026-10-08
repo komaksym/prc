@@ -1,0 +1,146 @@
+[
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private reports, and for whom?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/collect_private_source.py:19",
+        "diagnostics/action-report-private-source-20261002/README.md:3"
+      ],
+      "id": "q1",
+      "key": "The private collector now selects the existing prospects.created_at column and preserves its exact value through pagination and CMS encryption, so exported rows keep their creation timestamp.",
+      "key_facts": [
+        "the prospects projection gains created_at",
+        "the exact value survives pagination and encryption",
+        "a missing value stays missing and is never fabricated"
+      ],
+      "type": "free"
+    },
+    "answer": "The private report owner now receives exact provider created_at timestamps for prospect rows."
+  },
+  {
+    "pr": 11,
+    "condition": "c4",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py:116"
+      ],
+      "id": "q6",
+      "key": "prospect_created_at_exact_across_pages",
+      "type": "name_or_free"
+    },
+    "answer": "Synthetic end-to-end tests pin exact created_at across pages and missing stays missing."
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:70",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:833"
+      ],
+      "id": "q1",
+      "key": "A prospect with several present employers now consumes invitation capacity at every current employer, so the report reader sees capacity accounted once per employer instead of one latest-known employer.",
+      "key_facts": [
+        "each profile is counted once per employer and selection requires capacity at every employer",
+        "incomplete, contradictory or unregistered employer sets withhold capacity claims",
+        "identities, exclusions, ranking and date_added are preserved"
+      ],
+      "type": "free"
+    },
+    "answer": "A person with two current jobs now needs a free invitation slot at every present employer to make the private shortlist."
+  },
+  {
+    "pr": 17,
+    "condition": "c4",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:1057"
+      ],
+      "id": "q6",
+      "key": "test_present_set_selection_requires_and_consumes_every_company_slot",
+      "type": "name_or_free"
+    },
+    "answer": "A second employer at capacity blocks the person and selected people consume a slot at every current employer."
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for a reviewer of the private invitation report, and for whom?",
+      "evidence": [
+        "docs/invitation-shortlist.md:62",
+        "src/linkedin_mdp_mcp/invitation_shortlist.py:441"
+      ],
+      "id": "q1",
+      "key": "Each selected invitation row shows a read-only date_added taken from the matched Supabase prospect row, so the report reader sees when the prospect was first added.",
+      "key_facts": [
+        "date_added is read only from created_at on exactly one canonical-profile-matched Supabase prospect row",
+        "missing, malformed, timezone-naive or future timestamps stay unknown with a fixed reason",
+        "it never affects shortlist eligibility, ranking, exclusions or capacity"
+      ],
+      "type": "free"
+    },
+    "answer": "Each invitation report row now shows date_added from its matched prospect created_at for the report reviewer, or unknown when missing."
+  },
+  {
+    "pr": 12,
+    "condition": "c4",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_invitation_shortlist.py:702"
+      ],
+      "id": "q6",
+      "key": "test_invalid_or_future_date_added_stays_unknown_with_safe_pointer",
+      "type": "name_or_free"
+    },
+    "answer": "New tests pin that date_added stays unknown for missing, invalid, or future timestamps and never affects selection."
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q1",
+    "question_data": {
+      "ask": "What behaviour changes for the owner of the private DM reports, and for whom?",
+      "evidence": [
+        "src/linkedin_mdp_mcp/dm_doc_report.py:46",
+        "src/linkedin_mdp_mcp/dm_doc_report.py:54"
+      ],
+      "id": "q1",
+      "key": "The owner gets three-doc publication: owner-only Google Docs for connections, first-time DMs and follow-ups through one marker-safe, revision-checked publisher with dual preflight and retained-evidence binding.",
+      "key_facts": [
+        "renders separate first-DM and follow-up bodies from validated planner plus retained evidence",
+        "refuses bodies containing managed markers",
+        "dual preflight and revision-checked replacement per document"
+      ],
+      "type": "free"
+    },
+    "answer": "The owner goes from no private DM reports to first-DM and follow-up reports published in separate owner-only Google Docs."
+  },
+  {
+    "pr": 19,
+    "condition": "c4",
+    "question": "q6",
+    "question_data": {
+      "ask": "Which behaviour do the new tests pin?",
+      "evidence": [
+        "tests/e2e_private_dm_doc_report.py:275"
+      ],
+      "id": "q6",
+      "key": "Both managed documents publish complete and reruns converge; a second revision conflict fails closed and dual-preflight violations are refused.",
+      "type": "name_or_free"
+    },
+    "answer": "New tests pin both docs completing, reruns converging, second conflicts failing closed, and dual preflight."
+  }
+]

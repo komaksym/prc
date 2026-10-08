@@ -11,3 +11,17 @@ research_notes/
 eval/runs/*/outputs/**/*.mp4
 eval/runs/*/outputs/**/*.wav
 eval/runs/*/packets/**/*.png
+.claude/
+.audit/*.py
+.audit/*.todo.md
+eval/runs/*/rendered/
+eval/runs/2026-10-07-rebaseline/
+eval/runs/2026-10-08-fixround1/
+eval/runs/2026-10-08-fixround2/
+eval/runs/2026-10-08-release-check-interrupted/
+eval/runs/2026-10-08-release-check-interrupted-2/
+eval/runs/2026-10-08-release-candidate/
+.audit/reconciliation-branches.md
+.audit/reconciliation-remote.md
+.audit/reconciliation-status.md
+!tests/data/**/artifacts/

@@ -1,0 +1,192 @@
+PULL REQUEST WALKTHROUGH
+
+feat(inbox): record private LinkedIn inbox evidence
+
+komaksym/linkedin-mdp#8
+
+AUTHOR komaksym
+
+HEAD dc3f451dd61aa01394d5f5f121c9fa2affeb0299 commit
+
+Watch the 50 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner had no durable inbox evidence.
+
+This change syncs private inbox messages.
+
+OPEN PULL REQUEST
+feat(inbox): record private LinkedIn inbox evidence
++1892 −7 · 29 files · komaksym/linkedin-mdp#8
+linkedin-mdp #8 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+Inbox rows arrive as one raw provider snapshot.
+
+The sync command defaults to a dry run.
+
+INBOX ROWS
+raw provider snapshot
+message
+SYNC COMMAND
+dry run default
+dry run
+linkedin-mdp #8 · komaksym
+RECEIPTS
+docs/inbox-evidence.md#L3
+tests/e2e_inbox_sync.py#L27
+SCENE 3 OF 7 · GROUPS
+
+Complete clean snapshots become planned evidence.
+
+Writes stay off unless the caller opts in.
+
+INBOX ROWS
+planned message evidence
+evidence
+SYNC COMMAND
+still dry run
+still dry
+linkedin-mdp #8 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/inbox_sync.py#L295
+src/linkedin_mdp_mcp/inbox_sync.py#L317
+src/linkedin_mdp_mcp/inbox_sync.py#L357
+SCENE 4 OF 7 · DIFF
+
+Reconcile validates the complete inbox snapshot, then plans evidence.
+
+It writes nothing unless the caller opts into apply.
+
+The change, line for line
+src/linkedin_mdp_mcp/inbox_sync.py
+311
++
+async def reconcile_inbox(
+⋯
+317
++
+    dry_run: bool = True,
+⋯
+319
++
+    """Validate a complete INBOX snapshot, plan evidence, then 
+optionally apply it."""
+⋯
+326
++
+        snapshot = await linkedin.snapshot("INBOX", max_pages=50, 
+strict_elements=True)
+⋯
+357
++
+    if not dry_run:
+writes only when applied
+linkedin-mdp #8 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/inbox_sync.py#L311
+src/linkedin_mdp_mcp/inbox_sync.py#L357
+src/linkedin_mdp_mcp/inbox_sync.py#L317
+src/linkedin_mdp_mcp/inbox_sync.py#L319
+src/linkedin_mdp_mcp/inbox_sync.py#L326
+SCENE 5 OF 7 · LIST
+
+New scenarios pin Unicode identity and dry-run defaults.
+
+2
+new tests
+ok
+unicode_profile_identity_persisted
+e2e_inbox_sync.py:115
+ok
+dry_run_writes_nothing
+e2e_inbox_sync.py:298
+linkedin-mdp #8 · komaksym
+RECEIPTS
+tests/e2e_inbox_sync.py#L115
+tests/e2e_inbox_sync.py#L298
+SCENE 6 OF 7 · STATS
+
+New tests guard the inbox pipeline.
+
+Changed functions carry the reconcile path.
+
+2
+new tests
+30
+changed functions
+linkedin-mdp #8 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+Private inbox rows gain validated evidence with dry run as default.
+Start review at reconcile_inbox in inbox_sync.py.
+prc map github.com/komaksym/linkedin-mdp/pull/8
+undefined
+linkedin-mdp #8 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+artifacts/inbox-e2e-evidence.json config
+artifacts/inbox-red-green-evidence.json config
+artifacts/inbox-review-e2e-evidence.json config
+diagnostics/verify_inbox_live.py code
+docs/action-report-contract.md docs
+infographic/inbox-evidence-slice/analysis.md docs
+infographic/inbox-evidence-slice/infographic.png opaque
+infographic/inbox-evidence-slice/prompts/01-infographic-inbox-evidence.md docs
+infographic/inbox-evidence-slice/source-inbox-evidence.md docs
+infographic/inbox-evidence-slice/structured-content.md docs
+infographic/inbox-review-repair/analysis.md docs
+infographic/inbox-review-repair/infographic.png opaque
+infographic/inbox-review-repair/prompts/01-infographic-inbox-review-repair.md docs
+infographic/inbox-review-repair/source-inbox-review-repair.md docs
+infographic/inbox-review-repair/structured-content.md docs
+infographic/unicode-profile-identity/analysis.md docs
+infographic/unicode-profile-identity/infographic.png opaque
+infographic/unicode-profile-identity/prompts/01-infographic-unicode-profile-identity.md docs
+infographic/unicode-profile-identity/source.md docs
+infographic/unicode-profile-identity/structured-content.md docs
+scripts/sync_inbox.py code
+src/linkedin_mdp_mcp/client.py code
+tests/e2e_inbox_review.py test
+tests/test_inbox_review_e2e.py test
+tests/test_inbox_sync_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+FrozenInbox diagnostics/verify_inbox_live.py
+FrozenInbox.__init__ diagnostics/verify_inbox_live.py
+FrozenInbox.snapshot diagnostics/verify_inbox_live.py
+VerifiedStore diagnostics/verify_inbox_live.py
+VerifiedStore.__init__ diagnostics/verify_inbox_live.py
+VerifiedStore.insert_events_ignore_duplicates diagnostics/verify_inbox_live.py
+VerifiedStore.read_events diagnostics/verify_inbox_live.py
+VerifiedStore.verify_readback diagnostics/verify_inbox_live.py
+_require diagnostics/verify_inbox_live.py
+main diagnostics/verify_inbox_live.py
+verify diagnostics/verify_inbox_live.py
+main scripts/sync_inbox.py
+run scripts/sync_inbox.py
+LinkedInMDPClient src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._get_paged src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._next_link src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._validate_snapshot_paging src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.snapshot src/linkedin_mdp_mcp/client.py
+InboxSyncError src/linkedin_mdp_mcp/inbox_sync.py
+InboxSyncPlan src/linkedin_mdp_mcp/inbox_sync.py
+InboxSyncSummary src/linkedin_mdp_mcp/inbox_sync.py
+_attachments src/linkedin_mdp_mcp/inbox_sync.py
+_event_key src/linkedin_mdp_mcp/inbox_sync.py
+_participants src/linkedin_mdp_mcp/inbox_sync.py
+_safe_one_to_one_row src/linkedin_mdp_mcp/inbox_sync.py
+_timestamp src/linkedin_mdp_mcp/inbox_sync.py
+normalize_profile_url src/linkedin_mdp_mcp/inbox_sync.py
+plan_inbox_events.skip src/linkedin_mdp_mcp/inbox_sync.py
+
+Built by prc explain from the checked board.
+
+dc3f451dd61aa01394d5f5f121c9fa2affeb0299

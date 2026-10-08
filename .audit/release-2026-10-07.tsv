@@ -1,0 +1,4 @@
+ts	phase	decision	why	evidence	result
+2026-10-07T14:31:37Z	start	started release completion run	needed one auditable trail for a project-scale release effort	todo.md	open
+2026-10-07T14:38:00Z	frame	set a high-rigor release predicate	archive contents and grounding claims can harm users	PLANS.md release predicate	workflow committed in todo.md
+2026-10-07T14:42:00Z	baseline	kept the passing baseline and isolated the Chromium smoke failure	tests and package checks passed before any code change	artifacts/release/verify/tests.log	480 tests passed; browser smoke NOT VERIFIED

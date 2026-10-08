@@ -1,0 +1,38 @@
+[
+ {
+  "scene": 2,
+  "phrase": "verified outbound",
+  "said": 0.591,
+  "share": 0.591
+ },
+ {
+  "scene": 2,
+  "phrase": "ambiguous history",
+  "said": 5.75,
+  "share": 5.75
+ },
+ {
+  "scene": 2,
+  "phrase": "owner still writes",
+  "said": 9.13,
+  "share": 9.13
+ },
+ {
+  "scene": 3,
+  "phrase": "newer inbound",
+  "said": 0.591,
+  "share": 0.591
+ },
+ {
+  "scene": 3,
+  "phrase": "old outbound",
+  "said": 5.398,
+  "share": 5.398
+ },
+ {
+  "scene": 3,
+  "phrase": "ambiguous history",
+  "said": 10.416,
+  "share": 10.416
+ }
+]

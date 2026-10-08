@@ -126,9 +126,13 @@ Where the added lines went. Every file of the PR must sit in exactly one bar. A 
 
 ### stats
 
+Give each card a `card` cue with its zero-based `i`. The checker rejects any card without a reveal cue.
+
 `{"type": "stats", "cards": [{"value": "{tests_added}", "label": "new tests", "tone": "good"}], "cues": [{"at": "...", "do": "card", "i": 0}]}`. Values are fact strings.
 
 ### outro
+
+Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible.
 
 ```json
 { "type": "outro", "l1": "first line", "l2": "second line", "fine": "small print", "nocap": true,

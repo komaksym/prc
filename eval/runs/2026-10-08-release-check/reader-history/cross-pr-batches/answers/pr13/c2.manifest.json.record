@@ -1,0 +1,14 @@
+{
+  "condition": "c2",
+  "files": [
+    "comment.md",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "comment.md": "ddbe35c1acc97691b74474a13f67bd56f207f685a0c1ea23e59186fa349b6445"
+  },
+  "payload_sha256": {
+    "comment.md": "ddbe35c1acc97691b74474a13f67bd56f207f685a0c1ea23e59186fa349b6445",
+    "prompt.md": "a8de198107f00b83f00aac7102f39ca2cd774776941fa1630adec73774ef6250"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Report reviewers get ranked invitations whose company capacity counts each person once across provider, CRM, and Supabase history."
+    },
+    {
+      "id": "q2",
+      "answer": "build_invitation_shortlist"
+    },
+    {
+      "id": "q3",
+      "answer": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "PLANS.md",
+        "PR10-present-employer-e2e-matrix.md",
+        "docs/action-report-contract.md",
+        "docs/invitation-shortlist.md",
+        "artifacts/invitation-shortlist-e2e-evidence.json",
+        "infographic/invitation-shortlist/analysis.md",
+        "infographic/invitation-shortlist/infographic.png",
+        "infographic/invitation-shortlist/prompts/01-infographic-invitation-shortlist.md",
+        "infographic/invitation-shortlist/source.md",
+        "infographic/invitation-shortlist/structured-content.md",
+        "scripts/build_invitation_shortlist.py",
+        "tests/e2e_invitation_shortlist.py",
+        "tests/test_invitation_shortlist_e2e.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q6",
+      "answer": "Tests pin deduplicated all-history capacity, audit pointers, withholding for unknown identities or employer conflicts, and reports without recommendation event plans."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

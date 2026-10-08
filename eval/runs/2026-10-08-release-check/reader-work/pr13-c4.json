@@ -1,0 +1,51 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private inbox owner gets an offline queue of manual reply, follow-up, and first-DM actions from verified inbox evidence."
+    },
+    {
+      "id": "q2",
+      "answer": "plan_dm_actions"
+    },
+    {
+      "id": "q3",
+      "answer": "if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):\n\"message_history_ambiguous_or_action_not_due\""
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "PLANS.md",
+        "artifacts/dm-uncertainty-scope-e2e-evidence.json",
+        "artifacts/private-dm-actions-e2e-evidence.json",
+        "docs/action-report-contract.md",
+        "docs/private-dm-actions.md",
+        "infographic/private-dm-actions/analysis.md",
+        "infographic/private-dm-actions/infographic.png",
+        "infographic/private-dm-actions/prompts/01-infographic-private-dm-actions.md",
+        "infographic/private-dm-actions/source.md",
+        "infographic/private-dm-actions/structured-content.md",
+        "scripts/build_private_dm_actions.py",
+        "tests/e2e_dm_uncertainty_scope.py",
+        "tests/e2e_private_dm_actions.py",
+        "tests/test_private_dm_actions_e2e.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": []
+    },
+    {
+      "id": "q6",
+      "answer": "The tests pin verified outbound follow-up, verified inbound reply, and separation of invitation notes from DMs."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/dm_actions.py::plan_dm_actions"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

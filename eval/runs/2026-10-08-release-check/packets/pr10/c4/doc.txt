@@ -1,0 +1,228 @@
+PULL REQUEST WALKTHROUGH
+
+feat(report): plan invitations from complete history
+
+komaksym/linkedin-mdp#10
+
+AUTHOR komaksym
+
+HEAD 5498b6c605ecd00941aa9dd34275c821f7c01876 commit
+
+Watch the 61 s video
+
+SCENE 1 OF 7 · TITLE
+
+The invitation report ignored history outside the CRM.
+
+This change counts every outgoing invitation before ranking.
+
+OPEN PULL REQUEST
+feat(report): plan invitations from complete history
++2698 −16 · 14 files · komaksym/linkedin-mdp#10
+linkedin-mdp #10 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+One person appears across provider, CRM, and event rows.
+
+The scope must read all history.
+
+OUTGOING HISTORY
+three sources, one person
+provider
+CRM
+Supabase
+COMPANY CAP
+a narrower slice counted
+used
+linkedin-mdp #10 · komaksym
+RECEIPTS
+docs/invitation-shortlist.md#L52
+artifacts/invitation-shortlist-e2e-evidence.json#L11
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1024
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1027
+SCENE 3 OF 7 · GROUPS
+
+Each recorded person counts once against the mapped latest employer.
+
+Slots fall as recorded history rises, down to zero.
+
+OUTGOING HISTORY
+three sources, one person
+provider
+CRM
+Supabase
+COMPANY CAP
+every source counts
+used
+provider
+one count per person
+linkedin-mdp #10 · komaksym
+RECEIPTS
+docs/invitation-shortlist.md#L52
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1024
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1027
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1050
+SCENE 4 OF 7 · DIFF
+
+Each recorded person adds one to their mapped company count.
+
+Unresolved history withholds the shortlist instead of guessing.
+
+Remaining slots pay out in rank order up to the list limit.
+
+The change, line for line
+src/linkedin_mdp_mcp/invitation_shortlist.py
+1024
++
+company_counts[employer.company_id] += 1
+⋯
+1046
++
+status = "withheld_current_employer_assignments"
+⋯
+1050
++
+slots = {company_id: max(0, 3 - company_counts[company_id]) for 
+company_id in registry}
+⋯
+1054
++
+    if slots[candidate_row.company_id] <= 0:
+⋯
+1056
++
+    selected.append(candidate_row)
+1057
++
+    slots[candidate_row.company_id] -= 1
+1058
++
+    if len(selected) == 25:
+queue blocks every slot
+cap minus recorded history
+linkedin-mdp #10 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1024
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1046
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1050
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1054
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1056
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1058
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1057
+SCENE 5 OF 7 · LIST
+
+New tests pin all-history capacity, conflicts, and the read-only report.
+
+66
+new tests
+ok
+test_present_employer_counts_undated_all_history_once_and_keeps_audit_pointers
+e2e_invitation_shortlist.py:1068
+ok
+test_current_employer_conflict_across_canonical_profile_keys_withholds_all
+e2e_invitation_shortlist.py:1092
+ok
+test_candidate_company_conflict_with_current_employer_is_withheld
+e2e_invitation_shortlist.py:1107
+ok
+test_unknown_historical_identity_or_employer_globally_withholds_capacity
+e2e_invitation_shortlist.py:1115
+ok
+test_read_only_report_has_no_recommendation_event_plan
+e2e_invitation_shortlist.py:1124
++ 61 more
+linkedin-mdp #10 · komaksym
+RECEIPTS
+tests/e2e_invitation_shortlist.py#L1068
+tests/e2e_invitation_shortlist.py#L1092
+tests/e2e_invitation_shortlist.py#L1107
+tests/e2e_invitation_shortlist.py#L1115
+tests/e2e_invitation_shortlist.py#L1124
+SCENE 6 OF 7 · STATS
+
+New tests guard the shortlist pipeline.
+
+Changed functions carry the capacity accounting.
+
+66
+new tests
+49
+changed functions
+linkedin-mdp #10 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+All invitation history counts once per person against the mapped latest employer.
+Start review at build_invitation_shortlist in invitation_shortlist.py.
+prc map github.com/komaksym/linkedin-mdp/pull/10
+undefined
+linkedin-mdp #10 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+PR10-present-employer-e2e-matrix.md docs
+docs/action-report-contract.md docs
+infographic/invitation-shortlist/analysis.md docs
+infographic/invitation-shortlist/infographic.png opaque
+infographic/invitation-shortlist/prompts/01-infographic-invitation-shortlist.md docs
+infographic/invitation-shortlist/source.md docs
+infographic/invitation-shortlist/structured-content.md docs
+scripts/build_invitation_shortlist.py code
+tests/test_invitation_shortlist_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+_Parser scripts/build_invitation_shortlist.py
+_Parser.error scripts/build_invitation_shortlist.py
+_arguments scripts/build_invitation_shortlist.py
+_private_json scripts/build_invitation_shortlist.py
+_write_new_private scripts/build_invitation_shortlist.py
+main scripts/build_invitation_shortlist.py
+Citation src/linkedin_mdp_mcp/invitation_shortlist.py
+Company src/linkedin_mdp_mcp/invitation_shortlist.py
+CurrentEmployer src/linkedin_mdp_mcp/invitation_shortlist.py
+Factor src/linkedin_mdp_mcp/invitation_shortlist.py
+HistoryEvidence src/linkedin_mdp_mcp/invitation_shortlist.py
+QualifiedCandidate src/linkedin_mdp_mcp/invitation_shortlist.py
+ShortlistInputError src/linkedin_mdp_mcp/invitation_shortlist.py
+ShortlistInputError.__init__ src/linkedin_mdp_mcp/invitation_shortlist.py
+_array src/linkedin_mdp_mcp/invitation_shortlist.py
+_attributes src/linkedin_mdp_mcp/invitation_shortlist.py
+_candidate src/linkedin_mdp_mcp/invitation_shortlist.py
+_candidate_json src/linkedin_mdp_mcp/invitation_shortlist.py
+_citation_json src/linkedin_mdp_mcp/invitation_shortlist.py
+_citation_list src/linkedin_mdp_mcp/invitation_shortlist.py
+_company_registry src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_invited src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_positive src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_sent src/linkedin_mdp_mcp/invitation_shortlist.py
+_current_employers src/linkedin_mdp_mcp/invitation_shortlist.py
+_date src/linkedin_mdp_mcp/invitation_shortlist.py
+_event_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_event_suppressed src/linkedin_mdp_mcp/invitation_shortlist.py
+_factor_score src/linkedin_mdp_mcp/invitation_shortlist.py
+_history_evidence_id src/linkedin_mdp_mcp/invitation_shortlist.py
+_key src/linkedin_mdp_mcp/invitation_shortlist.py
+_legacy_name src/linkedin_mdp_mcp/invitation_shortlist.py
+_make_markdown src/linkedin_mdp_mcp/invitation_shortlist.py
+_object src/linkedin_mdp_mcp/invitation_shortlist.py
+_optional_timestamp src/linkedin_mdp_mcp/invitation_shortlist.py
+_parse_factor src/linkedin_mdp_mcp/invitation_shortlist.py
+_profile_queue_id src/linkedin_mdp_mcp/invitation_shortlist.py
+_provider_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_provider_local_date src/linkedin_mdp_mcp/invitation_shortlist.py
+_reconcile_legacy_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_source_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_source_profile_index src/linkedin_mdp_mcp/invitation_shortlist.py
+_stable_hash src/linkedin_mdp_mcp/invitation_shortlist.py
+_suppressed src/linkedin_mdp_mcp/invitation_shortlist.py
+_timestamp src/linkedin_mdp_mcp/invitation_shortlist.py
+_validate_database_snapshot src/linkedin_mdp_mcp/invitation_shortlist.py
+_validate_provider_snapshot src/linkedin_mdp_mcp/invitation_shortlist.py
+
+Built by prc explain from the checked board.
+
+5498b6c605ecd00941aa9dd34275c821f7c01876

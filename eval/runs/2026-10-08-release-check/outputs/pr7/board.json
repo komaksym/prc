@@ -1,0 +1,833 @@
+{
+  "duration": 55.95000000000001,
+  "header": "<b>linkedin-mdp #7</b> \u00b7 komaksym",
+  "name": "pr7",
+  "scenes": [
+    {
+      "end": 8.199295774647888,
+      "footer": "base 1253403  \u2192  head 1f2f010",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+818</span> <span class=\"del\">\u22129</span> \u00b7 17 files \u00b7 komaksym/linkedin-mdp#7",
+      "say": [
+        "The owner had no durable invitation history.",
+        "This change reconciles past outbound invitations."
+      ],
+      "sentences": [
+        {
+          "dur": 3.098591549295775,
+          "off": 3.098591549295775,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The owner had no durable invitation history."
+        },
+        {
+          "dur": 3.450704225352113,
+          "off": 3.450704225352113,
+          "on": 0.0,
+          "start": 3.848591549295775,
+          "text": "This change reconciles past outbound invitations."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(invitations): reconcile outbound invitation history",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": ".github/workflows/sync-invitations.yml:11",
+          "match": "INVITATIONS_RECONCILIATION_ENABLED == 'true'"
+        },
+        {
+          "line": ".github/workflows/sync-invitations.yml:4",
+          "match": "workflow_dispatch:"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_sync.py:83",
+          "match": "!= \"OUTGOING\""
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "gate",
+            "rows"
+          ],
+          "step": 0.4,
+          "t": 9.029577464788733
+        }
+      ],
+      "end": 18.370422535211265,
+      "footer": "receipts   sync-invitations.yml:11  \u00b7  sync-invitations.yml:4  \u00b7  invitation_sync.py:83",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "OUTGOING",
+          "id": "rows",
+          "items": [
+            {
+              "id": "r",
+              "text": "OUTGOING"
+            }
+          ],
+          "row": true,
+          "sub": "raw provider history",
+          "title": "invitation rows"
+        },
+        {
+          "col": 1,
+          "ground": "workflow_dispatch",
+          "id": "gate",
+          "items": [
+            {
+              "ground": "workflow_dispatch",
+              "id": "g",
+              "text": "manual"
+            }
+          ],
+          "row": true,
+          "sub": "stays disabled",
+          "title": "manual workflow"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "Outbound invitation rows wait as raw provider history.",
+        "A manual workflow stays gated behind main branch plus one variable."
+      ],
+      "sentences": [
+        {
+          "dur": 3.802816901408451,
+          "off": 3.802816901408451,
+          "on": 0.0,
+          "start": 8.649295774647888,
+          "text": "Outbound invitation rows wait as raw provider history."
+        },
+        {
+          "dur": 4.71830985915493,
+          "off": 4.71830985915493,
+          "on": 0.0,
+          "start": 12.752112676056338,
+          "text": "A manual workflow stays gated behind main branch plus one variable."
+        }
+      ],
+      "start": 8.199295774647888,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": ".github/workflows/sync-invitations.yml:11",
+          "match": "INVITATIONS_RECONCILIATION_ENABLED == 'true'"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_sync.py:107",
+          "match": "LINKEDIN_INVITATION_HISTORY_FOUND"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "gate",
+            "rows"
+          ],
+          "step": 0.4,
+          "t": 19.123239436619716
+        }
+      ],
+      "end": 28.189436619718307,
+      "footer": "receipts   sync-invitations.yml:11  \u00b7  invitation_sync.py:107",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "LINKEDIN_INVITATION_HISTORY_FOUND",
+          "id": "rows",
+          "items": [
+            {
+              "ground": "LINKEDIN_INVITATION_HISTORY_FOUND",
+              "id": "r",
+              "text": "history"
+            }
+          ],
+          "row": true,
+          "sub": "durable history events",
+          "title": "invitation rows"
+        },
+        {
+          "col": 1,
+          "ground": "INVITATIONS_RECONCILIATION_ENABLED",
+          "id": "gate",
+          "items": [
+            {
+              "ground": "INVITATIONS_RECONCILIATION_ENABLED",
+              "id": "g",
+              "text": "gated"
+            }
+          ],
+          "row": true,
+          "sub": "still gated",
+          "title": "manual workflow"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "Matched rows become durable history events.",
+        "The manual workflow still waits for main branch plus the opt-in variable."
+      ],
+      "sentences": [
+        {
+          "dur": 3.028169014084507,
+          "off": 3.028169014084507,
+          "on": 0.0,
+          "start": 18.820422535211264,
+          "text": "Matched rows become durable history events."
+        },
+        {
+          "dur": 5.140845070422536,
+          "off": 5.140845070422536,
+          "on": 0.0,
+          "start": 22.148591549295773,
+          "text": "The manual workflow still waits for main branch plus the opt-in variable."
+        }
+      ],
+      "start": 18.370422535211265,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_sync.py:176",
+          "match": "Fetch and validate all provider pages"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/invitation_sync.py:184",
+          "match": "insert_events_ignore_duplicates"
+        }
+      ],
+      "cues": [
+        {
+          "at": "every invitations page",
+          "do": "step",
+          "n": 1,
+          "t": 29.907042253521123
+        },
+        {
+          "at": "duplicate-safe events",
+          "do": "note",
+          "line": "184",
+          "t": 34.291549295774644,
+          "text": "dedupe safe, replay clean",
+          "tone": "good"
+        }
+      ],
+      "cut": 0,
+      "end": 38.923943661971826,
+      "file": "src/linkedin_mdp_mcp/invitation_sync.py",
+      "footer": "receipts   6 lines quoted verbatim from the diff of invitation_sync.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        "170",
+        "176",
+        "177",
+        "178",
+        "183",
+        "184"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 170,
+          "op": "+",
+          "ref": "170",
+          "step": 1,
+          "text": "async def reconcile_invitations(",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "async"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "def"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "reconcile_invitations"
+            },
+            {
+              "cls": "",
+              "text": "("
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            24
+          ],
+          "hang": 8,
+          "num": 176,
+          "op": "+",
+          "ref": "176",
+          "step": 1,
+          "text": "    \"\"\"Fetch and validate all provider pages before any database read or write.\"\"\"",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "Fetch"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "and"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "validate"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "all"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "provider"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "pages"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "before"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "any"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "database"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "read"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "or"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "write"
+            },
+            {
+              "cls": "s",
+              "text": "."
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 177,
+          "op": "+",
+          "ref": "177",
+          "step": 1,
+          "text": "    snapshot = await linkedin.snapshot(",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "snapshot"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "await"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "linkedin"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "snapshot"
+            },
+            {
+              "cls": "",
+              "text": "("
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "num": 178,
+          "op": "+",
+          "ref": "178",
+          "step": 1,
+          "text": "        \"INVITATIONS\", max_pages=50, strict_elements=True",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "INVITATIONS"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "max_pages"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "n",
+              "text": "50"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "strict_elements"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "k",
+              "text": "True"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            14
+          ],
+          "hang": 8,
+          "num": 183,
+          "op": "+",
+          "ref": "183",
+          "step": 1,
+          "text": "    plan = plan_invitation_events(rows, prospects_by_key, observed_at=observed_at)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "plan"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "plan_invitation_events"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "rows"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "prospects_by_key"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "observed_at"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": "observed_at"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            13
+          ],
+          "hang": 8,
+          "num": 184,
+          "op": "+",
+          "ref": "184",
+          "step": 1,
+          "text": "    inserted = await supabase.insert_events_ignore_duplicates(plan.events)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "inserted"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "await"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "supabase"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "insert_events_ignore_duplicates"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "plan"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "events"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "Reconcile fetches every invitations page before any database write.",
+        "It plans duplicate-safe events then inserts them idempotently."
+      ],
+      "sentences": [
+        {
+          "dur": 4.71830985915493,
+          "off": 4.71830985915493,
+          "on": 0.0,
+          "start": 28.639436619718307,
+          "text": "Reconcile fetches every invitations page before any database write."
+        },
+        {
+          "dur": 4.366197183098592,
+          "off": 4.366197183098592,
+          "on": 0.0,
+          "start": 33.657746478873236,
+          "text": "It plans duplicate-safe events then inserts them idempotently."
+        }
+      ],
+      "start": 28.189436619718307,
+      "type": "diff"
+    },
+    {
+      "big": "6",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 39.768309859154925
+        }
+      ],
+      "end": 44.21760563380282,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/test_invitation_sync_e2e.py:111",
+          "text": "test_complete_multipage_history_is_matched_deduped_and_idempotent"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": "+ 5 more",
+      "say": [
+        "New tests pin multipage matching with dedupe and replay."
+      ],
+      "sentences": [
+        {
+          "dur": 3.943661971830986,
+          "off": 3.943661971830986,
+          "on": 0.0,
+          "start": 39.37394366197183,
+          "text": "New tests pin multipage matching with dedupe and replay."
+        }
+      ],
+      "start": 38.923943661971826,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "6"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "13"
+        }
+      ],
+      "end": 51.71267605633803,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "New tests guard the invitation pipeline.",
+        "Changed functions carry the reconcile path."
+      ],
+      "sentences": [
+        {
+          "dur": 2.8169014084507045,
+          "off": 2.8169014084507045,
+          "on": 0.0,
+          "start": 44.66760563380282,
+          "text": "New tests guard the invitation pipeline."
+        },
+        {
+          "dur": 3.028169014084507,
+          "off": 3.028169014084507,
+          "on": 0.0,
+          "start": 47.78450704225352,
+          "text": "Changed functions carry the reconcile path."
+        }
+      ],
+      "start": 44.21760563380282,
+      "type": "stats"
+    },
+    {
+      "end": 55.95000000000001,
+      "footer": "",
+      "i": 6,
+      "l1": "Past outbound invitations gain durable history with the workflow gated.",
+      "l2": "Start review at reconcile_invitations in invitation_sync.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 52.162676056338036,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 51.71267605633803,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/7"
+    }
+  ]
+}

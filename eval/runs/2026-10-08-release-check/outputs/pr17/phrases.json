@@ -1,0 +1,146 @@
+[
+ {
+  "scene": 1,
+  "phrase": "No company",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 1,
+  "phrase": "on B",
+  "said": 6.595,
+  "share": 6.595
+ },
+ {
+  "scene": 1,
+  "phrase": "and D",
+  "said": 7.158,
+  "share": 7.158
+ },
+ {
+  "scene": 1,
+  "phrase": "Person A works",
+  "said": 7.881,
+  "share": 7.881
+ },
+ {
+  "scene": 1,
+  "phrase": "say co-a",
+  "said": 14.308,
+  "share": 14.308
+ },
+ {
+  "scene": 1,
+  "phrase": "only co-a's limit",
+  "said": 15.223,
+  "share": 15.223
+ },
+ {
+  "scene": 1,
+  "phrase": "Nothing stopped A",
+  "said": 17.636,
+  "share": 17.636
+ },
+ {
+  "scene": 1,
+  "phrase": "co-b's people",
+  "said": 19.256,
+  "share": 19.256
+ },
+ {
+  "scene": 1,
+  "phrase": "fourth invitation",
+  "said": 20.664,
+  "share": 20.664
+ },
+ {
+  "scene": 2,
+  "phrase": "Now A needs",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 2,
+  "phrase": "A needs",
+  "said": 0.732,
+  "share": 0.732
+ },
+ {
+  "scene": 2,
+  "phrase": "every company",
+  "said": 2.351,
+  "share": 2.351
+ },
+ {
+  "scene": 2,
+  "phrase": "works at",
+  "said": 3.478,
+  "share": 3.478
+ },
+ {
+  "scene": 2,
+  "phrase": "is full",
+  "said": 4.764,
+  "share": 4.764
+ },
+ {
+  "scene": 2,
+  "phrase": "not invited",
+  "said": 5.961,
+  "share": 5.961
+ },
+ {
+  "scene": 3,
+  "phrase": "When both",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 3,
+  "phrase": "invited once",
+  "said": 2.985,
+  "share": 2.985
+ },
+ {
+  "scene": 3,
+  "phrase": "two at co-a",
+  "said": 6.736,
+  "share": 6.736
+ },
+ {
+  "scene": 3,
+  "phrase": "two at co-b",
+  "said": 7.863,
+  "share": 7.863
+ },
+ {
+  "scene": 4,
+  "phrase": "the old check",
+  "said": 1.365,
+  "share": 1.365
+ },
+ {
+  "scene": 4,
+  "phrase": "Now it checks",
+  "said": 4.975,
+  "share": 4.975
+ },
+ {
+  "scene": 4,
+  "phrase": "every company",
+  "said": 5.961,
+  "share": 5.961
+ },
+ {
+  "scene": 4,
+  "phrase": "uses up a slot",
+  "said": 10.698,
+  "share": 10.698
+ },
+ {
+  "scene": 4,
+  "phrase": "each of them",
+  "said": 11.965,
+  "share": 11.965
+ }
+]

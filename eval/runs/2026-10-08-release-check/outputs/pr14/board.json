@@ -1,0 +1,837 @@
+{
+  "duration": 64.97042253521127,
+  "header": "<b>linkedin-mdp #14</b> \u00b7 komaksym",
+  "name": "mdp14",
+  "scenes": [
+    {
+      "end": 10.875352112676056,
+      "footer": "base 306ff5a  \u2192  head 66e8fe4",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+261</span> <span class=\"del\">\u221220</span> \u00b7 13 files \u00b7 komaksym/linkedin-mdp#14",
+      "say": [
+        "This pull request makes the private source collector gather LinkedIn's member changelog.",
+        "It also guards how that changelog is paged."
+      ],
+      "sentences": [
+        {
+          "dur": 6.19718309859155,
+          "off": 6.19718309859155,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "This pull request makes the private source collector gather LinkedIn's member changelog."
+        },
+        {
+          "dur": 3.028169014084507,
+          "off": 3.028169014084507,
+          "on": 0.0,
+          "start": 6.94718309859155,
+          "text": "It also guards how that changelog is paged."
+        }
+      ],
+      "start": 0.0,
+      "title": "fix(collector): collect changelog",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:179",
+          "match": "{\"CONNECTIONS\", \"INVITATIONS\", \"INBOX\"}"
+        },
+        {
+          "line": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:177",
+          "match": "bundle.get(\"changelog\", {})"
+        }
+      ],
+      "cues": [
+        {
+          "at": "Before",
+          "do": "show",
+          "ids": [
+            "bun"
+          ],
+          "t": 11.325352112676056
+        },
+        {
+          "at": "Now it",
+          "do": "fill",
+          "ids": [
+            "cl"
+          ],
+          "t": 16.977464788732394
+        },
+        {
+          "at": "also holds",
+          "do": "note",
+          "id": "cl",
+          "t": 17.470422535211267,
+          "text": "new in this PR",
+          "tone": "good"
+        }
+      ],
+      "end": 20.73098591549296,
+      "footer": "receipts   e2e_private_source.py:179  \u00b7  e2e_private_source.py:177",
+      "groups": [
+        {
+          "col": 0,
+          "id": "bun",
+          "items": [
+            {
+              "id": "c",
+              "text": "CONNECTIONS"
+            },
+            {
+              "id": "i",
+              "text": "INVITATIONS"
+            },
+            {
+              "id": "x",
+              "text": "INBOX"
+            },
+            {
+              "id": "cl",
+              "kind": "slot",
+              "text": "changelog",
+              "tone": "good"
+            }
+          ],
+          "row": true,
+          "sub": "collected with no writes",
+          "title": "Encrypted source bundle"
+        }
+      ],
+      "hold": 0.6,
+      "i": 1,
+      "say": [
+        "Before, the bundle held three snapshots: connections, invitations and inbox.",
+        "Now it also holds the changelog."
+      ],
+      "sentences": [
+        {
+          "dur": 5.352112676056338,
+          "off": 5.352112676056338,
+          "on": 0.0,
+          "start": 11.325352112676056,
+          "text": "Before, the bundle held three snapshots: connections, invitations and inbox."
+        },
+        {
+          "dur": 2.2535211267605635,
+          "off": 2.2535211267605635,
+          "on": 0.0,
+          "start": 16.977464788732394,
+          "text": "Now it also holds the changelog."
+        }
+      ],
+      "start": 10.875352112676056,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "diagnostics/action-report-private-source-20261002/collect_private_source.py:92",
+          "match": "count=50"
+        },
+        {
+          "line": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:72",
+          "match": "/rest/memberChangeLogs?start=1&startTime=1710000000"
+        }
+      ],
+      "cues": [
+        {
+          "at": "The caller",
+          "do": "show",
+          "ids": [
+            "req"
+          ],
+          "t": 21.180985915492958
+        },
+        {
+          "at": "next page link",
+          "do": "show",
+          "ids": [
+            "nxt"
+          ],
+          "step": 0.2,
+          "t": 24.08661971830986
+        },
+        {
+          "at": "adds one",
+          "do": "note",
+          "id": "n2",
+          "t": 25.142957746478874,
+          "text": "not in request",
+          "tone": "bad"
+        },
+        {
+          "at": "stops with",
+          "do": "mark",
+          "id": "nxt",
+          "t": 28.96408450704225,
+          "text": "\u2717",
+          "tone": "bad"
+        }
+      ],
+      "end": 31.872535211267603,
+      "footer": "receipts   collect_private_source.py:92  \u00b7  e2e_private_source.py:72",
+      "groups": [
+        {
+          "col": 0,
+          "id": "req",
+          "items": [
+            {
+              "id": "r",
+              "text": "count=50"
+            }
+          ],
+          "row": true,
+          "sub": "no startTime set",
+          "title": "Caller request"
+        },
+        {
+          "col": 1,
+          "id": "nxt",
+          "items": [
+            {
+              "id": "n1",
+              "text": "start=1"
+            },
+            {
+              "id": "n2",
+              "text": "startTime=1710000000",
+              "tone": "bad"
+            }
+          ],
+          "row": true,
+          "sub": "second page",
+          "title": "Next link from provider"
+        }
+      ],
+      "hold": 0.6,
+      "i": 2,
+      "say": [
+        "The caller sets no start time.",
+        "If the next page link adds one, the scope has changed.",
+        "The collector now stops with an error."
+      ],
+      "sentences": [
+        {
+          "dur": 2.1126760563380285,
+          "off": 2.1126760563380285,
+          "on": 0.0,
+          "start": 21.180985915492958,
+          "text": "The caller sets no start time."
+        },
+        {
+          "dur": 3.802816901408451,
+          "off": 3.802816901408451,
+          "on": 0.0,
+          "start": 23.593661971830986,
+          "text": "If the next page link adds one, the scope has changed."
+        },
+        {
+          "dur": 2.676056338028169,
+          "off": 2.676056338028169,
+          "on": 0.0,
+          "start": 27.696478873239435,
+          "text": "The collector now stops with an error."
+        }
+      ],
+      "start": 20.73098591549296,
+      "type": "groups"
+    },
+    {
+      "cues": [
+        {
+          "at": "compared with",
+          "do": "step",
+          "n": 1,
+          "t": 35.13943661971831
+        },
+        {
+          "at": "never sent",
+          "do": "note",
+          "line": "219",
+          "t": 38.89014084507042,
+          "text": "rejects the link",
+          "tone": "good"
+        }
+      ],
+      "cut": 16,
+      "end": 42.49154929577465,
+      "file": "src/linkedin_mdp_mcp/client.py",
+      "footer": "receipts   5 lines quoted verbatim from the diff of client.py",
+      "gutter": 3,
+      "hold": 0.8,
+      "i": 3,
+      "label": "The new scope check",
+      "lang": "py",
+      "lines": [
+        "217",
+        {
+          "ref": "218",
+          "step": 1
+        },
+        {
+          "ref": "219",
+          "step": 1
+        },
+        "220",
+        "221"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 217,
+          "op": " ",
+          "ref": "217",
+          "step": 0,
+          "text": "next_params = parse_qs(parsed.query, keep_blank_values=True)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "next_params"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "parse_qs"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "parsed"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "query"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "keep_blank_values"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "k",
+              "text": "True"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            24
+          ],
+          "hang": 4,
+          "num": 218,
+          "op": "+",
+          "ref": "218",
+          "step": 1,
+          "text": "if strict_envelope and \"startTime\" not in params and \"startTime\" in next_params:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "strict_envelope"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "and"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "startTime"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "not"
+            },
+            {
+              "cls": "k",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "params"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "and"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "startTime"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "next_params"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            19
+          ],
+          "hang": 8,
+          "num": 219,
+          "op": "+",
+          "ref": "219",
+          "step": 1,
+          "text": "    raise LinkedInAPIError(0, \"changelog next link changed request scope\")",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "raise"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "LinkedInAPIError"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "n",
+              "text": "0"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "changelog"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "next"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "link"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "changed"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "request"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "scope"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "num": 220,
+          "op": " ",
+          "ref": "220",
+          "step": 0,
+          "text": "for key, value in params.items():",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "key"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "value"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "params"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "items"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "num": 221,
+          "op": " ",
+          "ref": "221",
+          "step": 0,
+          "text": "    expected = [str(value)]",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "expected"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "f",
+              "text": "str"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "value"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "In the client, a changelog next link is compared with the request.",
+        "A startTime the caller never sent raises an error."
+      ],
+      "sentences": [
+        {
+          "dur": 4.647887323943662,
+          "off": 4.647887323943662,
+          "on": 0.0,
+          "start": 32.322535211267606,
+          "text": "In the client, a changelog next link is compared with the request."
+        },
+        {
+          "dur": 3.5211267605633805,
+          "off": 3.5211267605633805,
+          "on": 0.0,
+          "start": 37.27042253521127,
+          "text": "A startTime the caller never sent raises an error."
+        }
+      ],
+      "start": 31.872535211267603,
+      "type": "diff"
+    },
+    {
+      "big": "",
+      "code": true,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.4,
+          "t": 43.5612676056338
+        }
+      ],
+      "end": 56.761267605633805,
+      "footer": "",
+      "hold": 1.0,
+      "i": 4,
+      "items": [
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:183",
+          "text": "changelog_complete_watermark"
+        },
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:187",
+          "text": "changelog_valid_pagination_preserves_scope_and_events"
+        },
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:197",
+          "text": "changelog_original_start_time_survives_pagination"
+        },
+        {
+          "cite": "diagnostics/action-report-private-source-20261002/e2e_private_source.py:39",
+          "text": "change_added_start_time"
+        }
+      ],
+      "label": "changelog checks in the end-to-end script",
+      "mark": "\u2713",
+      "more": "plus more rejection cases for bad changelog pages",
+      "say": [
+        "The end-to-end script checks the watermark, valid paging, and a caller's own start time.",
+        "It also feeds in a next link that adds a start time, and expects a rejection."
+      ],
+      "sentences": [
+        {
+          "dur": 6.19718309859155,
+          "off": 6.19718309859155,
+          "on": 0.0,
+          "start": 42.94154929577465,
+          "text": "The end-to-end script checks the watermark, valid paging, and a caller's own start time."
+        },
+        {
+          "dur": 5.422535211267606,
+          "off": 5.422535211267606,
+          "on": 0.0,
+          "start": 49.4387323943662,
+          "text": "It also feeds in a next link that adds a start time, and expects a rejection."
+        }
+      ],
+      "start": 42.49154929577465,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            0,
+            0.0
+          ],
+          "do": "l1",
+          "t": 57.21126760563381
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2",
+          "t": 59.64084507042254
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd",
+          "t": 61.58450704225353
+        }
+      ],
+      "end": 64.97042253521127,
+      "fine": "Every name on screen was checked against the pull request's code before rendering.",
+      "footer": "",
+      "hold": 2.0,
+      "i": 5,
+      "l1": "The bundle now carries the changelog.",
+      "l2": "Paging cannot add a start time.",
+      "nocap": true,
+      "say": [
+        "The bundle now carries the changelog. Paging cannot add a start time."
+      ],
+      "sentences": [
+        {
+          "dur": 4.859154929577465,
+          "off": 4.859154929577465,
+          "on": 0.0,
+          "start": 57.21126760563381,
+          "text": "The bundle now carries the changelog. Paging cannot add a start time."
+        }
+      ],
+      "start": 56.761267605633805,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/14"
+    }
+  ]
+}

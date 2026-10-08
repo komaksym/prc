@@ -1,0 +1,48 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The owner now receives two private DM reports published to separate owner-only docs."
+    },
+    {
+      "id": "q2",
+      "answer": "build_dm_doc_bodies"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        ".github/workflows/morning-report.yml",
+        "scripts/publish_private_dm_docs.py",
+        ".github/workflows/report-tests.yml",
+        "scripts/report_connections_doc.py",
+        ".github/workflows/sync-connections.yml",
+        "scripts/sync_inbox.py",
+        "src/linkedin_mdp_mcp/google_doc_report.py",
+        "src/linkedin_mdp_mcp/inbox_sync.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "CI",
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/dm_doc_report.py::build_dm_doc_bodies"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

@@ -1,0 +1,870 @@
+{
+  "duration": 62.51760563380284,
+  "header": "<b>linkedin-mdp #13</b> \u00b7 komaksym",
+  "name": "pr13",
+  "scenes": [
+    {
+      "end": 9.678169014084508,
+      "footer": "base 0c54c1a  \u2192  head f59b09a",
+      "i": 0,
+      "kicker": "Open pull request",
+      "meta": "<span class=\"add\">+1403</span> <span class=\"del\">\u22123</span> \u00b7 15 files \u00b7 komaksym/linkedin-mdp#13",
+      "say": [
+        "The owner had no offline plan for inbox messages.",
+        "This change queues manual reply, follow-up, and first-DM actions."
+      ],
+      "sentences": [
+        {
+          "dur": 3.450704225352113,
+          "off": 3.450704225352113,
+          "on": 0.0,
+          "start": 0.45,
+          "text": "The owner had no offline plan for inbox messages."
+        },
+        {
+          "dur": 4.577464788732395,
+          "off": 4.577464788732395,
+          "on": 0.0,
+          "start": 4.200704225352113,
+          "text": "This change queues manual reply, follow-up, and first-DM actions."
+        }
+      ],
+      "start": 0.0,
+      "title": "feat(report): plan DM actions",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:471",
+          "match": "\"reply\": [], \"follow_up\": [], \"first_dm\": [], \"withheld\": []"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:505",
+          "match": "timedelta(hours=72)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:508",
+          "match": "verified outbound DM at least 72 hours old with no later observed inbound"
+        },
+        {
+          "line": "docs/private-dm-actions.md:3",
+          "match": "sends no message"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "inbox"
+          ],
+          "step": 0.4,
+          "t": 10.501408450704226
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "queue"
+          ],
+          "step": 0.4,
+          "t": 15.850704225352112
+        }
+      ],
+      "end": 18.440845070422533,
+      "footer": "receipts   dm_actions.py:471  \u00b7  dm_actions.py:505  \u00b7  dm_actions.py:508  \u00b7  private-dm-actions.md:3",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "follow_up",
+          "id": "inbox",
+          "items": [
+            {
+              "ground": "verified outbound DM at least 72 hours old with no later observed inbound",
+              "id": "o",
+              "text": "outbound"
+            }
+          ],
+          "row": true,
+          "sub": "one verified message",
+          "title": "person inbox"
+        },
+        {
+          "col": 1,
+          "ground": "withheld",
+          "id": "queue",
+          "items": [
+            {
+              "ground": "unknown",
+              "id": "a",
+              "text": "unknown"
+            }
+          ],
+          "row": true,
+          "sub": "time-scoped rule",
+          "title": "action queue"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "A verified outbound message sits unanswered for days.",
+        "Anonymous rows nearby follow a time-scoped rule."
+      ],
+      "sentences": [
+        {
+          "dur": 3.7323943661971835,
+          "off": 3.7323943661971835,
+          "on": 0.0,
+          "start": 10.128169014084508,
+          "text": "A verified outbound message sits unanswered for days."
+        },
+        {
+          "dur": 3.3802816901408455,
+          "off": 3.3802816901408455,
+          "on": 0.0,
+          "start": 14.16056338028169,
+          "text": "Anonymous rows nearby follow a time-scoped rule."
+        }
+      ],
+      "start": 9.678169014084508,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:471",
+          "match": "\"reply\": [], \"follow_up\": [], \"first_dm\": [], \"withheld\": []"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:508",
+          "match": "verified outbound DM at least 72 hours old with no later observed inbound"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:508",
+          "match": "Owner writes follow-up"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:511",
+          "match": "message_history_ambiguous_or_action_not_due"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:503",
+          "match": "latest verified inbound DM after outbound"
+        }
+      ],
+      "cues": [
+        {
+          "at": "verified outbound",
+          "do": "fill",
+          "ids": [
+            "o"
+          ],
+          "t": 19.03169014084507
+        },
+        {
+          "at": "ambiguous history",
+          "do": "tone",
+          "ids": [
+            "a"
+          ],
+          "t": 24.190845070422533,
+          "tone": "bad"
+        },
+        {
+          "at": "owner still writes",
+          "do": "note",
+          "id": "queue",
+          "t": 27.57112676056338,
+          "text": "owner sends everything"
+        }
+      ],
+      "end": 30.583802816901407,
+      "footer": "receipts   dm_actions.py:471  \u00b7  dm_actions.py:508  \u00b7  dm_actions.py:508  \u00b7  dm_actions.py:511",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "follow_up",
+          "id": "inbox",
+          "items": [
+            {
+              "ground": "verified outbound DM at least 72 hours old with no later observed inbound",
+              "id": "o",
+              "text": "outbound"
+            }
+          ],
+          "row": true,
+          "sub": "verified evidence only",
+          "title": "person inbox"
+        },
+        {
+          "col": 1,
+          "ground": "withheld",
+          "id": "queue",
+          "items": [
+            {
+              "ground": "message_history_ambiguous_or_action_not_due",
+              "id": "a",
+              "text": "unknown"
+            }
+          ],
+          "row": true,
+          "sub": "ambiguous rows wait",
+          "title": "action queue"
+        }
+      ],
+      "i": 2,
+      "say": [
+        "A verified outbound message of that age still earns a follow-up.",
+        "Recent ambiguous history withholds the action, and the owner still writes every word."
+      ],
+      "sentences": [
+        {
+          "dur": 4.507042253521127,
+          "off": 4.507042253521127,
+          "on": 0.0,
+          "start": 18.890845070422532,
+          "text": "A verified outbound message of that age still earns a follow-up."
+        },
+        {
+          "dur": 5.985915492957747,
+          "off": 5.985915492957747,
+          "on": 0.0,
+          "start": 23.69788732394366,
+          "text": "Recent ambiguous history withholds the action, and the owner still writes every word."
+        }
+      ],
+      "start": 18.440845070422533,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:500",
+          "match": "latest_in.occurred_at > latest_out.occurred_at"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:505",
+          "match": "timedelta(hours=72)"
+        },
+        {
+          "line": "src/linkedin_mdp_mcp/dm_actions.py:511",
+          "match": "message_history_ambiguous_or_action_not_due"
+        }
+      ],
+      "cues": [
+        {
+          "at": "newer inbound",
+          "do": "step",
+          "n": 1,
+          "t": 31.174647887323943
+        },
+        {
+          "at": "old outbound",
+          "do": "step",
+          "n": 2,
+          "t": 35.98169014084507
+        },
+        {
+          "at": "ambiguous history",
+          "do": "step",
+          "n": 3,
+          "t": 41.0
+        }
+      ],
+      "cut": 8,
+      "end": 45.20985915492958,
+      "file": "src/linkedin_mdp_mcp/dm_actions.py",
+      "footer": "receipts   3 lines quoted verbatim from the diff of dm_actions.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "The change, line for line",
+      "lang": "py",
+      "lines": [
+        {
+          "ref": "500",
+          "step": 1
+        },
+        {
+          "ref": "505",
+          "step": 2
+        },
+        {
+          "ref": "511",
+          "step": 3
+        }
+      ],
+      "rows": [
+        {
+          "breaks": [
+            19
+          ],
+          "hang": 4,
+          "num": 500,
+          "op": "+",
+          "ref": "500",
+          "step": 1,
+          "text": "if latest_in and (not latest_out or latest_in.occurred_at > latest_out.occurred_at):",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "and"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "k",
+              "text": "not"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_out"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_in"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "occurred_at"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": ">"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_out"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "occurred_at"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            24,
+            41
+          ],
+          "hang": 4,
+          "num": 505,
+          "op": "+",
+          "ref": "505",
+          "step": 2,
+          "text": "if latest_out and now - latest_out.occurred_at >= timedelta(hours=72) and (not latest_in or latest_in.occurred_at < latest_out.occurred_at):",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_out"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "and"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "now"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "-"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_out"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "occurred_at"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": ">"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "timedelta"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "hours"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "n",
+              "text": "72"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "and"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "k",
+              "text": "not"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "or"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_in"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "occurred_at"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "<"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "latest_out"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "occurred_at"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true
+        },
+        {
+          "breaks": [
+            22
+          ],
+          "hang": 8,
+          "num": 511,
+          "op": "+",
+          "ref": "511",
+          "step": 3,
+          "text": "    report[\"withheld\"].append({**common, \"reason\": \"message_history_ambiguous_or_action_not_due\"})",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "report"
+            },
+            {
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "withheld"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "append"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "{"
+            },
+            {
+              "cls": "k",
+              "text": "*"
+            },
+            {
+              "cls": "k",
+              "text": "*"
+            },
+            {
+              "cls": "",
+              "text": "common"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "reason"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "message_history_ambiguous_or_action_not_due"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": "}"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "A newer inbound message after the last outbound queues a reply.",
+        "An old outbound message with no later reply queues a follow-up.",
+        "Recent ambiguous history withholds the action instead."
+      ],
+      "sentences": [
+        {
+          "dur": 4.436619718309859,
+          "off": 4.436619718309859,
+          "on": 0.0,
+          "start": 31.033802816901407,
+          "text": "A newer inbound message after the last outbound queues a reply."
+        },
+        {
+          "dur": 4.436619718309859,
+          "off": 4.436619718309859,
+          "on": 0.0,
+          "start": 35.77042253521127,
+          "text": "An old outbound message with no later reply queues a follow-up."
+        },
+        {
+          "dur": 3.802816901408451,
+          "off": 3.802816901408451,
+          "on": 0.0,
+          "start": 40.50704225352113,
+          "text": "Recent ambiguous history withholds the action instead."
+        }
+      ],
+      "start": 30.583802816901407,
+      "type": "diff"
+    },
+    {
+      "big": "1",
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 46.10352112676057
+        }
+      ],
+      "end": 50.99647887323945,
+      "footer": "",
+      "i": 4,
+      "items": [
+        {
+          "cite": "tests/e2e_private_dm_actions.py:130",
+          "text": "verified_outbound_followup"
+        },
+        {
+          "cite": "tests/e2e_private_dm_actions.py:131",
+          "text": "verified_inbound_reply"
+        },
+        {
+          "cite": "tests/e2e_private_dm_actions.py:134",
+          "text": "invitation_note_not_dm"
+        }
+      ],
+      "label": "new tests",
+      "mark": "ok",
+      "more": null,
+      "say": [
+        "New tests pin follow-up, reply, and invitation-note separation."
+      ],
+      "sentences": [
+        {
+          "dur": 4.436619718309859,
+          "off": 4.436619718309859,
+          "on": 0.0,
+          "start": 45.659859154929585,
+          "text": "New tests pin follow-up, reply, and invitation-note separation."
+        }
+      ],
+      "start": 45.20985915492958,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cards": [
+        {
+          "label": "new tests",
+          "tone": "good",
+          "value": "1"
+        },
+        {
+          "label": "changed functions",
+          "tone": "blue",
+          "value": "23"
+        }
+      ],
+      "end": 58.28028169014086,
+      "footer": "",
+      "i": 5,
+      "say": [
+        "New tests guard the DM action queues.",
+        "Changed functions carry the planning logic."
+      ],
+      "sentences": [
+        {
+          "dur": 2.6056338028169015,
+          "off": 2.6056338028169015,
+          "on": 0.0,
+          "start": 51.44647887323945,
+          "text": "New tests guard the DM action queues."
+        },
+        {
+          "dur": 3.028169014084507,
+          "off": 3.028169014084507,
+          "on": 0.0,
+          "start": 54.35211267605635,
+          "text": "Changed functions carry the planning logic."
+        }
+      ],
+      "start": 50.99647887323945,
+      "type": "stats"
+    },
+    {
+      "end": 62.51760563380284,
+      "footer": "",
+      "i": 6,
+      "l1": "Verified inbox evidence queues manual reply, follow-up, and first-DM actions.",
+      "l2": "Start review at plan_dm_actions in dm_actions.py.",
+      "say": [
+        "That is the change, quoted from the diff."
+      ],
+      "sentences": [
+        {
+          "dur": 2.887323943661972,
+          "off": 2.887323943661972,
+          "on": 0.0,
+          "start": 58.73028169014086,
+          "text": "That is the change, quoted from the diff."
+        }
+      ],
+      "start": 58.28028169014086,
+      "type": "outro",
+      "url": "github.com/komaksym/linkedin-mdp/pull/13"
+    }
+  ]
+}

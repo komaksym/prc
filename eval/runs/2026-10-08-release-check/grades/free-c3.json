@@ -1,0 +1,153 @@
+{
+  "grades": [
+    {
+      "pr": 10,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Describes all-history person counting against company capacity. Omits the three-person lifetime cap, canonical-profile citation binding and ASCII-safe hashing, and strict legacy-row reconciliation."
+    },
+    {
+      "pr": 10,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "States that all history counts once. Omits that historical rows without source dates still count against the mapped employer."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies prospect rows gaining exactly preserved created_at. Omits preservation through pagination and encryption and the rule that missing values remain missing."
+    },
+    {
+      "pr": 11,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States exact created_at preservation across pages, matching the keyed test behavior."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies prospect creation time as date_added and missing values as unknown. Omits unique canonical-profile matching, other invalid timestamps and fixed reasons, and unchanged selection and capacity."
+    },
+    {
+      "pr": 12,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "States that invalid timestamps remain unknown. Omits future timestamps and the safe evidence pointer required by the keyed behavior."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Describes verified-message actions, withholding for ambiguous history, and manual writing and sending. Omits exact identity and directional evidence, unknown read status, and absence of provider requests and database writes."
+    },
+    {
+      "pr": 13,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Separates invitation notes from DMs and identifies verified outbound follow-ups. Omits the 72-hour threshold, absence of later inbound messages, and exactly one follow-up."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies changelog collection and rejection of an added startTime. Omits collection bounds, observation timestamps and unknown freshness, member validation before encryption, and rejection before a second request."
+    },
+    {
+      "pr": 14,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States retention of the original start time during valid pagination, matching the keyed changelog behavior."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies combined invitation and DM reporting and publication through the Google command. Omits upstream evidence and uncertainty preservation, marker and revision safeguards, and offline operation without requests, writes or sends."
+    },
+    {
+      "pr": 15,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States complete composition from real upstream shapes and preservation of sources, covering combined-report completeness and provenance."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "States that selection needs capacity at every current employer and consumes one slot at each. Omits withholding for invalid employer sets and preservation of identities, exclusions, ranking and date_added."
+    },
+    {
+      "pr": 17,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States that any full employer prevents selection and that successful selection consumes one slot at every employer."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies separate owner-only first-DM and follow-up documents. Omits validated planner and retained-evidence binding, managed-marker refusal, and dual preflight with revision-checked replacement."
+    },
+    {
+      "pr": 19,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "partial",
+      "reason": "Identifies tests covering both documents, reruns, conflicts and preflight. Omits complete publication, convergent reruns, failure on a second revision conflict, and refusal of dual-preflight violations."
+    },
+    {
+      "pr": 5,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "States that a marked Google Docs section preserves operator notes. Omits revision and owner-only permission checks and exact terminal no-data handling that retains rows while preserving genuine failures."
+    },
+    {
+      "pr": 5,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "wrong",
+      "reason": "Claims there are no new tests, contradicting the supplied new-test question and its 32-scenario matrix key. Row retention matches part of the key, but the false denial prevents partial credit."
+    },
+    {
+      "pr": 7,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "States that matched outbound invitations become durable duplicate-safe history. Omits invitation-specific planning, the disabled workflow and main-branch opt-in gate, and absence of migration or live backfill."
+    },
+    {
+      "pr": 8,
+      "condition": "c3",
+      "question": "q1",
+      "verdict": "partial",
+      "reason": "Identifies complete clean snapshots and persistence only through explicit application. Omits exact Unicode identity and direction validation, preserved message details and uncertainty, and withholding of ambiguous threads."
+    },
+    {
+      "pr": 8,
+      "condition": "c3",
+      "question": "q6",
+      "verdict": "correct",
+      "reason": "States Unicode profile identity persistence, matching the keyed test behavior."
+    }
+  ],
+  "input_sha256": "7eab5c7bc6de5fd02184ad36255a1c1022c333e301826209defbe37abd9d52e6",
+  "input_count": 21
+}

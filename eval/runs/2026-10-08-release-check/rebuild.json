@@ -1,0 +1,74 @@
+{
+  "pr11": {
+    "wall_seconds": 43.2768879160285,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr11/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr11.v2.json",
+    "check_passed": true
+  },
+  "pr12": {
+    "wall_seconds": 49.928273458004696,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr12/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr12.json",
+    "check_passed": true
+  },
+  "pr17": {
+    "wall_seconds": 68.49864600002184,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr17/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr17.v2.json",
+    "check_passed": true
+  },
+  "pr19": {
+    "wall_seconds": 38.18349812499946,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr19/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr19.json",
+    "check_passed": true
+  },
+  "pr5": {
+    "wall_seconds": 45.19644083399908,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr5/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr5.json",
+    "check_passed": true
+  },
+  "pr7": {
+    "wall_seconds": 46.158652874990366,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr7/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr7.json",
+    "check_passed": true
+  },
+  "pr8": {
+    "wall_seconds": 38.00845858300454,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr8/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr8.json",
+    "check_passed": true
+  },
+  "pr10": {
+    "wall_seconds": 50.34116587499739,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr10/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr10.json",
+    "check_passed": true
+  },
+  "pr13": {
+    "wall_seconds": 51.75422829200397,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr13/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr13.json",
+    "check_passed": true
+  },
+  "pr14": {
+    "wall_seconds": 58.60474204100319,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr14/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr14.json",
+    "check_passed": true
+  },
+  "pr15": {
+    "wall_seconds": 48.643385917006526,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr15/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr15.json",
+    "check_passed": true
+  },
+  "pr16": {
+    "wall_seconds": 42.21309158302029,
+    "source_map": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround1/outputs/pr16/map.json",
+    "source_board": "/Users/koval/dev/prc/eval/runs/2026-10-08-fixround2/boards/pr16.json",
+    "check_passed": true
+  }
+}

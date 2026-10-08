@@ -1,0 +1,233 @@
+PULL REQUEST WALKTHROUGH
+
+feat(report): count every present employer
+
+komaksym/linkedin-mdp#17
+
+AUTHOR komaksym
+
+HEAD 537a16de03f9fad8ffe0def188494037991b275a commit
+
+Watch the 89 s video
+
+SCENE 1 OF 8 · TITLE
+
+This pull request changes who makes the LinkedIn invitation shortlist.
+
+It's about people with two jobs at once.
+
+OPEN PULL REQUEST
+feat(report): count every present employer
++219 −39 · 11 files · komaksym/linkedin-mdp#17
+linkedin-mdp #17 · komaksym
+SCENE 2 OF 8 · GROUPS
+
+No company gets more than three invitations.
+
+Here, co-b has already used all three, on B, C and D.
+
+Person A works at both co-a and co-b.
+
+Before this change, A had one employer on record, say co-a, so only co-a's limit was checked.
+
+Nothing stopped A, and co-b's people got a fourth invitation.
+
+PERSON A
+two current jobs
+A
+CO-A
+max 3 invitations
+A
+CO-B
+max 3 invitations
+B
+C
+D
+A
+A
+only this limit checked
+A
+4th invite
+✗
+linkedin-mdp #17 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1038
+src/linkedin_mdp_mcp/invitation_shortlist.py#L73
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1018
+tests/test_invitation_shortlist_e2e.py#L89
+tests/e2e_invitation_shortlist.py#L1059
+tests/e2e_invitation_shortlist.py#L1061
+tests/e2e_invitation_shortlist.py#L1063
+SCENE 3 OF 8 · GROUPS
+
+Now A needs a free slot at every company A works at.
+
+co-b is full, so A is not invited.
+
+PERSON A
+two current jobs
+A
+CO-A
+max 3 invitations
+CO-B
+max 3 invitations
+B
+C
+D
+✓
+✗
+not invited
+linkedin-mdp #17 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1031
+tests/e2e_invitation_shortlist.py#L1064
+tests/e2e_invitation_shortlist.py#L1059
+tests/e2e_invitation_shortlist.py#L1061
+SCENE 4 OF 8 · GROUPS
+
+When both companies have room, A is invited once and uses a slot at each.
+
+That leaves two at co-a and two at co-b.
+
+PERSON A
+two current jobs
+A
+CO-A
+max 3 invitations
+A
+CO-B
+max 3 invitations
+A
+A
+A
+2 left
+2 left
+linkedin-mdp #17 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1035
+tests/e2e_invitation_shortlist.py#L1066
+tests/e2e_invitation_shortlist.py#L1067
+tests/e2e_invitation_shortlist.py#L1065
+SCENE 5 OF 8 · DIFF
+
+In the code, the old check looked at one company per person.
+
+Now it checks every company the person works at.
+
+And a person who gets picked uses up a slot at each of them.
+
+The change, line for line
+src/linkedin_mdp_mcp/invitation_shortlist.py
+1030
+for candidate_row in eligible:
+1018
+−
+    if slots[candidate_row.company_id] <= 0:
+1031
++
+    if any(slots[company_id] <= 0 for company_id in employers[
+candidate_row.profile_url].assignments):
+1032
+        continue
+1033
+    selected.append(candidate_row)
+1021
+−
+    slots[candidate_row.company_id] -= 1
+1034
++
+    for company_id in employers[candidate_row.profile_url].
+assignments:
+1035
++
+        slots[company_id] -= 1
+one company
+−1 slot at each employer
+linkedin-mdp #17 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1030
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1018
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1031
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1032
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1033
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1021
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1034
+src/linkedin_mdp_mcp/invitation_shortlist.py#L1035
+SCENE 6 OF 8 · LIST
+
+If anyone's employer data is empty, unknown, partial or conflicting, no one is invited.
+
+Each reason goes to a research queue instead.
+
+kinds of unclear employer data stop the whole shortlist
+✗
+current_employer_assignment_invalid
+e2e_invitation_shortlist.py:1010
+✗
+current_employer_unregistered
+e2e_invitation_shortlist.py:1011
+✗
+current_employer_coverage_incomplete
+e2e_invitation_shortlist.py:1012
+✗
+conflicting_current_employer_assignments
+e2e_invitation_shortlist.py:1045
+linkedin-mdp #17 · komaksym
+RECEIPTS
+tests/e2e_invitation_shortlist.py#L1018
+tests/e2e_invitation_shortlist.py#L1019
+tests/e2e_invitation_shortlist.py#L1020
+tests/e2e_invitation_shortlist.py#L1010
+tests/e2e_invitation_shortlist.py#L1011
+tests/e2e_invitation_shortlist.py#L1012
+tests/e2e_invitation_shortlist.py#L1045
+SCENE 7 OF 8 · LIST
+
+Seven new tests pin it down.
+
+7
+new tests
+✓
+A second employer at capacity blocks the person, and selected people charge every job.
+e2e_invitation_shortlist.py:1058
+✓
+Replayed invitation facts charge one profile once to every present employer.
+e2e_invitation_shortlist.py:989
+✓
+Unbounded or contradictory claims cannot create company capacity.
+e2e_invitation_shortlist.py:1016
++ 4 more
+linkedin-mdp #17 · komaksym
+RECEIPTS
+tests/e2e_invitation_shortlist.py#L1058
+tests/e2e_invitation_shortlist.py#L989
+tests/e2e_invitation_shortlist.py#L1016
+SCENE 8 OF 8 · OUTRO
+
+Capacity counts each current employer. Review _current_employers.
+
+Capacity counts each current employer.
+Review _current_employers.
+prc map github.com/komaksym/linkedin-mdp/pull/17
+Every name, number and arrow on screen was checked against the pull request's code before rendering.
+linkedin-mdp #17 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+PLANS.md docs
+artifacts/invitation-shortlist-e2e-evidence.json config
+docs/invitation-shortlist.md docs
+infographic/present-employer-sets/analysis.md docs
+infographic/present-employer-sets/infographic.png opaque
+infographic/present-employer-sets/prompts/01-infographic-present-employers.md docs
+infographic/present-employer-sets/source.md docs
+infographic/present-employer-sets/structured-content.md docs
+CHANGED SYMBOLS NOT SHOWN
+_current_employers src/linkedin_mdp_mcp/invitation_shortlist.py
+_make_markdown src/linkedin_mdp_mcp/invitation_shortlist.py
+
+Built by prc explain from the checked board.
+
+537a16de03f9fad8ffe0def188494037991b275a

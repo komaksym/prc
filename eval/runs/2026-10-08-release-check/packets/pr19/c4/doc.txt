@@ -1,0 +1,375 @@
+PULL REQUEST WALKTHROUGH
+
+Reconcile legacy evidence and publish private DM reports
+
+komaksym/linkedin-mdp#19
+
+AUTHOR komaksym
+
+HEAD 5ec569d6f35a198021164a09b1769e8bda052ede commit
+
+Watch the 50 s video
+
+SCENE 1 OF 7 · TITLE
+
+The owner had no private DM reports.
+
+This change publishes three reports to Google Docs.
+
+OPEN PULL REQUEST
+Reconcile legacy evidence and publish private DM reports
++8083 −12 · 62 files · komaksym/linkedin-mdp#19
+linkedin-mdp #19 · komaksym
+SCENE 2 OF 7 · GROUPS
+
+The owner drafts first messages and follow-ups by hand.
+
+Neither report reaches its own private doc yet.
+
+FIRST-DM DOC
+owner-only Google Doc
+draft
+FOLLOW-UP DOC
+owner-only Google Doc
+follow-up
+linkedin-mdp #19 · komaksym
+RECEIPTS
+tests/e2e_private_dm_doc_report.py#L260
+tests/e2e_private_dm_doc_report.py#L267
+tests/e2e_private_dm_doc_report.py#L287
+tests/e2e_private_dm_doc_report.py#L272
+SCENE 3 OF 7 · GROUPS
+
+Now each report publishes to its own doc.
+
+A rerun converges on the same text.
+
+FIRST-DM DOC
+owner-only Google Doc
+draft
+FOLLOW-UP DOC
+owner-only Google Doc
+follow-up
+linkedin-mdp #19 · komaksym
+RECEIPTS
+tests/e2e_private_dm_doc_report.py#L260
+tests/e2e_private_dm_doc_report.py#L267
+tests/e2e_private_dm_doc_report.py#L287
+tests/e2e_private_dm_doc_report.py#L272
+tests/e2e_private_dm_doc_report.py#L280
+SCENE 4 OF 7 · DIFF
+
+The builder validates both inputs, then renders each body.
+
+Any body holding a managed marker is refused.
+
+The change, line for line
+src/linkedin_mdp_mcp/dm_doc_report.py
+46
++
+def build_dm_doc_bodies(actions_value: Any, retained_value: Any, *, 
+now: datetime) -> DmDocBodies:
+⋯
+50
++
+    actions = _actions(actions_value)
+51
++
+    retained_rows, publication_status = _retained_evidence(
+retained_value, actions)
+⋯
+53
++
+    follow_up = _render_follow_up(actions, now)
+54
++
+    if any(marker in body for body in (first_dm, follow_up) for 
+marker in (BEGIN_MARKER, END_MARKER)):
+55
++
+        raise DmDocReportError("managed_marker_in_body")
+56
++
+    return DmDocBodies(first_dm=first_dm, follow_up=follow_up)
+linkedin-mdp #19 · komaksym
+RECEIPTS
+src/linkedin_mdp_mcp/dm_doc_report.py#L46
+src/linkedin_mdp_mcp/dm_doc_report.py#L50
+src/linkedin_mdp_mcp/dm_doc_report.py#L51
+src/linkedin_mdp_mcp/dm_doc_report.py#L53
+src/linkedin_mdp_mcp/dm_doc_report.py#L54
+src/linkedin_mdp_mcp/dm_doc_report.py#L55
+src/linkedin_mdp_mcp/dm_doc_report.py#L56
+SCENE 5 OF 7 · LIST
+
+New scenarios pin both docs, reruns, conflicts, and preflight.
+
+70
+new tests
+ok
+both_docs_complete
+e2e_private_dm_doc_report.py:275
+ok
+rerun_converges
+e2e_private_dm_doc_report.py:281
+ok
+second_conflict_fails_closed
+e2e_private_dm_doc_report.py:294
+ok
+dual_preflight_
+e2e_private_dm_doc_report.py:302
++ 66 more
+linkedin-mdp #19 · komaksym
+RECEIPTS
+tests/e2e_private_dm_doc_report.py#L275
+tests/e2e_private_dm_doc_report.py#L281
+tests/e2e_private_dm_doc_report.py#L294
+tests/e2e_private_dm_doc_report.py#L302
+SCENE 6 OF 7 · STATS
+
+New tests guard the publication path.
+
+Changed functions carry the two reports.
+
+70
+new tests
+159
+changed functions
+linkedin-mdp #19 · komaksym
+SCENE 7 OF 7 · OUTRO
+
+That is the change, quoted from the diff.
+
+Two private DM reports now publish to separate owner-only docs.
+Start review at build_dm_doc_bodies in dm_doc_report.py.
+prc map github.com/komaksym/linkedin-mdp/pull/19
+undefined
+linkedin-mdp #19 · komaksym
+NOT COVERED
+
+Files and symbols this board leaves out.
+
+CHANGED FILES NOT SHOWN
+.github/workflows/morning-report.yml config
+.github/workflows/report-tests.yml config
+.github/workflows/sync-connections.yml config
+PLANS.md docs
+PR10-present-employer-e2e-matrix.md docs
+artifacts/doc-report-e2e-evidence.json config
+artifacts/inbox-e2e-evidence.json config
+artifacts/inbox-red-green-evidence.json config
+artifacts/inbox-review-e2e-evidence.json config
+artifacts/invitation-shortlist-e2e-evidence.json config
+artifacts/private-dm-actions-e2e-evidence.json config
+artifacts/private-dm-doc-report-e2e-evidence.json config
+diagnostics/verify_inbox_live.py code
+docs/action-report-contract.md docs
+docs/google-docs-report.md docs
+docs/images/google-doc-report.jpg opaque
+docs/inbox-evidence.md docs
+docs/invitation-shortlist.md docs
+docs/private-dm-actions.md docs
+infographic/inbox-evidence-slice/analysis.md docs
+infographic/inbox-evidence-slice/infographic.png opaque
+infographic/inbox-evidence-slice/prompts/01-infographic-inbox-evidence.md docs
+infographic/inbox-evidence-slice/source-inbox-evidence.md docs
+infographic/inbox-evidence-slice/structured-content.md docs
+infographic/inbox-review-repair/analysis.md docs
+infographic/inbox-review-repair/infographic.png opaque
+infographic/inbox-review-repair/prompts/01-infographic-inbox-review-repair.md docs
+infographic/inbox-review-repair/source-inbox-review-repair.md docs
+infographic/inbox-review-repair/structured-content.md docs
+infographic/invitation-shortlist/analysis.md docs
+infographic/invitation-shortlist/infographic.png opaque
+infographic/invitation-shortlist/prompts/01-infographic-invitation-shortlist.md docs
+infographic/invitation-shortlist/source.md docs
+infographic/invitation-shortlist/structured-content.md docs
+infographic/unicode-profile-identity/analysis.md docs
+infographic/unicode-profile-identity/infographic.png opaque
+infographic/unicode-profile-identity/prompts/01-infographic-unicode-profile-identity.md docs
+infographic/unicode-profile-identity/source.md docs
+infographic/unicode-profile-identity/structured-content.md docs
+scripts/build_invitation_shortlist.py code
+scripts/build_private_dm_actions.py code
+scripts/publish_private_dm_docs.py code
+scripts/report_connections_doc.py code
+scripts/sync_inbox.py code
+src/linkedin_mdp_mcp/client.py code
+src/linkedin_mdp_mcp/dm_actions.py code
+src/linkedin_mdp_mcp/google_doc_report.py code
+src/linkedin_mdp_mcp/inbox_sync.py code
+src/linkedin_mdp_mcp/invitation_shortlist.py code
+tests/e2e_dm_uncertainty_scope.py test
+tests/e2e_doc_report.py test
+tests/e2e_inbox_review.py test
+tests/e2e_inbox_sync.py test
+tests/e2e_invitation_shortlist.py test
+tests/e2e_private_dm_actions.py test
+tests/test_inbox_review_e2e.py test
+tests/test_inbox_sync_e2e.py test
+tests/test_invitation_shortlist_e2e.py test
+tests/test_private_dm_actions_e2e.py test
+tests/test_private_dm_doc_report_e2e.py test
+CHANGED SYMBOLS NOT SHOWN
+FrozenInbox diagnostics/verify_inbox_live.py
+FrozenInbox.__init__ diagnostics/verify_inbox_live.py
+FrozenInbox.snapshot diagnostics/verify_inbox_live.py
+VerifiedStore diagnostics/verify_inbox_live.py
+VerifiedStore.__init__ diagnostics/verify_inbox_live.py
+VerifiedStore.insert_events_ignore_duplicates diagnostics/verify_inbox_live.py
+VerifiedStore.read_events diagnostics/verify_inbox_live.py
+VerifiedStore.verify_readback diagnostics/verify_inbox_live.py
+_require diagnostics/verify_inbox_live.py
+main diagnostics/verify_inbox_live.py
+verify diagnostics/verify_inbox_live.py
+_Parser scripts/build_invitation_shortlist.py
+_Parser.error scripts/build_invitation_shortlist.py
+_arguments scripts/build_invitation_shortlist.py
+_private_json scripts/build_invitation_shortlist.py
+_write_new_private scripts/build_invitation_shortlist.py
+main scripts/build_invitation_shortlist.py
+_Parser scripts/build_private_dm_actions.py
+_Parser.error scripts/build_private_dm_actions.py
+_markdown scripts/build_private_dm_actions.py
+_read scripts/build_private_dm_actions.py
+_write scripts/build_private_dm_actions.py
+main scripts/build_private_dm_actions.py
+_Parser scripts/publish_private_dm_docs.py
+_Parser.error scripts/publish_private_dm_docs.py
+_clock scripts/publish_private_dm_docs.py
+_publication_inputs scripts/publish_private_dm_docs.py
+_read_private_json scripts/publish_private_dm_docs.py
+main scripts/publish_private_dm_docs.py
+run scripts/publish_private_dm_docs.py
+_SnapshotStage scripts/report_connections_doc.py
+_SnapshotStage.__init__ scripts/report_connections_doc.py
+_SnapshotStage.snapshot scripts/report_connections_doc.py
+main scripts/report_connections_doc.py
+run scripts/report_connections_doc.py
+main scripts/sync_inbox.py
+run scripts/sync_inbox.py
+LinkedInAPIError.__init__ src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._get_paged src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._next_link src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient._validate_snapshot_paging src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.changelog src/linkedin_mdp_mcp/client.py
+LinkedInMDPClient.snapshot src/linkedin_mdp_mcp/client.py
+DmEvidence src/linkedin_mdp_mcp/dm_actions.py
+DmMessage src/linkedin_mdp_mcp/dm_actions.py
+DmUnknown src/linkedin_mdp_mcp/dm_actions.py
+_aware_time src/linkedin_mdp_mcp/dm_actions.py
+_citation_url src/linkedin_mdp_mcp/dm_actions.py
+_connection_day src/linkedin_mdp_mcp/dm_actions.py
+_content src/linkedin_mdp_mcp/dm_actions.py
+_date_added src/linkedin_mdp_mcp/dm_actions.py
+_event_time src/linkedin_mdp_mcp/dm_actions.py
+_fingerprint src/linkedin_mdp_mcp/dm_actions.py
+_qualified src/linkedin_mdp_mcp/dm_actions.py
+_row_identity src/linkedin_mdp_mcp/dm_actions.py
+_row_time src/linkedin_mdp_mcp/dm_actions.py
+_saved_draft src/linkedin_mdp_mcp/dm_actions.py
+_thread_suffix src/linkedin_mdp_mcp/dm_actions.py
+classify_dm_evidence src/linkedin_mdp_mcp/dm_actions.py
+plan_dm_actions src/linkedin_mdp_mcp/dm_actions.py
+ConditionalFirstDmDraft src/linkedin_mdp_mcp/dm_doc_report.py
+DmDocBodies src/linkedin_mdp_mcp/dm_doc_report.py
+DmDocReportError src/linkedin_mdp_mcp/dm_doc_report.py
+_actions src/linkedin_mdp_mcp/dm_doc_report.py
+_citations src/linkedin_mdp_mcp/dm_doc_report.py
+_common_message_fields src/linkedin_mdp_mcp/dm_doc_report.py
+_coverage src/linkedin_mdp_mcp/dm_doc_report.py
+_first_dm_row src/linkedin_mdp_mcp/dm_doc_report.py
+_header src/linkedin_mdp_mcp/dm_doc_report.py
+_message_row src/linkedin_mdp_mcp/dm_doc_report.py
+_optional_text src/linkedin_mdp_mcp/dm_doc_report.py
+_render_first_dm src/linkedin_mdp_mcp/dm_doc_report.py
+_render_follow_up src/linkedin_mdp_mcp/dm_doc_report.py
+_retained_evidence src/linkedin_mdp_mcp/dm_doc_report.py
+_retained_row src/linkedin_mdp_mcp/dm_doc_report.py
+_status src/linkedin_mdp_mcp/dm_doc_report.py
+_text src/linkedin_mdp_mcp/dm_doc_report.py
+_withheld_row src/linkedin_mdp_mcp/dm_doc_report.py
+GoogleDocConfig src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocConfig.from_env src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.__init__ src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._access_token src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._json_object src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._preflight src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._preflight_and_read src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._read_document src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._replace_region src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._request src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher._require_success src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.aclose src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.prepare src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.publish src/linkedin_mdp_mcp/google_doc_report.py
+GoogleDocPublisher.publish_text src/linkedin_mdp_mcp/google_doc_report.py
+GoogleReportError src/linkedin_mdp_mcp/google_doc_report.py
+ReportCounts src/linkedin_mdp_mcp/google_doc_report.py
+ReportResult src/linkedin_mdp_mcp/google_doc_report.py
+ReportResult.__post_init__ src/linkedin_mdp_mcp/google_doc_report.py
+_is_revision_conflict src/linkedin_mdp_mcp/google_doc_report.py
+_report_range src/linkedin_mdp_mcp/google_doc_report.py
+as_counts src/linkedin_mdp_mcp/google_doc_report.py
+render_report src/linkedin_mdp_mcp/google_doc_report.py
+InboxSyncError src/linkedin_mdp_mcp/inbox_sync.py
+InboxSyncPlan src/linkedin_mdp_mcp/inbox_sync.py
+InboxSyncSummary src/linkedin_mdp_mcp/inbox_sync.py
+_attachments src/linkedin_mdp_mcp/inbox_sync.py
+_event_key src/linkedin_mdp_mcp/inbox_sync.py
+_participants src/linkedin_mdp_mcp/inbox_sync.py
+_safe_one_to_one_row src/linkedin_mdp_mcp/inbox_sync.py
+_timestamp src/linkedin_mdp_mcp/inbox_sync.py
+normalize_profile_url src/linkedin_mdp_mcp/inbox_sync.py
+plan_inbox_events src/linkedin_mdp_mcp/inbox_sync.py
+plan_inbox_events.skip src/linkedin_mdp_mcp/inbox_sync.py
+reconcile_inbox src/linkedin_mdp_mcp/inbox_sync.py
+Citation src/linkedin_mdp_mcp/invitation_shortlist.py
+Company src/linkedin_mdp_mcp/invitation_shortlist.py
+CurrentEmployer src/linkedin_mdp_mcp/invitation_shortlist.py
+Factor src/linkedin_mdp_mcp/invitation_shortlist.py
+HistoryEvidence src/linkedin_mdp_mcp/invitation_shortlist.py
+QualifiedCandidate src/linkedin_mdp_mcp/invitation_shortlist.py
+ShortlistInputError src/linkedin_mdp_mcp/invitation_shortlist.py
+ShortlistInputError.__init__ src/linkedin_mdp_mcp/invitation_shortlist.py
+_array src/linkedin_mdp_mcp/invitation_shortlist.py
+_attributes src/linkedin_mdp_mcp/invitation_shortlist.py
+_candidate src/linkedin_mdp_mcp/invitation_shortlist.py
+_candidate_json src/linkedin_mdp_mcp/invitation_shortlist.py
+_citation_json src/linkedin_mdp_mcp/invitation_shortlist.py
+_citation_list src/linkedin_mdp_mcp/invitation_shortlist.py
+_company_registry src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_invited src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_positive src/linkedin_mdp_mcp/invitation_shortlist.py
+_crm_sent src/linkedin_mdp_mcp/invitation_shortlist.py
+_current_employers src/linkedin_mdp_mcp/invitation_shortlist.py
+_date src/linkedin_mdp_mcp/invitation_shortlist.py
+_event_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_event_suppressed src/linkedin_mdp_mcp/invitation_shortlist.py
+_factor_score src/linkedin_mdp_mcp/invitation_shortlist.py
+_history_evidence_id src/linkedin_mdp_mcp/invitation_shortlist.py
+_key src/linkedin_mdp_mcp/invitation_shortlist.py
+_legacy_name src/linkedin_mdp_mcp/invitation_shortlist.py
+_make_markdown src/linkedin_mdp_mcp/invitation_shortlist.py
+_object src/linkedin_mdp_mcp/invitation_shortlist.py
+_optional_timestamp src/linkedin_mdp_mcp/invitation_shortlist.py
+_parse_factor src/linkedin_mdp_mcp/invitation_shortlist.py
+_profile_queue_id src/linkedin_mdp_mcp/invitation_shortlist.py
+_provider_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_provider_local_date src/linkedin_mdp_mcp/invitation_shortlist.py
+_reconcile_legacy_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_source_history src/linkedin_mdp_mcp/invitation_shortlist.py
+_source_profile_index src/linkedin_mdp_mcp/invitation_shortlist.py
+_stable_hash src/linkedin_mdp_mcp/invitation_shortlist.py
+_suppressed src/linkedin_mdp_mcp/invitation_shortlist.py
+_timestamp src/linkedin_mdp_mcp/invitation_shortlist.py
+_validate_database_snapshot src/linkedin_mdp_mcp/invitation_shortlist.py
+_validate_provider_snapshot src/linkedin_mdp_mcp/invitation_shortlist.py
+build_invitation_shortlist src/linkedin_mdp_mcp/invitation_shortlist.py
+
+Built by prc explain from the checked board.
+
+5ec569d6f35a198021164a09b1769e8bda052ede

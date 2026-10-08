@@ -111,8 +111,76 @@ def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
     return str(m.get("title", ""))
 
 
-def look_first(m: dict[str, Any], brief: Any = None, limit: int = 3) -> tuple[LookEntry, ...]:
-    """Changed code symbols with a direct test first, then most-called, then largest."""
+def _receipt_refs(board: dict[str, Any] | None) -> list[str]:
+    """Displayed diff receipts first, then context receipts in board order."""
+    if not board:
+        return []
+    refs: list[str] = []
+    scenes = board.get("scenes", [])
+    for scene in scenes:
+        if scene.get("type") == "diff" and isinstance(scene.get("file"), str) and scene["file"]:
+            for item in scene.get("lines", []):
+                ref = item.get("ref", "") if isinstance(item, dict) else item
+                if isinstance(ref, str) and ref:
+                    refs.append(f"{scene['file']}:{ref}")
+            for cue in scene.get("cues", []):
+                if isinstance(cue, dict) and isinstance(cue.get("line"), str) and cue["line"]:
+                    refs.append(f"{scene['file']}:{cue['line']}")
+    for scene in scenes:
+        cites = scene.get("cite")
+        if isinstance(cites, list):
+            for cite in cites:
+                if isinstance(cite, dict) and isinstance(cite.get("line"), str) and cite["line"]:
+                    refs.append(cite["line"])
+        if scene.get("type") == "list" and isinstance(scene.get("items"), list):
+            for item in scene["items"]:
+                if isinstance(item, dict) and isinstance(item.get("cite"), str) and item["cite"]:
+                    refs.append(item["cite"])
+        if scene.get("type") == "receipt" and isinstance(scene.get("rows"), list):
+            for row in scene["rows"]:
+                if not isinstance(row, dict):
+                    continue
+                if isinstance(row.get("symbol"), str) and row["symbol"]:
+                    refs.append(row["symbol"])
+                edge = row.get("edge")
+                if isinstance(edge, list) and len(edge) == 2:
+                    refs.extend(sid for sid in edge if isinstance(sid, str) and sid)
+                if isinstance(row.get("line"), str) and row["line"]:
+                    refs.append(row["line"])
+    return refs
+
+
+def quoted_files(board: dict[str, Any] | None) -> frozenset[str]:
+    """Files the board writer quoted: diff scenes plus cited receipt lines."""
+    if not board:
+        return frozenset()
+    paths: set[str] = set()
+    for scene in board.get("scenes", []):
+        if isinstance(scene.get("file"), str):
+            paths.add(scene["file"])
+    for line in _receipt_refs(board):
+        if "::" in line:
+            continue
+        path, _, num = line.rpartition(":")
+        try:
+            int(num)
+        except ValueError:
+            continue
+        path = path.strip()
+        if path:
+            paths.add(path)
+    return frozenset(paths)
+
+
+def look_first(
+    m: dict[str, Any], brief: Any = None, limit: int = 3, board: dict[str, Any] | None = None
+) -> tuple[LookEntry, ...]:
+    """Changed symbols displayed in the diff, then cited context and quoted files.
+
+    Displayed symbols lead, then context symbols in cite order. Quoted-file symbols follow by
+    changed lines, then coverage, then callers. Quoted lines outside changed symbols
+    get a file-level entry. Unquoted symbols keep the coverage-first order.
+    """
     tests = _test_paths(_brief_of(m, brief))
     callers: dict[str, int] = {}
     for e in m.get("edges", []):
@@ -125,24 +193,100 @@ def look_first(m: dict[str, Any], brief: Any = None, limit: int = 3) -> tuple[Lo
         for sym in m.get("symbols", [])
         if sym.get("status") in CHANGED and sym.get("path") not in tests
     ]
-    cands.sort(
-        key=lambda s: (
-            s["id"] not in covered,
-            -callers.get(s["id"], 0),
-            -(s.get("added", 0) + s.get("removed", 0)),
-            s["id"],
-        )
+    quoted = quoted_files(board)
+    cited = cited_symbol_ids(cands, board)
+    rank = {sid: i for i, sid in enumerate(cited)}
+
+    def key(s: dict[str, Any]) -> tuple[int, int, int, int, int]:
+        churn = s.get("added", 0) + s.get("removed", 0)
+        if s["id"] in rank:
+            return (0, rank[s["id"]], 0, 0, 0)
+        if s.get("path") in quoted:
+            return (1, 0, -churn, int(s["id"] not in covered), -callers.get(s["id"], 0))
+        return (2, 0, int(s["id"] not in covered), -callers.get(s["id"], 0), -churn)
+
+    ordered = sorted(cands, key=key)
+    entries = [LookEntry(s["id"], s["qualname"], s["path"], s["status"]) for s in ordered]
+    fallbacks = _file_fallbacks(m, brief, board, quoted)
+    if fallbacks:
+        first_rest = next((i for i, s in enumerate(ordered) if key(s)[0] != 0), len(entries))
+        entries[first_rest:first_rest] = fallbacks
+    return tuple(entries[:limit])
+
+
+def _symbols_at_ref(cands: list[dict[str, Any]], ref: str) -> list[str]:
+    if "::" in ref:
+        return [sym["id"] for sym in cands if sym["id"] == ref]
+    path, _, num = ref.rpartition(":")
+    try:
+        lineno = int(num)
+    except ValueError:
+        return []
+    found: list[str] = []
+    for sym in cands:
+        if sym.get("path") != path.strip():
+            continue
+        span = sym.get("base_span") if lineno < 0 else sym.get("span")
+        if isinstance(span, (list, tuple)) and len(span) == 2 and span[0] <= abs(lineno) <= span[1]:
+            found.append(sym["id"])
+    return found
+
+
+def cited_symbol_ids(cands: list[dict[str, Any]], board: dict[str, Any] | None) -> list[str]:
+    """Displayed diff symbols first, then cited lines, symbols and edge endpoints."""
+    return list(
+        dict.fromkeys(sid for ref in _receipt_refs(board) for sid in _symbols_at_ref(cands, ref))
     )
-    return tuple(LookEntry(s["id"], s["qualname"], s["path"], s["status"]) for s in cands[:limit])
+
+
+def _file_fallbacks(
+    m: dict[str, Any],
+    brief: Any,
+    board: dict[str, Any] | None,
+    quoted: frozenset[str],
+) -> list[LookEntry]:
+    """One entry per quoted code file with a line outside its changed symbols."""
+    if not board:
+        return []
+    changed = _changed(m)
+    with_symbols = {s.get("path") for s in changed}
+    unmatched: set[str] = set()
+    for ref in _receipt_refs(board):
+        if "::" in ref:
+            continue
+        path, _, num = ref.rpartition(":")
+        try:
+            int(num)
+        except ValueError:
+            continue
+        if not _symbols_at_ref(changed, ref):
+            unmatched.add(path.strip())
+    status = {f.get("path"): f.get("status") for f in m.get("files", []) if isinstance(f, dict)}
+    return [
+        LookEntry(
+            f"file:{f['path']}", "top-level change", f["path"], status.get(f["path"]) or "modified"
+        )
+        for f in _brief_of(m, brief).get("files", [])
+        if f.get("kind") == "code"
+        and f["path"] in quoted
+        and (f["path"] in unmatched or f["path"] not in with_symbols)
+    ]
 
 
 def risky(m: dict[str, Any], brief: Any = None) -> tuple[RiskEntry, ...]:
-    """Brief files with a sensitive reason, by name."""
-    return tuple(
-        RiskEntry(f["path"], f["sensitive"] or "")
-        for f in _brief_of(m, brief).get("files", [])
-        if f.get("sensitive")
-    )
+    """Brief files with a sensitive reason, round-robin by reason."""
+    groups: dict[str, list[RiskEntry]] = {}
+    for f in _brief_of(m, brief).get("files", []):
+        if f.get("sensitive"):
+            groups.setdefault(f["sensitive"], []).append(RiskEntry(f["path"], f["sensitive"]))
+    for entries in groups.values():
+        entries.sort(key=lambda r: r.path)
+    ordered: list[RiskEntry] = []
+    for i in range(max((len(v) for v in groups.values()), default=0)):
+        for entries in groups.values():
+            if i < len(entries):
+                ordered.append(entries[i])
+    return tuple(ordered)
 
 
 def untested(m: dict[str, Any], brief: Any = None) -> tuple[UntestedEntry, ...]:
@@ -175,7 +319,7 @@ def build_card_html(
 ) -> str:
     """Render the card.html template. Every PR-controlled string is HTML-escaped."""
     stats = compute_stats(m, brief)
-    entries = look_first(m, brief)
+    entries = look_first(m, brief, 3, board)
     surfaces = risky(m, brief)
     missing = untested(m, brief)
     repo = str(m.get("pr", ""))
@@ -211,12 +355,19 @@ def build_card_html(
         "".join(
             f'<li class="st-modified"><span class="name">{_escape(r.path)}</span><br>'
             f'<span class="reason">{_escape(r.reason)}</span></li>'
-            for r in surfaces
+            for r in surfaces[:3]
         )
         or '<li><span class="reason">None.</span></li>'
     )
+    if len(surfaces) > 3:
+        shown_reasons = {r.reason for r in surfaces[:3]}
+        hidden = sorted({r.reason for r in surfaces[3:] if r.reason not in shown_reasons})
+        suffix = _escape(f": {', '.join(hidden)}") if hidden else ""
+        risky_html += f'<li><span class="reason">+{len(surfaces) - 3} more{suffix}</span></li>'
     if not _changed(m):
         untested_html = "<strong>No code symbols changed.</strong>"
+    elif all(s.get("path") in _test_paths(_brief_of(m, brief)) for s in _changed(m)):
+        untested_html = "No production symbols changed."
     elif missing:
         shown = ", ".join(f'<span class="mono">{_escape(u.name)}</span>' for u in missing[:3])
         rest = f" +{len(missing) - 3} more" if len(missing) > 3 else ""

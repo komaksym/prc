@@ -1,0 +1,44 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The connection-report owner gets private morning reports in one marked Google Doc section, with operator notes preserved and scheduling gated."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "No data found for this domain and memberId"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "google_doc_report.py",
+        "google-docs-report.md",
+        "e2e_doc_report.py",
+        "workflow"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "CI",
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "There are no new tests; the exhaustion_domain scenario exercises snapshot exhaustion handling with rows retained."
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py::SNAPSHOT_EXHAUSTED_MESSAGES"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

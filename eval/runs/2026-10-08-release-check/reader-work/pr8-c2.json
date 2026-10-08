@@ -1,0 +1,42 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private inbox owner can add validated evidence to inbox rows, with dry run as the default."
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_inbox"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "diagnostics/verify_inbox_live.py",
+        "scripts/sync_inbox.py",
+        "src/linkedin_mdp_mcp/client.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/inbox_sync.py::reconcile_inbox"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

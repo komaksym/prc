@@ -1,0 +1,657 @@
+{
+  "arrow_precision": {
+    "coverage": "28/28",
+    "pass": true,
+    "rate": 0.9966101694915255,
+    "scope": "28 captured public PR maps; see artifact hashes in arrows/results-20261008.json",
+    "supported": 882,
+    "total": 885
+  },
+  "gates": {
+    "pr10": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "15 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "7 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "41 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "60.8s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr11": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "6 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "7 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "16 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "59.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr12": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "11 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "24 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "8 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "30 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "65.4s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr13": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "10 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "3 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "26 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "62.5s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr14": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "9 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "13 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "20 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "65.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr15": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "8 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "19 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "55.5s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr16": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "7 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "4 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "19 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "51.7s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr17": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "28 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "8 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "64 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "89.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr19": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "16 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "7 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "35 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "49.5s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr5": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "11 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "22 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "56.1s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr7": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "11 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "6 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "22 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "56.0s 1920x1080 30fps",
+        "pass": true
+      }
+    },
+    "pr8": {
+      "card_facts": {
+        "note": "card numbers match recomputation",
+        "pass": true
+      },
+      "diagram": {
+        "note": "12 nodes",
+        "pass": true
+      },
+      "doc_links": {
+        "note": "10 receipt links match board, revisions and lines",
+        "pass": true
+      },
+      "dom_text": {
+        "note": "1 doc scenes join",
+        "pass": true
+      },
+      "join": {
+        "note": "5 refs join",
+        "pass": true
+      },
+      "layout": {
+        "note": "no layout warnings",
+        "pass": true
+      },
+      "receipts": {
+        "note": "22 receipts",
+        "pass": true
+      },
+      "video_file": {
+        "note": "50.0s 1920x1080 30fps",
+        "pass": true
+      }
+    }
+  },
+  "ocr": {
+    "hits": 25,
+    "pass": false,
+    "protocol": "Original fixed scene offsets, frames from actual MP4; exact OCR matches.",
+    "source": "../../../artifacts/release/ocr-20261008/results.json",
+    "total": 31,
+    "width": 800
+  },
+  "sizes": [
+    {
+      "bytes": {
+        "card.png": 214442,
+        "comment.md": 5588,
+        "doc.html": 82798,
+        "map.html": 715616,
+        "video.mp4": 2568297
+      },
+      "pr": "pr10"
+    },
+    {
+      "bytes": {
+        "card.png": 153083,
+        "comment.md": 1034,
+        "doc.html": 72146,
+        "map.html": 127972,
+        "video.mp4": 2041352
+      },
+      "pr": "pr11"
+    },
+    {
+      "bytes": {
+        "card.png": 174123,
+        "comment.md": 1787,
+        "doc.html": 77874,
+        "map.html": 133605,
+        "video.mp4": 2929130
+      },
+      "pr": "pr12"
+    },
+    {
+      "bytes": {
+        "card.png": 201163,
+        "comment.md": 3012,
+        "doc.html": 76888,
+        "map.html": 375872,
+        "video.mp4": 2019743
+      },
+      "pr": "pr13"
+    },
+    {
+      "bytes": {
+        "card.png": 201906,
+        "comment.md": 1447,
+        "doc.html": 74793,
+        "map.html": 164435,
+        "video.mp4": 2383588
+      },
+      "pr": "pr14"
+    },
+    {
+      "bytes": {
+        "card.png": 217140,
+        "comment.md": 3568,
+        "doc.html": 76886,
+        "map.html": 287785,
+        "video.mp4": 2066573
+      },
+      "pr": "pr15"
+    },
+    {
+      "bytes": {
+        "card.png": 256404,
+        "comment.md": 3477,
+        "doc.html": 76247,
+        "map.html": 351975,
+        "video.mp4": 1832803
+      },
+      "pr": "pr16"
+    },
+    {
+      "bytes": {
+        "card.png": 188496,
+        "comment.md": 2246,
+        "doc.html": 87619,
+        "map.html": 173454,
+        "video.mp4": 3473019
+      },
+      "pr": "pr17"
+    },
+    {
+      "bytes": {
+        "card.png": 258636,
+        "comment.md": 11858,
+        "doc.html": 96020,
+        "map.html": 1813726,
+        "video.mp4": 1792288
+      },
+      "pr": "pr19"
+    },
+    {
+      "bytes": {
+        "card.png": 264615,
+        "comment.md": 3528,
+        "doc.html": 75931,
+        "map.html": 275776,
+        "video.mp4": 1640263
+      },
+      "pr": "pr5"
+    },
+    {
+      "bytes": {
+        "card.png": 252068,
+        "comment.md": 2683,
+        "doc.html": 74922,
+        "map.html": 228987,
+        "video.mp4": 1931830
+      },
+      "pr": "pr7"
+    },
+    {
+      "bytes": {
+        "card.png": 227027,
+        "comment.md": 3429,
+        "doc.html": 76067,
+        "map.html": 435089,
+        "video.mp4": 1496030
+      },
+      "pr": "pr8"
+    }
+  ],
+  "timing": {
+    "scope": "Offline prc explain, voice none, supplied board, all five outputs. One warmup then three measured samples, serially. Acquisition and board authorship excluded.",
+    "machine": "macOS-26.6.2-arm64-arm-64bit",
+    "source_sha256": "a85e00b0b6bd107b470142c08ff0e19a5e31c5e04a05fc5a956ddcde44c72e9d",
+    "samples": 48,
+    "successful_samples": 48,
+    "prs": [
+      {
+        "pr": "pr5",
+        "samples": 3,
+        "median_seconds": 44.67735787498532,
+        "min_seconds": 40.582403458014596,
+        "max_seconds": 47.76606312498916
+      },
+      {
+        "pr": "pr7",
+        "samples": 3,
+        "median_seconds": 47.513482333975844,
+        "min_seconds": 42.155281833023764,
+        "max_seconds": 57.24310166598298
+      },
+      {
+        "pr": "pr8",
+        "samples": 3,
+        "median_seconds": 41.8352407499915,
+        "min_seconds": 36.719215500000246,
+        "max_seconds": 43.356220124987885
+      },
+      {
+        "pr": "pr10",
+        "samples": 3,
+        "median_seconds": 46.33677054097643,
+        "min_seconds": 46.043877582997084,
+        "max_seconds": 48.15884270798415
+      },
+      {
+        "pr": "pr11",
+        "samples": 3,
+        "median_seconds": 43.72211516700918,
+        "min_seconds": 43.449724500009324,
+        "max_seconds": 44.33085516700521
+      },
+      {
+        "pr": "pr12",
+        "samples": 3,
+        "median_seconds": 49.06338520796271,
+        "min_seconds": 48.93297079199692,
+        "max_seconds": 49.29321858298499
+      },
+      {
+        "pr": "pr13",
+        "samples": 3,
+        "median_seconds": 44.776034542010166,
+        "min_seconds": 44.680829374992754,
+        "max_seconds": 45.655146415985655
+      },
+      {
+        "pr": "pr14",
+        "samples": 3,
+        "median_seconds": 48.10072074999334,
+        "min_seconds": 47.88909920799779,
+        "max_seconds": 48.43380783300381
+      },
+      {
+        "pr": "pr15",
+        "samples": 3,
+        "median_seconds": 39.64819058298599,
+        "min_seconds": 39.481188959034625,
+        "max_seconds": 40.360555416031275
+      },
+      {
+        "pr": "pr16",
+        "samples": 3,
+        "median_seconds": 36.28577491699252,
+        "min_seconds": 36.10419937502593,
+        "max_seconds": 36.36205837497255
+      },
+      {
+        "pr": "pr17",
+        "samples": 3,
+        "median_seconds": 64.51990587502951,
+        "min_seconds": 64.45110725000268,
+        "max_seconds": 66.77759879204677
+      },
+      {
+        "pr": "pr19",
+        "samples": 3,
+        "median_seconds": 36.078096250013914,
+        "min_seconds": 36.02233745902777,
+        "max_seconds": 37.638478249999935
+      }
+    ],
+    "excluded_samples": [
+      {
+        "pr": "pr8",
+        "sample": {
+          "warmup": false,
+          "seconds": 42.4887599159847,
+          "output": "/Users/koval/dev/prc/artifacts/release/timing-20261008/pr8/sample-2/komaksym-linkedin-mdp-8-dc3f451dd61a",
+          "board_sha256": "fc90653cb1329189514f5c522e768721e1372f975c84a36aad15236747d5cd4f",
+          "map_sha256": "74a2d2f35d0e0ad96fdb7b41f8aa06a2fa99e23ab63dbdd21402a2e91d8afc10"
+        },
+        "reason": "card.png absent after shared Chromium cache disappeared"
+      }
+    ],
+    "limitations": "The shared Playwright cache disappeared after 11 successful samples. Remaining samples use an isolated project cache with the same Chromium revision. Early measurements lack load samples; the host load exceeded 30 during concurrent checks. These measurements establish end-to-end wall time, not a speedup. No limiter profile was collected; these wall times establish no comparative speed verdict."
+  }
+}

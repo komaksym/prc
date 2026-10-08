@@ -1,0 +1,14 @@
+{
+  "condition": "c5",
+  "files": [
+    "map.png",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "map.html": "faa6e3ba274c615d4ef0e28aac0b2cd2ec594d82a838b1e8dd14e26893f01331"
+  },
+  "payload_sha256": {
+    "map.png": "a2e0280678fb21145441abf189101cdca54acb2a91a9bf9312486da345f557b6",
+    "prompt.md": "bfb0225acf72cdcdba902de3d7c3b5a92314c2c57d271b6b04d22c8a07782baf"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "One sync stages LinkedIn evidence and applies only with apply for the private owner."
+    },
+    {
+      "id": "q2",
+      "answer": "sync_actual_actions"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/sync_actual_actions.py",
+        "src/linkedin_mdp_mcp/invitation_sync.py",
+        "src/linkedin_mdp_mcp/client.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/actual_action_sync.py::sync_actual_actions"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

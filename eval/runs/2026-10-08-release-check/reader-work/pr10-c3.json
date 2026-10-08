@@ -1,0 +1,40 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "Private invitation report reviewers get ranked candidates within company capacity after all recorded history counts once per person, with unresolved history withholding the shortlist."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "slots = {company_id: max(0, 3 - company_counts[company_id]) for company_id in registry}"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "invitation-shortlist.md",
+        "e2e_invitation_shortlist.py",
+        "invitation-shortlist-e2e-evidence.json"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q6",
+      "answer": "Tests pin counting all history once with audit pointers, withholding capacity for employer conflicts or unknown history, and read-only reports without recommendation event plans."
+    },
+    {
+      "id": "q7",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

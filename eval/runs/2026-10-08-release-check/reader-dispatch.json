@@ -1,0 +1,547 @@
+{
+  "pending": [],
+  "active": [],
+  "completed": [
+    {
+      "agent_id": "01a11907-7838-7432-b7df-3010973fcd58",
+      "nickname": "Aquinas",
+      "n": 11,
+      "c": "c1",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr11/c1.json"
+    },
+    {
+      "agent_id": "01a11907-7914-7d03-b799-9169a52a1e49",
+      "nickname": "Socrates",
+      "n": 11,
+      "c": "c2",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr11/c2.json"
+    },
+    {
+      "agent_id": "01a11909-424b-70c1-bf70-ac505f9f1bf9",
+      "nickname": "Lovelace",
+      "n": 11,
+      "c": "c4",
+      "report": "TL;DR — Saved answers to /private/tmp/prc-single-readers/pr11-c4.json.\n\nI read prompt.md, doc.txt, doc-first.png, and doc-full.png. I viewed both PNG frames. Unread listed payloads: none.",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr11/c4.json"
+    },
+    {
+      "agent_id": "01a11909-418c-7832-925b-43195eca5eb1",
+      "nickname": "Euclid",
+      "n": 11,
+      "c": "c3",
+      "report": "TL;DR Saved blind read answers for PR11 c3.\n\nSaved [/private/tmp/prc-single-readers/pr11-c3.json](/private/tmp/prc-single-readers/pr11-c3.json) with q1-q8 answers. Viewed frame-01.png through frame-16.png with view_image. Read prompt.md only. Did not read manifest.json, frames.json, keys, code, or other packets. No listed PNG remains unread. Verified the saved file with cat. You decide nothing further.\n\nI assume q3 uses arrow format and q7 uses basename path.",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr11/c3.json"
+    },
+    {
+      "agent_id": "01a1190a-c2aa-7753-a89d-f4cfebce3f6e",
+      "nickname": "Franklin",
+      "n": 11,
+      "c": "c5",
+      "started_at": "2026-10-08 01:04:58 UTC",
+      "report": "TL;DR I saved pr11 c5 answers to /private/tmp/prc-single-readers/pr11-c5.json.\n\nI created one JSON file outside the project. I read prompt.md. I viewed map.png with view_image. I skipped manifest.json per the ban. Assumption: the folder contents define the payload. No allowed payload remains unread. You must decide nothing.",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr11/c5.json"
+    },
+    {
+      "agent_id": "01a1190b-8c8a-7683-9620-b7cb965857f5",
+      "nickname": "Pascal",
+      "n": 12,
+      "c": "c1",
+      "started_at": "2026-10-08 01:05:49 UTC",
+      "report": "TL;DR: Saved pr12 c1 answers to /private/tmp/prc-single-readers/pr12-c1.json.\n\nI read prompt.md. I viewed card.png with view_image. I saved one JSON file with eight answers. I verified the file with cat. I did not read manifest.json per task rule. No allowed payload remains unread.",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr12/c1.json"
+    },
+    {
+      "agent_id": "01a1190d-1e17-72c3-bad3-1c98af006a52",
+      "nickname": "Mencius",
+      "n": 12,
+      "c": "c2",
+      "started_at": "2026-10-08 01:07:32 UTC",
+      "report": "TL;DR: I saved the PR12 c2 answers and found one missing payload.\n\n```json\n{\"answers\": [{\"id\": \"q1\", \"answer\": \"Each row in the private invitation report now shows its date added for the reviewer.\"}, {\"id\": \"q2\", \"answer\": \"_date_added\"}, {\"id\": \"q3\", \"answer\": \"CANNOT TELL\"}, {\"id\": \"q4\", \"answer\": [\"tests\"]}, {\"id\": \"q5\", \"answer\": []}, {\"id\": \"q6\", \"answer\": \"New tests pin exact canonical source matching for date_added and that invalid, future, or missing dates stay unknown.\"}, {\"id\": \"q7\", \"answer\": \"src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added\"}, {\"id\": \"q8\", \"answer\": false}]}\n```\n\nUnread listed payload: card.png is referenced in comment.md but absent from the folder, so I viewed zero frames. I left manifest.json unread per the task rules.",
+      "saved_path": "eval/runs/2026-10-08-release-check/answers/pr12/c2.json"
+    },
+    {
+      "agent_id": "01a11aba-9d5e-7bf0-9eeb-db6c37bd20b3",
+      "nickname": "Faraday",
+      "n": 12,
+      "c": "c3",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr12-c3.json",
+      "report": "TL;DR: Saved 8 valid answers to pr12-c3.json. All 18 frames read, none unread.\n\nResult: blind read of packet pr12/c3 is complete.\n\nWhat changed: created [pr12-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr12-c3.json) with answers q1–q8 in canonical shapes.\n\nWhat I verified: viewed frame-01.png through frame-18.png via view_image; JSON parses with 8 answer ids in order.\n\nWhat you must decide: nothing. Assumption in one line: q3 keeps both exact tokens without quote escaping risk."
+    },
+    {
+      "agent_id": "01a11ac4-8eb8-7012-9771-b35d071b0714",
+      "nickname": "McClintock",
+      "n": 17,
+      "c": "c1",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr17-c1.json",
+      "report": "{\"answers\": [{\"id\": \"q1\", \"answer\": \"Capacity counts each current employer for reviewers of the private invitation report.\"}, {\"id\": \"q2\", \"answer\": \"CurrentEmployer\"}, {\"id\": \"q3\", \"answer\": \"CANNOT TELL\"}, {\"id\": \"q4\", \"answer\": \"CANNOT TELL\"}, {\"id\": \"q5\", \"answer\": []}, {\"id\": \"q6\", \"answer\": \"CANNOT TELL\"}, {\"id\": \"q7\", \"answer\": \"src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist\"}, {\"id\": \"q8\", \"answer\": false}]}\n\nSaved to /Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c1.json. Only that file written.\n\nRead: prompt.md, card.png (viewed). Unread payload: manifest.json (excluded by blind rules)."
+    },
+    {
+      "agent_id": "01a11ac4-8e3d-7e13-96d3-c6873499676f",
+      "nickname": "Nietzsche",
+      "n": 12,
+      "c": "c5",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr12-c5.json",
+      "report": "TL;DR: I saved the blind reader answers for PR12 c5.\n\n```json\n{\"answers\": [{\"id\": \"q1\", \"answer\": \"The private invitation report shows date added for the reviewer.\"}, {\"id\": \"q2\", \"answer\": \"_date_added\"}, {\"id\": \"q3\", \"answer\": \"CANNOT TELL\"}, {\"id\": \"q4\", \"answer\": [\"PLANS.md\", \"PR10-present-employer-e2e-matrix.md\", \"invitation-shortlist-e2e-evidence.json\", \"invitation-shortlist.md\", \"analysis.md\", \"infographic.png\", \"01-infographic-date-added.md\", \"source.md\", \"structured-content.md\"]}, {\"id\": \"q5\", \"answer\": []}, {\"id\": \"q6\", \"answer\": \"The new tests pin date added display and invalid and missing timestamp handling.\"}, {\"id\": \"q7\", \"answer\": \"CANNOT TELL\"}, {\"id\": \"q8\", \"answer\": false}]}\n```\n\nI saved that JSON to /Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr12-c5.json. I viewed map.png and read prompt.md. I left manifest.json unread per the task rules. No allowed payloads remain unread.\n"
+    },
+    {
+      "agent_id": "01a11ac4-8f4a-76f1-a051-aea75d78b3a1",
+      "nickname": "Kuhn",
+      "n": 17,
+      "c": "c2",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr17-c2.json",
+      "report": "TL;DR — PR17 c2 blind read is complete and the 8-answer JSON is saved.\n\nResult: I saved /Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c2.json with answers for q1 through q8.\n\nWhat changed: I created only pr17-c2.json and made no other edits.\n\nWhat I verified: I read prompt.md and comment.md with cat. Find returned no PNG files, so view_image had no target. Python loaded the saved JSON and confirmed 8 ids q1 to q8. I skipped lint, typecheck, tests, and build per the blind-reader scope. I followed no links and opened no other packets, keys, source, Git, or network.\n\nAssumption: the missing card.png adds no facts beyond comment.md.\n\nAnswers:\n\n- q1: Capacity counts each current employer once in the invitation report.\n- q2: CurrentEmployer\n- q3: CANNOT TELL\n- q4: CANNOT TELL\n- q5: []\n- q6: Tests pin present-set employer_set charging, merging, and withholding.\n- q7: src/linkedin_mdp_mcp/invitation_shortlist.py::build_invitation_shortlist\n- q8: false\n\nUnread payloads:\n\n- card.png is referenced in comment.md but absent from the folder, so not viewed.\n- map.html is referenced in comment.md but absent from the folder, so not read.\n- manifest.json is present but not read per the blind rule.\n\nWhat you must decide: No decision is required; the file is ready for scoring.\n"
+    },
+    {
+      "agent_id": "01a11ac6-c4be-7dd2-8ad0-ad02135b79f2",
+      "nickname": "Kant",
+      "n": 17,
+      "c": "c3",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr17-c3.json",
+      "report": "TL;DR: Viewed prompt.md and all 30 frame PNGs, saved answers JSON to the reader-work output.\n\nWhat changed: nothing in the repo; only created [pr17-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c3.json:1).\n\nWhat I verified: viewed frame-01 through frame-30 via the image viewer; confirmed the output file content matches the intended answers JSON.\n\nWhat you must decide: whether CANNOT TELL answers for q2, q3, q4, and q7 are acceptable, since the packet shows file paths and code lines but no class name, CurrentEmployer field names, other changed file list, or review-start symbol.\n\nUnread payloads: frames.json and manifest.json were listed in the folder but not opened; no keys, source, other packets or PRs, Git, or network were touched."
+    },
+    {
+      "agent_id": "01a11ac8-3ea8-73b1-98e8-9ba054f32088",
+      "nickname": "Noether",
+      "n": 17,
+      "c": "c4",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr17-c4.json",
+      "report": "TL;DR: I answered q1-q8 from the packet files alone and saved the JSON artifact.\n\nI read prompt.md and doc.txt and viewed doc-first.png and doc-full.png. I saved the answers to [/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c4.json:1). I made no other edits and used no agents.\n\nUnread payload: manifest.json was present in the packet folder and I did not open it, per the packet rule."
+    },
+    {
+      "agent_id": "01a11ac2-e3c3-71c1-b5f8-ceaa4f46f704",
+      "nickname": "Schrodinger",
+      "n": 12,
+      "c": "c4",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr12-c4.json",
+      "report": "TL;DR: PR12 c4 read complete and answers saved to the required JSON path with all eight questions answered.\n\nThe work touched one file only, grouped by area: reader output at eval/runs/2026-10-08-release-check/reader-work/pr12-c4.json now holds q1–q8, with q2 pointing at _date_added and q7 at src/linkedin_mdp_mcp/invitation_shortlist.py::_date_added. I read prompt.md and doc.txt in full and viewed both doc-first.png and doc-full.png via view_image, so unread payloads are none. I verified the save by catting the JSON file and confirming valid content with all eight ids present. No decision is needed from you. Assumption: q4 lists changed files as exact paths and q5 uses an empty array for no risky surface."
+    },
+    {
+      "agent_id": "01a11ac8-769c-7a31-babc-ca791c43dc6d",
+      "nickname": "Ampere",
+      "n": 17,
+      "c": "c5",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr17-c5.json",
+      "report": "TL;DR: I read only the allowed packet files, viewed its one PNG, and saved the answers JSON.\n\nResult: done. Answers for q1–q8 are saved to [/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr17-c5.json).\n\nWhat changed: created that one JSON file with 8 answers (CANNOT TELL for q3 and q7 where the map truncates the evidence).\n\nWhat I verified: read prompt.md via cat; viewed map.png plus zoomed crops to confirm the title, counts (11 files, 0 risky surfaces), changed-file names, and test names. No lint/typecheck/tests apply to this read-only task.\n\nWhat you must decide: nothing.\n\nUnread payloads: the map lists infographic.png and seven doc/json files under other changed files, but none of them exist in the packet folder, so per instructions I did not follow or read them. The map also truncates full source paths and symbol names, so exact old/new field names and the reviewer start location are not recoverable from this packet."
+    },
+    {
+      "agent_id": "01a11ac9-c89c-75e3-a5a8-865c61e65f89",
+      "nickname": "Hooke",
+      "n": 19,
+      "c": "c1",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr19-c1.json",
+      "report": "TL;DR: I saved eight answers for PR19 c1 from prompt.md and card.png only.\n\nI created eval/runs/2026-10-08-release-check/reader-work/pr19-c1.json with answers q1 to q8. I read prompt.md and viewed card.png twice for exact tokens. I verified the saved JSON with cat and confirmed valid answers. I left manifest.json unread per the blind reader rule. I assume q4 lists only the three visible risky surfaces. No decision remains.\n"
+    },
+    {
+      "agent_id": "01a11aca-78fa-7ec3-918a-8c28bcb9ece5",
+      "nickname": "Raman",
+      "n": 19,
+      "c": "c2",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr19-c2.json",
+      "report": "TL;DR: I read only the two allowed files, confirmed the single listed image is missing, and saved the q1–q8 JSON to the requested output path.\n\nSaved [pr19-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr19-c2.json) with 8 answers: q1, q2, q4, q5, and q7 answered from readable evidence; q3, q6, and q8 returned as CANNOT TELL because the packet text contains no guard code, test pin, or publish rule for marker-bearing bodies.\n\nWhat changed: created only `reader-work/pr19-c2.json`; no other files touched and no other packets, source, manifest, links, Git, or network used.\n\nWhat I verified: listed the packet directory to confirm `card.png` is absent; attempted `view_image` on `card.png` and received “No such file or directory”; grep confirmed `card.png` is the only PNG referenced; re-read the saved JSON after writing.\n\nAssumption to flag: I treated the “Risky surfaces” file list as the q4 changed-files evidence and its “CI workflow” / “external calls” labels as the q5 categories.\n\nUnread payload: `card.png`, referenced in `comment.md` as `![PR card](card.png)`, was not on disk and could not be viewed.\n"
+    },
+    {
+      "agent_id": "01a11acb-beec-7b50-9da2-dd1fead77983",
+      "nickname": "Pasteur",
+      "n": 19,
+      "c": "c5",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr19-c5.json",
+      "report": "TL;DR: Saved blind-reader answers for pr19 c5 to the requested JSON path.\n\nResult: wrote /Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr19-c5.json with 8 answers. Exact function, guard, test pin, entry point, and publish boolean were absent from the allowed payloads, so they are CANNOT TELL. Other changed areas list folder and file names visible in map.png. Risky surface lists CI from the visible CI workflow labels.\n\nWhat changed: created only the reader output JSON above.\n\nWhat verified: read prompt.md and viewed map.png at original detail; `cat` of the saved JSON returned the same object.\n\nWhat you must decide: none.\n\nUnread payloads: manifest.json was present in the packet folder and was not read."
+    },
+    {
+      "agent_id": "01a11acb-2ceb-7a42-8f7d-9430773c6237",
+      "nickname": "Popper",
+      "n": 19,
+      "c": "c3",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr19-c3.json",
+      "report": "Completed notification received; output saved and validated by integrator"
+    },
+    {
+      "agent_id": "01a11acb-be87-70a0-b835-5cadd321fb65",
+      "nickname": "Cicero",
+      "n": 19,
+      "c": "c4",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr19-c4.json",
+      "report": "Completed notification received; output saved and validated by integrator"
+    },
+    {
+      "agent_id": "01a11acf-f357-7420-a556-205fa82fdb25",
+      "nickname": "Bohr",
+      "n": 5,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c2.json",
+      "report": "TL;DR: Saved and validated all eight answers in [pr5-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr5-c2.json).\n\nUnread payload: `card.png` was missing; `view_image` failed. Used `CANNOT TELL` for absent evidence."
+    },
+    {
+      "agent_id": "01a11ad0-a86e-7ac1-9d03-aa7dce68376b",
+      "nickname": "Dirac",
+      "n": 5,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c4.json",
+      "report": "TL;DR: Saved all eight answers to [pr5-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr5-c4.json).\n\nRead all four permitted files and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad0-a69f-7241-9244-f15b2ac9328a",
+      "nickname": "Sartre",
+      "n": 5,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c1.json",
+      "report": "TL;DR: Saved [pr5-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr5-c1.json). Read prompt.md and viewed card.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad0-a7ac-73c2-9fc8-efec64fc49c9",
+      "nickname": "Darwin",
+      "n": 5,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c3.json",
+      "report": "TL;DR: Saved eight answers to [pr5-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr5-c3.json).\n\n- [x] Read the prompt and viewed all 14 PNGs.\n- [x] Saved and validated JSON. (2/2)\n\nUnread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad1-32bb-7eb3-81e9-0633424ab8e5",
+      "nickname": "Tesla",
+      "n": 5,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c5.json",
+      "report": "TL;DR: Saved [pr5-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr5-c5.json).\n\nRead prompt.md and viewed map.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad1-ef34-7382-806f-8e8ca5107543",
+      "nickname": "Hume",
+      "n": 7,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr7-c1.json",
+      "report": "TL;DR: Saved eight answers to [pr7-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr7-c1.json).\n\nRead prompt.md and viewed card.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad1-efff-7d40-a432-65ca87d55fa9",
+      "nickname": "Euler",
+      "n": 7,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr7-c2.json",
+      "report": "TL;DR: Saved eight answers to [pr7-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr7-c2.json). JSON validation passed.\n\nUnread payload: `card.png` is missing. Both permitted text files were read."
+    },
+    {
+      "agent_id": "01a11ad1-f0cd-7432-a079-91b89d4e47c3",
+      "nickname": "Chandrasekhar",
+      "n": 7,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr7-c3.json",
+      "report": "TL;DR: Saved all eight answers to [pr7-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr7-c3.json).\n\nRead the prompt and viewed all 12 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad2-b6a4-7ce0-860a-6b1d5ad4b7e0",
+      "nickname": "Gibbs",
+      "n": 7,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr7-c4.json",
+      "report": "TL;DR: Saved all eight answers to [pr7-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr7-c4.json). JSON validation passed.\n\nRead all four allowed files and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad2-b7e1-7351-964d-1ff430dcbc2d",
+      "nickname": "Copernicus",
+      "n": 7,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr7-c5.json",
+      "report": "TL;DR: Saved [pr7-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr7-c5.json).\n\nRead prompt.md and viewed map.png. No unread authorized payloads. Used CANNOT TELL where evidence was absent or truncated."
+    },
+    {
+      "agent_id": "01a11ad2-b8e6-73e3-89e4-896a32a3ca47",
+      "nickname": "Feynman",
+      "n": 8,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr8-c1.json",
+      "report": "TL;DR: Saved all eight answers to [pr8-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr8-c1.json).\n\nRead `prompt.md` and viewed `card.png`. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad2-b9d6-7d63-8514-a7b0b5e6bab9",
+      "nickname": "Bernoulli",
+      "n": 8,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr8-c2.json",
+      "report": "TL;DR: Saved all eight answers to [pr8-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr8-c2.json).\n\nUnread payload: `card.png` was missing; `view_image` could not open it."
+    },
+    {
+      "agent_id": "01a11ad3-825c-7d01-a874-22cf64b9791b",
+      "nickname": "Hubble",
+      "n": 10,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr10-c1.json",
+      "report": "TL;DR: Saved and validated all eight answers in [pr10-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr10-c1.json).\n\nUnread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad3-7f79-7123-9adf-1f45bcc413a9",
+      "nickname": "Hegel",
+      "n": 8,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr8-c3.json",
+      "report": "TL;DR: Saved eight answers to [pr8-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr8-c3.json) and validated the JSON.\n\nRead the prompt and viewed all 12 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad3-8087-7620-bc46-102d14e5f536",
+      "nickname": "Volta",
+      "n": 8,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr8-c4.json",
+      "report": "TL;DR: Saved and validated all eight answers in [pr8-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr8-c4.json). All four payloads read; both PNGs viewed. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad3-8161-76f2-8eeb-aaa4961db794",
+      "nickname": "Confucius",
+      "n": 8,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr8-c5.json",
+      "report": "TL;DR: Saved all eight answers to [pr8-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr8-c5.json).\n\nRead prompt.md and viewed map.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad4-20f1-7972-934e-3c5d1bec5706",
+      "nickname": "Averroes",
+      "n": 10,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr10-c2.json",
+      "report": "TL;DR: Saved and validated eight answers in [pr10-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr10-c2.json).\n\nUnread payload: `card.png` is missing; `view_image` failed. Unsupported answers use `CANNOT TELL`."
+    },
+    {
+      "agent_id": "01a11ad4-acac-73b0-95a7-02acd5ccdf5a",
+      "nickname": "Sagan",
+      "n": 10,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr10-c5.json",
+      "report": "TL;DR: Saved q1–q8 to [pr10-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr10-c5.json).\n\nRead prompt.md and viewed map.png. Unread payloads: none. Used CANNOT TELL where evidence was absent."
+    },
+    {
+      "agent_id": "01a11ad4-ad9a-79f1-b2aa-5c881a2555a2",
+      "nickname": "Aquinas",
+      "n": 13,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr13-c1.json",
+      "report": "TL;DR: Saved [pr13-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr13-c1.json) with q1–q8 answers.\n\nRead prompt.md and viewed card.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad4-aac9-7321-9e33-1c8bab2c1ba0",
+      "nickname": "Plato",
+      "n": 10,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr10-c3.json",
+      "report": "TL;DR: Saved [pr10-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr10-c3.json). JSON validated; q1–q8 present.\n\nRead the prompt and viewed all 16 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad4-abdd-7521-976c-863fe31318da",
+      "nickname": "Mill",
+      "n": 10,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr10-c4.json",
+      "report": "TL;DR: Saved all eight answers to [pr10-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr10-c4.json). JSON verified.\n\nRead both text files and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad5-5759-72d0-b548-633991a305df",
+      "nickname": "Mendel",
+      "n": 13,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr13-c2.json",
+      "report": "TL;DR: Saved and verified eight answers in [pr13-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr13-c2.json).\n\nUnread payload: `card.png` is missing. The `view_image` call failed. Both allowed Markdown files were read."
+    },
+    {
+      "agent_id": "01a11ad5-5874-7f93-8c9a-23cfb010312c",
+      "nickname": "Locke",
+      "n": 13,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr13-c3.json",
+      "report": "TL;DR: Saved and validated [pr13-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr13-c3.json) with q1–q8.\n\nRead the prompt and viewed all 16 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad6-9d6b-7d93-88be-04396d5bcfd7",
+      "nickname": "Lagrange",
+      "n": 13,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr13-c4.json",
+      "report": "TL;DR: Saved eight answers to [pr13-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr13-c4.json). JSON validation passed.\n\nRead all four allowed files and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad6-9e8b-7480-9bfc-7ae5e5af836f",
+      "nickname": "Erdos",
+      "n": 13,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr13-c5.json",
+      "report": "TL;DR: Saved and validated all eight answers in [pr13-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr13-c5.json).\n\nUnread payloads: none. Viewed map.png. One filename was clipped; unsupported answers use CANNOT TELL."
+    },
+    {
+      "agent_id": "01a11ad6-9f73-7250-b2a5-a570ac4f7b05",
+      "nickname": "Rawls",
+      "n": 14,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr14-c1.json",
+      "report": "TL;DR: Saved q1–q8 to [pr14-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr14-c1.json). Viewed card.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad6-a06c-7483-b1b4-0d04c9a8b2d3",
+      "nickname": "Peirce",
+      "n": 14,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr14-c2.json",
+      "report": "TL;DR: Saved [pr14-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr14-c2.json).\n\nUnread payload: `card.png` was missing; `view_image` could not open it."
+    },
+    {
+      "agent_id": "01a11ad7-ac59-71d3-b267-e7f54b3d7ae6",
+      "nickname": "Galileo",
+      "n": 14,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr14-c4.json",
+      "report": "TL;DR: Saved all eight answers to [pr14-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr14-c4.json).\n\nRead all four permitted files and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad7-ad7d-7381-8ce5-213dbb6b06d4",
+      "nickname": "James",
+      "n": 14,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr14-c5.json",
+      "report": "TL;DR: Saved [pr14-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr14-c5.json).\n\nRead prompt.md and viewed map.png. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad7-ae6e-7bb2-aa45-62d7df8a8489",
+      "nickname": "Wegener",
+      "n": 15,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr15-c1.json",
+      "report": "TL;DR: Saved [pr15-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr15-c1.json) with q1–q8 answers. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad7-aa92-77a0-a0e8-2d625cdf8c36",
+      "nickname": "Lorentz",
+      "n": 14,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr14-c3.json",
+      "report": "TL;DR: Saved and verified eight answers in [pr14-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr14-c3.json).\n\nRead the prompt and viewed all 19 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad8-9b42-7201-8a65-c5b94946cb8b",
+      "nickname": "Bacon",
+      "n": 15,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr15-c2.json",
+      "report": "TL;DR: Saved [q1–q8 answers](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr15-c2.json).\n\nUnread payload: `card.png` is missing; `view_image` failed. No other files changed."
+    },
+    {
+      "agent_id": "01a11ad8-9d91-7dd2-99d5-b710669d65df",
+      "nickname": "Pauli",
+      "n": 15,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr15-c4.json",
+      "report": "TL;DR: Saved and verified all eight answers in [pr15-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr15-c4.json).\n\nRead all four allowed payloads and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad8-9ca7-7ba3-8162-a16ff2063084",
+      "nickname": "Kepler",
+      "n": 15,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr15-c3.json",
+      "report": "TL;DR: Saved q1–q8 to [pr15-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr15-c3.json).\n\nRead the prompt and viewed all 14 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad9-489d-7800-bdd8-98fff10025b5",
+      "nickname": "Ramanujan",
+      "n": 15,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr15-c5.json",
+      "report": "TL;DR: Saved [pr15-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr15-c5.json).\n\nRead `prompt.md` and viewed `map.png`. Unread payloads: none. Used `CANNOT TELL` where evidence was absent."
+    },
+    {
+      "agent_id": "01a11ad9-4a0c-7fb2-b99b-a5f8e691484c",
+      "nickname": "Arendt",
+      "n": 16,
+      "c": "c1",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr16-c1.json",
+      "report": "TL;DR: Saved all eight answers to [pr16-c1.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr16-c1.json). JSON validation passed. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ad9-4ada-7c42-8281-0f9cfa5140df",
+      "nickname": "Archimedes",
+      "n": 16,
+      "c": "c2",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr16-c2.json",
+      "report": "TL;DR: Saved and validated eight answers in [pr16-c2.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr16-c2.json).\n\nUnread payload: `card.png` was missing; `view_image` failed. No other files changed."
+    },
+    {
+      "agent_id": "01a11ada-1299-7fd0-9b51-5ace7664a103",
+      "nickname": "Poincare",
+      "n": 16,
+      "c": "c3",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr16-c3.json",
+      "report": "TL;DR: Saved [pr16-c3.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr16-c3.json) with all eight answers.\n\nRead the prompt and viewed all 14 PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ada-13c6-7c00-87d8-730b96208b22",
+      "nickname": "Pascal",
+      "n": 16,
+      "c": "c4",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr16-c4.json",
+      "report": "TL;DR: Saved all eight answers to [pr16-c4.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr16-c4.json).\n\nRead all four payloads and viewed both PNGs. Unread payloads: none."
+    },
+    {
+      "agent_id": "01a11ada-1583-7622-ab1c-7d3eb98cf7e0",
+      "nickname": "Halley",
+      "n": 16,
+      "c": "c5",
+      "model": "inherit-parent fallback after routed provider 429",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr16-c5.json",
+      "report": "TL;DR: Saved and verified [pr16-c5.json](/Users/koval/dev/prc/eval/runs/2026-10-08-release-check/reader-work/pr16-c5.json).\n\nRead prompt.md and viewed map.png. Unread payloads: none. Used `CANNOT TELL` where evidence was absent."
+    }
+  ],
+  "limit": 4,
+  "durable_output": "eval/runs/2026-10-08-release-check/reader-work",
+  "failed": [
+    {
+      "agent_id": "01a11ace-8e11-70d1-a953-bbf7ac9d4bd3",
+      "nickname": "Jason",
+      "n": 5,
+      "c": "c1",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c1.json",
+      "error": "exceeded retry limit, last status: 429 Too Many Requests"
+    },
+    {
+      "agent_id": "01a11ace-8e75-74e0-8496-91b171e6e0fd",
+      "nickname": "Laplace",
+      "n": 5,
+      "c": "c2",
+      "saved_path": "eval/runs/2026-10-08-release-check/reader-work/pr5-c2.json",
+      "error": "exceeded retry limit, last status: 429 Too Many Requests"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+[
+ {
+  "scene": 1,
+  "phrase": "Before",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 1,
+  "phrase": "Now it",
+  "said": 6.102,
+  "share": 6.102
+ },
+ {
+  "scene": 1,
+  "phrase": "also holds",
+  "said": 6.595,
+  "share": 6.595
+ },
+ {
+  "scene": 2,
+  "phrase": "The caller",
+  "said": 0.45,
+  "share": 0.45
+ },
+ {
+  "scene": 2,
+  "phrase": "next page link",
+  "said": 3.356,
+  "share": 3.356
+ },
+ {
+  "scene": 2,
+  "phrase": "adds one",
+  "said": 4.412,
+  "share": 4.412
+ },
+ {
+  "scene": 2,
+  "phrase": "stops with",
+  "said": 8.233,
+  "share": 8.233
+ },
+ {
+  "scene": 3,
+  "phrase": "compared with",
+  "said": 3.267,
+  "share": 3.267
+ },
+ {
+  "scene": 3,
+  "phrase": "never sent",
+  "said": 7.018,
+  "share": 7.018
+ }
+]

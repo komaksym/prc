@@ -1,0 +1,40 @@
+{
+  "condition": "c3",
+  "files": [
+    "frame-01.png",
+    "frame-02.png",
+    "frame-03.png",
+    "frame-04.png",
+    "frame-05.png",
+    "frame-06.png",
+    "frame-07.png",
+    "frame-08.png",
+    "frame-09.png",
+    "frame-10.png",
+    "frame-11.png",
+    "frame-12.png",
+    "frames.json",
+    "prompt.md"
+  ],
+  "source_sha256": {
+    "board.json": "682dfd1a342028a61d9cbd6c5ba454605a8c8081ace9850b0662e38f0cda3c64",
+    "run.json": "487f0b30d44f86b1ae3b1a8b32c71ddd2fcbfb26a43718b827bf7a8f4732c05f",
+    "video.mp4": "caef34a706022ee28cbd0efbe55be0f7108ca334a7d6b3e977bb2b95abbff5c1"
+  },
+  "payload_sha256": {
+    "frame-01.png": "0b35d8ab892c7633087111871a51500b72131dcbeed8a3919f046c3f734ef9ee",
+    "frame-02.png": "e2015d47a8416c92212dbb30f5b7d2cef3e039371486a97180d6911902e90be9",
+    "frame-03.png": "1473bcb6d972de57895582cda9fa23eb50a0c3daabe62bb8a973a6959b8c8565",
+    "frame-04.png": "220990426fc502e3e25b090386a164393e2d249d6503b6c41a41472f4ccd9820",
+    "frame-05.png": "cfe183319b0e0eb76aa8300006ed2ca819f1175973f2c539efe542eaccd97d18",
+    "frame-06.png": "888e2ddb1273698d33f1d78279261b7aceba89ae2eb91ebccf42f9bf2b641095",
+    "frame-07.png": "203e57c35eba58794e0c2f0c5383e022a4cab3b2550fce29f8e6e99cea8eafe7",
+    "frame-08.png": "cf5b3866eb875db89a6dbadbaeadc4167882332bae6ac1fd1e87bcb76f7103be",
+    "frame-09.png": "81b1c77a40fbb3c5148f7d8cab8ee7ff7b793ca7ee2a2e2875c7e17e119d0c5a",
+    "frame-10.png": "6fbfbdce6ff5cdf72d0244f4984415b324687b0dcfbc15056c0e7e15e9405328",
+    "frame-11.png": "01b042cd5c8fe0f753e9b7d32a30e445b8fbd1f604e4d021a5e645eec52d1e8a",
+    "frame-12.png": "f572bb2d8b4af34c3379b7c1ffeba366744eff4aee9712d5e082ea15cf14f0e7",
+    "frames.json": "4f762e972fc68312aa4ad1103e1c21d48ec0b730916a3d5179be974163b41feb",
+    "prompt.md": "7ac7d4a1feb3b96316799b78575ce4b77e19c0d1f8e14e246347a60e92fbc42b"
+  }
+}

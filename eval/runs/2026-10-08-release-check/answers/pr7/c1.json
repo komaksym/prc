@@ -1,0 +1,43 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "reconcile_invitations"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        ".github/workflows/sync-invitations.yml",
+        "scripts/sync_invitations.py",
+        "scripts/verify_invitation_sync.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": [
+        "CI",
+        "external calls"
+      ]
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/invitation_sync.py::reconcile_invitations"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

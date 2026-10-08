@@ -1,0 +1,46 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/build_private_dm_actions.py",
+        "tests",
+        "PLANS.md",
+        "dm-uncertainty-scope-e2e-evidence.json",
+        "private-dm-actions-e2e-evidence.json",
+        "infographic.png",
+        "01-infographic-private-dm-actions.md",
+        "source.md",
+        "structured-content.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": []
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

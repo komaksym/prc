@@ -49,8 +49,9 @@ def validate_file(path: Path) -> list[str]:
     data = json.loads(path.read_text(encoding="utf-8"))
     pr = data.get("pr")
     head_sha = data.get("head_sha", "")
-    if data.get("version") != 1:
-        errors.append(f"{path.name}: version must be 1")
+    expected = 2 if path.name.endswith(".v2.json") else 1
+    if data.get("version") != expected:
+        errors.append(f"{path.name}: version must be {expected}")
     if not CACHE_RE.match(head_sha or ""):
         errors.append(f"{path.name}: head_sha is not a 40-char hex sha")
         return errors
@@ -140,7 +141,7 @@ def check_c0(results_path: str | None) -> list[str]:
 def main() -> int:
     c0_arg = sys.argv[sys.argv.index("--c0-results") + 1] if "--c0-results" in sys.argv else None
     errors: list[str] = []
-    files = sorted(QUESTIONS.glob("pr*.json"))
+    files = sorted(path for path in QUESTIONS.glob("pr*.json") if path.stem[2:].isdigit())
     if len(files) != 12:
         errors.append(f"expected 12 question files, found {len(files)}")
     for path in files:

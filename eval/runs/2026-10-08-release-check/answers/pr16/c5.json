@@ -1,0 +1,46 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "scripts/sync_actual_actions.py",
+        "tests/e2e_actual_action_sync.py",
+        "tests/test_actual_action_sync_e2e.py",
+        "PLANS.md",
+        "README.md",
+        "actual-action-sync-e2e-evidence.json",
+        "actual-action-sync.md",
+        "analysis.md",
+        "infographic.png"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q8",
+      "answer": "CANNOT TELL"
+    }
+  ]
+}

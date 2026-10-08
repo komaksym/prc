@@ -1,0 +1,316 @@
+{
+  "name": "mdp12",
+  "scenes": [
+    {
+      "kicker": "Open pull request",
+      "say": [
+        "This pull request adds a date to each row of the invitation report.",
+        "It shows when the prospect was added."
+      ],
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_invitation_shortlist.py:621",
+          "match": "created_at = \"2026-09-30T14:12:13.123456+02:00\""
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:652",
+          "match": "\"prospect_id\": \"tracked-a\""
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:657",
+          "match": "\"Synthetic Person\" in markdown"
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:650",
+          "match": "row[\"date_added\"] == created_at"
+        }
+      ],
+      "cues": [
+        {
+          "at": "Each prospect",
+          "do": "show",
+          "ids": [
+            "pr"
+          ]
+        },
+        {
+          "at": "Before this change",
+          "do": "show",
+          "ids": [
+            "rr"
+          ]
+        },
+        {
+          "at": "showed none",
+          "do": "note",
+          "id": "rr",
+          "text": "no date",
+          "tone": "bad",
+          "until": "Now the report"
+        },
+        {
+          "at": "carries that exact",
+          "do": "fly",
+          "from": "ts",
+          "to": "d"
+        }
+      ],
+      "groups": [
+        {
+          "col": 0,
+          "ground": "tracked-a",
+          "id": "pr",
+          "items": [
+            {
+              "ground": "tracked-a",
+              "id": "p",
+              "text": "tracked-a"
+            },
+            {
+              "ground": "created_at",
+              "id": "ts",
+              "text": "created_at"
+            }
+          ],
+          "row": true,
+          "sub": "in Supabase",
+          "title": "Prospect row"
+        },
+        {
+          "col": 1,
+          "ground": "Synthetic Person",
+          "id": "rr",
+          "items": [
+            {
+              "ground": "Synthetic Person",
+              "id": "n",
+              "text": "Synthetic Person"
+            },
+            {
+              "ground": "created_at",
+              "id": "d",
+              "kind": "slot",
+              "label": "date_added",
+              "text": "created_at"
+            }
+          ],
+          "row": true,
+          "sub": "invitation",
+          "title": "Report row"
+        }
+      ],
+      "hold": 0.8,
+      "say": [
+        "Each prospect row matched here supplies its creation time, or unknown when missing.",
+        "Before this change, the report row showed none of it.",
+        "Now the report row carries that exact timestamp as date added."
+      ],
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "tests/e2e_invitation_shortlist.py:710",
+          "match": "assert row[\"date_added\"] is None"
+        },
+        {
+          "line": "tests/e2e_invitation_shortlist.py:716",
+          "match": "assert str(created_at) not in json.dumps(row)"
+        }
+      ],
+      "code": true,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "items",
+          "step": 0.4
+        }
+      ],
+      "hold": 0.8,
+      "items": [
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:693",
+          "text": "(None, \"missing\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:694",
+          "text": "(42, \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:695",
+          "text": "(\"0001-01-01T00:00:00+01:00\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:696",
+          "text": "(\"9999-12-31T23:59:59-01:00\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:697",
+          "text": "(\"not-a-timestamp\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:698",
+          "text": "(\"2026-09-30T14:12:13\", \"invalid_timestamp\")"
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:699",
+          "text": "(\"2026-10-03T00:00:00Z\", \"future_timestamp\")"
+        }
+      ],
+      "label": "cases stay unknown, not guessed",
+      "mark": "?",
+      "more": null,
+      "say": [
+        "A missing, malformed, out-of-range, timezone-less or future timestamp shows as unknown.",
+        "The row keeps a reason, and the bad value is never copied."
+      ],
+      "tone": "info",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": "A new helper",
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": "Each selected",
+          "do": "step",
+          "n": 2
+        },
+        {
+          "at": "gets its date",
+          "do": "note",
+          "line": "1031",
+          "text": "date_added on each row",
+          "tone": "good"
+        }
+      ],
+      "file": "src/linkedin_mdp_mcp/invitation_shortlist.py",
+      "hold": 0.8,
+      "label": "The change, line for line",
+      "lines": [
+        {
+          "ref": "453",
+          "step": 1
+        },
+        {
+          "ref": "472",
+          "step": 1
+        },
+        {
+          "ref": "473",
+          "step": 1
+        },
+        {
+          "ref": "474",
+          "step": 1
+        },
+        {
+          "ref": "475",
+          "step": 1
+        },
+        {
+          "ref": "476",
+          "step": 1
+        },
+        {
+          "ref": "1030",
+          "step": 2
+        },
+        {
+          "ref": "1031",
+          "step": 2
+        }
+      ],
+      "say": [
+        "A new helper finds exactly one matching prospect row.",
+        "It returns unknown with a reason when the timestamp is bad or in the future.",
+        "Each selected invitation row then gets its date."
+      ],
+      "type": "diff"
+    },
+    {
+      "assert": [
+        {
+          "equals": 3,
+          "fact": "tests_added"
+        }
+      ],
+      "big": "{tests_added}",
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ],
+      "hold": 1.2,
+      "items": [
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:669",
+          "text": "An exact URL alias may enrich output, but its source time cannot affect selection."
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:703",
+          "text": "Invalid values stay unknown and never leak their raw timestamp into output."
+        },
+        {
+          "cite": "tests/e2e_invitation_shortlist.py:720",
+          "text": "A missing creation time is not inferred and cannot alter eligibility."
+        }
+      ],
+      "label": "new tests",
+      "mark": "\u2713",
+      "say": [
+        "Three new tests pin it down."
+      ],
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            0,
+            0.0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd"
+        }
+      ],
+      "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
+      "hold": 2.0,
+      "l1": "Each row now shows its date added.",
+      "l2": "Unknown stays unknown.",
+      "nocap": true,
+      "say": [
+        "Each row now shows its date added. Unknown stays unknown."
+      ],
+      "type": "outro"
+    }
+  ]
+}

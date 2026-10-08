@@ -1,0 +1,12 @@
+{
+  "answers": [
+    {"id": "q1", "answer": "The connection owner gets private morning reports in one marked Google Docs section, preserving operator notes when reporting is enabled."},
+    {"id": "q2", "answer": "GoogleDocPublisher"},
+    {"id": "q3", "answer": "No data found for this domain and memberId"},
+    {"id": "q4", "answer": [".github/workflows/morning-report.yml", ".github/workflows/report-tests.yml", ".github/workflows/sync-connections.yml", "PLANS.md", "docs/google-docs-report.md", "docs/images/google-doc-report.jpg", "scripts/report_connections_doc.py", "src/linkedin_mdp_mcp/client.py", "tests/e2e_doc_report.py"]},
+    {"id": "q5", "answer": ["CI", "auth", "external calls"]},
+    {"id": "q6", "answer": "Later-page terminal no-data messages complete the snapshot with previously collected rows retained."},
+    {"id": "q7", "answer": "src/linkedin_mdp_mcp/google_doc_report.py::GoogleDocPublisher"},
+    {"id": "q8", "answer": false}
+  ]
+}

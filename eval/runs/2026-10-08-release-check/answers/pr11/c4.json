@@ -1,0 +1,48 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private report owner now receives exact provider created_at timestamps for prospect rows."
+    },
+    {
+      "id": "q2",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q3",
+      "answer": "id,lead_id,linkedin_url,attributes -> id,lead_id,linkedin_url,attributes,created_at"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "diagnostics/action-report-private-source-20261002/e2e_private_source.py",
+        "PLANS.md",
+        "diagnostics/action-report-private-source-20261002/README.md",
+        "diagnostics/action-report-private-source-20261002/e2e-evidence.json",
+        "infographic/prospect-created-at/analysis.md",
+        "infographic/prospect-created-at/infographic.png",
+        "infographic/prospect-created-at/prompts/01-infographic-prospect-created-at.md",
+        "infographic/prospect-created-at/prompts/02-infographic-prospect-created-at.md",
+        "infographic/prospect-created-at/prompts/03-infographic-prospect-created-at.md",
+        "infographic/prospect-created-at/source.md",
+        "infographic/prospect-created-at/structured-content.md"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": []
+    },
+    {
+      "id": "q6",
+      "answer": "Synthetic end-to-end tests pin exact created_at across pages and missing stays missing."
+    },
+    {
+      "id": "q7",
+      "answer": "diagnostics/action-report-private-source-20261002/collect_private_source.py::TABLE_COLUMNS"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}

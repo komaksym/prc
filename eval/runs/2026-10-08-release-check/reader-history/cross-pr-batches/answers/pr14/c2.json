@@ -1,0 +1,38 @@
+{
+  "answers": [
+    {
+      "id": "q1",
+      "answer": "The private source bundle now carries the changelog for the owner."
+    },
+    {
+      "id": "q2",
+      "answer": "_get_paged"
+    },
+    {
+      "id": "q3",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q4",
+      "answer": [
+        "src/linkedin_mdp_mcp/client.py"
+      ]
+    },
+    {
+      "id": "q5",
+      "answer": []
+    },
+    {
+      "id": "q6",
+      "answer": "CANNOT TELL"
+    },
+    {
+      "id": "q7",
+      "answer": "src/linkedin_mdp_mcp/client.py::LinkedInMDPClient._get_paged"
+    },
+    {
+      "id": "q8",
+      "answer": false
+    }
+  ]
+}
