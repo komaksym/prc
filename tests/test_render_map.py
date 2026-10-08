@@ -10,6 +10,7 @@ import pytest
 
 from map_sample import HOSTILE_LINES, hostile_map, large_map, shop_map
 from prc.changemap import ChangeMap
+from prc.facts import compute_facts
 from prc.identity import to_jsonable
 from prc.presentation.render_map import BRAND, render_map
 
@@ -43,7 +44,9 @@ def test_page_contract(name: str) -> None:
 
     assert html.startswith("<!doctype html>")
     assert html.count("<script") == 2
-    assert json.loads(data) == stored(change_map)
+    payload = json.loads(data)
+    assert payload.pop("summary") == to_jsonable(compute_facts(to_jsonable(change_map)))
+    assert payload == stored(change_map)
     assert (
         'http-equiv="Content-Security-Policy" content="'
         f"default-src 'none'; script-src 'sha256-{digest}'; style-src 'unsafe-inline'; "

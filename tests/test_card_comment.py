@@ -185,7 +185,11 @@ def recompute(m: dict[str, Any]) -> dict[str, object]:
     changed = [s for s in m["symbols"] if s["status"] in ("added", "modified", "deleted")]
     test_paths = {f["path"] for f in brief["files"] if f["kind"] == "test"}
     test_symbols = {s["id"] for s in m["symbols"] if s["path"] in test_paths}
-    callers = {e["target"] for e in m["edges"] if e["source"] in test_symbols}
+    callers = {
+        e["target"]
+        for e in m["edges"]
+        if e["source"] in test_symbols and e["status"] != "removed" and e["resolution"] == "exact"
+    }
     checks = brief.get("checks", [])
     passed = sum(1 for c in checks if c["state"] == "passed")
     return {
@@ -195,7 +199,9 @@ def recompute(m: dict[str, Any]) -> dict[str, object]:
         "tests": sum(1 for f in brief["files"] if f["kind"] == "test"),
         "ci": "no CI" if not checks else f"{passed}/{len(checks)}",
         "untested": sorted(
-            s["id"] for s in changed if s["path"] not in test_paths and s["id"] not in callers
+            s["id"]
+            for s in changed
+            if s["status"] != "deleted" and s["path"] not in test_paths and s["id"] not in callers
         ),
     }
 
@@ -290,8 +296,8 @@ def test_test_only_symbols_do_not_claim_production_test_coverage() -> None:
     text = comment.render_comment(m)
     assert "Every changed symbol has a direct test." not in html
     assert "Every changed symbol has a direct test." not in text
-    assert "No production symbols changed." in html
-    assert "No production symbols changed." in text
+    assert "No live production symbols changed." in html
+    assert "No live production symbols changed." in text
 
 
 def test_look_first_prefers_board_quoted_files() -> None:
@@ -515,7 +521,7 @@ def test_comment_part_order_and_span() -> None:
         "```mermaid",
         "Look here first",
         "Risky",
-        "Not covered by tests",
+        "Direct test-call evidence",
         m["head_sha"][:12],
     ]
     positions = [text.find(part) for part in order]
@@ -546,7 +552,7 @@ def test_docs_only_pr_gives_valid_card_and_comment() -> None:
     assert "No code symbols changed" in text
     block = comment.mermaid_block(DOCS_ONLY)
     assert comment.check_mermaid(block) == []
-    assert "```mermaid" in text
+    assert "```mermaid" not in text
 
 
 # --- The picture: OCR at 800 px finds every stat and name ---
@@ -617,7 +623,7 @@ def test_card_png_renders_and_ocr_finds_stats_and_names(tmp_path: Path) -> None:
     raw = _ocr_text(png)
     found = re.sub(r"[^a-z0-9]", "", raw.lower())
     stats = card.compute_stats(m)
-    labels = ["files", "symbols", "callsites", "tests", "ci", "directtest"]
+    labels = ["files", "symbols", "callsites", "testfiles", "ci", "directtest"]
     for token in [
         *(
             str(v)

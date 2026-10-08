@@ -2,6 +2,8 @@
   "use strict";
 
   const MAP = JSON.parse(document.getElementById("map-data").textContent);
+  const FACTS = MAP.summary;
+  const STATS = FACTS.stats;
   const SVGNS = "http://www.w3.org/2000/svg";
   const STATUSES = new Set(["added", "modified", "deleted", "context"]);
   const EDGE_STATUSES = new Set(["added", "removed", "kept"]);
@@ -25,7 +27,7 @@
   const DIM_EDGE = 0.05;
   const BEHIND_SUMMARY = 0.35;
   const LEGIBLE = 0.55;
-  const NO_TEST = "no direct test";
+  const NO_TEST = "no direct test evidence";
   const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
 
   const $ = (id) => document.getElementById(id);
@@ -121,33 +123,29 @@
     dst.near.add(src);
   });
 
-  const isTest = (node) => node.lane === "tests";
+  const testIds = new Set(FACTS.test_symbol_ids);
+  const missingIds = new Set(FACTS.no_direct_test.map((entry) => entry.id));
+  const isTest = (node) => node.kind === "symbol" && testIds.has(node.sym.id);
   const live = (edge) => edge.status !== "removed";
 
   for (const node of nodes) {
-    node.untested =
-      node.lane === "changed" && node.status !== "deleted" && !node.in.some((e) => isTest(e.src) && live(e));
+    node.untested = node.kind === "symbol" && missingIds.has(node.sym.id);
   }
 
   const changed = nodes.filter((n) => n.kind === "symbol" && n.status !== "context");
-  const changedCode = changed.filter((n) => n.lane === "changed");
-  const testsTouched = changed.filter(isTest);
-  const untested = changedCode.filter((n) => n.untested);
-  const callSites = changedCode.reduce((sum, n) => sum + (n.sym.call_sites || 0), 0);
-  const added = edges.filter((e) => e.status === "added").length;
-  const removed = edges.filter((e) => e.status === "removed").length;
+  const changedCode = changed.filter((n) => !isTest(n));
+  const testsTouched = STATS.tests_touched;
+  const untested = FACTS.no_direct_test;
+  const callSites = STATS.call_sites;
+  const added = FACTS.edges_added;
+  const removed = FACTS.edges_removed;
   const risky = MAP.brief.files.filter((f) => f.sensitive);
-
-  function ciState() {
-    const checks = MAP.brief.checks;
-    const failed = checks.filter((c) => c.state === "failed");
-    if (!checks.length) return { cls: "none", label: "no CI", word: "none" };
-    if (failed.length) return { cls: "bad", label: "CI failed", word: "failed", failed };
-    if (checks.some((c) => c.state === "pending")) return { cls: "warn", label: "CI pending", word: "pending" };
-    return { cls: "good", label: "CI passed", word: "passed" };
-  }
-
-  const ci = ciState();
+  const ci = {
+    cls: { none: "none", failed: "bad", pending: "warn", passed: "good" }[FACTS.ci_state],
+    label: FACTS.ci_state === "none" ? "no CI" : `CI ${FACTS.ci_state}`,
+    word: STATS.ci_text,
+    failed: MAP.brief.checks.filter((c) => c.state === "failed"),
+  };
 
   /* Header */
 
@@ -176,13 +174,18 @@
       return add(box, val, el("div", "stat-label", label));
     };
     add(stats,
-      stat(MAP.files.length, MAP.files.length === 1 ? "file" : "files"),
-      stat(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      stat(STATS.files, STATS.files === 1 ? "file" : "files"),
+      stat(STATS.symbols_changed, STATS.symbols_changed === 1 ? "symbol changed" : "symbols changed"),
       stat(callSites, "call sites affected"),
-      stat(testsTouched.length, testsTouched.length === 1 ? "test touched" : "tests touched",
-        testsTouched.length ? "" : "warn"),
-      stat(ci.word, "CI on head", ci.cls, true),
+      stat(testsTouched, testsTouched === 1 ? "test file touched" : "test files touched",
+        testsTouched ? "" : "warn"),
+      stat(ci.word, ci.label, ci.cls, true),
       stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
+    if (FACTS.limits.length) {
+      const limit = stat(FACTS.limits.length, "files without symbol analysis", "warn");
+      limit.setAttribute("title", FACTS.limits.map((entry) => `${entry.path}: ${entry.reason}`).join("\n"));
+      stats.appendChild(limit);
+    }
   })();
 
   /* Canvas */
@@ -374,7 +377,7 @@
     else expanded.add(folder.index);
     applyConceal();
     flyTo(fitTo(
-      expanded.has(folder.index) ? bounds([...folder.members, ...folderNodes]) : folderBounds(),
+      expanded.has(folder.index) ? { x: folder.x, y: folder.y, w: folder.w, h: 360 } : folderBounds(),
       viewArea(),
       1.25,
     ));
@@ -478,7 +481,7 @@
   }
 
   function fit() {
-    Object.assign(cam, fitTo(all, viewArea(), 1.1));
+    Object.assign(cam, fitTo(grouped ? folderBounds() : all, viewArea(), 1.1));
     applyCamera();
   }
 
@@ -732,14 +735,14 @@
       facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
       if (sym.span) facts.appendChild(el("span", "fact", `lines ${sym.span[0]}\u2013${sym.span[1]}`));
       else if (sym.base_span) facts.appendChild(el("span", "fact", `was lines ${sym.base_span[0]}\u2013${sym.base_span[1]}`));
-      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no test in this map calls it`));
+      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no exact live test call appears in this map`));
       const callers = node.in.filter((e) => !isTest(e.src));
       const tests = node.in.filter((e) => isTest(e.src));
       add(body,
         section("Diff", node.status === "context" ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.") : diffView(sym.hunks)),
         section("Callers", linkList(callers.map((e) => edgeItem(e, e.src)), "No caller in the map.")),
         section("Callees", linkList(node.out.map((e) => edgeItem(e, e.dst)), "Calls nothing in the map.")),
-        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test calls this directly.")));
+        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test call appears in this map. This does not establish missing tests.")));
     }
 
     head.appendChild(facts);
@@ -782,7 +785,7 @@
     if (step.kind === "overview") {
       return {
         kicker: "Overview", count, main: MAP.title,
-        sub: [plural(MAP.files.length, "file", "files"), plural(changed.length, "symbol changed", "symbols changed"),
+        sub: [plural(STATS.files, "file", "files"), plural(STATS.symbols_changed, "symbol changed", "symbols changed"),
           plural(added, "call added", "calls added"), `${removed} removed`].join(DOT),
       };
     }
@@ -816,7 +819,7 @@
 
     if (step.kind === "test") {
       const targets = node.out.filter(live).map((e) => e.dst);
-      const covers = targets.length ? `${DOT}covers ${names(targets)}` : "";
+      const covers = targets.length ? `${DOT}calls ${names(targets)}` : "";
       const main = node.status === "added" ? `New test ${name}${covers}`
         : node.status === "deleted" ? `Deleted test ${name}` : `Test ${name} changed${covers}`;
       return { kicker: "Test", count, main, sub: symbolFacts(node) };
@@ -893,7 +896,7 @@
         : all;
       return fitTo(box, area, 1.25);
     }
-    if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
+    if (step.plain) return fitTo(grouped ? folderBounds() : all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
     const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
     const wide = fitTo(bounds([...step.lit]), area, 1.25);
     return wide.k >= 0.62 ? wide : fitTo(bounds(core), area, 1.25);
@@ -931,15 +934,18 @@
     summary.replaceChildren();
     const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
     const grid = add(el("div", "sum-grid"),
-      cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
+      cell(STATS.symbols_changed, STATS.symbols_changed === 1 ? "symbol changed" : "symbols changed"),
       cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
       cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
       cell(callSites, "call sites affected"),
       cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
-      cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
+      cell(ci.word, ci.failed.length ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : `${ci.label} on the head commit`, ci.cls));
     const toured = new Set(MAP.tour.flatMap((step) => step.focus));
     const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
     const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+    const limits = FACTS.limits.map((entry) => `${entry.path}: ${entry.reason}`).join("; ");
+    add(summary, el("div", "sum-note", FACTS.test_note),
+      limits ? el("div", "sum-note", `Symbol analysis limits: ${limits}`) : null);
     add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
       el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
   }

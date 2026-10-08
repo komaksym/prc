@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import os
 import random
 import re
 import shutil
@@ -351,9 +352,56 @@ def test_tour_visits_folders_first(open_map: Callable[[ChangeMap], Any]) -> None
     assert kinds[1] == "folder" and kinds[2] == "folder"
     assert kinds[-1] == "summary"
 
+    page.evaluate("window.prcTour.seek(0.8)")
+    assert f"1 / {len(kinds)}" in page.locator("#caption").text_content()
+
     page.evaluate("window.prcTour.seek(window.prcTour.steps[1].start + 0.1)")
 
     assert "src/pkg" in page.locator("#caption").text_content()
+
+
+def test_large_tour_overview_keeps_folder_names_readable(
+    open_map: Callable[[ChangeMap], Any],
+) -> None:
+    page = open_map(large_map(152))
+    page.evaluate("window.prcTour.seek(0.8)")
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "artifacts/trustworthiness/2026-10-09/regressions"
+        / f"dense-{os.environ.get('PRC_TRUST_PHASE', 'green')}.png"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    page.screenshot(path=str(path))
+    for box in page.locator(".f-name").all():
+        assert box.bounding_box()["height"] >= 10
+
+
+def test_group_member_list_shows_full_long_names(open_map: Callable[[ChangeMap], Any]) -> None:
+    change = large_map(152)
+    change = dataclasses.replace(
+        change,
+        symbols=tuple(
+            dataclasses.replace(
+                s,
+                qualname="test_unchanged_descriptive_prefix_then_the_actual_behavior_and_expected_result_"
+                + s.qualname,
+            )
+            for s in change.symbols
+        ),
+    )
+    page = open_map(change)
+    folder_cards(page).first.click()
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "artifacts/trustworthiness/2026-10-09/regressions"
+        / f"dense-member-{os.environ.get('PRC_TRUST_PHASE', 'green')}.png"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    page.screenshot(path=str(path))
+    names = page.locator(".fcard.open .fmem-name")
+    assert names.count() > 0
+    assert names.first.bounding_box()["height"] >= 28, "long member name must wrap"
+    assert page.locator(".fcard.open .f-name").bounding_box()["height"] >= 10
 
 
 def test_folder_edge_width_grows_with_call_count(

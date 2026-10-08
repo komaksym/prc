@@ -15,24 +15,35 @@ from pathlib import Path
 from typing import Any
 from xml.sax.saxutils import escape as _escape
 
-CHANGED = ("added", "modified", "deleted")
+from prc.facts import (
+    CHANGED as CHANGED,
+)
+from prc.facts import (
+    TEST_NOTE,
+    test_evidence,
+    test_paths,
+)
+from prc.facts import (
+    CardStats as CardStats,
+)
+from prc.facts import (
+    UntestedEntry as UntestedEntry,
+)
+from prc.facts import (
+    brief_of as _brief_of,
+)
+from prc.facts import (
+    compute_stats as compute_stats,
+)
+from prc.facts import (
+    untested as untested,
+)
+
 TEMPLATE = _files("prc.presentation") / "assets" / "card.html"
 
 
 class CardError(RuntimeError):
     """A missing tool or a failed capture, worded for the person running the CLI."""
-
-
-@dataclass(frozen=True, slots=True)
-class CardStats:
-    files: int
-    symbols_changed: int
-    call_sites: int
-    tests_touched: int
-    ci_passed: int
-    ci_total: int
-    ci_text: str
-    untested_total: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,54 +60,12 @@ class RiskEntry:
     reason: str
 
 
-@dataclass(frozen=True, slots=True)
-class UntestedEntry:
-    id: str
-    name: str
-    path: str
-
-
-def _brief_dict(brief: Any) -> dict[str, Any]:
-    """The brief as a plain map.json dict, from a dict or a prc.brief.Brief."""
-    if brief is None or isinstance(brief, dict):
-        return brief if brief is not None else {}
-    return {
-        "files": [{"path": f.path, "kind": f.kind, "sensitive": f.sensitive} for f in brief.files],
-        "checks": [{"name": c.name, "state": c.state} for c in brief.checks],
-    }
-
-
-def _brief_of(m: dict[str, Any], brief: Any) -> dict[str, Any]:
-    if brief is not None:
-        return _brief_dict(brief)
-    raw = m.get("brief")
-    return _brief_dict(raw) if not isinstance(raw, dict) else raw
-
-
 def _test_paths(brief: dict[str, Any]) -> set[str]:
-    return {f["path"] for f in brief.get("files", []) if f.get("kind") == "test"}
+    return test_paths({}, brief)
 
 
 def _changed(m: dict[str, Any]) -> list[dict[str, Any]]:
     return [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
-
-
-def compute_stats(m: dict[str, Any], brief: Any = None) -> CardStats:
-    """Shared stat code: the card shows these, and EVAL gate 6 recomputes them."""
-    b = _brief_of(m, brief)
-    changed = _changed(m)
-    checks = b.get("checks", [])
-    passed = sum(1 for c in checks if c.get("state") == "passed")
-    return CardStats(
-        files=len(b.get("files", [])),
-        symbols_changed=len(changed),
-        call_sites=sum(s.get("call_sites", 0) for s in changed),
-        tests_touched=sum(1 for f in b.get("files", []) if f.get("kind") == "test"),
-        ci_passed=passed,
-        ci_total=len(checks),
-        ci_text=f"{passed}/{len(checks)}" if checks else "no CI",
-        untested_total=len(untested(m, b)),
-    )
 
 
 def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
@@ -181,13 +150,19 @@ def look_first(
     changed lines, then coverage, then callers. Quoted lines outside changed symbols
     get a file-level entry. Unquoted symbols keep the coverage-first order.
     """
-    tests = _test_paths(_brief_of(m, brief))
+    tests = test_paths(m, brief)
     callers: dict[str, int] = {}
     for e in m.get("edges", []):
         callers[e.get("source", "")] = callers.get(e.get("source", ""), 0) + 1
         callers[e.get("target", "")] = callers.get(e.get("target", ""), 0) + 1
     test_symbols = {s["id"] for s in m.get("symbols", []) if s.get("path") in tests}
-    covered = {e["target"] for e in m.get("edges", []) if e.get("source") in test_symbols}
+    covered = {
+        e["target"]
+        for e in m.get("edges", [])
+        if e.get("source") in test_symbols
+        and e.get("status") != "removed"
+        and e.get("resolution") == "exact"
+    }
     cands = [
         sym
         for sym in m.get("symbols", [])
@@ -289,24 +264,6 @@ def risky(m: dict[str, Any], brief: Any = None) -> tuple[RiskEntry, ...]:
     return tuple(ordered)
 
 
-def untested(m: dict[str, Any], brief: Any = None) -> tuple[UntestedEntry, ...]:
-    """Changed symbols outside test files with no incoming edge from a test symbol."""
-    b = _brief_of(m, brief)
-    tests = _test_paths(b)
-    test_symbols = {s["id"] for s in m.get("symbols", []) if s.get("path") in tests}
-    covered = {e["target"] for e in m.get("edges", []) if e.get("source") in test_symbols}
-    return tuple(
-        sorted(
-            (
-                UntestedEntry(s["id"], s["qualname"], s["path"])
-                for s in _changed(m)
-                if s.get("path") not in tests and s["id"] not in covered
-            ),
-            key=lambda u: u.id,
-        )
-    )
-
-
 def _stat(value: object, label: str, tone: str = "") -> str:
     return (
         f'<div class="stat{tone}"><div class="stat-value">{_escape(str(value))}</div>'
@@ -330,7 +287,7 @@ def build_card_html(
             _stat(stats.files, "files"),
             _stat(stats.symbols_changed, "symbols changed"),
             _stat(stats.call_sites, "call sites"),
-            _stat(stats.tests_touched, "tests touched"),
+            _stat(stats.tests_touched, "test files touched"),
             _stat(
                 stats.ci_text,
                 "CI passed",
@@ -338,7 +295,7 @@ def build_card_html(
             ),
             _stat(
                 stats.untested_total,
-                "no direct test",
+                "no direct test evidence",
                 "" if stats.untested_total == 0 else " warn",
             ),
         ]
@@ -364,16 +321,12 @@ def build_card_html(
         hidden = sorted({r.reason for r in surfaces[3:] if r.reason not in shown_reasons})
         suffix = _escape(f": {', '.join(hidden)}") if hidden else ""
         risky_html += f'<li><span class="reason">+{len(surfaces) - 3} more{suffix}</span></li>'
-    if not _changed(m):
-        untested_html = "<strong>No code symbols changed.</strong>"
-    elif all(s.get("path") in _test_paths(_brief_of(m, brief)) for s in _changed(m)):
-        untested_html = "No production symbols changed."
-    elif missing:
+    untested_html = _escape(test_evidence(m, brief))
+    if missing:
         shown = ", ".join(f'<span class="mono">{_escape(u.name)}</span>' for u in missing[:3])
         rest = f" +{len(missing) - 3} more" if len(missing) > 3 else ""
-        untested_html = f"<strong>No direct test:</strong> {shown}{_escape(rest)}"
-    else:
-        untested_html = "Every changed symbol has a direct test."
+        untested_html += f"<br>{shown}{_escape(rest)}"
+    untested_html += f"<br>{_escape(TEST_NOTE)}"
 
     page = TEMPLATE.read_text()
     for token, value in (

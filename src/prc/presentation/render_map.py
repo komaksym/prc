@@ -12,6 +12,7 @@ import json
 from importlib.resources import files
 
 from prc.changemap import ChangeMap
+from prc.facts import compute_facts
 from prc.identity import to_jsonable
 from prc.presentation.map_layout import (
     MAIN,
@@ -69,9 +70,9 @@ _BODY = (
 def data_block(change_map: ChangeMap) -> str:
     """The map as JSON that cannot close its script element or break a line terminator."""
 
-    text = json.dumps(
-        to_jsonable(change_map), sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    )
+    data = to_jsonable(change_map)
+    data["summary"] = to_jsonable(compute_facts(data))
+    text = json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
     return text.translate(_ESCAPES)
 

@@ -113,6 +113,17 @@ def unified_diff(repo: Path, old_oid: str, new_oid: str) -> str:
     """Text diff between two blob ids; empty ids denote an absent side."""
 
     zero = "0" * 40
+    if old_oid != zero and new_oid != zero:
+        return run_git(
+            repo,
+            "diff",
+            "--no-ext-diff",
+            "--no-textconv",
+            "--no-color",
+            "--unified=3",
+            old_oid,
+            new_oid,
+        ).decode("utf-8", "replace")
     old_text = "" if old_oid == zero else read_blob(repo, old_oid).decode("utf-8", "replace")
     new_text = "" if new_oid == zero else read_blob(repo, new_oid).decode("utf-8", "replace")
 

@@ -176,6 +176,9 @@ _JS_DEFINITIONS = f"""
 (generator_function_declaration name: (identifier) @name) @function
 (class_declaration name: (_) @name) @class
 (class_body (method_definition name: (_) @name) @function)
+(object (method_definition name: [(property_identifier) (string)] @name) @function)
+(object (pair key: [(property_identifier) (string)] @name
+  value: [(arrow_function) (function_expression)] @function))
 (program (lexical_declaration (variable_declarator name: (identifier) @name {_BOUND_FUNCTION}) @function))
 (program (variable_declaration (variable_declarator name: (identifier) @name {_BOUND_FUNCTION}) @function))
 (program (export_statement declaration: (lexical_declaration
@@ -357,7 +360,36 @@ def parse_file(path: str, data: bytes) -> ParsedFile | None:
         while outer.parent is not None and outer.parent.type in spec.wrappers:
             outer = outer.parent
 
-        found.setdefault(_key(node), (node, outer, text_of(captures["name"][0]), is_class))
+        name = text_of(captures["name"][0])
+        if spec.family == "js" and (
+            node.parent is not None and node.parent.type in ("object", "pair")
+        ):
+            container: Node | None = node.parent
+            if container is not None and container.type == "pair":
+                outer = container
+                container = container.parent
+            parts = [name.strip("\"'")]
+            while container is not None and container.type == "object":
+                binding: Node | None = container.parent
+                if binding is None:
+                    break
+                while binding is not None and binding.type in (
+                    "satisfies_expression",
+                    "as_expression",
+                    "parenthesized_expression",
+                ):
+                    binding = binding.parent
+                if binding is None:
+                    break
+                field = "key" if binding.type == "pair" else "name"
+                key = binding.child_by_field_name(field)
+                if binding.type not in ("pair", "variable_declarator") or key is None:
+                    parts.insert(0, f"object@{line_of(container.start_byte)}")
+                    break
+                parts.insert(0, text_of(key).strip("\"'"))
+                container = binding.parent
+            name = ".".join(parts)
+        found.setdefault(_key(node), (node, outer, name, is_class))
 
     owners: dict[tuple[int, int, str], Definition] = {}
     definitions: list[Definition] = []

@@ -111,3 +111,11 @@ Append one entry per stage or session. Newest at the bottom. Label every number 
 - Verify in the worktree passed. ruff check, ruff format, mypy (97 source files), pytest (572 passed in 259.89 s) and uv build exit 0. The fresh clone fails one release test because its uv cache is cold (D16). shellcheck is not installed; `bash -n` passes on the probe script.
 - Accepted six independent review flags. Corrected the baseline conclusion, probe exit status, install evidence, D15 evidence, voice limits and private-path count. The `say` example has non-silent audio; human listening and Kokoro remain untested.
 - No push and no PR. START-HERE.md requires the owner's yes.
+
+
+## Trustworthy facts, 2026-10-09
+
+The domain facts module supplies card, comment, and map totals. Static calls are qualified as evidence, not test coverage.
+Regressions include unsupported Go, TypeScript object handlers, browser-test paths, large-text counts, dependency risk, and the original librarySync decorator case.
+Proof lives under `artifacts/trustworthiness/2026-10-09/regressions/`. `stats-green.png` shows one test file for two test functions. `dense-green.png` and `dense-member-green.png` show readable groups and member names.
+The milestone is still in progress. Rendering, clean-cache installation, and human acceptance remain open.

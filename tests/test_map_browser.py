@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import os
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -11,13 +12,68 @@ from typing import Any
 import pytest
 
 from map_sample import CHECKOUT, CI, hostile_map, large_map, shop_map
+from prc.brief import Check, CheckState
 from prc.changemap import ChangeMap, Step
-from prc.presentation.map_layout import layout_map
+from prc.identity import to_jsonable
+from prc.presentation.card import compute_stats
+from prc.presentation.map_layout import folders_of, layout_map
 from prc.presentation.render_map import render_map
+from test_changemap import custom_map
 
 playwright = pytest.importorskip("playwright.sync_api")
 
 VIEWPORT = {"width": 1440, "height": 900}
+
+
+@pytest.mark.parametrize("state", ["pending", "failed"])
+def test_ci_state_is_honest_in_header_and_summary(open_map: Any, state: CheckState) -> None:
+    change = shop_map()
+    change = dataclasses.replace(
+        change, brief=dataclasses.replace(change.brief, checks=(Check("ci", state),))
+    )
+    opened = open_map(change)
+    opened.page.evaluate("window.prcTour.seek(window.prcTour.duration)")
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "artifacts/trustworthiness/2026-10-09/regressions"
+        / f"ci-{state}-{os.environ.get('PRC_TRUST_PHASE', 'green')}.png"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    opened.page.screenshot(path=str(path))
+    header = opened.page.locator("#stats").text_content()
+    summary = opened.page.locator("#summary").text_content()
+    assert f"CI {state}" in header
+    assert f"CI {state}" in summary
+    assert "CI passed" not in header + summary
+
+
+def test_statistics_match_card_for_multiple_tests_in_one_file(
+    open_map: Any, tmp_path: Path
+) -> None:
+    change = custom_map(
+        tmp_path,
+        {"m.py": b"def run():\n    return 0\n"},
+        {
+            "m.py": b"def run():\n    return 1\n",
+            "tests/test_m.py": b"from m import run\ndef test_a():\n    run()\ndef test_b():\n    run()\n",
+        },
+    )
+    stats = compute_stats(to_jsonable(change))
+    opened = open_map(change)
+    phase = os.environ.get("PRC_TRUST_PHASE", "green")
+    artifact = (
+        Path(__file__).resolve().parents[1]
+        / "artifacts/trustworthiness/2026-10-09/regressions"
+        / f"stats-{phase}.png"
+    )
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    opened.page.screenshot(path=str(artifact))
+    actual = opened.page.locator("#stats .stat").all_text_contents()
+    assert any(str(stats.tests_touched) in cell and "test file" in cell for cell in actual), actual
+    assert any(str(stats.call_sites) in cell and "call site" in cell for cell in actual), actual
+    assert opened.problems == []
+
+
 STATE = """() => ({
   world: document.getElementById("world").style.transform,
   caption: document.getElementById("caption").textContent,
@@ -224,12 +280,8 @@ def test_dense_map_draws_edges_only_for_the_hovered_symbol(
     for i in range(cards.count()):
         cards.nth(i).click()
 
-    on_screen = opened.page.evaluate(
-        """() => [...document.querySelectorAll("[data-node]")]
-          .filter((n) => { const r = n.getBoundingClientRect(); return r.top > 100 && r.bottom < 800 && r.left > 0 && r.right < 1400; })
-          .map((n) => n.dataset.node)"""
-    )
-    sid = next(e.source for e in change_map.edges if node(change_map, e.source)[12:-2] in on_screen)
+    sid = folders_of(change_map)[0].members[0]
+    cards.first.locator(".fmem").first.click()
     opened.page.hover(node(change_map, sid))
     opened.page.wait_for_timeout(300)
     lit = opened.page.locator("[data-edge].lit")

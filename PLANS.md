@@ -1,3 +1,33 @@
+# Trustworthy PR explanations, 2026-10-09
+
+## Summary
+
+Make facts consistent, coverage literal, rendering reliable and installation verifiable with an empty package cache.
+Use the assessment's D1 to D17 as regression cases. Prepare three real PRs for the user's acceptance review.
+The user is the only human reviewer. Outside reviewers are optional. Publication, license and package-name decisions stay separate.
+
+- [x] T1. Ground the fact and render paths; save design contracts and failing regression evidence.
+- [ ] T2. Fix parsing, classification, line counts, shared output statistics, GitHub errors and large-map readability.
+- [ ] T3. Fix line coverage, board preflight, layout, duration, preview commands and installed instructions.
+- [ ] T4. Prove clean-cache installation and verification; run full lint, typecheck, tests and build.
+- [ ] T5. Preserve three original PR diffs and PRC outputs at matching base and head commits for acceptance.
+- [ ] T6. Complete independent model review, inspect browser and video artifacts, document results and commit locally.
+
+Done predicate. Each assessment defect has a passing regression result or a tested and explicit supported limit.
+All output formats must use consistent facts and explicit coverage limits.
+Board checks must reject render-invalid input before encoding. Browser and video checks must save screenshots.
+An installed wheel must produce the offline example outside the source checkout with a fresh package cache.
+Each acceptance case binds its original diff and PRC output to the same base and head commits.
+Human acceptance remains open until the user supplies it. The milestone does not authorize publication.
+
+Throughput checkpoint. The parent owns contracts, shared facts, integration, live captures and acceptance artifacts.
+Workers own rendering and packaging in separate worktrees. Workers write tests before implementation.
+Each unit ends in its narrow check. Full package checks follow integration.
+Reuse the installed Chromium cache and run browsers headless. No production dependency is planned.
+
+Regression ownership. The parent owns D1 to D6, D8, D15 and D17.
+The rendering worker owns D7 and D9 to D13. The packaging worker owns D14 and D16.
+
 # Repository reconciliation, 2026-10-08
 
 ## Summary

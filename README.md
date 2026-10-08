@@ -117,11 +117,18 @@ Without those blobs, the renderer uses the stored diff for highlighting.
 
 prc computes symbols, call relationships, diff rows, and statistics from captured code and provider data.
 The parser supports Python, JavaScript, TypeScript, and TSX. Static call analysis can miss dynamic calls or use name-only matches.
+Card, comment, and map totals share one calculation. Tests touched counts changed test files, not test functions.
+Direct test evidence requires an exact live call from a test symbol. Removed calls and name matches do not qualify.
 A missing direct test link does not prove that a function has no test coverage.
+Unsupported code, including Go, remains in file counts and diffs. Each summary names missing symbol analysis.
+Git supplies text line totals, including large files that PRC cannot parse.
+Object methods and callbacks in named JavaScript and TypeScript objects receive qualified names.
 Stored maps are reconciled once. Board checks and all outputs use the same file classifications and computed facts.
 The card and comment lead with symbols displayed in the diff, then symbols cited in the board.
 They show a file-level entry when a quoted change falls outside a parsed symbol.
-Files named `e2e_*` count as tests, including diagnostic checks.
+Files named `e2e_*` and browser test folders count as tests, including diagnostic checks and large test files.
+Dependency lockfiles and dependency patches require review under the sensitivity rules.
+Dense maps start with folder groups. Group tours and member lists preserve readable labels.
 External-call warnings apply to code, including automation scripts, and exclude tests, diagnostics, and documentation.
 The card shows up to three risky files and reports additional files with an overflow count.
 
