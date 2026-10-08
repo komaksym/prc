@@ -100,3 +100,14 @@ Append one entry per stage or session. Newest at the bottom. Label every number 
 - Reused Playwright because Vercel agent-browser was unavailable in this session. No production dependency was added. Five recipes were seeded; this task does not prove every recipe or live GitHub acquisition.
 - Final independent recheck passed all four findings. Reports: `.audit/verification-skill-review.md` and `.audit/verification-skill-recheck.md`.
 - Release evaluation and final human comparison remain open. This skill does not establish release acceptance. No remote is configured; push and PR creation are skipped.
+
+## 2026-10-08. Public release readiness
+
+- Assessed whether prc is ready to release as a useful pull request visualizer. The report is `docs/launch/READINESS-2026-10-08.md`. The decision trail is `.audit/readiness-2026-10-08.tsv`.
+- Verdict is not ready (inferred from measured checks). A fresh public clone at `eeaba4b` installs on one Mac and fetches six unseen live pull requests. Output accuracy, usefulness evidence, the fresh-clone test suite, and license and distribution fail.
+- Two fresh agents with only the installed instructions finished the board workflow, and each logged many instruction problems. Two defects reproduced. `board check` passes a blank diff row that `explain` rejects, and `layout_warnings` misses a note over code.
+- Added `scripts/probe-public.sh`. It reruns the clone, install, offline example and boardless explain path. It starts with an empty uv cache, records the environment, and exits 1 if a step fails.
+- Proof, ignored by git, is in `artifacts/readiness/2026-10-08/` (u1 install, u3 live pull requests, u4 trials, u5 frames and repros, u9 report screenshots, tmp-copy). Key images are tracked in `docs/launch/evidence/readiness-2026-10-08/`.
+- Verify in the worktree passed. ruff check, ruff format, mypy (97 source files), pytest (572 passed in 259.89 s) and uv build exit 0. The fresh clone fails one release test because its uv cache is cold (D16). shellcheck is not installed; `bash -n` passes on the probe script.
+- Accepted six independent review flags. Corrected the baseline conclusion, probe exit status, install evidence, D15 evidence, voice limits and private-path count. The `say` example has non-silent audio; human listening and Kokoro remain untested.
+- No push and no PR. START-HERE.md requires the owner's yes.
