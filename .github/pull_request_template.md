@@ -18,4 +18,4 @@
 - None
 
 ## Visual summary
-- Post a visual only when it carries review information: a Mermaid diagram of the change, a before/after, or a diff map. Mermaid renders inline. Raster images must use a hosted URL GitHub can display, never a local path. Skip decoration on small diffs.
+- The visual must explain this PR: its problem, its change, its effect. Mermaid renders inline and is preferred for small diffs. Raster images must use a hosted URL GitHub can display, never a local path. Skip decoration on small diffs. Build raster visuals with the baoyu-infographic skill workflow and OCR-check every label before posting.
