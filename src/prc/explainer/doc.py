@@ -12,6 +12,7 @@ import html
 from pathlib import Path
 from typing import Any
 
+from prc.explainer.preflight import cited_refs, line_coverage
 from prc.explainer.render import ASSETS, board_json
 
 # Fixed template strings: the only chrome the doc may add. Every other string
@@ -27,6 +28,8 @@ TEMPLATE_STRINGS = frozenset(
         "Files and symbols this board leaves out.",
         "Changed files not shown",
         "Changed symbols not shown",
+        "Changed lines not shown",
+        "Some changed lines have no line refs and cannot be quoted.",
         "Everything changed is on screen.",
         "Built by prc explain from the checked board.",
     }
@@ -66,20 +69,9 @@ def receipt_url(
 def uncovered(
     board: dict[str, Any], m: dict[str, Any]
 ) -> tuple[list[tuple[str, str]], list[dict[str, Any]]]:
-    """Changed files and symbols the board does not show. Same rule as board coverage."""
+    """Changed files and symbols the board does not show. Same refs as board coverage."""
     kinds = {f["path"]: f["kind"] for f in m["files"]}
-    shown: set[tuple[str, int]] = set()
-    for s in board["scenes"]:
-        for c in s.get("cite", []):
-            path, n = c["line"].rsplit(":", 1)
-            shown.add((path, int(n)))
-        for it in s.get("items", []):
-            if "cite" in it:
-                path, n = it["cite"].rsplit(":", 1)
-                shown.add((path, int(n)))
-        if s["type"] == "diff":
-            for r in s["lines"]:
-                shown.add((s["file"], int(r["ref"] if isinstance(r, dict) else r)))
+    shown = cited_refs(board)
 
     def hit(sym: dict[str, Any]) -> bool:
         for path, n in shown:
@@ -160,10 +152,29 @@ def _scene_section(board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str
 
 def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
     files, syms = uncovered(board, m)
-    if not files and not syms:
+    cov = line_coverage(board, m)
+    missing = cov["missing"]
+    unavail = cov["unavailable"]
+    if not missing and not files and not syms and not unavail:
         body = "<p>Everything changed is on screen.</p>"
     else:
         parts = ["<p>Files and symbols this board leaves out.</p>"]
+        if unavail:
+            parts.append("<p>Some changed lines have no line refs and cannot be quoted.</p>")
+        if missing:
+            owner_repo = m["pr"].split("#")[0]
+            items = []
+            for ref in missing:
+                path, n = ref.rsplit(":", 1)
+                removed = n.startswith("-")
+                num = abs(int(n))
+                href = receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, num, removed)
+                items.append(
+                    f'<li><a class="leftout" href="{html.escape(href)}">'
+                    f"{html.escape(path)}#L{num}</a></li>"
+                )
+            rows = "\n".join(items)
+            parts.append(f'<h3>Changed lines not shown</h3>\n<ul class="receipts">\n{rows}\n</ul>')
         if files:
             rows = "\n".join(
                 f"<li><code>{html.escape(p)}</code> <span>{html.escape(k)}</span></li>"

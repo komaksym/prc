@@ -15,6 +15,7 @@ from prc.explainer import highlight
 from prc.explainer.check import verify_board
 from prc.explainer.diffrows import pair_rows, wrap_row
 from prc.explainer.jointest import run as join_run
+from prc.explainer.preflight import join_preflight
 from prc.explainer.timing import fit_sentences
 from prc.explainer.voice import Backend
 
@@ -192,6 +193,9 @@ def fill(
 
 def join_gate(board: dict[str, Any], m: dict[str, Any], out: Path) -> None:
     """Write tokens_s<i>.json per diff scene and run the join test. Stops the build on failure."""
+    problems = join_preflight(board, m)
+    if problems:
+        raise RenderError("join gate failed:\n" + "\n".join(problems))
     for i, s in enumerate(board["scenes"]):
         if s["type"] != "diff":
             continue

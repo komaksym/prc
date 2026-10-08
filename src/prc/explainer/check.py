@@ -8,6 +8,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from prc.explainer.preflight import (
+    coverage_summary,
+    join_preflight,
+    line_coverage,
+    note_risks,
+    silent_estimate,
+)
+
 CHANGED = ("added", "modified")
 ROWS = 12
 VERBS: dict[str, set[str]] = {
@@ -277,6 +285,10 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             for verb in ("l1", "l2", "cmd"):
                 if verb not in shown:
                     ck.fail(f"scene {i}: outro needs a {verb!r} cue")
+            if "fine" not in s:
+                ck.fail(
+                    f"scene {i}: outro needs a fine line; without it the video prints undefined"
+                )
         for c in s.get("cues", []):
             verb = c.get("do", "claim" if "claim" in c else None)
             if verb not in VERBS[s["type"]]:
@@ -401,6 +413,9 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             else:
                 verdicts[i] = ("NOT FOUND IN THE CODE", "bad")
 
+    for problem in join_preflight(board, m):
+        ck.fail(problem)
+
     changed = {
         s["id"]
         for s in m["symbols"]
@@ -422,6 +437,16 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
         "receipts": ck.receipts,
     }
 
+    cov = line_coverage(board, m)
+    facts["estimate_none_seconds"] = silent_estimate(board)
+    facts["changed_total"] = cov["total"]
+    facts["changed_shown"] = cov["shown"]
+    facts["changed_missing"] = cov["missing"]
+    facts["changed_known"] = cov["known"]
+    facts["changed_unavailable"] = cov["unavailable"]
+    facts["coverage_summary"] = coverage_summary(cov)
+    facts["note_risks"] = note_risks(board, m)
+
     for s in board["scenes"]:
         for a in s.get("assert", []):
             want = facts[a["equals_fact"]] if "equals_fact" in a else a["equals"]
@@ -439,6 +464,11 @@ def main(argv: list[str]) -> int:
     m = json.loads(Path(argv[1]).read_text())
     facts = verify_board(board, m)
     print(f"{facts['receipts']} receipts verified")
+
+    print(f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s")
+    print(facts["coverage_summary"])
+    for risk in facts["note_risks"]:
+        print(f"warning: {risk}")
 
     return 0
 

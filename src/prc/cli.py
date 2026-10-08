@@ -144,7 +144,7 @@ def build_parser() -> argparse.ArgumentParser:
     board_sub = board.add_subparsers(dest="board_command", required=True)
     board_sub.add_parser("guide", help="print the board-writing guide")
     board_cmds = {}
-    for name in ("show", "find", "coverage", "check"):
+    for name in ("show", "find", "coverage", "check", "preview"):
         cmd = board_sub.add_parser(name)
         cmd.add_argument("--source", default=None)
         cmd.add_argument("--map", type=Path, default=None)
@@ -159,6 +159,10 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmds["find"].add_argument("--path", default=None, help="only files with this in the path")
     board_cmds["coverage"].add_argument("board", type=Path)
     board_cmds["check"].add_argument("board", type=Path)
+    board_cmds["preview"].add_argument("board", type=Path)
+    board_cmds["preview"].add_argument(
+        "--out", type=Path, default=Path("artifacts/preview"), help="stills output folder"
+    )
 
     skill = sub.add_parser("skill", help="install the board-writer skill for your agent")
     skill_sub = skill.add_subparsers(dest="skill_command", required=True)
@@ -339,11 +343,12 @@ def _main(argv: list[str] | None = None) -> int:
 
             return 0
 
+        repo: Path | None = None
         if args.map is not None:
             used = json.loads(args.map.read_text())
         elif args.source:
             source, ref = _resolve(args.source, args.store)
-            used, _, _, _ = load_map_dict(
+            used, _, _, repo = load_map_dict(
                 source, ref, _clock(args.source, args.clock_offset), policy, None
             )
         else:
@@ -376,6 +381,35 @@ def _main(argv: list[str] | None = None) -> int:
             return 2
 
         print(f"{facts['receipts']} receipts verified")
+
+        print(
+            f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s"
+        )
+        print(facts["coverage_summary"])
+        for risk in facts["note_risks"]:
+            print(f"warning: {risk}")
+
+        if args.board_command == "preview":
+            from prc.explainer import render as explain_render
+            from prc.explainer.voice import NoneBackend
+
+            out_dir = args.out / args.board.stem
+            git_dir = str(repo) if repo is not None and repo.exists() else None
+            try:
+                rendered = explain_render.render(
+                    board_doc,
+                    used,
+                    facts,
+                    out_dir,
+                    NoneBackend(),
+                    git_dir,
+                    keys_only=True,
+                )
+            except explain_render.RenderError as error:
+                raise SystemExit(f"prc board preview: {error}") from error
+            print(f"{len(board_doc['scenes']) * 2} stills in {out_dir / 'keys'}")
+            for warning in rendered.layout_warnings:
+                print(f"warning: {warning}")
 
         return 0
 

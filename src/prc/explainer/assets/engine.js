@@ -484,7 +484,7 @@
     const wrap = D('outro', null, root);
     const l1 = D('l1', esc(s.l1), wrap), l2 = D('l2', esc(s.l2), wrap);
     const cmd = D('cmd', `<b>prc map</b> ${esc(s.url)}`, wrap);
-    const fine = D('fine', esc(s.fine), wrap);
+    const fine = D('fine', esc(s.fine == null ? '' : s.fine), wrap);
     const at = name => cueT(s, q => q.do === name);
     return t => {
       l1.style.opacity = prog(t, at('l1'), 0.5);
@@ -560,8 +560,17 @@
       const el = D('dnote', fmt(c.text), box);
       el.style.color = tone; el.style.borderColor = tone;
       const lnW = R.el.querySelector('.ln') ? R.el.querySelector('.ln').getBoundingClientRect().width : 0;
-      const x = Math.min(lnW + 56 + lastLineW(R) + 32, 1700 - el.offsetWidth - 20);
-      const N = { R, el, x, t: c.t, until: c.until != null ? c.until : Infinity, tone };
+      const want = lnW + 56 + lastLineW(R) + 32;
+      const limit = 1700 - el.offsetWidth - 20;
+      // A clamped note would sit on the code: drop it under its row instead.
+      const clamped = want > limit + 1;
+      const stack = R.drop ? R.drop / 56 : 0;
+      const N = { R, el, x: clamped ? 120 : want, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: clamped, stack };
+      if (clamped) {
+        R.drop = (R.drop || 0) + 56;
+        R.h += 56;
+        el.dataset.moved = '1';
+      }
       R.notes.push(N);
       return N;
     });
@@ -603,9 +612,15 @@
       });
       box.style.height = y + TOP + 'px';
       notes.forEach(N => {
+        const o = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * clamp(N.R.hk * 2 - 1);
         N.el.style.left = N.x + 'px';
-        N.el.style.top = N.R.y + N.R.h * N.R.hk - RH / 2 + 'px';
-        N.el.style.opacity = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * clamp(N.R.hk * 2 - 1);
+        N.el.style.opacity = o;
+        if (N.below) {
+          N.el.style.transform = 'none';
+          N.el.style.top = (N.R.y + (N.R.h - (N.R.drop || 0)) * N.R.hk + 8 + N.stack * 56) + 'px';
+        } else {
+          N.el.style.top = N.R.y + N.R.h * N.R.hk - RH / 2 + 'px';
+        }
       });
     };
   };
@@ -657,6 +672,30 @@
             const edge = r.bottom > SAFE.bottom ? `bottom ${Math.round(r.bottom)}px (captions start at ${SAFE.bottom})` : r.right > SAFE.right ? `right edge ${Math.round(r.right)}px` : r.left < SAFE.left ? `left edge ${Math.round(r.left)}px` : r.top < SAFE.top ? `top ${Math.round(r.top)}px` : null;
             const msg = edge && `scene ${s.i}: ${el.className.split(' ')[0]} "${el.textContent.trim().slice(0, 32)}" leaves the frame at the ${edge}`;
             if (msg && !window.lint.includes(msg)) window.lint.push(msg);
+          });
+        });
+        root.querySelectorAll('.dnote[data-moved]').forEach(el => {
+          const msg = `scene ${s.i}: note "${el.textContent.trim().slice(0, 32)}" moved below the code to avoid overlap`;
+          if (!window.lint.includes(msg)) window.lint.push(msg);
+        });
+        times.forEach(t => {
+          update(t);
+          root.querySelectorAll('.dnote').forEach(el => {
+            if (parseFloat(getComputedStyle(el).opacity) < 0.05) return;
+            const r = el.getBoundingClientRect();
+            const covers = [...root.querySelectorAll('.drow')].some(row => {
+              if (parseFloat(getComputedStyle(row).opacity) < 0.05) return false;
+              const ct = row.querySelector('.ct');
+              if (!ct) return false;
+              const c = ct.getBoundingClientRect();
+              const w = Math.min(r.right, c.right) - Math.max(r.left, c.left);
+              const h = Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top);
+              return w > 12 && h > 12;
+            });
+            if (covers) {
+              const msg = `scene ${s.i}: note "${el.textContent.trim().slice(0, 32)}" overlaps code`;
+              if (!window.lint.includes(msg)) window.lint.push(msg);
+            }
           });
         });
       });

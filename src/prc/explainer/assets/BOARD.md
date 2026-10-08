@@ -1,6 +1,6 @@
 # Writing a storyboard for a pull request video
 
-You write one JSON file, the board. `build.py` turns it into a narrated 1920×1080 video: a Kokoro voice reads your sentences, captions show them, and an engine animates your scenes. `check.py` refuses any board that puts something on screen the pull request does not contain.
+You write one JSON file, the board. `prc explain --board` turns it into a narrated 1920×1080 video: a voice reads your sentences, captions show them, and an engine animates your scenes. `prc board check` refuses any board that puts something on screen the pull request does not contain.
 
 The video sits in the pull request description on GitHub. The viewer is the reviewer: a developer who has never seen this pull request, watches once before reading the diff, maybe muted. After about a minute they should be able to say what behavior changed, for whom, which lines of code do it, and where to start reviewing. The video is a review aid, not an advertisement. Success is how well the reviewer understands the pull request, nothing else.
 
@@ -11,14 +11,14 @@ The video sits in the pull request description on GitHub. The viewer is the revi
 3. One idea per scene. One to three sentences per scene, each under 20 words, in plain words. No hype words, no slogans, no taglines, no wordplay. Describe the pull request; do not sell it.
 4. Never invent. Every name, value, label and count on screen comes from the diff. If the PR adds no tests, do not mention tests. Counts come from checker facts, never typed by you.
 5. Show code once, twice at most, with a diff scene of the lines that carry the change.
-6. 45 to 75 seconds in total. `check.py` prints an estimate.
+6. 45 to 75 seconds in total. `prc board check` prints a silent estimate; stay inside the range before rendering.
 7. Close with the evidence (the tests the PR adds, when it adds any), then the outro, which hands the reviewer off to the diff.
 8. Narration may simplify, but each sentence must be something the cited lines show. When unsure, say less.
 
 ## The board
 
 ```json
-{ "name": "mdp12", "scenes": [ { "type": "title", "kicker": "Open pull request", "say": ["..."] }, ... ] }
+{ "name": "myboard", "scenes": [ { "type": "title", "kicker": "Merged pull request", "say": ["..."] }, ... ] }
 ```
 
 Every scene has a `type`, a `say` list and usually `cues`. Optional fields are `cite`, `hold` and `assert`.
@@ -49,7 +49,7 @@ Notes also take `until`, in the same forms, to disappear.
 
 ### title
 
-`{"type": "title", "kicker": "Open pull request", "say": [...]}`. The engine fills in the PR title, size and number. No cues.
+`{"type": "title", "kicker": "Merged pull request", "say": [...]}`. The engine fills in the PR title, size and number. No cues. Write the real state of the pull request in the kicker (Open or Merged); never copy the example word for word.
 
 ### groups, the behavior picture
 
@@ -98,7 +98,7 @@ Cues:
 
 You list line refs, never code. The text comes from the diff. "N" is a line after the change (added or unchanged) and "-N" is a removed line. List refs top to bottom in diff order, which puts a removed line before the line that replaces it. Skipped lines show as a ⋯ row. At most 12 rows are allowed, ⋯ rows included, and the code box must end above the captions: the font shrinks to fit (22 to 40 px) and the build warns below 28 px, so prefer fewer and shorter lines.
 
-The scene opens on the old code: unchanged lines plus removed lines. At step k the removed lines of step k tint red and stay on screen, and the added lines of step k slide in beneath them in green. A removed line is paired with its replacement and the changed words are marked in both. Long lines wrap with a hanging indent. Each row shows its line number, so the reviewer can find it in the diff. Added and removed lines take step 1 unless you set `step`. `step: 0` on an added line shows it from the start, which suits a PR that only adds code. Every step number in use needs exactly one `step` cue. A `note` pins a callout to one listed line, by its ref.
+The scene opens on the old code: unchanged lines plus removed lines. At step k the removed lines of step k tint red and stay on screen, and the added lines of step k slide in beneath them in green. A removed line is paired with its replacement and the changed words are marked in both. Long lines wrap with a hanging indent. Each row shows its line number, so the reviewer can find it in the diff. Added and removed lines take step 1 unless you set `step`. `step: 0` on an added line shows it from the start, which suits a PR that only adds code. Every step number in use needs exactly one `step` cue. A `note` pins a callout to one listed line, by its ref. Keep notes under 30 characters. A note that cannot fit beside its line moves below the row and the check flags it, so pick short lines for noted rows.
 
 ### list
 
@@ -132,7 +132,7 @@ Give each card a `card` cue with its zero-based `i`. The checker rejects any car
 
 ### outro
 
-Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible.
+Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible. Always include `fine`, small print under the command; without it the checker fails the board because the video would print undefined.
 
 ```json
 { "type": "outro", "l1": "first line", "l2": "second line", "fine": "small print", "nocap": true,
@@ -144,11 +144,13 @@ Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues beca
 
 ## Tools
 
-Run these from the `explainer` directory.
+All commands read the map you pass.
 
-- `python3 show.py <map.json> [path-substring ...]` prints the diff with the ref of every line.
-- `python3 find.py <map.json> "needle" [...] [--path substr]` prints the lines that contain a needle, with refs.
-- `python3 check.py <board.json> <map.json>` checks the board. Fix what it prints and run it again until it prints "receipts verified".
-- Optional preview: `<python with playwright> build.py <board.json> <map.json> out/<name>-keys --keys-only` renders two stills per scene into `out/<name>-keys/keys/` (`NNa` mid-scene, `NNb` near the scene's end) and prints `layout:` lines for boxes that run into the captions. It needs speech and a headless browser, so run it with the sandbox disabled. Look at the stills with the Read tool.
+- `prc board show --map <map.json> [path-substring ...]` prints the diff with the ref of every line.
+- `prc board find --map <map.json> "needle" [...] [--path substr]` prints the lines that contain a needle, with refs.
+- `prc board coverage <board.json> --map <map.json>` prints how many changed lines are on screen.
+- `prc board check <board.json> --map <map.json>` checks the board. Fix what it prints and run it again until it prints receipts verified, a silent estimate, and the changed-line coverage.
+- `prc board preview <board.json> --map <map.json> [--out dir]` renders two stills per scene into `<out>/<name>/keys/` (`NNa` mid-scene, `NNb` near the scene's end) without encoding a video, and prints layout warnings. It needs the cached Chromium. Open the stills in an image viewer.
+- `prc explain --source <PR-URL> --board <board.json> --voice none --out <dir>` renders the full silent video.
 
-`boards/mdp17b.json` is the reference board, with phrase cues, automatic group layout and a diff scene. `boards/mdp17.json` and `boards/mdp3.json` are older and place groups in pixels. Do not copy their `x`, `y` or `w`.
+A good reference board uses phrase cues, automatic group layout, and one diff scene of the lines that carry the change. Never place groups in pixels: give columns, rows, and items, not `x`, `y` or `w`.

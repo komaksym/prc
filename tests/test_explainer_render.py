@@ -84,6 +84,7 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
                 "type": "outro",
                 "l1": "First line with </script> in it.",
                 "l2": "Second line.",
+                "fine": "Small print.",
                 "say": ["Closing out."],
                 "cues": [
                     {"at": [0, 0.0], "do": "l1"},
