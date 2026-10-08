@@ -1,9 +1,8 @@
-"""Install the prc-explain board-writer skill for the user's coding agent.
+"""Board-writer skill installers for Claude and Codex.
 
-Claude reads skills from ``<dest>/prc-explain/SKILL.md``. Codex reads the
-``AGENTS.md`` section this module writes. Both installers print the path
-they wrote and never touch the user's real ``~/.claude`` unless the caller
-passes it as ``dest`` explicitly.
+SKILL.md beside this module is the canonical instruction source. Both
+installed outputs derive from it: the Claude installer ships the file,
+and codex_section() renders the same body minus its YAML frontmatter.
 """
 
 from __future__ import annotations
@@ -14,10 +13,30 @@ SKILL_NAME = "prc-explain"
 SECTION_START = "<!-- prc-explain:start -->"
 SECTION_END = "<!-- prc-explain:end -->"
 
+# Canonical metadata mirrored from SKILL.md; the instruction prose itself
+# always comes from the file, never from a second hand-written copy here.
+PRODUCT_OUTPUTS = ("map.html", "video.mp4", "doc.html", "card.png", "comment.md")
+
 
 def skill_source() -> Path:
     """The SKILL.md shipped inside this package."""
     return Path(__file__).resolve().parent / "SKILL.md"
+
+
+def _canonical_text() -> str:
+    """The canonical instruction text. Separate seam so tests can vary it."""
+    return skill_source().read_text()
+
+
+def codex_body_for(canonical: str) -> str:
+    """The Codex section body derived from canonical SKILL.md text."""
+    lines = canonical.splitlines()
+    if lines and lines[0].strip() == "---":
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                lines = lines[i + 1 :]
+                break
+    return "\n".join(lines).strip() + "\n"
 
 
 def default_skills_dir() -> Path:
@@ -37,43 +56,14 @@ def install_claude(dest: Path) -> Path:
     """Copy SKILL.md to ``dest/prc-explain/SKILL.md``. Returns the path written."""
     written = dest / SKILL_NAME / "SKILL.md"
     written.parent.mkdir(parents=True, exist_ok=True)
-    written.write_text(skill_source().read_text())
+    written.write_text(_canonical_text())
 
     return written
 
 
 def codex_section() -> str:
-    """The AGENTS.md section for Codex: the same 9 steps, condensed."""
-    return f"""{SECTION_START}
-## prc-explain: PR explainer board writer
-
-You write one JSON file, the board. `prc` turns it into a narrated
-1920x1080 video plus a map page, and checks every fact in it. `prc` never
-posts anything to GitHub; the files stay local. Describe the pull
-request; do not sell it. One idea per scene, sentences under 20 words.
-
-1. Render the deterministic outputs: `prc explain --source <PR URL>`
-   (add `--map <stored map.json>` when GitHub is unreachable). It prints
-   the `out` folder with `map.json`, the only source of truth below.
-2. Run `prc board guide` and follow it: title, groups before/after, one
-   diff scene, one evidence scene, outro. 45 to 75 seconds.
-3. Pick lines with `prc board show --map map.json` and
-   `prc board find --map map.json "needle"`. List refs, never code.
-4. Write `board.json`. Every `match` is an exact substring of its line.
-   Never type a number on screen; use facts (`{{tests_added}}`) or leave
-   `big` out. Titles, subs and notes are unchecked, so keep them true.
-   When unsure, say less.
-5. Run `prc board check board.json --map map.json` until it passes
-   (`<n> receipts verified`); fix each error line and re-run.
-6. Run `prc board coverage board.json --map map.json`; say what is left out.
-7. Render: `prc explain --source <PR URL> --board board.json`
-   (plus `--map` when step 1 needed it).
-8. Review frames at 800 px wide (`ffmpeg -ss <t> -i video.mp4 -frames:v 1
-   -vf scale=800:-1 f.png`), fix unreadable text, repeat from step 5.
-9. Report the out folder (`map.json`, `map.html`, `board.json`,
-   `video.mp4`, `run.json`) and say prc posted nothing.
-{SECTION_END}
-"""
+    """The AGENTS.md section for Codex, derived from the canonical SKILL.md."""
+    return f"{SECTION_START}\n{codex_body_for(_canonical_text())}{SECTION_END}\n"
 
 
 def install_codex(dest: Path) -> Path:

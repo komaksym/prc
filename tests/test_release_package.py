@@ -62,7 +62,7 @@ def test_generated_eval_audio_stays_out_of_git(tmp_path: Path) -> None:
 
 def test_installed_video_extra_can_use_the_available_browser(tmp_path: Path) -> None:
     build = subprocess.run(
-        ["uv", "build", "--offline", "--wheel", "--out-dir", str(tmp_path / "dist")],
+        ["uv", "build", "--wheel", "--out-dir", str(tmp_path / "dist")],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -72,20 +72,49 @@ def test_installed_video_extra_can_use_the_available_browser(tmp_path: Path) -> 
     env = tmp_path / "env"
     subprocess.run(["uv", "venv", "--python", sys.executable, str(env)], check=True)
     wheel = next((tmp_path / "dist").glob("prc-*.whl"))
+    exported = subprocess.run(
+        [
+            "uv",
+            "export",
+            "--frozen",
+            "--no-dev",
+            "--extra",
+            "video",
+            "--no-hashes",
+            "--no-emit-project",
+            "--output-file",
+            str(tmp_path / "dist" / "wheel-requirements.txt"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert exported.returncode == 0, exported.stderr
     installed = subprocess.run(
-        ["uv", "pip", "install", "--offline", "--python", str(env / "bin/python"),
+        ["uv", "pip", "install", "--python", str(env / "bin/python"),
+         "--requirement", str(tmp_path / "dist" / "wheel-requirements.txt"),
          f"{wheel}[video]"],
         capture_output=True,
         text=True,
         check=False,
     )  # fmt: skip
     assert installed.returncode == 0, installed.stderr
+    import os
+
+    doctor_env = dict(os.environ)
+    cached = doctor_env.get("PLAYWRIGHT_BROWSERS_PATH") or str(
+        ROOT / "artifacts" / "release" / "browser-cache"
+    )
+    if Path(cached).exists():
+        doctor_env["PLAYWRIGHT_BROWSERS_PATH"] = cached
     doctor = subprocess.run(
         [str(env / "bin/prc"), "doctor"],
         cwd=tmp_path,
         capture_output=True,
         text=True,
         check=False,
+        env=doctor_env,
     )
     proof = ROOT / "artifacts/e2e/wheel"
     proof.mkdir(parents=True, exist_ok=True)
@@ -96,7 +125,7 @@ def test_installed_video_extra_can_use_the_available_browser(tmp_path: Path) -> 
 
 def test_source_archive_contains_only_release_files(tmp_path: Path) -> None:
     build = subprocess.run(
-        ["uv", "build", "--offline", "--sdist", "--out-dir", str(tmp_path)],
+        ["uv", "build", "--sdist", "--out-dir", str(tmp_path)],
         cwd=ROOT,
         capture_output=True,
         text=True,

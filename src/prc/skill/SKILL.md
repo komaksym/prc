@@ -156,8 +156,9 @@ Add `--map <stored map.json>` when step 1 needed it. Pass `--out` as an
 absolute path: a relative one currently crashes the renderer before the
 first frame. A failed check stops the render with exit 2 and one line per
 error: go back to step 5.
-On success the command prints the `out` folder with the 5 files:
-`map.json`, `map.html`, `board.json`, `video.mp4` and `run.json`.
+On success the command prints the `out` folder with the five product outputs
+(`map.html`, `video.mp4`, `doc.html`, `card.png`, `comment.md`) plus evidence
+(`map.json`, `board.json`, `run.json`).
 
 ## 8. Review your own frames and fix them
 
