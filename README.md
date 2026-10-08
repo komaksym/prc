@@ -120,6 +120,7 @@ The parser supports Python, JavaScript, TypeScript, and TSX. Static call analysi
 Card, comment, and map totals share one calculation. Tests touched counts changed test files, not test functions.
 Direct test evidence requires an exact live call from a test symbol. Removed calls and name matches do not qualify.
 A missing direct test link does not prove that a function has no test coverage.
+Symbol and call totals describe parsed symbols and resolved calls. A zero count does not prove no code changed.
 Unsupported code, including Go, remains in file counts and diffs. Each summary names missing symbol analysis.
 Git supplies text line totals, including large files that PRC cannot parse.
 Object methods and callbacks in named JavaScript and TypeScript objects receive qualified names.

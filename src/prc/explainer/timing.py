@@ -141,7 +141,7 @@ def scene_windows(board: dict[str, Any]) -> list[tuple[float, float]]:
     wins: list[tuple[float, float]] = []
     cursor = 0.0
     for s in board.get("scenes", []):
-        ds = [sentence_seconds(t) for t in spoken(s)]
+        ds = [sentence_seconds(t) for t in spoken(s)] if "say" in s else []
         end = cursor + LEAD + sum(ds) + GAP * (len(ds) - 1) + TAIL + float(s.get("hold", 0))
         wins.append((cursor, end))
         cursor = end

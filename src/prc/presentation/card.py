@@ -239,7 +239,7 @@ def _file_fallbacks(
     status = {f.get("path"): f.get("status") for f in m.get("files", []) if isinstance(f, dict)}
     return [
         LookEntry(
-            f"file:{f['path']}", "top-level change", f["path"], status.get(f["path"]) or "modified"
+            f"file:{f['path']}", "file-level change", f["path"], status.get(f["path"]) or "modified"
         )
         for f in _brief_of(m, brief).get("files", [])
         if f.get("kind") == "code"
@@ -285,8 +285,8 @@ def build_card_html(
     stats_html = "".join(
         [
             _stat(stats.files, "files"),
-            _stat(stats.symbols_changed, "symbols changed"),
-            _stat(stats.call_sites, "call sites"),
+            _stat(stats.symbols_changed, "parsed symbols changed"),
+            _stat(stats.call_sites, "resolved call sites"),
             _stat(stats.tests_touched, "test files touched"),
             _stat(
                 stats.ci_text,
@@ -295,7 +295,7 @@ def build_card_html(
             ),
             _stat(
                 stats.untested_total,
-                "no direct test evidence",
+                "parsed code without test evidence",
                 "" if stats.untested_total == 0 else " warn",
             ),
         ]

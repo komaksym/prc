@@ -3,24 +3,13 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 DATA = Path(__file__).resolve().parent / "data" / "explainer"
-ACCEPT = (
-    Path(__file__).resolve().parent.parent
-    / "artifacts"
-    / "trustworthiness"
-    / "2026-10-09"
-    / "acceptance"
-)
-os.environ.setdefault(
-    "PLAYWRIGHT_BROWSERS_PATH",
-    "/Users/koval/dev/prc/artifacts/release/browser-cache",
-)
+ACCEPT = Path(__file__).resolve().parent / "data" / "trustworthiness"
 
 
 def tiny_map() -> dict[str, Any]:
@@ -209,7 +198,7 @@ def test_highlight_hunk_fallback_survives_trailing_blank_lines() -> None:
             ],
         }
     ]
-    rows = [
+    rows: list[dict[str, Any]] = [
         {"ref": "18", "op": " ", "num": 18},
         {"ref": "21", "op": "+", "num": 21},
         {"ref": "22", "op": "+", "num": 22},

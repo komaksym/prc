@@ -400,6 +400,7 @@ def _main(argv: list[str] | None = None) -> int:
             from prc.explainer.voice import NoneBackend
 
             out_dir = args.out / args.board.stem
+            git_dir: str | None
             if args.git_dir is not None:
                 git_dir = str(args.git_dir)
             else:

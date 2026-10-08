@@ -175,8 +175,8 @@
     };
     add(stats,
       stat(STATS.files, STATS.files === 1 ? "file" : "files"),
-      stat(STATS.symbols_changed, STATS.symbols_changed === 1 ? "symbol changed" : "symbols changed"),
-      stat(callSites, "call sites affected"),
+      stat(STATS.symbols_changed, STATS.symbols_changed === 1 ? "parsed symbol changed" : "parsed symbols changed"),
+      stat(callSites, "resolved call sites"),
       stat(testsTouched, testsTouched === 1 ? "test file touched" : "test files touched",
         testsTouched ? "" : "warn"),
       stat(ci.word, ci.label, ci.cls, true),
@@ -934,10 +934,10 @@
     summary.replaceChildren();
     const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
     const grid = add(el("div", "sum-grid"),
-      cell(STATS.symbols_changed, STATS.symbols_changed === 1 ? "symbol changed" : "symbols changed"),
+      cell(STATS.symbols_changed, STATS.symbols_changed === 1 ? "parsed symbol changed" : "parsed symbols changed"),
       cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
       cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
-      cell(callSites, "call sites affected"),
+      cell(callSites, "resolved call sites"),
       cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
       cell(ci.word, ci.failed.length ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : `${ci.label} on the head commit`, ci.cls));
     const toured = new Set(MAP.tour.flatMap((step) => step.focus));

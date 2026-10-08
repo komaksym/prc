@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_OUTPUTS = ("map.html", "video.mp4", "doc.html", "card.png", "comment.md")
 EVIDENCE_FILES = ("map.json", "board.json", "run.json")
@@ -39,7 +41,7 @@ def test_d14_canonical_checked_scope_is_accurate() -> None:
     assert "cited code and explicit numeric assertions" in text
 
 
-def test_d14_codex_body_reflects_canonical_edits(monkeypatch) -> None:
+def test_d14_codex_body_reflects_canonical_edits(monkeypatch: pytest.MonkeyPatch) -> None:
     from prc import skill
 
     sentinel = "SENTINEL_CANONICAL_EDIT_9f3k"
@@ -49,7 +51,7 @@ def test_d14_codex_body_reflects_canonical_edits(monkeypatch) -> None:
     assert sentinel in skill.codex_section(), "codex body is not derived from SKILL.md"
 
 
-def test_d14_installed_agents_share_exact_body(tmp_path) -> None:
+def test_d14_installed_agents_share_exact_body(tmp_path: Path) -> None:
     from prc import skill
     from prc.skill import SECTION_END, SECTION_START
 

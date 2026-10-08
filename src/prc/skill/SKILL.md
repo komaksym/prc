@@ -20,6 +20,9 @@ not sell it. One idea per scene, one to three sentences per scene, each
 under 20 words, in plain words. No hype words, no slogans, no taglines,
 no wordplay.
 
+Counts describe parsed symbols and resolved calls. Unsupported languages can leave that analysis incomplete.
+Do not infer no tests from zero parsed test functions. Check the changed test files and original diff.
+
 ## 1. Render the deterministic outputs and read `map.json`
 
 Run `prc doctor` first. Video and card rendering require Chromium and ffmpeg.

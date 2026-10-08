@@ -26,9 +26,14 @@ def test_unsupported_language_reports_limits_instead_of_no_changes(tmp_path: Pat
 
     assert "No code symbols changed" not in text + html
     assert "unsupported" in (text + html).lower()
+    assert "parsed symbols changed" in html
     assert "main.go" in text
     assert "```mermaid" not in text
     assert (change.files[0].added, change.files[0].removed) == (1, 1)
+    board = {"scenes": [{"type": "diff", "file": "main.go", "lines": ["2"]}]}
+    quoted = build_card_html(data, board=board)
+    assert "file-level change" in quoted
+    assert "top-level change" not in quoted
 
 
 def test_object_handlers_have_distinct_names_and_own_their_calls() -> None:
