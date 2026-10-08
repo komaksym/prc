@@ -26,7 +26,7 @@ from prc.pipeline import (
 )
 from prc.presentation import map_video
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
-from prc.source import PullRequestSource
+from prc.source import PullRequestSource, SourceError
 from prc.store import StaleExpectation, Store
 from prc.verification import EligibilityPolicy
 
@@ -181,6 +181,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except SourceError as error:
+        print(f"prc: {error}", file=sys.stderr)
+
+        return 1
+
+
+def _main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     policy = EligibilityPolicy()
 

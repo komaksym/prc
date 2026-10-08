@@ -183,7 +183,11 @@ class BriefResult:
 def _acquire_brief(
     source: PullRequestSource, ref: PrRef, clock: Clock, policy: EligibilityPolicy
 ) -> tuple[Acquisition, Path, Brief]:
+    from prc.source import SourceError
+
     bundle = capture_bundle(source, ref, clock)
+    if bundle.consistency != "stable":
+        raise SourceError(bundle.gaps[-1])
     repo = source.repo_path(ref)
     acquisition = build_snapshot(bundle, source.label, source.live_verified, repo, policy)
     comparison = acquisition.snapshot.comparison

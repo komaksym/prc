@@ -7,7 +7,7 @@ Use the assessment's D1 to D17 as regression cases. Prepare three real PRs for t
 The user is the only human reviewer. Outside reviewers are optional. Publication, license and package-name decisions stay separate.
 
 - [x] T1. Ground the fact and render paths; save design contracts and failing regression evidence.
-- [ ] T2. Fix parsing, classification, line counts, shared output statistics, GitHub errors and large-map readability.
+- [x] T2. Fix parsing, classification, line counts, shared output statistics, GitHub errors and large-map readability.
 - [ ] T3. Fix line coverage, board preflight, layout, duration, preview commands and installed instructions.
 - [ ] T4. Prove clean-cache installation and verification; run full lint, typecheck, tests and build.
 - [ ] T5. Preserve three original PR diffs and PRC outputs at matching base and head commits for acceptance.
