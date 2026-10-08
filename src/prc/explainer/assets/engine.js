@@ -687,10 +687,16 @@
               if (parseFloat(getComputedStyle(row).opacity) < 0.05) return false;
               const ct = row.querySelector('.ct');
               if (!ct) return false;
-              const c = ct.getBoundingClientRect();
-              const w = Math.min(r.right, c.right) - Math.max(r.left, c.left);
-              const h = Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top);
-              return w > 12 && h > 12;
+              // A whole-row rect envelopes every wrapped line, so a note after a
+              // short last line still intersects the wide first line. Compare
+              // against each laid-out line box instead: getClientRects on the
+              // inline code span yields one rect per visual line.
+              return [...ct.getClientRects()].some(c => {
+                if (c.width < 1 || c.height < 1) return false;
+                const w = Math.min(r.right, c.right) - Math.max(r.left, c.left);
+                const h = Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top);
+                return w > 12 && h > 12;
+              });
             });
             if (covers) {
               const msg = `scene ${s.i}: note "${el.textContent.trim().slice(0, 32)}" overlaps code`;

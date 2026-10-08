@@ -132,7 +132,7 @@ Give each card a `card` cue with its zero-based `i`. The checker rejects any car
 
 ### outro
 
-Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible. Always include `fine`, small print under the command; without it the checker fails the board because the video would print undefined.
+Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible. `fine` is optional small print under the command; when absent the checker fills an empty default and the video shows nothing there.
 
 ```json
 { "type": "outro", "l1": "first line", "l2": "second line", "fine": "small print", "nocap": true,
@@ -150,7 +150,7 @@ All commands read the map you pass.
 - `prc board find --map <map.json> "needle" [...] [--path substr]` prints the lines that contain a needle, with refs.
 - `prc board coverage <board.json> --map <map.json>` prints how many changed lines are on screen.
 - `prc board check <board.json> --map <map.json>` checks the board. Fix what it prints and run it again until it prints receipts verified, a silent estimate, and the changed-line coverage.
-- `prc board preview <board.json> --map <map.json> [--out dir]` renders two stills per scene into `<out>/<name>/keys/` (`NNa` mid-scene, `NNb` near the scene's end) without encoding a video, and prints layout warnings. It needs the cached Chromium. Open the stills in an image viewer.
+- `prc board preview <board.json> --map <map.json> [--out dir] [--git-dir dir]` renders two stills per scene into `<out>/<name>/keys/` (`NNa` mid-scene, `NNb` near the scene's end) without encoding a video, and prints layout warnings. It needs the cached Chromium but no ffmpeg, and writes no video or narration audio. `--git-dir` pins highlighting to a git checkout; without it (or a source repo) colors fall back to hunk text. Open the stills in an image viewer.
 - `prc explain --source <PR-URL> --board <board.json> --voice none --out <dir>` renders the full silent video.
 
 A good reference board uses phrase cues, automatic group layout, and one diff scene of the lines that carry the change. Never place groups in pixels: give columns, rows, and items, not `x`, `y` or `w`.

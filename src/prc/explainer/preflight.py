@@ -168,7 +168,7 @@ def coverage_summary(cov: dict[str, Any]) -> str:
     """One honest line: changed lines on screen, never files-on-screen."""
     line = "changed lines " + str(cov["shown"]) + "/" + str(cov["total"]) + " on screen"
     if cov.get("unavailable"):
-        line += "; " + str(cov["unavailable"]) + " without line refs (opaque or oversize files)"
+        line += "; " + str(cov["unavailable"]) + " without diff references"
     return line
 
 

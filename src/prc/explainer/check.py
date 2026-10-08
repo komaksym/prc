@@ -261,6 +261,11 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
     bar_facts: dict[str, Any] = {}
     ck = Checker(m)
 
+    # Lazy import: timing imports this module for find_phrase/spoken.
+    from prc.explainer.timing import scene_windows
+
+    windows = scene_windows(board)
+
     for i, s in enumerate(board["scenes"]):
         if s["type"] not in VERBS:
             ck.fail(f"scene {i}: unknown scene type {s['type']!r}")
@@ -285,15 +290,25 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             for verb in ("l1", "l2", "cmd"):
                 if verb not in shown:
                     ck.fail(f"scene {i}: outro needs a {verb!r} cue")
-            if "fine" not in s:
-                ck.fail(
-                    f"scene {i}: outro needs a fine line; without it the video prints undefined"
-                )
+            # `fine` is optional small print: absent means an empty default,
+            # which the engine already renders as an empty string.
+            s.setdefault("fine", "")
         for c in s.get("cues", []):
             verb = c.get("do", "claim" if "claim" in c else None)
             if verb not in VERBS[s["type"]]:
                 ck.fail(f"scene {i}: unknown cue {verb!r} for a {s['type']} scene")
             ck.when(i, s, c.get("at"))
+            at = c.get("at")
+            if not isinstance(at, bool) and isinstance(at, (int, float)):
+                # Absolute seconds from the scene start: a cue stamped after
+                # the scene ends would never show, so its rows would be
+                # counted on screen without ever appearing.
+                start, end = windows[i]
+                if float(at) > end - start + 1e-6:
+                    ck.fail(
+                        f"scene {i}: cue {verb!r} at {at}s is after this scene "
+                        f"ends (~{end - start:.1f}s); the reveal would never show"
+                    )
             if "until" in c:
                 ck.when(i, s, c["until"])
             named = [c[k] for k in ("id", "from", "to", "line") if k in c] + [

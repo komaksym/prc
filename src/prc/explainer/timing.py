@@ -123,12 +123,55 @@ def predict(board: dict[str, Any], backend: Backend) -> float:
     tail and hold constants the render uses. With a voice it is the check
     formula, the best available before synthesis.
     """
-    from prc.explainer.voice import estimate_seconds as sentence_seconds
-
     if backend.has_audio:
         return estimate(board)
-    total = 0.0
-    for s in board["scenes"]:
+    wins = scene_windows(board)
+    return wins[-1][1] if wins else 0.0
+
+
+def scene_windows(board: dict[str, Any]) -> list[tuple[float, float]]:
+    """(start, end) per scene under voice-none timing.
+
+    Exact for voice none (the same sentence estimates and lead, gap, tail
+    and hold constants the render fits with); an approximation for voice
+    backends, whose real durations are only known after synthesis.
+    """
+    from prc.explainer.voice import estimate_seconds as sentence_seconds
+
+    wins: list[tuple[float, float]] = []
+    cursor = 0.0
+    for s in board.get("scenes", []):
         ds = [sentence_seconds(t) for t in spoken(s)]
-        total += LEAD + sum(ds) + GAP * (len(ds) - 1) + TAIL + float(s.get("hold", 0))
-    return total
+        end = cursor + LEAD + sum(ds) + GAP * (len(ds) - 1) + TAIL + float(s.get("hold", 0))
+        wins.append((cursor, end))
+        cursor = end
+    return wins
+
+
+def check_stamped_cues(board: dict[str, Any], eps: float = 1e-6) -> list[str]:
+    """Cues whose fitted stamp falls outside their scene, or that end before they start.
+
+    Runs after fit_sentences sets start/end on scenes and t/until on cues,
+    so it validates the actual voice-backend durations, not the estimate.
+    A cue that never shows would leave its rows invisible while coverage
+    counts them on screen.
+    """
+    problems: list[str] = []
+    for i, s in enumerate(board.get("scenes", [])):
+        for c in s.get("cues", []):
+            t = c.get("t")
+            if t is None:
+                continue
+            if float(t) < float(s["start"]) - eps or float(t) > float(s["end"]) + eps:
+                problems.append(
+                    f"scene {i}: cue {c.get('do')!r} stamped at {float(t):.2f}s "
+                    f"is outside the scene ({float(s['start']):.2f}-"
+                    f"{float(s['end']):.2f}s); the reveal would never show"
+                )
+            until = c.get("until")
+            if until is not None and float(until) + eps < float(t):
+                problems.append(
+                    f"scene {i}: cue {c.get('do')!r} ends before it starts; "
+                    "the reveal would never show"
+                )
+    return problems

@@ -163,6 +163,12 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmds["preview"].add_argument(
         "--out", type=Path, default=Path("artifacts/preview"), help="stills output folder"
     )
+    board_cmds["preview"].add_argument(
+        "--git-dir",
+        type=Path,
+        default=None,
+        help="git dir for exact highlight colors (default: from --source, else hunk text)",
+    )
 
     skill = sub.add_parser("skill", help="install the board-writer skill for your agent")
     skill_sub = skill.add_subparsers(dest="skill_command", required=True)
@@ -394,7 +400,10 @@ def _main(argv: list[str] | None = None) -> int:
             from prc.explainer.voice import NoneBackend
 
             out_dir = args.out / args.board.stem
-            git_dir = str(repo) if repo is not None and repo.exists() else None
+            if args.git_dir is not None:
+                git_dir = str(args.git_dir)
+            else:
+                git_dir = str(repo) if repo is not None and repo.exists() else None
             try:
                 rendered = explain_render.render(
                     board_doc,
