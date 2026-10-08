@@ -3,6 +3,7 @@
 ## Summary
 - What changed
 - Why it changed
+- Reflect the actual diff, not the ticket title
 
 ## Validation
 - Lint: passed | failed | not run | N/A
