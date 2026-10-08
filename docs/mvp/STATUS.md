@@ -12,7 +12,7 @@ Historical worktrees and their ignored caches remain intact. The branch reconcil
 
 Before reconciliation, every branch ref was saved in `artifacts/reconciliation/2026-10-08/branches-before.bundle`. All 2,290 pending file identities and contents were saved beside it. Unrelated analyzer, queue, and provider experiments were moved into its `unrelated-experiments` directory with matching hashes. These archives stay local.
 
-No GitHub remote is configured. Read-only discovery found no intended PRC repository among the authenticated account's accessible repositories. An existing URL or a new repository decision is required before sync. No GitHub main was changed.
+The public repository is https://github.com/komaksym/prc with default branch main. Local main was pushed there and PR 1 (tracker destination record) was merged. No license is selected yet.
 
 ## Implemented and checked behavior
 
@@ -22,7 +22,7 @@ Stored-map reconstruction now supplies one reconciled dictionary to board checks
 
 The regression invokes the real explain CLI with an older map classifying an E2E test as production code. Its checked facts and published outputs agree after reconstruction. Browser screenshots and media remain under `artifacts/e2e/explain/stored-reclassified`.
 
-The full check is `bash scripts/verify-release.sh` with the existing Chromium cache. The final proof is `artifacts/release/verify/run-MZ8PLD`. It passed 572 tests and all required checks. Lint, formatting, strict types, tests, build, clean-wheel installation, browser screenshots, and five output files are required.
+The full check is `bash scripts/verify-release.sh` with the existing Chromium cache. The final proof is `artifacts/release/verify/run-MZ8PLD`. It passed 572 tests and all required checks. After publication, `artifacts/release/verify/run-UULFOm` repeated the full check on the merged main with the same result. Lint, formatting, strict types, tests, build, clean-wheel installation, browser screenshots, and five output files are required.
 
 ## Verification skill
 
