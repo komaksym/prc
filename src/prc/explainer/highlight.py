@@ -240,11 +240,6 @@ def attach_tokens(
             if len(lines) == len(sel) and all(f == t for f, (_, t) in zip(flat, sel, strict=True)):
                 by_num = {n: lines[i] for i, (n, _) in enumerate(sel)}
             else:
-                # Hunk text that does not round-trip through whole-text
-                # highlighting (for example trailing blank lines, which
-                # "\n".join ends with a newline that splitlines drops):
-                # tokenize each line on its own so every hunk line keeps
-                # a runs entry instead of crashing on a short list.
                 by_num = {}
                 for n, t in sel:
                     one = file_runs(path, t.encode())

@@ -9,6 +9,20 @@ from typing import Any
 MIN_RATIO = 0.4
 
 
+def prepare(rows: list[dict[str, Any]]) -> int:
+    """Expand tabs, trim trailing space and remove the common indent."""
+    code = [r for r in rows if "text" in r]
+    for r in code:
+        r["text"] = r["text"].expandtabs(4).rstrip()
+    cut = min(
+        (len(r["text"]) - len(r["text"].lstrip()) for r in code if r["text"].strip()),
+        default=0,
+    )
+    for r in code:
+        r["text"] = r["text"][cut:]
+    return cut
+
+
 def _words(tokens: list[dict[str, Any]]) -> list[int]:
     return [i for i, t in enumerate(tokens) if t["text"].strip()]
 

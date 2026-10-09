@@ -620,6 +620,19 @@ def test_card_png_renders_and_ocr_finds_stats_and_names(tmp_path: Path) -> None:
 
     assert struct.unpack(">II", header[16:24]) == (2400, 1260)
 
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1200, "height": 630})
+        page.goto(html_path.as_uri())
+        page.screenshot(path=str(tmp_path / "card-labels.png"))
+        clipped = page.locator(".stat-label").evaluate_all(
+            "labels => labels.filter(el => el.scrollWidth > el.clientWidth || "
+            "el.getBoundingClientRect().bottom > el.parentElement.getBoundingClientRect().bottom)"
+            ".map(el => el.textContent)"
+        )
+        browser.close()
+    assert not clipped, f"card statistic labels are clipped: {clipped}"
+
     raw = _ocr_text(png)
     found = re.sub(r"[^a-z0-9]", "", raw.lower())
     stats = card.compute_stats(m)

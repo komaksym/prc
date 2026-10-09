@@ -467,3 +467,93 @@ def test_jsx_components_count_in_the_javascript_grammar() -> None:
     )
 
     assert edges({"page.jsx": source}) == {("page.jsx::Page", "page.jsx::Widget", "exact")}
+
+
+def test_object_handler_same_file_resolves() -> None:
+    source = (
+        "const command = { exec() { return 1; } };\n"
+        "function caller() { return command.exec(); }\n"
+    )
+
+    assert {(q, k) for q, k, _ in defs("command.ts", source)} == {
+        ("command.exec", "function"),
+        ("caller", "function"),
+    }
+    assert edges({"command.ts": source}) == {
+        ("command.ts::caller", "command.ts::command.exec", "exact"),
+    }
+
+
+def test_object_handler_imported_resolves() -> None:
+    files = {
+        "command.ts": "export const command = { exec() { return 1; } };\n",
+        "tests/test_command.ts": (
+            'import { command } from "../command";\n'
+            "function test_exec() { return command.exec(); }\n"
+        ),
+    }
+
+    assert edges(files) == {
+        ("tests/test_command.ts::test_exec", "command.ts::command.exec", "exact"),
+    }
+
+
+def test_nested_object_handler_resolves_same_file_and_imported() -> None:
+    nested = "const a = { b: { c() { return 1; } } };\n"
+    same = nested + "function caller() { return a.b.c(); }\n"
+
+    assert {(q, k) for q, k, _ in defs("nested.ts", same)} == {
+        ("a.b.c", "function"),
+        ("caller", "function"),
+    }
+    assert edges({"nested.ts": same}) == {
+        ("nested.ts::caller", "nested.ts::a.b.c", "exact"),
+    }
+
+    files = {
+        "nested.ts": "export const a = { b: { c() { return 1; } } };\n",
+        "tests/test_nested.ts": (
+            'import { a } from "../nested";\n'
+            "function test_nested() { return a.b.c(); }\n"
+        ),
+    }
+
+    assert edges(files) == {
+        ("tests/test_nested.ts::test_nested", "nested.ts::a.b.c", "exact"),
+    }
+
+
+def test_object_containers_are_not_public_symbols() -> None:
+    source = (
+        "export const command = { exec() { return 1; } };\n"
+        "export const a = { b: { c() { return 1; } } };\n"
+    )
+    parsed = parse("shapes.ts", source)
+    qualnames = {d.qualname for d in parsed.definitions}
+
+    assert qualnames == {"command.exec", "a.b.c"}
+    assert "command" not in qualnames
+    assert "a" not in qualnames
+    assert "a.b" not in qualnames
+
+
+def test_object_handler_shadowed_and_duplicate_has_no_false_edge() -> None:
+    shadowed = {
+        "command.ts": "export const command = { exec() { return 1; } };\n",
+        "app.ts": (
+            "class command {\n"
+            "  other() { return 1; }\n"
+            "}\n"
+            "function caller() { return command.exec(); }\n"
+        ),
+    }
+
+    assert edges(shadowed) == set()
+
+    duplicate = {
+        "one.ts": "export const command = { exec() { return 1; } };\n",
+        "two.ts": "export const command = { exec() { return 2; } };\n",
+        "app.ts": "function caller() { return command.exec(); }\n",
+    }
+
+    assert edges(duplicate) == set()

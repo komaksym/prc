@@ -21,7 +21,7 @@ Each acceptance case binds its original diff and PRC output to the same base and
 Human acceptance remains open until the user supplies it. The milestone does not authorize publication.
 
 Throughput checkpoint. The parent owns contracts, shared facts, integration, live captures and acceptance artifacts.
-Workers own rendering and packaging in separate worktrees. Workers write tests before implementation.
+Workers own rendering and packaging in separate worktrees. Workers write tests before implementation. Final probes reopened join parity, reveal timing, literal path counts, object calls and verification isolation.
 Each unit ends in its narrow check. Full package checks follow integration.
 Reuse the installed Chromium cache and run browsers headless. No production dependency is planned.
 

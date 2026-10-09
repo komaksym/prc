@@ -1,11 +1,11 @@
-"""One preflight for board check and render: line coverage, join parity, note fit."""
-
 from __future__ import annotations
 
 import math
 from typing import Any
 
-from prc.explainer.diffrows import wrap_row
+from prc.explainer.diffrows import prepare, wrap_row
+from prc.explainer.jointest import document
+from prc.explainer.jointest import run as join_run
 
 WRAP_WIDTH = 72
 STAGE_RIGHT = 1700
@@ -14,12 +14,10 @@ NOTE_PX_PAD = 37
 
 
 def _post(text: str) -> str:
-    """The render transform: expand tabs, strip trailing whitespace."""
     return text.expandtabs(4).rstrip()
 
 
 def _order(m: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:
-    """(path, ref) -> hunk line, with ref str(new) or -old like boards use."""
     order: dict[tuple[str, str], dict[str, Any]] = {}
     for f in m.get("files", []):
         for h in f.get("hunks", []):
@@ -81,7 +79,7 @@ def cited_refs(board: dict[str, Any]) -> set[tuple[str, int]]:
     return shown
 
 
-def rendered_refs(board: dict[str, Any]) -> set[tuple[str, int]]:
+def rendered_refs(board: dict[str, Any], m: dict[str, Any]) -> set[tuple[str, int]]:
     """Changed lines the engine renders as code: diff rows only.
 
     Cites, list items, and symbol mentions never render the cited code text:
@@ -89,25 +87,17 @@ def rendered_refs(board: dict[str, Any]) -> set[tuple[str, int]]:
     paints the lines, so only diff refs count as displayed code.
     """
     shown: set[tuple[str, int]] = set()
-    for s in board.get("scenes", []):
+    from prc.explainer.check import Checker
+    from prc.explainer.timing import estimated_scene, scene_windows, visible_rows
+
+    windows = scene_windows(board)
+    for i, s in enumerate(board.get("scenes", [])):
         if s.get("type") != "diff":
             continue
-        rows = s.get("rows") or []
-        if rows:
-            for r in rows:
-                if "text" not in r:
-                    continue
-                try:
-                    shown.add((s["file"], int(r["ref"])))
-                except (ValueError, TypeError, KeyError):
-                    continue
-        else:
-            for r in s.get("lines", []):
-                ref = r["ref"] if isinstance(r, dict) else r
-                try:
-                    shown.add((s["file"], int(ref)))
-                except (ValueError, TypeError):
-                    continue
+        scene = s if "start" in s and "end" in s else estimated_scene(s, *windows[i])
+        if not scene.get("rows"):
+            scene = {**scene, "rows": Checker(m).diff(i, s)}
+        shown.update((s["file"], int(ref)) for ref in visible_rows(scene))
     return shown
 
 
@@ -124,7 +114,7 @@ def line_coverage(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
     as shown; cites and mentions do not render code.
     """
     changed = changed_refs(m)
-    rendered = rendered_refs(board)
+    rendered = rendered_refs(board, m)
     cited = cited_refs(board)
     shown = {k for k in changed if k in rendered}
     missing = sorted((k for k in changed if k not in shown), key=lambda k: (k[0], k[1]))
@@ -181,52 +171,29 @@ def silent_estimate(board: dict[str, Any]) -> float:
 
 
 def join_preflight(board: dict[str, Any], m: dict[str, Any]) -> list[str]:
-    """Diff scenes the render join gate would reject: blank lines, bad cuts."""
+    """Use the render join contract on selected rows before highlighting."""
     errs: list[str] = []
     order = _order(m)
     for i, s in enumerate(board.get("scenes", [])):
         if s.get("type") != "diff":
             continue
         refs = [(r["ref"] if isinstance(r, dict) else r) for r in s.get("lines", [])]
-        texts: dict[str, tuple[str, str]] = {}
+        rows = []
         for ref in refs:
             ln = order.get((s.get("file"), ref))
             if ln is None:
                 continue
-            texts[ref] = (ln.get("op", " "), _post(ln.get("text", "")))
-        nonblank = [t for _, t in texts.values() if t.strip()]
-        cut = min(len(t) - len(t.lstrip()) for t in nonblank) if nonblank else 0
-        for ref in refs:
-            if ref not in texts:
-                continue
-            op, t = texts[ref]
-            if op in ("+", "-") and not t.strip():
-                errs.append(
-                    "scene "
-                    + str(i)
-                    + ": "
-                    + ref
-                    + " is a blank changed line; the render join gate fails it with [CUT_NOT_SPACES]"
-                )
-            elif t.strip():
-                head = t[:cut]
-                if head != " " * len(head) or len(t) < cut:
-                    errs.append(
-                        "scene "
-                        + str(i)
-                        + ": "
-                        + ref
-                        + " fails the render join gate [CUT_NOT_SPACES]: first "
-                        + str(cut)
-                        + " chars are not all spaces"
-                    )
+            rows.append({"ref": ref, "op": ln["op"], "text": ln["text"]})
+        scene = {"file": s["file"], "rows": rows, "cut": prepare(rows)}
+        doc = document(scene, i)
+        problems, _ = join_run(doc, m, refs)
+        errs.extend(f"scene {i}: {problem}" for problem in problems)
     return errs
 
 
 def _scene_geom(
     rows: list[tuple[str, str]], nums: list[int], label: Any
 ) -> tuple[int, int, dict[str, Any], int]:
-    """Gutter, wrap columns, per-row wrap map, and engine font size for a diff scene."""
     gutter = math.ceil((len(str(max(nums))) + 1) * 0.72) if nums else 1
     cols = WRAP_WIDTH - gutter
     wrapped: dict[str, Any] = {}
@@ -260,7 +227,7 @@ def _scene_geom(
 
 
 def note_risks(board: dict[str, Any], m: dict[str, Any]) -> list[str]:
-    """Diff notes whose box cannot fit beside their line: clamped notes cover code."""
+    """Diff notes whose box cannot fit beside their line."""
     risks: list[str] = []
     order = _order(m)
     for i, s in enumerate(board.get("scenes", [])):

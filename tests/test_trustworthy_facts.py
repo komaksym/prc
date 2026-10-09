@@ -166,3 +166,61 @@ def test_analysis_limit_paths_stay_inert_in_comment_markdown(tmp_path: Path) -> 
     text = render_comment(to_jsonable(change))
     line = next(line for line in text.splitlines() if "analysis is incomplete" in line)
     assert line.startswith("`"), line
+
+
+def test_bracket_filename_gets_literal_line_counts(tmp_path: Path) -> None:
+    nl = chr(10)
+    change = custom_map(
+        tmp_path,
+        {},
+        {
+            "file[1].py": ("first" + nl + "second" + nl + "third" + nl).encode(),
+            "file1.py": ("one" + nl).encode(),
+        },
+    )
+    by_path = {f.path: f for f in change.files}
+    assert (by_path["file[1].py"].added, by_path["file[1].py"].removed) == (3, 0)
+    assert (by_path["file1.py"].added, by_path["file1.py"].removed) == (1, 0)
+
+
+def test_magic_prefixed_filename_gets_literal_line_counts(tmp_path: Path) -> None:
+    nl = chr(10)
+    change = custom_map(
+        tmp_path,
+        {},
+        {
+            ":(glob)x.py": ("first" + nl + "second" + nl + "third" + nl).encode(),
+            "x.py": ("one" + nl + "two" + nl).encode(),
+        },
+    )
+    by_path = {f.path: f for f in change.files}
+    assert (by_path[":(glob)x.py"].added, by_path[":(glob)x.py"].removed) == (3, 0)
+    assert (by_path["x.py"].added, by_path["x.py"].removed) == (2, 0)
+
+
+def test_magic_prefixed_filename_without_neighbor_does_not_traceback(tmp_path: Path) -> None:
+    nl = chr(10)
+    change = custom_map(tmp_path, {}, {":(glob)absent.py": ("one" + nl + "two" + nl).encode()})
+    by_path = {f.path: f for f in change.files}
+    assert (by_path[":(glob)absent.py"].added, by_path[":(glob)absent.py"].removed) == (2, 0)
+
+
+def test_tab_filename_keeps_literal_line_counts(tmp_path: Path) -> None:
+    nl = chr(10)
+    tab = chr(9)
+    path = "a" + tab + "b.py"
+    change = custom_map(tmp_path, {}, {path: ("one" + nl + "two" + nl + "three" + nl).encode()})
+    by_path = {f.path: f for f in change.files}
+    assert (by_path[path].added, by_path[path].removed) == (3, 0)
+
+
+def test_renamed_path_reports_delete_and_add_counts(tmp_path: Path) -> None:
+    nl = chr(10)
+    change = custom_map(
+        tmp_path,
+        {"old.py": ("old" + nl).encode()},
+        {"new.py": ("old" + nl + "new" + nl).encode()},
+    )
+    by_path = {f.path: f for f in change.files}
+    assert (by_path["old.py"].added, by_path["old.py"].removed) == (0, 1)
+    assert (by_path["new.py"].added, by_path["new.py"].removed) == (2, 0)

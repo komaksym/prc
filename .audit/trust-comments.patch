@@ -1,0 +1,75 @@
+--- a/scripts/verify-release.sh
++++ b/scripts/verify-release.sh
+@@ -40,3 +39,0 @@
+-# Intended but not yet committed .py/.json fixtures (for example new T2
+-# regression tests) must also verify; otherwise the isolated run silently
+-# skips them until their local commit lands.
+--- a/src/prc/explainer/assets/engine.js
++++ b/src/prc/explainer/assets/engine.js
+@@ -565,1 +564,0 @@
+-      // A clamped note would sit on the code: drop it under its row instead.
+--- a/src/prc/explainer/check.py
++++ b/src/prc/explainer/check.py
+@@ -264,1 +263,0 @@
+-    # Lazy import: timing imports this module for find_phrase/spoken.
+@@ -293,2 +291,0 @@
+-            # `fine` is optional small print: absent means an empty default,
+-            # which the engine already renders as an empty string.
+@@ -303,3 +299,0 @@
+-                # Absolute seconds from the scene start: a cue stamped after
+-                # the scene ends would never show, so its rows would be
+-                # counted on screen without ever appearing.
+--- a/src/prc/explainer/highlight.py
++++ b/src/prc/explainer/highlight.py
+@@ -243,5 +242,0 @@
+-                # Hunk text that does not round-trip through whole-text
+-                # highlighting (for example trailing blank lines, which
+-                # "\n".join ends with a newline that splitlines drops):
+-                # tokenize each line on its own so every hunk line keeps
+-                # a runs entry instead of crashing on a short list.
+--- a/src/prc/explainer/preflight.py
++++ b/src/prc/explainer/preflight.py
+@@ -1,1 +0,0 @@
+-"""One preflight for board check and render: line coverage, join parity, note fit."""
+@@ -17,1 +15,0 @@
+-    """The render transform: expand tabs, strip trailing whitespace."""
+@@ -22,1 +19,0 @@
+-    """(path, ref) -> hunk line, with ref str(new) or -old like boards use."""
+@@ -229,1 +225,0 @@
+-    """Gutter, wrap columns, per-row wrap map, and engine font size for a diff scene."""
+@@ -263,1 +259,1 @@
+-    """Diff notes whose box cannot fit beside their line: clamped notes cover code."""
++    """Diff notes whose box cannot fit beside their line."""
+--- a/src/prc/explainer/render.py
++++ b/src/prc/explainer/render.py
+@@ -44,1 +43,0 @@
+-    # Key-only still previews never encode or mix audio, so they need no ffmpeg.
+--- a/src/prc/skill/__init__.py
++++ b/src/prc/skill/__init__.py
+@@ -16,2 +15,0 @@
+-# Canonical metadata mirrored from SKILL.md; the instruction prose itself
+-# always comes from the file, never from a second hand-written copy here.
+@@ -27,1 +24,0 @@
+-    """The canonical instruction text. Separate seam so tests can vary it."""
+--- a/tests/test_acquisition_errors.py
++++ b/tests/test_acquisition_errors.py
+@@ -1,5 +0,0 @@
+-"""Offline acquisition failures: enumeration, fetch, reread, drift, and checkout.
+-
+-CLI regressions run the real module entry point with injected provider failures.
+-They retain exit status and both output streams under artifacts/trust-acquisition.
+-"""
+--- a/tests/test_trust_package.py
++++ b/tests/test_trust_package.py
+@@ -1,7 +0,0 @@
+-"""Trust-package regressions: D14 single-source instructions, D16 clean-cache verify.
+-
+-Scope: src/prc/skill/*, scripts/verify-release.sh, release packaging.
+-D14 is proven behaviorally: the Codex body is derived from the canonical
+-SKILL.md, so consistency holds by construction instead of by parallel
+-string assertions.
+-"""
+--- a/tests/test_trust_render_preflight.py
++++ b/tests/test_trust_render_preflight.py
+@@ -1,1 +0,0 @@
+-"""Trust-render regressions: D7 line coverage, D9 join parity, D10 notes, D11 fine, D12 estimate, D13 guide."""

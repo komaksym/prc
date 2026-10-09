@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -122,9 +123,23 @@ class Checker:
                     )
                 )
         elif isinstance(spec, list):
-            if not (len(spec) == 2 and 0 <= spec[0] < len(s["say"]) and 0 <= spec[1] <= 1):
+            if not (
+                len(spec) == 2
+                and isinstance(spec[0], int)
+                and not isinstance(spec[0], bool)
+                and 0 <= spec[0] < len(s["say"])
+                and isinstance(spec[1], (int, float))
+                and not isinstance(spec[1], bool)
+                and math.isfinite(spec[1])
+                and 0 <= spec[1] <= 1
+            ):
                 self.fail(f"scene {i}: cue time {spec} is not [sentence, fraction] of this scene")
-        elif not isinstance(spec, (int, float)) or spec < 0:
+        elif (
+            not isinstance(spec, (int, float))
+            or isinstance(spec, bool)
+            or not math.isfinite(spec)
+            or spec < 0
+        ):
             self.fail(
                 f"scene {i}: cue time {spec!r} is not seconds, [sentence, fraction] or a phrase"
             )
@@ -169,7 +184,13 @@ class Checker:
             rows.append({"ref": ref, "op": op, "num": num, "text": line["text"], "step": step})
         if len(rows) > ROWS:
             self.fail(f"scene {i}: {len(rows)} rows, but the screen fits {ROWS} (gap rows count)")
-        cued = {c.get("n") for c in s.get("cues", []) if c.get("do") == "step"}
+        cued = {
+            c["n"]
+            for c in s.get("cues", [])
+            if c.get("do") == "step"
+            and isinstance(c.get("n"), int)
+            and not isinstance(c["n"], bool)
+        }
         for k in sorted(steps - cued):
             self.fail(f"scene {i}: lines wait for step {k}, but no cue says when")
         for k in sorted(cued - steps, key=str):
@@ -261,7 +282,6 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
     bar_facts: dict[str, Any] = {}
     ck = Checker(m)
 
-    # Lazy import: timing imports this module for find_phrase/spoken.
     from prc.explainer.timing import scene_windows
 
     windows = scene_windows(board)
@@ -290,19 +310,18 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             for verb in ("l1", "l2", "cmd"):
                 if verb not in shown:
                     ck.fail(f"scene {i}: outro needs a {verb!r} cue")
-            # `fine` is optional small print: absent means an empty default,
-            # which the engine already renders as an empty string.
             s.setdefault("fine", "")
         for c in s.get("cues", []):
             verb = c.get("do", "claim" if "claim" in c else None)
             if verb not in VERBS[s["type"]]:
                 ck.fail(f"scene {i}: unknown cue {verb!r} for a {s['type']} scene")
+            if verb == "step" and (
+                not isinstance(c.get("n"), int) or isinstance(c["n"], bool) or c["n"] <= 0
+            ):
+                ck.fail(f"scene {i}: step cue needs a positive integer n")
             ck.when(i, s, c.get("at"))
             at = c.get("at")
             if not isinstance(at, bool) and isinstance(at, (int, float)):
-                # Absolute seconds from the scene start: a cue stamped after
-                # the scene ends would never show, so its rows would be
-                # counted on screen without ever appearing.
                 start, end = windows[i]
                 if float(at) > end - start + 1e-6:
                     ck.fail(
@@ -430,6 +449,16 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
 
     for problem in join_preflight(board, m):
         ck.fail(problem)
+    if ck.failures:
+        sys.exit("receipts failed:\n  " + "\n  ".join(ck.failures))
+    if not ck.failures:
+        from prc.explainer.timing import check_stamped_cues, estimated_scene
+
+        estimated = {
+            "scenes": [estimated_scene(s, *windows[i]) for i, s in enumerate(board["scenes"])]
+        }
+        for problem in check_stamped_cues(estimated):
+            ck.fail(problem)
 
     changed = {
         s["id"]

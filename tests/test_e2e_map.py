@@ -150,7 +150,12 @@ def test_shop_map_is_computed_safe_and_repeatable() -> None:
     blocks = [body for attrs, body in scripts if 'id="map-data"' in attrs]
 
     assert len(scripts) == 2 and len(executable) == 1 and len(blocks) == 1
-    assert json.loads(blocks[0]) == data
+    embedded = json.loads(blocks[0])
+    summary = embedded.pop("summary")
+    assert embedded == data and "summary" not in data
+    assert (summary["stats"]["files"], summary["stats"]["symbols_changed"]) == (8, 7)
+    assert (summary["stats"]["call_sites"], summary["stats"]["tests_touched"]) == (7, 1)
+    assert summary["ci_state"] == "passed"
 
     digest = base64.b64encode(hashlib.sha256(executable[0].encode()).digest()).decode()
     csp = re.search(r'http-equiv="Content-Security-Policy" content="([^"]+)"', html)

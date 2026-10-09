@@ -98,6 +98,13 @@ Cues:
 
 You list line refs, never code. The text comes from the diff. "N" is a line after the change (added or unchanged) and "-N" is a removed line. List refs top to bottom in diff order, which puts a removed line before the line that replaces it. Skipped lines show as a ⋯ row. At most 12 rows are allowed, ⋯ rows included, and the code box must end above the captions: the font shrinks to fit (22 to 40 px) and the build warns below 28 px, so prefer fewer and shorter lines.
 
+Replacement rows open 0.55 seconds after their step cue. Row reveals take another 0.45 seconds.
+Each selected row must finish its reveal before the scene's settled frame, 0.5 seconds before its end.
+The checker tests silent timing. Rendering checks actual narration timing before encoding.
+Move a late cue earlier or increase the scene's `hold`. Coverage excludes rows that miss this interval.
+The same join validator checks quoted text before rendering and after syntax highlighting.
+Empty diff scenes fail. Blank rows fail when they cannot support the selected common indent.
+
 The scene opens on the old code: unchanged lines plus removed lines. At step k the removed lines of step k tint red and stay on screen, and the added lines of step k slide in beneath them in green. A removed line is paired with its replacement and the changed words are marked in both. Long lines wrap with a hanging indent. Each row shows its line number, so the reviewer can find it in the diff. Added and removed lines take step 1 unless you set `step`. `step: 0` on an added line shows it from the start, which suits a PR that only adds code. Every step number in use needs exactly one `step` cue. A `note` pins a callout to one listed line, by its ref. Keep notes under 30 characters. A note that cannot fit beside its line moves below the row and the check flags it, so pick short lines for noted rows.
 
 ### list

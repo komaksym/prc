@@ -510,6 +510,7 @@ class Index:
         self.files = dict(sorted(files.items()))
         self.definitions: dict[str, dict[str, Definition]] = {}
         self.exported: dict[str, frozenset[str]] = {}
+        self.namespaces: dict[str, frozenset[str]] = {}
         self.bindings: dict[str, dict[str, Import]] = {}
         self.stars: dict[str, tuple[Import, ...]] = {}
         self.python_files: dict[str, str] = {}
@@ -532,11 +533,22 @@ class Index:
                 )
 
             self.definitions[path] = merged
+            namespaces: set[str] = set()
+            for qualname in merged:
+                if "@" in qualname:
+                    continue
+                for prefix in _prefixes(qualname):
+                    if "@" in prefix or prefix in merged:
+                        continue
+                    namespaces.add(prefix)
+            self.namespaces[path] = frozenset(namespaces)
             self.exported[path] = frozenset(
                 qualname
                 for qualname in merged
-                if all(
-                    merged.get(prefix) is not None and merged[prefix].kind == "class"
+                if "@" not in qualname
+                and all(
+                    (merged.get(prefix) is not None and merged[prefix].kind == "class")
+                    or prefix in namespaces
                     for prefix in _prefixes(qualname)
                 )
             )
@@ -605,15 +617,17 @@ class Index:
 
         else:
             root, rest = call.chain[0], (*call.chain[1:], call.name)
-            scoped = self._scoped(path, call.scope, root)
+            holder = self._local_root(path, call.scope, root)
 
-            if scoped is not None:
-                qualname = ".".join((scoped, *rest))
+            if holder is not None:
+                qualname = ".".join((holder, *rest))
 
                 if qualname in local:
                     return f"{path}::{qualname}", "exact"
 
-            elif root in self.bindings[path]:
+                return None
+
+            if root in self.bindings[path]:
                 return self._imported(path, root, rest)
 
         named = self._named(path, call)
@@ -704,6 +718,24 @@ class Index:
 
         return next(
             (q for s in scopes if (q := f"{s}.{name}" if s else name) in local),
+            None,
+        )
+
+    def _local_root(self, path: str, scope: str | None, name: str) -> str | None:
+        """Innermost holder for a qualified receiver root: definition or object namespace."""
+
+        local = self.definitions[path]
+        namespaces = self.namespaces[path]
+        scopes = [] if scope is None else [scope]
+        scopes += [p for p in _prefixes(scope or "") if p in local and local[p].kind != "class"]
+        scopes.append("")
+
+        return next(
+            (
+                q
+                for s in scopes
+                if (q := f"{s}.{name}" if s else name) in local or q in namespaces
+            ),
             None,
         )
 

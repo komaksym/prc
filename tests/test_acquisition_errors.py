@@ -1,9 +1,3 @@
-"""Offline acquisition failures: enumeration, fetch, reread, drift, and checkout.
-
-CLI regressions run the real module entry point with injected provider failures.
-They retain exit status and both output streams under artifacts/trust-acquisition.
-"""
-
 from __future__ import annotations
 
 import json

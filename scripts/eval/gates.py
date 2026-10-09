@@ -170,10 +170,11 @@ def gate_diagram(pr_dir: Path) -> tuple[bool, str]:
 
 
 def gate_card_facts(pr_dir: Path) -> tuple[bool, str]:
-    from prc.presentation.card import compute_stats
+    from prc.facts import compute_facts
 
     m = _read(pr_dir / "map.json")
-    stats = compute_stats(m, m.get("brief"))
+    facts = compute_facts(m, m.get("brief"))
+    stats = facts.stats
     card = (pr_dir / "card.html").read_text()
     pairs = re.findall(
         r'<div class="stat-value">([^<]*)</div>\s*<div class="stat-label">([^<]*)</div>',
@@ -181,11 +182,11 @@ def gate_card_facts(pr_dir: Path) -> tuple[bool, str]:
     )
     expected = {
         "files": str(stats.files),
-        "symbols changed": str(stats.symbols_changed),
-        "call sites": str(stats.call_sites),
-        "tests touched": str(stats.tests_touched),
-        "CI passed": stats.ci_text,
-        "no direct test": str(stats.untested_total),
+        "parsed symbols changed": str(stats.symbols_changed),
+        "resolved call sites": str(stats.call_sites),
+        "test files touched": str(stats.tests_touched),
+        "no CI" if facts.ci_state == "none" else f"CI {facts.ci_state}": stats.ci_text,
+        "parsed code without test evidence": str(stats.untested_total),
     }
     actual = {html.unescape(label): html.unescape(value) for value, label in pairs}
     if len(pairs) != len(expected) or actual != expected:

@@ -1,5 +1,3 @@
-"""Trust-render regressions: D7 line coverage, D9 join parity, D10 notes, D11 fine, D12 estimate, D13 guide."""
-
 from __future__ import annotations
 
 import json
@@ -122,6 +120,129 @@ def test_check_rejects_blank_changed_line_like_render() -> None:
     with pytest.raises(SystemExit) as err:
         verify_board(b, m)
     assert "blank" in str(err.value).lower() or "cut" in str(err.value).lower(), err.value
+
+
+@pytest.mark.parametrize("refs", [["2", "5"], []])
+def test_check_rejects_context_blank_and_empty_diff(refs: list[str]) -> None:
+    from prc.explainer.check import verify_board
+
+    m = tiny_map()
+    m["files"][0]["hunks"][0]["lines"].append({"op": " ", "old": 5, "new": 5, "text": ""})
+    b = tiny_board(refs)
+    if not refs:
+        b["scenes"][0]["cues"] = []
+    with pytest.raises(SystemExit, match=r"CUT_NOT_SPACES|no expected refs"):
+        verify_board(b, m)
+
+
+def replacement() -> tuple[dict[str, Any], dict[str, Any]]:
+    m = tiny_map()
+    m["files"][0]["hunks"][0]["lines"] = [
+        {"op": "-", "old": 2, "new": None, "text": "    x = 0"},
+        {"op": "+", "old": None, "new": 2, "text": "    x = 1"},
+    ]
+    m["files"][0].update(added=1, removed=1)
+    m["brief"]["files"][0].update(added=1, removed=1)
+    return m, tiny_board(["-2", "2"])
+
+
+def test_check_rejects_replacement_revealed_after_scene() -> None:
+    from prc.explainer.check import verify_board
+    from prc.explainer.timing import scene_windows
+
+    m, b = replacement()
+    end = scene_windows(b)[0][1]
+    b["scenes"][0]["cues"][0]["at"] = end - 0.25
+    with pytest.raises(SystemExit, match=r"row 2.*reveal|reveal.*row 2"):
+        verify_board(b, m)
+
+
+def test_coverage_excludes_replacement_that_never_appears() -> None:
+    from prc.explainer.preflight import line_coverage
+    from prc.explainer.timing import scene_windows
+
+    m, b = replacement()
+    b["scenes"][0]["cues"][0]["at"] = scene_windows(b)[0][1] - 0.25
+    cov = line_coverage(b, m)
+    assert cov["shown"] == 1, cov
+    assert cov["missing"] == ["a.py:2"], cov
+
+
+def test_fitted_timing_checks_effective_replacement_reveal(tmp_path: Path) -> None:
+    from prc.explainer.check import verify_board
+    from prc.explainer.timing import check_stamped_cues, fit_sentences
+    from prc.explainer.voice import NoneBackend
+
+    m, b = replacement()
+    verify_board(b, m)
+    fit_sentences(b, NoneBackend(), tmp_path, [])
+    b["scenes"][0]["cues"][0]["t"] = b["scenes"][0]["end"] - 0.25
+    problems = check_stamped_cues(b)
+    assert any("row 2" in problem and "reveal" in problem for problem in problems), problems
+
+
+def test_replacement_is_visible_in_real_settled_frame(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.timing import scene_windows
+    from prc.explainer.voice import NoneBackend
+
+    m, b = replacement()
+    b["scenes"][0]["cues"][0]["at"] = scene_windows(b)[0][1] - 1.6
+    facts = verify_board(b, m)
+    render(b, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        errors: list[str] = []
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        page.evaluate("window.seek(window.BOARD.scenes[0].end - 0.5)")
+        page.screenshot(path=str(tmp_path / "settled-replacement.png"))
+        row = page.locator(".drow").filter(has_text="x = 1")
+        assert row.count() == 1
+        assert row.evaluate("el => Number(getComputedStyle(el).opacity)") == 1
+        assert row.evaluate("el => el.getBoundingClientRect().height") > 0
+        assert row.evaluate("el => getComputedStyle(el.closest('.scene')).visibility") == "visible"
+        assert errors == []
+        browser.close()
+
+
+@pytest.mark.parametrize(
+    "cue",
+    [
+        {"at": [0.0, 0.2], "do": "note", "line": "2", "text": "changed"},
+        {"at": [0, "bad"], "do": "note", "line": "2", "text": "changed"},
+        {"at": [True, 0.2], "do": "note", "line": "2", "text": "changed"},
+        {"at": 0.1, "do": "step"},
+        {"at": float("nan"), "do": "step", "n": 1},
+        {"at": 0.1, "do": "note", "line": "2", "text": "changed", "until": float("nan")},
+        {"at": 0.1, "do": "note", "line": "2", "text": "changed", "until": float("inf")},
+    ],
+)
+def test_malformed_cue_fails_check_without_traceback(cue: dict[str, Any]) -> None:
+    from prc.explainer.check import verify_board
+
+    m, b = replacement()
+    b["scenes"][0]["cues"].append(cue)
+    with pytest.raises(SystemExit, match=r"cue|step"):
+        verify_board(b, m)
+
+
+@pytest.mark.parametrize("field", ["t", "until"])
+def test_actual_fitted_stamps_must_be_finite(tmp_path: Path, field: str) -> None:
+    from prc.explainer.check import verify_board
+    from prc.explainer.timing import check_stamped_cues, fit_sentences
+    from prc.explainer.voice import NoneBackend
+
+    m, b = replacement()
+    verify_board(b, m)
+    fit_sentences(b, NoneBackend(), tmp_path, [])
+    b["scenes"][0]["cues"][0][field] = float("nan")
+    assert any("finite" in issue for issue in check_stamped_cues(b))
 
 
 def test_check_outro_fine_defaults_empty() -> None:

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from prc.gitutil import TreeChange, blob_size, read_blob, run_git, tree_delta
+from prc.gitutil import GitError, TreeChange, blob_size, read_blob, run_git, tree_delta
 from prc.identity import InventoryId, content_id
 
 MAX_INSPECTABLE_BYTES = 64 * 1024
@@ -92,9 +92,14 @@ def _line_counts(
         base,
         head,
         "--",
-        change.path,
+        f":(literal){change.path}",
     )
-    added, removed, _ = raw.split(b"\t", 2)
+    records = [record for record in raw.split(b"\x00") if record]
+    if len(records) != 1:
+        raise GitError(f"numstat expected one record for {change.path!r}, got {len(records)}")
+    added, removed, path = records[0].split(b"\t", 2)
+    if path.decode("utf-8", errors="surrogateescape") != change.path:
+        raise GitError(f"numstat path mismatch for {change.path!r}")
     return int(added), int(removed)
 
 

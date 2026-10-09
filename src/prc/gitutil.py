@@ -7,6 +7,7 @@ hooks, attributes and filters never execute on untrusted content.
 from __future__ import annotations
 
 import difflib
+import io
 import os
 import subprocess
 from dataclasses import dataclass
@@ -114,30 +115,31 @@ def unified_diff(repo: Path, old_oid: str, new_oid: str) -> str:
 
     zero = "0" * 40
     if old_oid != zero and new_oid != zero:
-        return run_git(
+        diff = run_git(
             repo,
             "diff",
             "--no-ext-diff",
             "--no-textconv",
             "--no-color",
+            "--text",
             "--unified=3",
             old_oid,
             new_oid,
         ).decode("utf-8", "replace")
+        start = diff.find("\n@@ ")
+        return "--- a\n+++ b\n" + diff[start + 1 :] if start >= 0 else ""
     old_text = "" if old_oid == zero else read_blob(repo, old_oid).decode("utf-8", "replace")
     new_text = "" if new_oid == zero else read_blob(repo, new_oid).decode("utf-8", "replace")
 
     lines = difflib.unified_diff(
-        old_text.splitlines(keepends=True),
-        new_text.splitlines(keepends=True),
+        io.StringIO(old_text).readlines(),
+        io.StringIO(new_text).readlines(),
         fromfile="a",
         tofile="b",
         n=3,
     )
 
-    return "".join(
-        line if line.splitlines() != [line] else f"{line}\n{NO_NEWLINE}\n" for line in lines
-    )
+    return "".join(line if line.endswith("\n") else f"{line}\n{NO_NEWLINE}\n" for line in lines)
 
 
 def list_paths(repo: Path, commit: str) -> tuple[str, ...]:

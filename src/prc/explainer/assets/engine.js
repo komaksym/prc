@@ -503,7 +503,6 @@
     const stepAt = {};
     (s.cues || []).forEach(c => { if (c.do === 'step') stepAt[c.n] = c.t; });
     // A step that replaces lines lets the removed rows tint red before the new lines open in their place.
-    const swaps = new Set(s.rows.filter(r => r.op === '-').map(r => r.step));
     // Fewer, shorter lines get a bigger font; the block is centred in the space above the captions.
     const gutter = s.gutter || 0, GH = 30, TOP = 12;
     const wide = c => { const n = c.codePointAt(0); return (n >= 0x1100 && n <= 0x115F) || (n >= 0x2E80 && n <= 0xA4CF) || (n >= 0xAC00 && n <= 0xD7AF) || (n >= 0xF900 && n <= 0xFAFF) || (n >= 0xFE30 && n <= 0xFE4F) || (n >= 0xFF00 && n <= 0xFF60) || (n >= 0xFFE0 && n <= 0xFFE6) ? 2 : 1; };
@@ -539,7 +538,7 @@
       const el = D('drow', `<span class="ln" style="width:${digits + 1}ch;line-height:${RH}px">${r.num}</span><span class="sg">${r.op === '+' ? '+' : r.op === '-' ? '−' : ''}</span><span class="tx"><span class="ct">${parts.join('') || esc(r.text)}</span></span>`, box);
       const t0 = r.step ? stepAt[r.step] : -Infinity;
       return { r, k, el, h: RH * (((r.breaks || []).length) + 1), sg: el.querySelector('.sg'), tx: el.querySelector('.tx'), ct: el.querySelector('.ct'),
-               t0, tin: r.op === '+' && swaps.has(r.step) ? t0 + 0.55 : t0, notes: [] };
+               t0, tin: r.motion.reveal[0], notes: [] };
     });
     const byRef = {};
     rows.forEach(R => { if (R.r.ref) byRef[R.r.ref] = R; if (R.ct) Object.assign(R.el.style, { fontSize: FS + 'px', lineHeight: RH + 'px' }); });
@@ -562,7 +561,6 @@
       const lnW = R.el.querySelector('.ln') ? R.el.querySelector('.ln').getBoundingClientRect().width : 0;
       const want = lnW + 56 + lastLineW(R) + 32;
       const limit = 1700 - el.offsetWidth - 20;
-      // A clamped note would sit on the code: drop it under its row instead.
       const clamped = want > limit + 1;
       const stack = R.drop ? R.drop / 56 : 0;
       const N = { R, el, x: clamped ? 120 : want, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: clamped, stack };
@@ -579,8 +577,8 @@
       let y = TOP;
       rows.forEach(R => {
         let k = 1;
-        if (R.r.op === '+') k = prog(t, R.tin, 0.45);
-        const enter = prog(t, s.start + 0.25 + R.k * 0.035, 0.4);
+        if (R.r.op === '+') k = prog(t, ...R.r.motion.reveal);
+        const enter = R.r.gap ? 1 : prog(t, ...R.r.motion.enter);
         R.y = y; R.hk = k;
         R.el.style.top = y + 'px';
         R.el.style.height = R.h * k + 'px';
@@ -601,7 +599,7 @@
         if (R.r.op === '+') {
           R.sg.style.color = C.green;
           R.el.style.transform = `translateX(${lerp(-24, 0, k)}px)`;
-          bg = 0.10 + 0.42 * decay(t, R.tin + 0.45, 0.8);
+          bg = 0.10 + 0.42 * decay(t, R.tin + R.r.motion.reveal[1], 0.8);
           const mark = 0.34 * prog(t, R.tin + 0.3, 0.3);
           R.chg.forEach(el => { el.style.background = mark > 0 ? rgba(C.green, mark) : ''; });
         }
@@ -644,7 +642,7 @@
 
     const seek = t => {
       scenes.forEach(sc => {
-        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, sc.s.end - 0.35, 0.35));
+        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, ...sc.s.fade));
         sc.root.style.opacity = o;
         sc.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
         if (o > 0.001) sc.update(t);
@@ -655,7 +653,7 @@
       const sc = scenes.find(x => t >= x.s.start && t < x.s.end);
       const f = sc ? sc.s.footer || '' : '';
       if (f !== lastFoot) { foot.textContent = f; lastFoot = f; }
-      foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, sc.s.end - 0.35, 0.35)) : 0;
+      foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, ...sc.s.fade)) : 0;
       bar.style.width = `${(t / B.duration) * 100}%`;
     };
     if (sceneIndex == null) {

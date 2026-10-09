@@ -36,23 +36,20 @@ import sys
 from pathlib import Path
 
 root, checkout = map(Path, sys.argv[1:])
-paths = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z']).decode().split('\0')
-# Intended but not yet committed .py/.json fixtures (for example new T2
-# regression tests) must also verify; otherwise the isolated run silently
-# skips them until their local commit lands.
-untracked = subprocess.check_output(
-    ['git', '-C', str(root), 'ls-files', '--others', '--exclude-standard', '-z']
-).decode().split('\0')
-paths += [n for n in untracked if n.endswith(('.py', '.json'))]
-for pattern in ['tests/test_release*.py', 'tests/test_eval*.py', 'tests/test_card_receipts.py', 'tests/test_explain_publication.py', 'scripts/eval/*.py', 'scripts/verify-release.sh']:
-    paths += [str(path.relative_to(root)) for path in root.glob(pattern)]
+sep = chr(0)
+# Release copy is restricted to committed or staged inputs (git index) plus
+# explicit fixtures below. Untracked experiments stay out: stage intended
+# files with git add before verifying.
+paths = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z']).decode().split(sep)
 for name in paths:
     if name and (root / name).is_file():
         target = checkout / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(root / name, target)
 for name in ['eval/runs/2026-10-06-full', 'docs/media']:
-    shutil.copytree(root / name, checkout / name, dirs_exist_ok=True)
+    src = root / name
+    if src.exists():
+        shutil.copytree(src, checkout / name, dirs_exist_ok=True)
 PY
 printf '%s\n' "$checkout" > "$proof/checkout.txt"
 cd "$checkout"

@@ -13,9 +13,9 @@ from typing import Any
 
 from prc.explainer import highlight
 from prc.explainer.check import verify_board
-from prc.explainer.diffrows import pair_rows, wrap_row
+from prc.explainer.diffrows import pair_rows, prepare, wrap_row
+from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
-from prc.explainer.preflight import join_preflight
 from prc.explainer.timing import check_stamped_cues, fit_sentences
 from prc.explainer.voice import Backend
 
@@ -41,7 +41,6 @@ class Rendered:
 
 
 def check_tools(*, need_video: bool = True) -> None:
-    # Key-only still previews never encode or mix audio, so they need no ffmpeg.
     if need_video and not shutil.which("ffmpeg"):
         raise RenderError("ffmpeg is not on PATH. Install it (for example `brew install ffmpeg`).")
     if need_video and not shutil.which("ffprobe"):
@@ -153,15 +152,7 @@ def fill(
             s.setdefault("fine", "")
         if s["type"] == "diff":
             code = [r for r in s["rows"] if "text" in r]
-            for r in code:
-                r["text"] = r["text"].expandtabs(4).rstrip()
-            cut = min(
-                (len(r["text"]) - len(r["text"].lstrip()) for r in code if r["text"].strip()),
-                default=0,
-            )
-            for r in code:
-                r["text"] = r["text"][cut:]
-            s["cut"] = cut
+            s["cut"] = cut = prepare(s["rows"])
             nums = [r["num"] for r in code]
             s["gutter"] = math.ceil((len(str(max(nums))) + 1) * 0.72) if nums else 1
             fe = next((f for f in m["files"] if f["path"] == s["file"]), None)
@@ -195,35 +186,11 @@ def fill(
 
 def join_gate(board: dict[str, Any], m: dict[str, Any], out: Path) -> None:
     """Write tokens_s<i>.json per diff scene and run the join test. Stops the build on failure."""
-    problems = join_preflight(board, m)
-    if problems:
-        raise RenderError("join gate failed:\n" + "\n".join(problems))
     for i, s in enumerate(board["scenes"]):
         if s["type"] != "diff":
             continue
         code = [r for r in s["rows"] if "text" in r]
-        doc = {
-            "scene": i,
-            "file": s["file"],
-            "cut": s["cut"],
-            "transform": "build",
-            "refs": [r["ref"] for r in code],
-            "frames": [
-                {
-                    "t": None,
-                    "rows": [
-                        {"gap": True}
-                        if "text" not in r
-                        else {
-                            "ref": r["ref"],
-                            "marker": "+" if r["op"] == "+" else "−" if r["op"] == "-" else "",
-                            "tokens": r["tokens"],
-                        }
-                        for r in s["rows"]
-                    ],
-                }
-            ],
-        }
+        doc = document(s, i)
         (out / f"tokens_s{i}.json").write_text(json.dumps(doc))
         errs, rc = join_run(doc, m, [str(r["ref"]) for r in code])
         if rc != 0:

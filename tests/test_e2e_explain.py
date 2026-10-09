@@ -324,7 +324,7 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
     assert (facts["changed"], facts["tests_added"]) == (0, 1)
     assert (run["check"]["changed"], run["check"]["tests_added"]) == (0, 1)
     for name in ("card.html", "comment.md"):
-        assert "No production symbols changed" in (out / name).read_text()
+        assert "No live production symbols changed" in (out / name).read_text()
     assert "def test_probe" in (out / "doc.html").read_text()
     artifact = ARTIFACT / "stored-reclassified"
     shutil.rmtree(artifact, ignore_errors=True)

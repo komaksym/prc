@@ -7,6 +7,7 @@ the sentence when there is none, so `none` never imports Kokoro.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,79 @@ from prc.explainer.check import find_phrase, spoken
 from prc.explainer.voice import Backend, audible, estimate_seconds, pauses
 
 LEAD, GAP, TAIL = 0.45, 0.3, 0.9
+ROW_LEAD, ROW_STAGGER, ROW_ENTER = 0.25, 0.035, 0.4
+REPLACE_DELAY, ROW_REVEAL, SCENE_FADE, STILL_MARGIN = 0.55, 0.45, 0.35, 0.5
+
+
+def estimated_scene(scene: dict[str, Any], start: float, end: float) -> dict[str, Any]:
+    """Estimate cue stamps with the silent sentence schedule used by fitting."""
+    s = {**scene, "start": start, "end": end, "sentences": [], "cues": []}
+    cursor = start + LEAD
+    for text in spoken(scene) if "say" in scene else []:
+        dur = estimate_seconds(text)
+        s["sentences"].append({"start": cursor, "dur": dur})
+        cursor += dur + GAP
+
+    def stamp(spec: Any) -> float | None:
+        value = None
+        if isinstance(spec, (int, float)) and not isinstance(spec, bool):
+            value = start + spec
+        elif isinstance(spec, list) and len(spec) == 2:
+            k, fraction = spec
+            if isinstance(k, int) and 0 <= k < len(s["sentences"]):
+                sent = s["sentences"][k]
+                value = sent["start"] + fraction * sent["dur"]
+        elif isinstance(spec, str) and "say" in scene:
+            hits = find_phrase(scene, spec)
+            if len(hits) == 1:
+                k, offset = hits[0]
+                sent = s["sentences"][k]
+                value = sent["start"] + offset / len(spoken(scene)[k]) * sent["dur"]
+        return value
+
+    for cue in scene.get("cues", []):
+        fitted = {**cue, "t": stamp(cue.get("at"))}
+        if "until" in cue:
+            fitted["until"] = stamp(cue["until"])
+        s["cues"].append(fitted)
+    return s
+
+
+def row_motion(scene: dict[str, Any]) -> list[dict[str, list[float]]]:
+    """Animation intervals consumed by the engine and coverage checks."""
+    steps = {
+        c["n"]: c.get("t")
+        for c in scene.get("cues", [])
+        if c.get("do") == "step" and isinstance(c.get("n"), int) and not isinstance(c["n"], bool)
+    }
+    swaps = {r.get("step", 1) for r in scene.get("rows", []) if r.get("op") == "-"}
+    result = []
+    for i, row in enumerate(scene.get("rows", [])):
+        step = 0 if row.get("gap") else row.get("step", 0 if row.get("op") == " " else 1)
+        at = steps.get(step) if step else float(scene["start"])
+        reveal = float(at) if at is not None else math.inf
+        if row.get("op") == "+" and step in swaps:
+            reveal += REPLACE_DELAY
+        result.append(
+            {
+                "enter": [float(scene["start"]) + ROW_LEAD + i * ROW_STAGGER, ROW_ENTER],
+                "reveal": [reveal, ROW_REVEAL],
+            }
+        )
+    return result
+
+
+def visible_rows(scene: dict[str, Any]) -> set[str]:
+    """Rows fully visible at the walkthrough's settled frame, before scene fade."""
+    shown = set()
+    deadline = float(scene["end"]) - STILL_MARGIN
+    for row, motion in zip(scene.get("rows", []), row_motion(scene), strict=True):
+        ready = max(float(scene["start"]) + LEAD, sum(motion["enter"]))
+        if row.get("op") == "+":
+            ready = max(ready, sum(motion["reveal"]))
+        if "ref" in row and ready <= deadline + 1e-6:
+            shown.add(str(row["ref"]))
+    return shown
 
 
 def onset(scene: dict[str, Any], phrase: str, audio: Path, backend: Backend) -> tuple[float, float]:
@@ -104,6 +178,10 @@ def fit_sentences(
             c["t"] = at(s, c["at"], audio, log, backend)
             if "until" in c:
                 c["until"] = at(s, c["until"], audio, log, backend)
+        s["fade"] = [float(s["end"]) - SCENE_FADE, SCENE_FADE]
+        if s["type"] == "diff":
+            for row, motion in zip(s["rows"], row_motion(s), strict=True):
+                row["motion"] = motion
         del s["onsets"], s["clips"]
     board["duration"] = cursor
     return cursor, clips
@@ -158,9 +236,18 @@ def check_stamped_cues(board: dict[str, Any], eps: float = 1e-6) -> list[str]:
     """
     problems: list[str] = []
     for i, s in enumerate(board.get("scenes", [])):
+        if s.get("type") == "diff":
+            shown = visible_rows(s)
+            for row in s.get("rows", []):
+                if "ref" in row and str(row["ref"]) not in shown:
+                    problems.append(
+                        f"scene {i}: row {row['ref']} cannot finish its reveal before the settled frame; the reveal would never show completely; "
+                        "move its step cue earlier or increase hold"
+                    )
         for c in s.get("cues", []):
             t = c.get("t")
-            if t is None:
+            if not isinstance(t, (int, float)) or isinstance(t, bool) or not math.isfinite(t):
+                problems.append(f"scene {i}: cue {c.get('do')!r} needs a finite fitted timestamp")
                 continue
             if float(t) < float(s["start"]) - eps or float(t) > float(s["end"]) + eps:
                 problems.append(
@@ -169,7 +256,13 @@ def check_stamped_cues(board: dict[str, Any], eps: float = 1e-6) -> list[str]:
                     f"{float(s['end']):.2f}s); the reveal would never show"
                 )
             until = c.get("until")
-            if until is not None and float(until) + eps < float(t):
+            if "until" in c and (
+                not isinstance(until, (int, float))
+                or isinstance(until, bool)
+                or not math.isfinite(until)
+            ):
+                problems.append(f"scene {i}: cue {c.get('do')!r} needs a finite fitted end")
+            elif until is not None and float(until) + eps < float(t):
                 problems.append(
                     f"scene {i}: cue {c.get('do')!r} ends before it starts; "
                     "the reveal would never show"

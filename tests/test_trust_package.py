@@ -1,13 +1,7 @@
-"""Trust-package regressions: D14 single-source instructions, D16 clean-cache verify.
-
-Scope: src/prc/skill/*, scripts/verify-release.sh, release packaging.
-D14 is proven behaviorally: the Codex body is derived from the canonical
-SKILL.md, so consistency holds by construction instead of by parallel
-string assertions.
-"""
-
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -15,6 +9,37 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_OUTPUTS = ("map.html", "video.mp4", "doc.html", "card.png", "comment.md")
 EVIDENCE_FILES = ("map.json", "board.json", "run.json")
+
+
+def _isolated_copy_program() -> str:
+    script = (ROOT / "scripts/verify-release.sh").read_text()
+    blocks: list[str] = []
+    parts = script.split("<<'PY'")
+    for part in parts[1:]:
+        lines = part.splitlines()
+        end = None
+        for i, line in enumerate(lines):
+            if line == "PY":
+                end = i
+                break
+        if end is None:
+            continue
+        blocks.append(chr(10).join(lines[:end]))
+    for block in blocks:
+        if "ls-files" in block and "checkout" in block and "shutil.copy" in block:
+            return block
+    raise AssertionError("isolated copy program not found")
+
+
+def _run_exact_isolated_copy(repo: Path, dest: Path) -> None:
+    code = _isolated_copy_program()
+    proc = subprocess.run(
+        [sys.executable, "-", str(repo), str(dest)],
+        input=code,
+        text=True,
+        capture_output=True,
+    )
+    assert proc.returncode == 0, proc.stderr
 
 
 def _claude_text() -> str:
@@ -95,12 +120,40 @@ def test_d16_verify_uses_cached_chromium_without_downloads() -> None:
     assert "playwright install" not in script, "verifier must not download browsers"
 
 
-def test_d16_verify_copies_untracked_test_fixtures() -> None:
-    import re
-
-    script = (ROOT / "scripts/verify-release.sh").read_text()
-    assert re.search(r"ls-files.*--others", script), (
-        "verifier default copy misses intended untracked .py/.json fixtures"
+def test_d16_isolated_copy_keeps_tracked_and_staged_excludes_untracked(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "--quiet", str(repo)], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "t@t.t"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "t"], check=True)
+    (repo / ".gitignore").write_text("*.bin")
+    (repo / "pkg").mkdir()
+    (repo / "pkg" / "keep.py").write_text("KEEP = 1")
+    subprocess.run(["git", "-C", str(repo), "add", ".gitignore", "pkg/keep.py"], check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "--quiet", "-m", "base"], check=True)
+    (repo / "pkg" / "staged.py").write_text("STAGED = 1")
+    subprocess.run(["git", "-C", str(repo), "add", "pkg/staged.py"], check=True)
+    (repo / "scratch.py").write_text("SCRATCH = 1")
+    (repo / "notes.json").write_text("{}")
+    (repo / "tests").mkdir()
+    (repo / "tests" / "test_release_scratch.py").write_text("X = 1")
+    (repo / "docs" / "media").mkdir(parents=True)
+    (repo / "docs" / "media" / "keep.bin").write_text("bin")
+    (repo / "eval" / "runs" / "2026-10-06-full").mkdir(parents=True)
+    (repo / "eval" / "runs" / "2026-10-06-full" / "data.json").write_text("{}")
+    dest = tmp_path / "checkout"
+    dest.mkdir()
+    _run_exact_isolated_copy(repo, dest)
+    assert (dest / "pkg" / "keep.py").is_file(), "tracked file missing"
+    assert (dest / "pkg" / "staged.py").is_file(), "staged file missing"
+    assert not (dest / "scratch.py").exists(), "untracked scratch.py leaked"
+    assert not (dest / "notes.json").exists(), "untracked json leaked"
+    assert not (dest / "tests" / "test_release_scratch.py").exists(), "untracked glob match leaked"
+    assert (dest / "docs" / "media" / "keep.bin").is_file(), "explicit asset missing"
+    assert (dest / "eval" / "runs" / "2026-10-06-full" / "data.json").is_file(), (
+        "explicit fixture missing"
     )
 
 

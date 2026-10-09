@@ -13,8 +13,6 @@ SKILL_NAME = "prc-explain"
 SECTION_START = "<!-- prc-explain:start -->"
 SECTION_END = "<!-- prc-explain:end -->"
 
-# Canonical metadata mirrored from SKILL.md; the instruction prose itself
-# always comes from the file, never from a second hand-written copy here.
 PRODUCT_OUTPUTS = ("map.html", "video.mp4", "doc.html", "card.png", "comment.md")
 
 
@@ -24,7 +22,6 @@ def skill_source() -> Path:
 
 
 def _canonical_text() -> str:
-    """The canonical instruction text. Separate seam so tests can vary it."""
     return skill_source().read_text()
 
 

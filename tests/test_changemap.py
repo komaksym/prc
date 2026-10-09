@@ -443,3 +443,28 @@ def test_tour_has_one_test_step_with_at_most_six_tests(tmp_path: Path) -> None:
         ("test", tuple(f"tests/test_a.py::test_{n}" for n in range(6))),
         ("summary", ()),
     ]
+
+
+def test_object_handler_change_links_imported_test_caller(tmp_path: Path) -> None:
+    from prc.facts import compute_facts
+    from prc.identity import to_jsonable
+
+    base = {"command.ts": b"export const command = { exec() { return 0; } };\n"}
+    head = {
+        "command.ts": b"export const command = { exec() { return 1; } };\n",
+        "tests/test_command.ts": (
+            b'import { command } from "../command";\n'
+            b"function test_exec() { return command.exec(); }\n"
+        ),
+    }
+    change = custom_map(tmp_path, base, head)
+    symbols = by_id(change)
+
+    assert symbols["command.ts::command.exec"].status == "modified"
+    assert "command.ts::command" not in symbols
+    assert {(e.source, e.target, e.resolution) for e in change.edges} == {
+        ("tests/test_command.ts::test_exec", "command.ts::command.exec", "exact"),
+    }
+    missing = {entry.id for entry in compute_facts(to_jsonable(change)).no_direct_test}
+
+    assert "command.ts::command.exec" not in missing
