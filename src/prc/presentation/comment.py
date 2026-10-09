@@ -65,7 +65,14 @@ def mermaid_label(qualname: str) -> str:
     )
     text = re.sub(r"\s+", " ", flat).strip()
     text = text.replace("#", "#35;").replace('"', "#quot;")
-    return text.replace("<", "#lt;").replace(">", "#gt;")[:LABEL_LIMIT]
+    text = text.replace("<", "#lt;").replace(">", "#gt;")
+    if len(text) <= LABEL_LIMIT:
+        return text
+    text = text[: LABEL_LIMIT - 1]
+    entity = text.rfind("#")
+    if entity >= 0 and ";" not in text[entity:]:
+        text = text[:entity]
+    return text + "…"
 
 
 def select_nodes(m: dict[str, Any]) -> list[str]:

@@ -155,6 +155,32 @@ def test_comment_keeps_bracket_property_identity(qualname: str, label: str) -> N
     assert comment.check_mermaid(block) == []
 
 
+@pytest.mark.parametrize("special", ['"', "#", "<", ">"])
+def test_comment_truncates_long_labels_at_complete_entities(special: str) -> None:
+    proof = ROOT / "artifacts/e2e/long-mermaid-labels"
+    proof.mkdir(parents=True, exist_ok=True)
+    samples: list[dict[str, Any]] = []
+    for length in range(45, 65):
+        qualname = "x" * length + special + "y" * 50
+        m = large_dict(1)
+        m["symbols"][0]["qualname"] = qualname
+        text = comment.render_comment(m)
+        block = comment.mermaid_block(m)
+        label = comment.mermaid_label(qualname)
+        samples.append(
+            {
+                "qualname": qualname,
+                "label": label,
+                "comment": text,
+                "errors": comment.check_mermaid(block),
+            }
+        )
+    (proof / f"labels-{ord(special)}.json").write_text(json.dumps(samples, indent=2))
+    assert all(not sample["errors"] for sample in samples), samples
+    assert all(len(sample["label"]) <= comment.LABEL_LIMIT for sample in samples)
+    assert all(sample["label"].endswith("…") for sample in samples)
+
+
 def test_mermaid_label_fuzz() -> None:
     hostile = '" `backtick` <angle> [sq] (par) {brace} |pipe| #hash ;semi;\nnewline\x00\x07'
     label = comment.mermaid_label(hostile)
