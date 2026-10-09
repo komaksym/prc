@@ -34,6 +34,18 @@ def test_card_gate_checks_each_label_not_number_presence(tmp_path: Path) -> None
     assert not gates.gate_card_facts(tmp_path)[0]
 
 
+@pytest.mark.parametrize("states", [[], ["failed", "passed"], ["pending"]])
+def test_card_gate_accepts_the_true_ci_state_and_singular_labels(
+    tmp_path: Path, states: list[str]
+) -> None:
+    m = json.loads((ROOT / "tests/data/explainer/maps/pr12.json").read_text())
+    m["brief"]["checks"] = [{"name": f"c{i}", "state": state} for i, state in enumerate(states)]
+    m["brief"]["files"] = m["brief"]["files"][:1]
+    (tmp_path / "map.json").write_text(json.dumps(m))
+    (tmp_path / "card.html").write_text(build_card_html(m))
+    assert gates.gate_card_facts(tmp_path) == (True, "card numbers match recomputation")
+
+
 @pytest.mark.parametrize("damage", ["missing", "sha", "line"])
 def test_doc_gate_requires_the_board_receipt(tmp_path: Path, damage: str) -> None:
     m = {"pr": "owner/repo#1", "head_sha": "a" * 40, "base_sha": "b" * 40}

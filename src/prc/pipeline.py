@@ -28,8 +28,7 @@ from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_
 from prc.model import PrRef
 from prc.presentation.build import build_document
 from prc.presentation.card import CardError
-from prc.presentation.card import build_card_html as build_pr_card_html
-from prc.presentation.card import render_card_png as render_pr_card_png
+from prc.presentation.card import render_card as render_pr_card
 from prc.presentation.check import (
     check_document,
     check_entry,
@@ -602,10 +601,11 @@ def run_explain(
             doc_out = out_dir / "doc.html"
 
         card_html = out_dir / "card.html"
-        (work / "card.html").write_text(build_pr_card_html(rebuilt, rebuilt.get("brief"), board))
         card_png: Path | None = None
         try:
-            render_pr_card_png(work / "card.html", work / "card.png")
+            render_pr_card(
+                rebuilt, rebuilt.get("brief"), board, work / "card.html", work / "card.png"
+            )
             card_png = out_dir / "card.png"
         except CardError as error:
             (work / "card.png").unlink(missing_ok=True)

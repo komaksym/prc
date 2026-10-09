@@ -180,11 +180,19 @@ def gate_card_facts(pr_dir: Path) -> tuple[bool, str]:
         r'<div class="stat-value">([^<]*)</div>\s*<div class="stat-label">([^<]*)</div>',
         card,
     )
+
+    def noun(count: int, one: str, many: str) -> str:
+        return one if count == 1 else many
+
     expected = {
-        "files": str(stats.files),
-        "parsed symbols changed": str(stats.symbols_changed),
-        "resolved call sites": str(stats.call_sites),
-        "test files touched": str(stats.tests_touched),
+        noun(stats.files, "file", "files"): str(stats.files),
+        noun(stats.symbols_changed, "parsed symbol changed", "parsed symbols changed"): str(
+            stats.symbols_changed
+        ),
+        noun(stats.call_sites, "resolved call site", "resolved call sites"): str(stats.call_sites),
+        noun(stats.tests_touched, "test file touched", "test files touched"): str(
+            stats.tests_touched
+        ),
         "no CI" if facts.ci_state == "none" else f"CI {facts.ci_state}": stats.ci_text,
         "parsed code without test evidence": str(stats.untested_total),
     }

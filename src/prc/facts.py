@@ -146,13 +146,21 @@ def compute_stats(m: dict[str, Any], brief: Any = None) -> CardStats:
     return compute_facts(m, brief).stats
 
 
+def limits_lead(limits: tuple[ParseLimit, ...]) -> str:
+    """The counted lead-in for the files symbol analysis skipped. Empty when none were skipped."""
+    if not limits:
+        return ""
+    count = "1 file" if len(limits) == 1 else f"{len(limits)} files"
+    return f"Symbol and call analysis is incomplete for {count}:"
+
+
 def test_evidence(m: dict[str, Any], brief: Any = None) -> str:
+    """The direct test-call verdict for parsed code. `limits_lead` reports unparsed files."""
     facts = compute_facts(m, brief)
-    if facts.limits:
-        paths = ", ".join(f"{entry.path} ({entry.reason})" for entry in facts.limits)
-        return f"Symbol and call analysis is incomplete: {paths}."
     if not any(s.get("status") in CHANGED for s in m.get("symbols", [])):
-        if any(f.get("kind") in ("code", "test") for f in brief_of(m, brief).get("files", [])):
+        if facts.limits or any(
+            f.get("kind") in ("code", "test") for f in brief_of(m, brief).get("files", [])
+        ):
             return "No parsed symbol changes. Top-level and unrecognized changes can remain."
         return "No code symbols changed."
     tests = test_paths(m, brief)

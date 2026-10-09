@@ -268,7 +268,7 @@ def test_card_look_first_shows_three_tour_symbols_with_files() -> None:
     m = shop_dict()
     entries = card.look_first(m)
     assert len(entries) == 3
-    html = card.build_card_html(m, m["brief"], None)
+    html = card.build_card_html(m, m["brief"], None).replace("<wbr>", "")
     for entry in entries:
         assert entry.name in html
         assert entry.path in html
@@ -588,12 +588,19 @@ def assert_readable(blob: str, expected: str, limit: int = 2) -> None:
 
 
 def _ocr_text(png: Path) -> str:
+    """Sparse-text mode: the card is separate tiles and columns, not one page of prose.
+
+    The default page mode joins the six tile labels into one line and misreads them.
+    """
     small = png.with_name("card-800.png")
     subprocess.run(
         ["sips", "-Z", "800", str(png), "--out", str(small)], check=True, capture_output=True
     )
     out = subprocess.run(
-        ["tesseract", str(small), "stdout"], capture_output=True, text=True, check=True
+        ["tesseract", str(small), "stdout", "--psm", "11"],
+        capture_output=True,
+        text=True,
+        check=True,
     )
     return out.stdout
 
@@ -612,8 +619,7 @@ def test_card_png_renders_and_ocr_finds_stats_and_names(tmp_path: Path) -> None:
 
     m = shop_dict()
     html_path = tmp_path / "card.html"
-    html_path.write_text(card.build_card_html(m, m["brief"], None))
-    png = card.render_card_png(html_path, tmp_path / "card.png")
+    png = card.render_card(m, m["brief"], None, html_path, tmp_path / "card.png")
     header = png.read_bytes()[:24]
     assert header[:8] == b"\x89PNG\r\n\x1a\n"
     import struct
@@ -636,21 +642,11 @@ def test_card_png_renders_and_ocr_finds_stats_and_names(tmp_path: Path) -> None:
     raw = _ocr_text(png)
     found = re.sub(r"[^a-z0-9]", "", raw.lower())
     stats = card.compute_stats(m)
-    labels = ["files", "symbols", "callsites", "testfiles", "ci", "directtest"]
-    for token in [
-        *(
-            str(v)
-            for v in (
-                stats.files,
-                stats.symbols_changed,
-                stats.call_sites,
-                stats.tests_touched,
-            )
-        ),
-        *labels,
-    ]:
-        assert re.sub(r"[^a-z0-9]", "", token.lower()) in found, token
-    assert stats.ci_text in raw or re.sub(r"[^a-z0-9]", "", stats.ci_text) in found
+    for value in (stats.files, stats.symbols_changed, stats.call_sites, stats.tests_touched):
+        assert str(value) in found, value
+    labels = ["files", "parsed symbols", "resolved call sites", "test file", "CI", "direct test"]
+    for label in [*labels, stats.ci_text]:
+        assert_readable(found, label)
     names = [e.name for e in card.look_first(m)]
     names += [r.path for r in card.risky(m)]
     names += [u.name for u in card.untested(m)[:3]]
@@ -709,3 +705,178 @@ def test_card_keeps_long_risky_paths_visible(tmp_path: Path) -> None:
         )
         browser.close()
     assert clipped == [], f"Risk paths are clipped: {clipped}"
+
+
+# --- em#5756: a crowded card keeps every block separate and readable ---
+
+PATCH = ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch"
+
+
+def crowded_card_map() -> dict[str, Any]:
+    """The em#5756 card: long names, one analysis limit, three symbols without test calls."""
+    rows = [
+        ("noteCommand.multicursor.onComplete", "src/commands/note.ts", "added"),
+        ("openCommandCenterCommand.exec", "src/commands/openCommandCenter.ts", "modified"),
+        ("CommandCenter", "src/components/CommandCenter/CommandCenter.tsx", "modified"),
+    ]
+    symbols = [
+        {
+            "id": f"{path}::{name}",
+            "qualname": name,
+            "path": path,
+            "kind": "function",
+            "status": status,
+            "span": [1, 9],
+            "base_span": [1, 9],
+            "added": 3,
+            "removed": 0,
+            "hunks": [],
+            "call_sites": 0,
+        }
+        for name, path, status in rows
+    ]
+    code = [
+        {"path": path, "kind": "code", "added": 3, "removed": 0, "named": True, "sensitive": None}
+        for _, path, _ in rows
+    ]
+    return {
+        "pr": "cybersemics/em#5756",
+        "url": None,
+        "title": "Note closes the Command Center on touch.",
+        "author": "Copilot",
+        "base_sha": "9e2db12" + "0" * 33,
+        "head_sha": "3755cd396c00" + "0" * 28,
+        "brief": {
+            "files": [
+                {
+                    "path": PATCH,
+                    "kind": "code",
+                    "added": 18,
+                    "removed": 0,
+                    "named": False,
+                    "sensitive": "dependency patch",
+                },
+                {
+                    "path": "yarn.lock",
+                    "kind": "opaque",
+                    "added": 9,
+                    "removed": 0,
+                    "named": False,
+                    "sensitive": "dependency lockfile",
+                },
+                *code,
+            ],
+            "checks": [{"name": "Test", "state": "passed"}],
+            "mismatches": [],
+            "look_first": [],
+        },
+        "files": [
+            {"path": PATCH, "language": None, "kind": "code"},
+            *({"path": path, "language": "typescript", "kind": "code"} for _, path, _ in rows),
+        ],
+        "symbols": symbols,
+        "edges": [],
+        "tour": [],
+    }
+
+
+CARD_LAYOUT = """() => {
+  const cols = document.querySelector('.cols').getBoundingClientRect();
+  const block = document.querySelector('.untested');
+  const evidence = block.getBoundingClientRect();
+  const footer = document.querySelector('footer').getBoundingClientRect();
+  const problems = [];
+  for (const item of document.querySelectorAll('#look-first li, #risky li')) {
+    const box = item.getBoundingClientRect();
+    if (box.bottom > cols.bottom + 0.5) problems.push('below its column: ' + item.textContent);
+    if (box.bottom > evidence.top + 0.5) problems.push('over the evidence: ' + item.textContent);
+  }
+  if (block.scrollHeight > block.clientHeight + 1) problems.push('evidence block is clipped');
+  if (evidence.bottom > footer.top + 0.5) problems.push('evidence block runs into the footer');
+  return problems;
+}"""
+
+
+def test_crowded_card_keeps_every_block_visible(tmp_path: Path) -> None:
+    """Long names pushed the third entry over a shrunken, clipped evidence block."""
+    pytest.importorskip("playwright.sync_api")
+    from playwright.sync_api import sync_playwright
+
+    m = crowded_card_map()
+    html_path = tmp_path / "card.html"
+    try:
+        card.render_card(m, m["brief"], None, html_path, tmp_path / "card.png")
+    except card.CardError as error:
+        pytest.skip(str(error))
+    proof = ROOT / "artifacts" / "e2e" / "card-crowded"
+    proof.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(tmp_path / "card.png", proof / "card.png")
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1200, "height": 630})
+        page.goto(html_path.as_uri())
+        problems = page.evaluate(CARD_LAYOUT)
+        shown = page.locator("#look-first li .name").count()
+        notes = page.locator("#look-first li .reason").all_text_contents()
+        browser.close()
+    assert problems == []
+    more = [re.fullmatch(r"\+(\d+) more", note) for note in notes]
+    hidden = sum(int(match.group(1)) for match in more if match)
+    assert shown >= 1
+    assert shown + hidden == len(card.look_first(m, m["brief"], 3, None))
+
+
+def test_analysis_limits_keep_the_evidence_sentence_and_every_path() -> None:
+    m = crowded_card_map()
+    paths = [
+        f"internal/compose/structured/errors/package_{i}_with_a_long_name.go" for i in range(6)
+    ]
+    m["files"] += [{"path": path, "language": None, "kind": "code"} for path in paths]
+    m["brief"]["files"] += [
+        {"path": path, "kind": "code", "added": 1, "removed": 0, "named": False, "sensitive": None}
+        for path in paths
+    ]
+    text = comment.render_comment(m)
+    html = card.build_card_html(m, m["brief"], None)
+    lead = "No direct test evidence in this map for some live changed production symbols."
+    section = text.split("## Direct test-call evidence", 1)[1]
+    assert lead in section and lead in html
+    assert "incomplete for 7 files" in section and "incomplete for 7 files" in html
+    for path in [PATCH, *paths]:
+        assert f"`{path}`" in section, path
+    assert "…" not in section
+
+
+@pytest.mark.parametrize(
+    ("states", "value", "label"),
+    [
+        ([], "no CI", "no CI"),
+        (["failed", "passed"], "1/2", "CI failed"),
+        (["pending"], "0/1", "CI pending"),
+        (["passed"], "1/1", "CI passed"),
+    ],
+)
+def test_card_ci_label_follows_check_state(states: list[str], value: str, label: str) -> None:
+    m = shop_dict()
+    m["brief"]["checks"] = [{"name": f"c{i}", "state": state} for i, state in enumerate(states)]
+    html = card.build_card_html(m)
+    pairs = re.findall(
+        r'<div class="stat-value">([^<]*)</div><div class="stat-label">([^<]*)</div>', html
+    )
+    assert (value, label) in pairs
+    assert "CI no CI" not in comment.render_comment(m)
+
+
+def test_card_counts_of_one_read_singular() -> None:
+    m = shop_dict()
+    m["brief"]["files"] = [f for f in m["brief"]["files"] if f["kind"] == "test"][:1]
+    for symbol in m["symbols"]:
+        symbol["call_sites"] = 1 if symbol["qualname"] == "checkout" else 0
+    stats = card.compute_stats(m)
+    assert (stats.files, stats.call_sites, stats.tests_touched) == (1, 1, 1)
+    html = card.build_card_html(m)
+    pairs = re.findall(
+        r'<div class="stat-value">([^<]*)</div><div class="stat-label">([^<]*)</div>', html
+    )
+    for pair in (("1", "file"), ("1", "resolved call site"), ("1", "test file touched")):
+        assert pair in pairs, pairs

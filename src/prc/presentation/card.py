@@ -5,10 +5,14 @@ of files in the brief, symbols changed counts added/modified/deleted, call
 sites sums `call_sites` over changed symbols, tests touched counts brief files
 of kind `test`, CI is passed/total checks or "no CI", and no-direct-test is a
 changed symbol outside test files with no incoming edge from a test symbol.
+
+The card has a fixed size. When long names overfill a list, its trailing entries
+give way to a "+N more" line, so no entry covers the test-evidence lines.
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from importlib.resources import files as _files
 from pathlib import Path
@@ -20,6 +24,8 @@ from prc.facts import (
 )
 from prc.facts import (
     TEST_NOTE,
+    compute_facts,
+    limits_lead,
     test_evidence,
     test_paths,
 )
@@ -40,6 +46,22 @@ from prc.facts import (
 )
 
 TEMPLATE = _files("prc.presentation") / "assets" / "card.html"
+LOOK_LIMIT = 3
+RISK_LIMIT = 3
+
+_FIT = """() => {
+  const bottom = document.querySelector('.cols').getBoundingClientRect().bottom + 0.5;
+  const over = (list) => [...document.querySelectorAll(list + ' li')]
+    .some((item) => item.getBoundingClientRect().bottom > bottom);
+  const block = document.querySelector('.untested');
+  const footer = document.querySelector('footer').getBoundingClientRect();
+  return {
+    look: over('#look-first'),
+    risky: over('#risky'),
+    evidence: block.scrollHeight > block.clientHeight + 1
+      || block.getBoundingClientRect().bottom > footer.top + 0.5,
+  };
+}"""
 
 
 class CardError(RuntimeError):
@@ -271,27 +293,53 @@ def _stat(value: object, label: str, tone: str = "") -> str:
     )
 
 
+def _label(count: int, one: str, many: str) -> str:
+    return one if count == 1 else many
+
+
+def _breakable(value: str) -> str:
+    """Escape, then let long names wrap after dots, slashes and :: instead of mid-word."""
+    return re.sub(r"(::|[./])", r"\1<wbr>", _escape(value))
+
+
 def build_card_html(
-    m: dict[str, Any], brief: Any = None, board: dict[str, Any] | None = None
+    m: dict[str, Any],
+    brief: Any = None,
+    board: dict[str, Any] | None = None,
+    look: int = LOOK_LIMIT,
+    risk: int = RISK_LIMIT,
 ) -> str:
-    """Render the card.html template. Every PR-controlled string is HTML-escaped."""
-    stats = compute_stats(m, brief)
-    entries = look_first(m, brief, 3, board)
+    """Render the card.html template. Every PR-controlled string is HTML-escaped.
+
+    `look` and `risk` cap the entries shown in each list; the rest become "+N more".
+    """
+    facts = compute_facts(m, brief)
+    stats = facts.stats
+    entries = look_first(m, brief, LOOK_LIMIT, board)
     surfaces = risky(m, brief)
-    missing = untested(m, brief)
+    missing = facts.no_direct_test
     repo = str(m.get("pr", ""))
     sha = str(m.get("head_sha", ""))
 
     stats_html = "".join(
         [
-            _stat(stats.files, "files"),
-            _stat(stats.symbols_changed, "parsed symbols changed"),
-            _stat(stats.call_sites, "resolved call sites"),
-            _stat(stats.tests_touched, "test files touched"),
+            _stat(stats.files, _label(stats.files, "file", "files")),
+            _stat(
+                stats.symbols_changed,
+                _label(stats.symbols_changed, "parsed symbol changed", "parsed symbols changed"),
+            ),
+            _stat(
+                stats.call_sites,
+                _label(stats.call_sites, "resolved call site", "resolved call sites"),
+            ),
+            _stat(
+                stats.tests_touched,
+                _label(stats.tests_touched, "test file touched", "test files touched"),
+            ),
             _stat(
                 stats.ci_text,
-                "CI passed",
-                "" if stats.ci_total == 0 or stats.ci_passed == stats.ci_total else " bad",
+                "no CI" if facts.ci_state == "none" else f"CI {facts.ci_state}",
+                {"failed": " bad", "pending": " warn"}.get(facts.ci_state, ""),
             ),
             _stat(
                 stats.untested_total,
@@ -302,31 +350,41 @@ def build_card_html(
     )
     look_html = (
         "".join(
-            f'<li class="st-{_escape(e.status)}"><span class="name">{_escape(e.name)}</span><br>'
-            f'<span class="path">{_escape(e.path)}</span></li>'
-            for e in entries
+            f'<li class="st-{_escape(e.status)}"><span class="name">{_breakable(e.name)}</span>'
+            f'<br><span class="path">{_breakable(e.path)}</span></li>'
+            for e in entries[:look]
         )
-        or '<li><span class="reason">Nothing stands out.</span></li>'
+        if entries
+        else '<li><span class="reason">Nothing stands out.</span></li>'
     )
+    if len(entries) > look:
+        look_html += f'<li><span class="reason">+{len(entries) - look} more</span></li>'
     risky_html = (
         "".join(
-            f'<li class="st-modified"><span class="name">{_escape(r.path)}</span><br>'
+            f'<li class="st-modified"><span class="name">{_breakable(r.path)}</span><br>'
             f'<span class="reason">{_escape(r.reason)}</span></li>'
-            for r in surfaces[:3]
+            for r in surfaces[:risk]
         )
-        or '<li><span class="reason">None.</span></li>'
+        if surfaces
+        else '<li><span class="reason">None.</span></li>'
     )
-    if len(surfaces) > 3:
-        shown_reasons = {r.reason for r in surfaces[:3]}
-        hidden = sorted({r.reason for r in surfaces[3:] if r.reason not in shown_reasons})
+    if len(surfaces) > risk:
+        shown_reasons = {r.reason for r in surfaces[:risk]}
+        hidden = sorted({r.reason for r in surfaces[risk:] if r.reason not in shown_reasons})
         suffix = _escape(f": {', '.join(hidden)}") if hidden else ""
-        risky_html += f'<li><span class="reason">+{len(surfaces) - 3} more{suffix}</span></li>'
-    untested_html = _escape(test_evidence(m, brief))
+        risky_html += f'<li><span class="reason">+{len(surfaces) - risk} more{suffix}</span></li>'
+    lines = []
+    lead = limits_lead(facts.limits)
+    if lead:
+        listed = ", ".join(f"{entry.path} ({entry.reason})" for entry in facts.limits)
+        lines.append(f"<strong>{_escape(lead)}</strong> {_escape(listed)}")
+    lines.append(_escape(test_evidence(m, brief)))
     if missing:
         shown = ", ".join(f'<span class="mono">{_escape(u.name)}</span>' for u in missing[:3])
         rest = f" +{len(missing) - 3} more" if len(missing) > 3 else ""
-        untested_html += f"<br>{shown}{_escape(rest)}"
-    untested_html += f"<br>{_escape(TEST_NOTE)}"
+        lines.append(f"{shown}{_escape(rest)}")
+    lines.append(_escape(TEST_NOTE))
+    untested_html = "<br>".join(lines)
 
     page = TEMPLATE.read_text()
     for token, value in (
@@ -345,10 +403,21 @@ def build_card_html(
     return page
 
 
-def render_card_png(html_path: Path, out_path: Path) -> Path:
-    """Screenshot card.html at 1200x630, scale 2, with the map_video Chromium pattern."""
+def render_card(
+    m: dict[str, Any],
+    brief: Any,
+    board: dict[str, Any] | None,
+    html_path: Path,
+    out_path: Path,
+) -> Path:
+    """Write card.html, fit its lists in Chromium, and screenshot it at 1200x630, scale 2.
+
+    card.html is written first, so it exists even when Chromium cannot start. A list
+    that runs past its column loses its last entry to "+N more" until every entry fits.
+    """
     from prc.presentation.map_video import CARD_SCALE, CARD_VIEWPORT
 
+    html_path.write_text(build_card_html(m, brief, board))
     try:
         import playwright.sync_api  # noqa: F401
     except ImportError as error:
@@ -373,8 +442,22 @@ def render_card_png(html_path: Path, out_path: Path) -> Path:
                 color_scheme="dark",
             )
             page = context.new_page()
-            page.goto(html_path.resolve().as_uri())
-            page.evaluate("document.fonts.ready.then(() => true)")
+            look, risk = LOOK_LIMIT, RISK_LIMIT
+            while True:
+                page.goto(html_path.resolve().as_uri())
+                page.evaluate("document.fonts.ready.then(() => true)")
+                over = page.evaluate(_FIT)
+                if over["evidence"]:
+                    raise CardError("The PR card cannot fit its test-evidence lines in 1200x630.")
+                if over["look"] and look > 0:
+                    look -= 1
+                elif over["risky"] and risk > 0:
+                    risk -= 1
+                elif over["look"] or over["risky"]:
+                    raise CardError("The PR card cannot fit its lists in 1200x630.")
+                else:
+                    break
+                html_path.write_text(build_card_html(m, brief, board, look, risk))
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_bytes(page.screenshot(type="png"))
         finally:

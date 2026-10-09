@@ -18,14 +18,12 @@ import re
 import unicodedata
 from typing import Any
 
-from prc.facts import TEST_NOTE, test_evidence
+from prc.facts import TEST_NOTE, compute_facts, limits_lead, test_evidence
 from prc.facts import brief_of as _brief_of
 from prc.presentation.card import (
-    compute_stats,
     headline,
     look_first,
     risky,
-    untested,
 )
 from prc.presentation.render_brief import span
 
@@ -166,8 +164,9 @@ def render_comment(
 ) -> str:
     """comment.md in PLAN order. PR strings via span(); Mermaid labels never."""
     b = _brief_of(m, brief)
+    facts = compute_facts(m, b)
     changed = [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
-    missing = untested(m, brief if brief is not None else m.get("brief"))
+    missing = facts.no_direct_test
     lines = [f"# {span(headline(m, board))}", ""]
     lines += [
         "![PR card](card.png)",
@@ -199,13 +198,21 @@ def render_comment(
             lines.append(f"  - {x['fact']} {subjects}".rstrip())
     elif not surfaces:
         lines += ["No description mismatch detected by the checked rules."]
-    lines += ["", "## Direct test-call evidence", "", span(test_evidence(m, brief)), "", TEST_NOTE]
+    lines += ["", "## Direct test-call evidence", ""]
+    lead = limits_lead(facts.limits)
+    if lead:
+        lines += [lead, ""]
+        lines += [f"- {span(entry.path)} ({entry.reason})" for entry in facts.limits]
+        lines += [""]
+    lines += [test_evidence(m, b)]
     if missing:
-        lines += [f"- {span(u.name)} in {span(u.path)}" for u in missing]
-    stats = compute_stats(m, brief if brief is not None else m.get("brief"))
+        lines += [""] + [f"- {span(u.name)} in {span(u.path)}" for u in missing]
+    lines += ["", TEST_NOTE]
+    stats = facts.stats
+    ci = "no CI" if facts.ci_state == "none" else f"CI {stats.ci_text} {facts.ci_state}"
     lines += [
         "",
-        f"Files {stats.files}, symbols {stats.symbols_changed}, CI {stats.ci_text}.",
+        f"Files {stats.files}, symbols {stats.symbols_changed}, {ci}.",
         "",
         f"*Written by prc from the code at head `{m.get('head_sha', '')[:12]}`.*",
         "",

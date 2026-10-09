@@ -164,8 +164,9 @@ def test_analysis_limit_paths_stay_inert_in_comment_markdown(tmp_path: Path) -> 
     path = "[link](https:evil).go"
     change = custom_map(tmp_path, {}, {path: b"package main\n"})
     text = render_comment(to_jsonable(change))
-    line = next(line for line in text.splitlines() if "analysis is incomplete" in line)
-    assert line.startswith("`"), line
+    assert "analysis is incomplete for 1 file:" in text
+    line = next(line for line in text.splitlines() if "evil" in line)
+    assert line.startswith("- `[link](https:evil).go`"), line
 
 
 def test_bracket_filename_gets_literal_line_counts(tmp_path: Path) -> None:
