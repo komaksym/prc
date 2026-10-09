@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import itertools
 import math
+import re
 import unicodedata
 from difflib import SequenceMatcher
 from typing import Any
@@ -132,18 +134,17 @@ def wrap_row(tokens: list[dict[str, Any]], cols: int) -> tuple[int, list[int]]:
     def room() -> int:
         return cols - (0 if first else hang)
 
-    for t in tokens:
-        txt = t["text"]
+    for txt in re.findall(r"\s+|\w+|[^\w\s]", text):
         if not txt.strip():
-            cur.append(_piece(t, txt))
+            cur.append(txt)
             used += _width(txt)
             continue
         while txt:
             if used + _width(txt) <= room():
-                cur.append(_piece(t, txt))
+                cur.append(txt)
                 used += _width(txt)
                 txt = ""
-            elif any(x["text"].strip() for x in cur):
+            elif any(x.strip() for x in cur):
                 lines.append(cur)
                 cur, used, first = [], 0, False
             else:
@@ -151,17 +152,29 @@ def wrap_row(tokens: list[dict[str, Any]], cols: int) -> tuple[int, list[int]]:
                 while n < len(txt) and used + _width(txt[: n + 1]) <= room():
                     n += 1
                 n = max(n, 1)
-                cur.append(_piece(t, txt[:n]))
+                cur.append(txt[:n])
                 lines.append(cur)
                 cur, used, txt, first = [], 0, txt[n:], False
     if cur:
         lines.append(cur)
     new: list[dict[str, Any]] = []
     breaks: list[int] = []
-    for li, line in enumerate(lines):
-        if li:
+    boundaries = iter(itertools.accumulate(sum(map(len, line)) for line in lines[:-1]))
+    stop = next(boundaries, None)
+    offset = 0
+    for token in tokens:
+        txt = token["text"]
+        while stop is not None and offset + len(txt) > stop:
+            size = stop - offset
+            if size:
+                new.append(_piece(token, txt[:size]))
             breaks.append(len(new))
-        new.extend(line)
+            txt = txt[size:]
+            offset = stop
+            stop = next(boundaries, None)
+        if txt:
+            new.append(_piece(token, txt))
+        offset += len(txt)
     tokens[:] = new
     return hang, breaks
 

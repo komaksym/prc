@@ -112,6 +112,49 @@ def test_coverage_does_not_claim_clipped_wrapped_diff_is_complete() -> None:
     assert "Everything changed is on screen" not in _not_covered(b, m)
 
 
+def test_cli_rejects_wrapped_assignment_rows_beyond_stage() -> None:
+    import subprocess
+    import sys
+
+    m, b = wrapped_change()
+    lines = m["files"][0]["hunks"][0]["lines"][:6]
+    for line in lines:
+        line["text"] = "result = " + " + ".join(["variable_" + "x" * 25] * 3)
+    m["files"][0]["hunks"][0]["lines"] = lines
+    m["files"][0]["added"] = m["brief"]["files"][0]["added"] = 6
+    b["scenes"][0]["lines"] = [str(n) for n in range(1, 7)]
+    root = Path(__file__).resolve().parents[1]
+    proof = root / "artifacts/e2e/wrapped-token-boundaries"
+    proof.mkdir(parents=True, exist_ok=True)
+    board_path, map_path = proof / "board.json", proof / "map.json"
+    board_path.write_text(json.dumps(b, indent=2))
+    map_path.write_text(json.dumps(m, indent=2))
+    run = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "prc.cli",
+            "board",
+            "check",
+            str(board_path),
+            "--map",
+            str(map_path),
+        ],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    (proof / "check.json").write_text(
+        json.dumps(
+            {"exit_code": run.returncode, "stdout": run.stdout, "stderr": run.stderr}, indent=2
+        )
+    )
+    assert run.returncode == 2, run.stdout + run.stderr
+    assert "diff cannot fit" in run.stderr
+    assert "6/6 on screen" not in run.stdout
+
+
 def test_wrapped_diff_fits_in_real_browser() -> None:
     from playwright.sync_api import sync_playwright
 
@@ -192,6 +235,13 @@ def test_outro_fine_print_must_finish_its_delayed_reveal() -> None:
         ("missing-file", {"scenes": [{"type": "diff", "lines": ["2"]}]}),
         ("missing-say", {"scenes": [{"type": "outro", "cues": [{"do": "cmd", "at": [0, 0.5]}]}]}),
         ("invalid-hold", {"scenes": [{"type": "outro", "hold": "x"}]}),
+        ("missing-receipt-rows", {"scenes": [{"type": "receipt", "say": ["x"]}]}),
+        ("invalid-receipt-row", {"scenes": [{"type": "receipt", "rows": [None]}]}),
+        ("invalid-timeline-row", {"scenes": [{"type": "timeline", "rows": [None]}]}),
+        ("invalid-list-item", {"scenes": [{"type": "list", "items": ["x"]}]}),
+        ("invalid-stat-card", {"scenes": [{"type": "stats", "cards": [True]}]}),
+        ("invalid-bar", {"scenes": [{"type": "bars", "bars": [1]}]}),
+        ("invalid-group", {"scenes": [{"type": "groups", "groups": [[]]}]}),
     ],
 )
 def test_malformed_board_fails_cli_without_traceback(tmp_path: Path, case: str, board: Any) -> None:

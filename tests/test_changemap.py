@@ -505,3 +505,29 @@ def test_quoted_property_change_has_no_nested_test_evidence(tmp_path: Path) -> N
     )
     (tmp_path / "collision-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
     (tmp_path / "collision-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))
+
+
+def test_literal_backslash_key_change_has_no_exact_test_evidence(tmp_path: Path) -> None:
+    import json
+
+    from prc.facts import compute_facts
+    from prc.identity import to_jsonable
+
+    base = {
+        "command.js": rb'export const command = { "\\u0072un": () => 1 };',
+        "tests/test_command.js": (
+            b'import { command } from "../command";\n'
+            rb"function test_run() { return command.\u0072un(); }"
+        ),
+    }
+    head = {**base, "command.js": base["command.js"].replace(b"=> 1", b"=> 2")}
+    change = custom_map(tmp_path, base, head)
+    facts = compute_facts(to_jsonable(change))
+    (tmp_path / "literal-key-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
+    (tmp_path / "literal-key-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))
+    changed = 'command.js::command["\\\\u0072un"]'
+
+    assert {entry.id for entry in facts.no_direct_test} == {changed}
+    assert by_id(change)[changed].status == "modified"
+    assert change.edges == ()
+    assert facts.stats.untested_total == 1

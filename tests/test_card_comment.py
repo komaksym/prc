@@ -135,6 +135,24 @@ def test_mermaid_edges_match_shop_map() -> None:
 # --- Mermaid labels survive hostile input ---
 
 
+@pytest.mark.parametrize(
+    ("qualname", "label"),
+    [
+        ('command["nested.run"]', 'command["nested.run"]'),
+        ('command["a::b"]', 'command["a::b"]'),
+        ('command["nested.exec"].run', "run"),
+        ("LinkedInMDPClient._get_paged", "_get_paged"),
+    ],
+)
+def test_comment_keeps_bracket_property_identity(qualname: str, label: str) -> None:
+    m = large_dict(1)
+    m["symbols"][0]["qualname"] = qualname
+    block = comment.mermaid_block(m)
+    expected = label.replace('"', "#quot;")
+    assert f'["{expected}"]' in block
+    assert comment.check_mermaid(block) == []
+
+
 def test_mermaid_label_fuzz() -> None:
     hostile = '" `backtick` <angle> [sq] (par) {brace} |pipe| #hash ;semi;\nnewline\x00\x07'
     label = comment.mermaid_label(hostile)

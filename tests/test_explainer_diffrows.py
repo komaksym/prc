@@ -7,6 +7,8 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 import prc.explainer.highlight as H
 from prc.explainer.check import verify_board
 from prc.explainer.diffrows import pair_rows, wrap_row
@@ -220,6 +222,34 @@ def visual_lines(toks: list[dict[str, Any]], breaks: list[int]) -> list[list[dic
         cur.append(t)
     lines.append(cur)
     return lines
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "result = " + " + ".join(["variable_" + "x" * 25] * 3),
+        '    value = "' + "x" * 190 + '"',
+        "result = " + " + ".join(["変数" * 16] * 3),
+    ],
+)
+def test_wrapping_depends_on_text_and_preserves_token_styles(text: str) -> None:
+    words = H.row_tokens([(text, "")], 0)
+    _, word_breaks = wrap_row(words, 69)
+    expected = ["".join(t["text"] for t in line) for line in visual_lines(words, word_breaks)]
+    for pieces in ([text], list(text)):
+        tokens: list[dict[str, Any]] = [
+            {"text": piece, "cls": str(i % 2), "chg": True} for i, piece in enumerate(pieces)
+        ]
+        _, breaks = wrap_row(tokens, 69)
+        actual = ["".join(t["text"] for t in line) for line in visual_lines(tokens, breaks)]
+        assert actual == expected
+        assert "".join(t["text"] for t in tokens) == text
+        assert all(t["chg"] for t in tokens)
+        offset = 0
+        for token in tokens:
+            expected_class = "0" if len(pieces) == 1 else str(offset % 2)
+            assert token["cls"] == expected_class
+            offset += len(token["text"])
 
 
 def test_wrapped_rows_join() -> None:

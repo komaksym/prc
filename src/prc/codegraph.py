@@ -360,6 +360,8 @@ def _property_segment(name: str) -> str:
             escape = match.group()[1:]
             if escape.startswith(("u", "x")):
                 digits = escape[1:].strip("{}")
+                if not digits:
+                    return match.group()
                 value = int(digits, 16)
                 return chr(value) if value <= 0x10FFFF else match.group()
             return {
@@ -382,6 +384,8 @@ def _property_segment(name: str) -> str:
             unescape,
             name[1:-1],
         )
+        if "\\" in name:
+            return f"[{json.dumps(name)}]"
     if _property_identifier(name):
         return f".{name}"
     return f"[{json.dumps(name)}]"

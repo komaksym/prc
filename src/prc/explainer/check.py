@@ -293,6 +293,7 @@ def _validate_shape(board: dict[str, Any]) -> None:
         "diff": "lines",
         "list": "items",
         "stats": "cards",
+        "receipt": "rows",
     }
     for i, scene in enumerate(board["scenes"]):
         if not isinstance(scene, dict):
@@ -311,8 +312,14 @@ def _validate_shape(board: dict[str, Any]) -> None:
         ):
             problems.append(f"scene {i}: hold needs finite nonnegative seconds")
         field = collections.get(kind)
-        if field and not isinstance(scene.get(field), list):
-            problems.append(f"scene {i}: {field} needs a list")
+        if field:
+            items = scene.get(field)
+            if not isinstance(items, list):
+                problems.append(f"scene {i}: {field} needs a list")
+            elif kind not in ("graph", "diff") and any(
+                not isinstance(item, dict) for item in items
+            ):
+                problems.append(f"scene {i}: {field} needs a list of objects")
         if kind == "diff" and not isinstance(scene.get("file"), str):
             problems.append(f"scene {i}: diff needs a file path")
         if kind == "outro":

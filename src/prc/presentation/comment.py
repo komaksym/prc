@@ -49,7 +49,8 @@ _DEF_LINES = (
 
 
 def short_label(qualname: str) -> str:
-    """The last dotted segment: `LinkedInMDPClient._get_paged` becomes `_get_paged`."""
+    if qualname.endswith("]"):
+        return qualname
     return qualname.split(".")[-1].split("::")[-1]
 
 

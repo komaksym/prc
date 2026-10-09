@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from prc.codegraph import MAX_PARSE_BYTES, Index, ParsedFile, language_of, parse_file
@@ -602,6 +604,64 @@ def test_unsafe_quoted_key_cannot_resolve_as_nested_import() -> None:
         )
         == set()
     )
+
+
+@pytest.mark.parametrize("extension", ["js", "ts", "tsx"])
+@pytest.mark.parametrize(
+    ("key", "name", "call"),
+    [
+        (r'"\\u0072un"', r"\u0072un", r"\u0072un"),
+        (r'"\\u{72}un"', r"\u{72}un", r"\u{72}un"),
+        (r'"\\x72un"', r"\x72un", "run"),
+        (r'"r\\u0075n"', r"r\u0075n", r"r\u0075n"),
+        (r'"\u005cu0072un"', r"\u0072un", r"\u0072un"),
+        (r"'\\u0072un'", r"\u0072un", r"\u0072un"),
+    ],
+)
+def test_literal_backslash_keys_have_no_identifier_edges(
+    extension: str, key: str, name: str, call: str
+) -> None:
+    path = f"command.{extension}"
+    source = f"export const command = {{ {key}: () => 1 }};\n"
+    index = Index({path: parse(path, source)})
+
+    assert set(index.definitions[path]) == {f"command[{json.dumps(name)}]"}
+    assert (
+        edges(
+            {
+                path: source,
+                f"test.{extension}": (
+                    'import { command } from "./command";\n'
+                    f"function test_run() {{ command.{call}(); }}\n"
+                ),
+            }
+        )
+        == set()
+    )
+
+
+@pytest.mark.parametrize("extension", ["js", "ts", "tsx"])
+def test_genuine_escaped_identifiers_keep_exact_edges(extension: str) -> None:
+    path = f"command.{extension}"
+    source = r"export const command = { \u0072un: () => 1 };"
+
+    assert edges(
+        {
+            path: source,
+            f"test.{extension}": (
+                'import { command } from "./command";\n'
+                r"function test_run() { command.\u0072un(); }"
+            ),
+        }
+    ) == {(f"test.{extension}::test_run", f"{path}::command.\\u0072un", "exact")}
+
+
+@pytest.mark.parametrize("extension", ["js", "ts", "tsx"])
+@pytest.mark.parametrize("key", [r'"\uZZ"', r'"a\ub"', r'"\xGG"'])
+def test_malformed_quoted_key_escapes_do_not_crash_indexing(extension: str, key: str) -> None:
+    path = f"command.{extension}"
+    source = f"export const c = {{ {key}: () => 1 }};"
+    assert edges({path: source}) == set()
 
 
 @pytest.mark.parametrize("extension", ["ts", "js", "tsx"])
