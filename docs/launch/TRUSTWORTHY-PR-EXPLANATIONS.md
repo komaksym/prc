@@ -1,8 +1,14 @@
 # Trustworthy PR explanation milestone
 
-Summary. The milestone code and clean-cache verification pass at b880513. The three-PR acceptance package is ready.
+Summary. Final source 548d8ab passes clean-cache verification and the complete acceptance artifact inspection.
+The assessment defects and seven final inspection defects have passing regression cases.
 The user is the only human reviewer, and human acceptance is pending. Model reviews are supplemental defect checks.
 Public release, license, package name, push and PR creation remain separate decisions.
+
+![Three fixed-revision PR cases, machine checks and the user's acceptance boundary](assets/trustworthy-pr-review.png)
+
+Each PR has its own base and head pair. That pair matches between its original diff and its PRC outputs.
+The figure describes the review method. The verification record below establishes its completion.
 
 ## What changed
 
@@ -89,16 +95,45 @@ map.html differs only by the new summary.test_verdict field.
 The red and green logs live under artifacts/trustworthiness/2026-10-09/regressions.
 The audit reports record test-invocation corrections and environment failures separately from product regressions.
 
+## Final inspection defects
+
+The final image inspection and model review added D18 to D24.
+The tests landed at cadf6f9 before the fixes at 548d8ab.
+Against the original source, 14 cases failed as predicted and the partial-coverage control passed.
+The corrected source passed all 15 cases in 6.17 seconds.
+
+| Defect | Correction and proof |
+| --- | --- |
+| D18 | The verdict says "any" when every live production symbol lacks direct test evidence. The partial case retains "some". |
+| D19 | Walkthrough prose renders paired backticks as code after escaping HTML. Real browser prose matches video captions. |
+| D20 | Wrapped diff signs align with the first visual line. Measured offset changed from 90 pixels to zero. |
+| D21 | Omitted removed lines list ascending line numbers before ascending added lines. |
+| D22 | Receipt labels identify removed lines while retaining base and head commit links. |
+| D23 | Cards and video outro lines render code names consistently. |
+| D24 | Card and comment headlines use `show` text from a sentence with separate speech spelling. |
+
+The Python caption rule lives in `src/prc/captions.py`. The browser parity test guards its JavaScript counterpart.
+Proof is in `regressions/inspection-d18-d24-{red,green}.log`, `artifacts/e2e/caption-headlines` and `artifacts/e2e/caption-parity`.
+The parent viewed both card captures, the outro, all three caption captures and the document scene.
+
+Coverage counts only rendered changed diff rows that finish before the settled frame.
+List quotes and other textual citations do not add to the on-screen line count.
+This conservative rule can undercount visible quotations. The walkthrough still lists omitted changed lines.
+
 ## Final verification
 
-scripts/verify-release.sh passed at b880513 from an empty uv cache. The proof is artifacts/release/verify/run-TnN2MF.
+scripts/verify-release.sh passed at 548d8ab from an empty uv cache. The proof is artifacts/release/verify/run-uVHho9.
 
-- ruff check and ruff format passed. mypy passed on 103 source files.
-- pytest ran 802 tests with 0 failures, 0 errors and 0 skips in 264.49 s.
+- ruff check passed. ruff format checked 566 files. mypy passed on 104 source files.
+- pytest ran 812 tests with 0 failures, 0 errors and 0 skips in 334.57 s.
 - uv filled the empty cache. sync.log has 12 download lines.
 - The installed wheel rendered the offline example outside the source checkout. The video is 1920x1080 and 41.008 s long. The browser checks logged no errors.
 - prc doctor found Python 3.12.7, ffmpeg, Chromium and say. Kokoro is not installed.
-- source-archive-compare.json confirms every source, test and script byte matches b880513. Only the working audit log and plan differ.
+- source-archive-compare.json confirms 237 source, test, script and build-metadata paths match 548d8ab without mismatches.
+
+After that verification, two redundant comments were removed from test_doc_adds_no_new_claims.
+No executable source or test logic changed. The focused test and static checks pass again.
+The older b880513 proof remains historical evidence. The final acceptance package uses the 548d8ab wheel.
 
 Run the same check from the repository root:
 
@@ -111,10 +146,20 @@ PLAYWRIGHT_BROWSERS_PATH=/Users/koval/dev/prc/artifacts/release/browser-cache UV
 
 Open artifacts/trustworthiness/2026-10-09/acceptance/index.html. Record each decision in acceptance.md in the same folder.
 Each case keeps the original diff, its numstat, the provenance and the five PRC outputs for one base and head pair.
-The b880513 wheel built every output. Chromium opened each map, drawer, walkthrough and card, and played each video.
-The parent inspected all 19 settled video scenes and the final browser screenshots.
-Vercel agent-browser checked the review page, all 35 local links, three playing videos and map navigation.
-Its screenshots and checks are in acceptance/hub-browser-b880513. No browser errors were reported. The headless session is closed.
+The 548d8ab wheel built every output. Chromium opened each map, drawer, walkthrough and card, and played each video.
+The installed-package verifier compares original diffs, per-file counts and quoted code with the pinned Git objects.
+It also checks input and output hashes, board identity, provider revisions and retained merge evidence.
+Provider facts describe the captured revision. They are not a live status check.
+
+Vercel agent-browser clicked all 35 local links in a background session and retained a screenshot for every result.
+All 35 passed. Proof is acceptance/hub-browser-548d8ab/checks.json. The session is closed.
+Direct model inspection covers all three cards, 21 walkthrough segments and 19 settled scenes from the final videos.
+Every video image matches decoded MP4 pixels. The segments cover each complete walkthrough screenshot without gaps.
+Proof is inspection-548d8ab/inspection-results.json and artifact-bindings.json beside the acceptance folder.
+The parent also inspected the five browser screenshots from the final installed-wheel verifier.
+
+Earlier statements overstated card inspection and hub clicks. Those earlier claims do not count as final proof.
+The current image inventory and executed click records provide the complete evidence.
 
 | Case | Base | Head | Changed lines on screen | Video |
 | --- | --- | --- | --- | --- |
@@ -150,12 +195,18 @@ It found no high or medium issues. Its report is .audit/trust-milestone-trail-fi
 The parent logged a test-count correction, recovered executed browser calls and retained temporary evidence with matching hashes.
 The report distinguishes code-byte verification from the working audit and plan files in the release copy.
 
+The final GLM recheck at 548d8ab found no correctness findings in D18 to D24.
+Its report is .audit/trust-final-inspection-review.md. Twelve source cases passed in the reviewer's environment.
+Its three browser attempts could not launch under the sandbox. The parent's clean-cache run passed all browser cases.
+The comment review requested two redundant narrative removals and found no MUST KILL issue.
+Both removals are complete. Its report is .audit/trust-inspection-comments-review.md.
+These are model reviews. They do not supply human acceptance.
+
 ## Known limits
 
 - Card evidence lines are single lines that end in an ellipsis. The swarm-deploy#116 card names one full unparsed path and part of a second. Its lead says 7 files, and the comment and the map tooltip list all seven.
 - A crowded card hides look-first entries behind "+N more". The em#5756 card shows two of three.
 - A map symbol card with the test badge cuts its call-site text, for example "0 call sit…".
-- In the em#5756 video diff frame, wrapped line 24 shows its "+" marker on the continuation row. The cause is not confirmed.
 - The acceptance runs did not run the tests of the three external projects.
 - No person has listened to the narration. Kokoro is not installed, so the videos use the macOS say voice.
 - Note-risk warnings retain a conservative geometry estimate. Actual note placement uses browser measurements and has real browser checks.

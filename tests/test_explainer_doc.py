@@ -277,13 +277,11 @@ def test_removed_receipt_labels_name_their_side() -> None:
 
 
 def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
-    """Every doc string is a board sentence, a fixed template, or map-verbatim."""
     docmod = need_doc()
     board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path, edit=code_first_word)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
     sentences = set(fixture_captions("mdp12.json"))
-    # Fixed template strings: the only chrome the doc may add.
     templates = set(docmod.TEMPLATE_STRINGS)
     blob = json.dumps(board) + json.dumps(m)
     joined_prose = "\n".join(p for section in doc.prose for p in section)

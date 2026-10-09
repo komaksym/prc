@@ -1,0 +1,733 @@
+diff --git a/src/prc/captions.py b/src/prc/captions.py
+new file mode 100644
+index 0000000..46ffc8a
+--- /dev/null
++++ b/src/prc/captions.py
+@@ -0,0 +1,12 @@
++from __future__ import annotations
++
++import html
++import re
++
++
++def shown(entry: str | dict[str, str]) -> str:
++    return entry if isinstance(entry, str) else entry["show"]
++
++
++def shown_html(text: str) -> str:
++    return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(text))
+diff --git a/src/prc/explainer/assets/doc.css b/src/prc/explainer/assets/doc.css
+index a2c5347..6843179 100644
+--- a/src/prc/explainer/assets/doc.css
++++ b/src/prc/explainer/assets/doc.css
+@@ -15,6 +15,7 @@ body.doc section.scene { position: static; opacity: 1; }
+ .scene h2, .not-covered h2 { font: 700 14px system-ui; letter-spacing: 0.14em; text-transform: uppercase; color: #8A93A6; margin-bottom: 14px; }
+ .scene h3, .not-covered h3 { font: 700 13px system-ui; letter-spacing: 0.12em; text-transform: uppercase; color: #5B6475; margin: 20px 0 8px; }
+ .prose { font: 400 20px/1.6 Charter, "Iowan Old Style", Georgia, serif; color: #ECEFF4; max-width: 68ch; margin: 8px 0; }
++.prose code { font-size: 0.9em; color: #F0AC5F; }
+ .shot { width: 100%; margin: 22px 0; border: 1px solid #1F2738; border-radius: 14px; }
+ .shot .efoot, .shot .ebar { display: none; }
+ .receipts { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font: 15px ui-monospace, Menlo, monospace; }
+diff --git a/src/prc/explainer/assets/engine.css b/src/prc/explainer/assets/engine.css
+index 07b8406..b405eac 100644
+--- a/src/prc/explainer/assets/engine.css
++++ b/src/prc/explainer/assets/engine.css
+@@ -122,7 +122,7 @@ body.video .emount { width: 1920px; height: 1080px; }
+ .diff .code { position: relative; border: 2px solid #1F2738; border-radius: 16px; background: #0A0F1A; overflow: hidden; }
+ .drow { position: absolute; left: 0; right: 0; display: flex; align-items: center; overflow: hidden; font: 25px/44px ui-monospace, "SF Mono", Menlo, monospace; color: #D5DBE5; white-space: pre; font-variant-ligatures: none; }
+ .drow .mt { display: inline-block; }
+-.drow .sg { flex: none; width: 56px; text-align: center; font-weight: 700; }
++.drow .sg { flex: none; align-self: flex-start; width: 56px; text-align: center; font-weight: 700; }
+ .drow .ln { flex: none; align-self: flex-start; color: #5B6475; font-size: 0.72em; text-align: right; padding-right: 12px; }
+ .drow .tx { position: relative; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-right: 24px; }
+ .drow.gap .tx { color: #3E4759; }
+diff --git a/src/prc/explainer/assets/engine.js b/src/prc/explainer/assets/engine.js
+index f5a78b8..e85d4db 100644
+--- a/src/prc/explainer/assets/engine.js
++++ b/src/prc/explainer/assets/engine.js
+@@ -482,7 +482,7 @@
+ 
+   MAKERS.outro = (s, root) => {
+     const wrap = D('outro', null, root);
+-    const l1 = D('l1', esc(s.l1), wrap), l2 = D('l2', esc(s.l2), wrap);
++    const l1 = D('l1', fmt(s.l1), wrap), l2 = D('l2', fmt(s.l2), wrap);
+     const cmd = D('cmd', `<b>prc map</b> ${esc(s.url)}`, wrap);
+     const fine = D('fine', esc(s.fine == null ? '' : s.fine), wrap);
+     const at = name => cueT(s, q => q.do === name);
+diff --git a/src/prc/explainer/doc.py b/src/prc/explainer/doc.py
+index fa553a5..8dea1e8 100644
+--- a/src/prc/explainer/doc.py
++++ b/src/prc/explainer/doc.py
+@@ -12,6 +12,7 @@ import html
+ from pathlib import Path
+ from typing import Any
+ 
++from prc.captions import shown, shown_html
+ from prc.explainer.preflight import cited_refs, line_coverage
+ from prc.explainer.render import ASSETS, board_json
+ 
+@@ -38,7 +39,7 @@ TEMPLATE_STRINGS = frozenset(
+ 
+ def captions(scene: dict[str, Any]) -> list[str]:
+     """Caption prose: the show text, not the voice spelling."""
+-    return [s if isinstance(s, str) else s.get("show", s.get("speak", "")) for s in scene["say"]]
++    return [shown(s) for s in scene["say"]]
+ 
+ 
+ def receipt_refs(scene: dict[str, Any]) -> list[tuple[str, int, bool]]:
+@@ -122,20 +123,26 @@ def header_html(m: dict[str, Any]) -> str:
+ 
+ def _scene_section(board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str, Any]) -> str:
+     owner_repo = m["pr"].split("#")[0]
+-    prose = "\n".join(f'<p class="prose">{html.escape(line)}</p>' for line in captions(s))
++    prose = "\n".join(f'<p class="prose">{shown_html(line)}</p>' for line in captions(s))
+     receipts = ""
+     links = [
+-        (receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed), path, n)
++        (
++            receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed),
++            path,
++            n,
++            removed,
++        )
+         for path, n, removed in receipt_refs(s)
+     ]
+     seen: set[str] = set()
+     items = []
+-    for href, path, n in links:
++    for href, path, n, removed in links:
+         if href in seen:
+             continue
+         seen.add(href)
++        label = f"{path}#L{n} (removed)" if removed else f"{path}#L{n}"
+         items.append(
+-            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(path)}#L{n}</a></li>'
++            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(label)}</a></li>'
+         )
+     if items:
+         receipts = "<h3>Receipts</h3>\n" + '<ul class="receipts">\n' + "\n".join(items) + "\n</ul>"
+diff --git a/src/prc/explainer/preflight.py b/src/prc/explainer/preflight.py
+index bb5774d..f33a858 100644
+--- a/src/prc/explainer/preflight.py
++++ b/src/prc/explainer/preflight.py
+@@ -117,7 +117,10 @@ def line_coverage(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
+     rendered = rendered_refs(board, m)
+     cited = cited_refs(board)
+     shown = {k for k in changed if k in rendered}
+-    missing = sorted((k for k in changed if k not in shown), key=lambda k: (k[0], k[1]))
++    missing = sorted(
++        (k for k in changed if k not in shown),
++        key=lambda k: (k[0], 0 if k[1] < 0 else 1, abs(k[1])),
++    )
+     total = sum(f.get("added", 0) + f.get("removed", 0) for f in m.get("files", []))
+     unavailable = max(0, total - len(changed))
+     kinds: dict[str, Any] = {}
+diff --git a/src/prc/explainer/timing.py b/src/prc/explainer/timing.py
+index 2db1cb0..3e864a1 100644
+--- a/src/prc/explainer/timing.py
++++ b/src/prc/explainer/timing.py
+@@ -11,6 +11,7 @@ import math
+ from pathlib import Path
+ from typing import Any
+ 
++from prc.captions import shown
+ from prc.explainer.check import find_phrase, spoken
+ from prc.explainer.diffrows import DIFF_BOTTOM, diff_layout
+ from prc.explainer.voice import Backend, audible, estimate_seconds, pauses
+@@ -175,7 +176,7 @@ def fit_sentences(
+                 on, off = 0.0, d
+             s["sentences"].append(
+                 {
+-                    "text": line if isinstance(line, str) else line["show"],
++                    "text": shown(line),
+                     "start": t,
+                     "dur": d,
+                     "on": on,
+diff --git a/src/prc/facts.py b/src/prc/facts.py
+index 054b9eb..3d0c537 100644
+--- a/src/prc/facts.py
++++ b/src/prc/facts.py
+@@ -152,7 +152,13 @@ def compute_facts(m: dict[str, Any], brief: Any = None) -> Facts:
+         else:
+             verdict = "No live production symbols changed."
+     elif missing:
+-        verdict = "No direct test evidence in this map for some live changed production symbols."
++        missing_ids = {entry.id for entry in missing}
++        live_ids = {s["id"] for s in live_prod}
++        verdict = (
++            "No direct test evidence in this map for any live changed production symbol."
++            if missing_ids >= live_ids
++            else "No direct test evidence in this map for some live changed production symbols."
++        )
+     else:
+         verdict = (
+             "Direct test-call evidence found for all live changed production symbols in this map."
+diff --git a/src/prc/presentation/card.py b/src/prc/presentation/card.py
+index f42b688..c8dfcc5 100644
+--- a/src/prc/presentation/card.py
++++ b/src/prc/presentation/card.py
+@@ -16,6 +16,7 @@ from pathlib import Path
+ from typing import Any
+ from xml.sax.saxutils import escape as _escape
+ 
++from prc.captions import shown, shown_html
+ from prc.facts import (
+     CHANGED as CHANGED,
+ )
+@@ -93,7 +94,7 @@ def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
+                 return str(scene["l1"])
+         for scene in board.get("scenes", []):
+             if scene.get("type") == "title" and scene.get("say"):
+-                return str(scene["say"][0])
++                return shown(scene["say"][0])
+     return str(m.get("title", ""))
+ 
+ 
+@@ -380,7 +381,7 @@ def build_card_html(
+     page = TEMPLATE.read_text()
+     for token, value in (
+         ("EYEBROW", f"PR card · {repo}"),
+-        ("HEADLINE", headline(m, board)),
++        ("HEADLINE", shown_html(headline(m, board))),
+         ("STATS", stats_html),
+         ("LOOK_FIRST", look_html),
+         ("RISKY", risky_html),
+@@ -389,7 +390,7 @@ def build_card_html(
+     ):
+         page = page.replace(
+             "{{" + token + "}}",
+-            _escape(value) if token in ("EYEBROW", "HEADLINE", "FOOTER") else value,
++            _escape(value) if token in ("EYEBROW", "FOOTER") else value,
+         )
+     return page
+ 
+diff --git a/tests/test_card_comment.py b/tests/test_card_comment.py
+index b4ef247..8cc1945 100644
+--- a/tests/test_card_comment.py
++++ b/tests/test_card_comment.py
+@@ -11,6 +11,7 @@ import json
+ import re
+ import shutil
+ import subprocess
++from html import unescape
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -310,6 +311,33 @@ def test_card_part_order_and_headline() -> None:
+     assert positions == sorted(positions), positions
+ 
+ 
++def headline_parts(page: str) -> tuple[str, list[str]]:
++    found = re.search(r'<h1 class="headline">(.*?)</h1>', page, re.S)
++    assert found, "card has a headline"
++    inner = found.group(1)
++    return unescape(re.sub(r"<[^>]+>", "", inner)), re.findall(r"<code>([^<]*)</code>", inner)
++
++
++def test_headline_uses_the_shown_text_of_a_spoken_caption() -> None:
++    m = shop_dict()
++    spoken = {"show": "The AI step is new.", "speak": "The A.I. step is new."}
++    board = {"scenes": [{"type": "title", "say": [spoken]}]}
++    assert headline_parts(card.build_card_html(m, m["brief"], board)) == ("The AI step is new.", [])
++    first = comment.render_comment(m, m["brief"], board).splitlines()[0]
++    assert first == "# `The AI step is new.`"
++
++
++def test_card_headline_sets_backticked_names_as_code() -> None:
++    m = shop_dict()
++    say = ['`select_next_episode` now skips <gaps> & "holes"; an unpaired ` stays.']
++    page = card.build_card_html(m, m["brief"], {"scenes": [{"type": "title", "say": say}]})
++    assert headline_parts(page) == (
++        'select_next_episode now skips <gaps> & "holes"; an unpaired ` stays.',
++        ["select_next_episode"],
++    )
++    assert "<gaps>" not in page
++
++
+ def test_card_look_first_shows_three_tour_symbols_with_files() -> None:
+     m = shop_dict()
+     entries = card.look_first(m)
+@@ -883,7 +911,7 @@ def test_analysis_limits_keep_the_evidence_sentence_and_every_path() -> None:
+     ]
+     text = comment.render_comment(m)
+     html = card.build_card_html(m, m["brief"], None)
+-    lead = "No direct test evidence in this map for some live changed production symbols."
++    lead = "No direct test evidence in this map for any live changed production symbol."
+     section = text.split("## Direct test-call evidence", 1)[1]
+     assert lead in section and lead in html
+     assert "incomplete for 7 files" in section and "incomplete for 7 files" in html
+diff --git a/tests/test_changemap.py b/tests/test_changemap.py
+index 212857c..b61367a 100644
+--- a/tests/test_changemap.py
++++ b/tests/test_changemap.py
+@@ -501,7 +501,7 @@ def test_quoted_property_change_has_no_nested_test_evidence(tmp_path: Path) -> N
+     assert {entry.id for entry in facts.no_direct_test} == {changed}
+     assert facts.stats.untested_total == 1
+     assert facts.test_verdict == (
+-        "No direct test evidence in this map for some live changed production symbols."
++        "No direct test evidence in this map for any live changed production symbol."
+     )
+     (tmp_path / "collision-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
+     (tmp_path / "collision-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))
+diff --git a/tests/test_explainer_doc.py b/tests/test_explainer_doc.py
+index 9c245b7..5cb6f22 100644
+--- a/tests/test_explainer_doc.py
++++ b/tests/test_explainer_doc.py
+@@ -12,6 +12,7 @@ import hashlib
+ import json
+ import re
+ import shutil
++from collections.abc import Callable
+ from html.parser import HTMLParser
+ from pathlib import Path
+ from typing import Any
+@@ -33,9 +34,14 @@ def need_doc() -> Any:
+ 
+ 
+ def filled(
+-    board_name: str, map_name: str, tmp_path: Path
++    board_name: str,
++    map_name: str,
++    tmp_path: Path,
++    edit: Callable[[dict[str, Any]], None] | None = None,
+ ) -> tuple[dict[str, Any], dict[str, Any], float]:
+     board = json.loads((DATA / "boards" / board_name).read_text())
++    if edit:
++        edit(board)
+     m = json.loads((DATA / "maps" / map_name).read_text())
+     facts = verify_board(board, m)
+     render.fill(board, m, facts, None)
+@@ -54,6 +60,16 @@ def captions(scene: dict[str, Any]) -> list[str]:
+     return [s if isinstance(s, str) else s["show"] for s in scene["say"]]
+ 
+ 
++def code_first_word(board: dict[str, Any]) -> None:
++    word, rest = board["scenes"][0]["say"][0].split(" ", 1)
++    board["scenes"][0]["say"][0] = f"`{word}` {rest}"
++
++
++def fixture_captions(board_name: str) -> list[str]:
++    board = json.loads((DATA / "boards" / board_name).read_text())
++    return [line for s in board["scenes"] for line in captions(s)]
++
++
+ class Doc(HTMLParser):
+     """Sections, prose, links, styles and the one script of a doc.html."""
+ 
+@@ -193,21 +209,80 @@ def uncovered_rule(board: dict[str, Any], m: dict[str, Any]) -> tuple[set[str],
+ 
+ def test_prose_is_board_sentences(tmp_path: Path) -> None:
+     docmod = need_doc()
+-    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path)
++    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path, edit=code_first_word)
+     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
+     doc = parse(html)
+     flat = [p for section in doc.prose for p in section]
+-    want = [line for s in board["scenes"] for line in captions(s)]
+-    assert flat == want
++    assert flat == fixture_captions("mdp17b.json")
++    assert '<p class="prose"><code>This</code> pull request changes' in html
++
++
++def _prose_section_html(docmod: Any, say: list[str]) -> Any:
++    m = {"pr": "o/r#1", "head_sha": "h" * 40, "base_sha": "b" * 40}
++    board: dict[str, Any] = {
++        "name": "t",
++        "scenes": [{"type": "title", "kicker": "Open pull request", "say": say}],
++    }
++    return docmod._scene_section(board, 0, board["scenes"][0], m)
++
++
++def test_prose_renders_backticked_names_as_code() -> None:
++    docmod = need_doc()
++    html = _prose_section_html(
++        docmod,
++        [
++            "`select_next_episode` now finds the last watched episode.",
++            "An unpaired ` stays literal.",
++            'Hostile `name` with <script> and "quotes" stays escaped.',
++        ],
++    )
++    assert "<code>select_next_episode</code>" in html
++    assert "<code>name</code>" in html
++    assert "<script>" not in html
++    assert "&lt;script&gt;" in html
++    doc = parse(html)
++    flat = [p for section in doc.prose for p in section]
++    assert flat[0] == "select_next_episode now finds the last watched episode."
++    assert "`" not in flat[0]
++    assert flat[1] == "An unpaired ` stays literal."
++    assert flat[2] == 'Hostile name with <script> and "quotes" stays escaped.'
++
++
++def test_removed_receipt_labels_name_their_side() -> None:
++    docmod = need_doc()
++    head, base = "h" * 40, "b" * 40
++    m = {"pr": "o/r#1", "head_sha": head, "base_sha": base}
++    scene: dict[str, Any] = {
++        "type": "diff",
++        "file": "internal/compose/file.go",
++        "say": ["Change the value."],
++        "rows": [
++            {"num": 77, "op": " ", "text": "x = 1"},
++            {"num": 77, "op": "-", "text": "x = 0"},
++        ],
++    }
++    board: dict[str, Any] = {"name": "t", "scenes": [scene]}
++    html = docmod._scene_section(board, 0, scene, m)
++    receipts = re.findall(r'<a class="receipt" href="([^"]+)">([^<]+)</a>', html)
++    assert len(receipts) == 2
++    by_label = {label: href for href, label in receipts}
++    assert "internal/compose/file.go#L77" in by_label
++    assert "internal/compose/file.go#L77 (removed)" in by_label
++    assert by_label["internal/compose/file.go#L77"] == (
++        f"https://github.com/o/r/blob/{head}/internal/compose/file.go#L77"
++    )
++    assert by_label["internal/compose/file.go#L77 (removed)"] == (
++        f"https://github.com/o/r/blob/{base}/internal/compose/file.go#L77"
++    )
+ 
+ 
+ def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
+     """Every doc string is a board sentence, a fixed template, or map-verbatim."""
+     docmod = need_doc()
+-    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
++    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path, edit=code_first_word)
+     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
+     doc = parse(html)
+-    sentences = {line for s in board["scenes"] for line in captions(s)}
++    sentences = set(fixture_captions("mdp12.json"))
+     # Fixed template strings: the only chrome the doc may add.
+     templates = set(docmod.TEMPLATE_STRINGS)
+     blob = json.dumps(board) + json.dumps(m)
+@@ -254,14 +329,18 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
+     for s in board["scenes"]:
+         for c in s.get("cite", []):
+             path, n = c["line"].rsplit(":", 1)
+-            want[f"{path}#L{abs(int(n))}"] = (
++            label = f"{path}#L{abs(int(n))} (removed)" if int(n) < 0 else f"{path}#L{abs(int(n))}"
++            want[label] = (
+                 m["base_sha"] if int(n) < 0 else m["head_sha"],
+                 abs(int(n)),
+             )
+         for it in s.get("items", []):
+             if "cite" in it:
+                 path, n = it["cite"].rsplit(":", 1)
+-                want[f"{path}#L{abs(int(n))}"] = (
++                label = (
++                    f"{path}#L{abs(int(n))} (removed)" if int(n) < 0 else f"{path}#L{abs(int(n))}"
++                )
++                want[label] = (
+                     m["base_sha"] if int(n) < 0 else m["head_sha"],
+                     abs(int(n)),
+                 )
+@@ -269,7 +348,12 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
+             for r in s["rows"]:
+                 if "text" not in r:
+                     continue
+-                want[f"{s['file']}#L{r['num']}"] = (
++                label = (
++                    f"{s['file']}#L{r['num']} (removed)"
++                    if r["op"] == "-"
++                    else f"{s['file']}#L{r['num']}"
++                )
++                want[label] = (
+                     m["base_sha"] if r["op"] == "-" else m["head_sha"],
+                     r["num"],
+                 )
+diff --git a/tests/test_trust_render_preflight.py b/tests/test_trust_render_preflight.py
+index 2136fab..e7cff09 100644
+--- a/tests/test_trust_render_preflight.py
++++ b/tests/test_trust_render_preflight.py
+@@ -189,6 +189,133 @@ def test_wrapped_diff_fits_in_real_browser() -> None:
+         browser.close()
+ 
+ 
++def test_wrapped_diff_sign_sits_on_first_line() -> None:
++    from playwright.sync_api import sync_playwright
++
++    from prc.explainer.check import verify_board
++    from prc.explainer.render import render
++    from prc.explainer.voice import NoneBackend
++
++    m, b = wrapped_change()
++    m["files"][0]["hunks"][0]["lines"][2]["text"] = "ok = 1"
++    b["scenes"][0]["lines"] = ["1", "2", "3"]
++    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/wrapped-diff-sign"
++    facts = verify_board(b, m)
++    render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
++    with sync_playwright() as driver:
++        browser = driver.chromium.launch()
++        page = browser.new_page(viewport={"width": 1920, "height": 1080})
++        page.goto((proof / "player.html").as_uri())
++        page.wait_for_function("window.ready === true")
++        page.evaluate("window.seek(window.BOARD.scenes[0].end - 0.5)")
++        page.screenshot(path=str(proof / "settled.png"))
++        bounds = page.locator(".drow:not(.gap)").evaluate_all(
++            """rows => rows.map(row => {
++                const rects = row.querySelector('.ct').getClientRects();
++                return {
++                    row: row.getBoundingClientRect().toJSON(),
++                    sg: row.querySelector('.sg').getBoundingClientRect().toJSON(),
++                    first: rects[0].toJSON(),
++                    count: rects.length,
++                    wrapped: rects.length > 1,
++                };
++            })"""
++        )
++        (proof / "bounds.json").write_text(json.dumps(bounds, indent=2))
++        assert [bound["wrapped"] for bound in bounds] == [True, True, False]
++        for bound in bounds:
++            sg_cy = bound["sg"]["y"] + bound["sg"]["height"] / 2
++            line_cy = bound["first"]["y"] + bound["first"]["height"] / 2
++            assert abs(sg_cy - line_cy) <= 2, bound
++        browser.close()
++
++
++def test_doc_prose_matches_video_captions_in_real_browser() -> None:
++    from playwright.sync_api import sync_playwright
++
++    from prc.explainer.check import verify_board
++    from prc.explainer.doc import render_doc
++    from prc.explainer.render import render
++    from prc.explainer.voice import NoneBackend
++
++    m = tiny_map()
++    b = tiny_board(["2", "3", "4"])
++    b["scenes"][0]["say"] = [
++        '`a` now returns <x> & "y".',
++        {"show": "The `AI` step stays.", "speak": "The A.I. step stays."},
++        "An unpaired ` stays literal.",
++    ]
++    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/caption-parity"
++    facts = verify_board(b, m)
++    rendered = render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
++    render_doc(b, m, proof, rendered.duration, has_video=False)
++    read = """el => ({
++        text: el.textContent,
++        code: [...el.querySelectorAll('code')].map(c => c.textContent),
++    })"""
++    with sync_playwright() as driver:
++        browser = driver.chromium.launch()
++        page = browser.new_page(viewport={"width": 1920, "height": 1080})
++        page.goto((proof / "player.html").as_uri())
++        page.wait_for_function("window.ready === true")
++        video = []
++        for n, sentence in enumerate(page.evaluate("window.BOARD.scenes[0].sentences")):
++            page.evaluate(f"window.seek({sentence['start'] + sentence['dur'] / 2})")
++            video.append(page.locator(".ecap").evaluate(read))
++            page.screenshot(path=str(proof / f"video-caption-{n}.png"))
++        page.goto((proof / "doc.html").as_uri())
++        doc = page.locator("#scene-0 .prose").evaluate_all(f"els => els.map({read})")
++        page.locator("#scene-0").screenshot(path=str(proof / "doc-scene.png"))
++        browser.close()
++    assert video == doc
++    assert doc == [
++        {"text": 'a now returns <x> & "y".', "code": ["a"]},
++        {"text": "The AI step stays.", "code": ["AI"]},
++        {"text": "An unpaired ` stays literal.", "code": []},
++    ]
++
++
++def test_card_and_video_outro_render_code_names() -> None:
++    from playwright.sync_api import sync_playwright
++
++    from prc.explainer.check import verify_board
++    from prc.explainer.render import render
++    from prc.explainer.voice import NoneBackend
++    from prc.presentation.card import render_card
++
++    m, b = tiny_map(), tiny_board(["2", "3", "4"])
++    b["scenes"][-1]["l1"] = '`a` now returns <x> & "y".'
++    b["scenes"][-1]["l2"] = "Start at `a` in `a.py`."
++    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/caption-headlines"
++    facts = verify_board(b, m)
++    render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
++    shown = {"show": "The `a` step stays.", "speak": "The A step stays."}
++    title = {"scenes": [{"type": "title", "say": [shown]}]}
++    for name, board in (("outro", b), ("spoken", title)):
++        render_card(m, m["brief"], board, proof / f"{name}.html", proof / f"{name}.png")
++    read = """el => ({
++        text: el.textContent,
++        code: [...el.querySelectorAll('code')].map(c => c.textContent),
++    })"""
++    with sync_playwright() as driver:
++        browser = driver.chromium.launch()
++        page = browser.new_page(viewport={"width": 1920, "height": 1080})
++        page.goto((proof / "player.html").as_uri())
++        page.wait_for_function("window.ready === true")
++        page.evaluate("window.seek(window.BOARD.scenes.at(-1).end - 0.5)")
++        page.screenshot(path=str(proof / "video-outro.png"))
++        outro = page.locator(".outro .l1, .outro .l2").evaluate_all(f"els => els.map({read})")
++        page.set_viewport_size({"width": 1200, "height": 630})
++        cards = []
++        for name in ("outro", "spoken"):
++            page.goto((proof / f"{name}.html").as_uri())
++            cards.append(page.locator(".headline").evaluate(read))
++        browser.close()
++    expected = {"text": 'a now returns <x> & "y".', "code": ["a"]}
++    assert outro == [expected, {"text": "Start at a in a.py.", "code": ["a", "a.py"]}]
++    assert cards == [expected, {"text": "The a step stays.", "code": ["a"]}]
++
++
+ @pytest.mark.parametrize("verb", ["l1", "l2", "cmd"])
+ def test_check_rejects_outro_reveal_at_scene_end(verb: str) -> None:
+     from prc.explainer.check import verify_board
+@@ -314,6 +441,44 @@ def test_board_coverage_and_doc_agree_on_missing_lines() -> None:
+     assert cov["missing"], "partial board must list missing changed lines"
+ 
+ 
++def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
++    import re
++
++    from prc.explainer import boards
++    from prc.explainer.doc import _not_covered
++    from prc.explainer.preflight import line_coverage
++
++    m = tiny_map()
++    m["files"][0]["hunks"][0]["lines"] = [
++        {"op": "-", "old": 178, "new": None, "text": "gone 178"},
++        {"op": "-", "old": 171, "new": None, "text": "gone 171"},
++        {"op": "-", "old": 81, "new": None, "text": "gone 81"},
++        {"op": "+", "old": None, "new": 9, "text": "new 9"},
++        {"op": "+", "old": None, "new": 3, "text": "new 3"},
++        {"op": " ", "old": 1, "new": 1, "text": "def a():"},
++    ]
++    m["files"][0].update(added=2, removed=3)
++    m["brief"]["files"][0].update(added=2, removed=3)
++    b = tiny_board([])
++    b["scenes"][0]["cues"] = []
++
++    cov = line_coverage(b, m)
++    assert cov["missing"] == ["a.py:-81", "a.py:-171", "a.py:-178", "a.py:3", "a.py:9"]
++
++    html = _not_covered(b, m)
++    labels = re.findall(r'<a class="leftout"[^>]*>([^<]+)</a>', html)
++    assert labels == [
++        "a.py#L81 (removed)",
++        "a.py#L171 (removed)",
++        "a.py#L178 (removed)",
++        "a.py#L3",
++        "a.py#L9",
++    ]
++
++    text = boards.coverage(b, m)
++    assert "missing changed lines: a.py:-81, a.py:-171, a.py:-178, a.py:3, a.py:9" in text
++
++
+ def test_check_rejects_blank_changed_line_like_render() -> None:
+     import pytest
+ 
+diff --git a/tests/test_trustworthy_facts.py b/tests/test_trustworthy_facts.py
+index cc8116d..8a2b5ba 100644
+--- a/tests/test_trustworthy_facts.py
++++ b/tests/test_trustworthy_facts.py
+@@ -331,3 +331,108 @@ def test_mixed_live_and_deleted_keeps_live_verdict() -> None:
+     assert facts.stats.symbols_changed == 2
+     assert [u.id for u in facts.no_direct_test] == ["a.py::kept"]
+     assert "No direct test evidence" in facts.test_verdict
++
++
++def _all_missing_map() -> dict[str, Any]:
++    return {
++        "pr": "o/r#1",
++        "head_sha": "abc123def456",
++        "brief": {"files": [{"path": "a.py", "kind": "code"}], "checks": [], "mismatches": []},
++        "files": [],
++        "symbols": [
++            {
++                "id": "a.py::one",
++                "qualname": "one",
++                "path": "a.py",
++                "status": "modified",
++                "added": 2,
++                "removed": 1,
++                "call_sites": 0,
++            },
++            {
++                "id": "a.py::two",
++                "qualname": "two",
++                "path": "a.py",
++                "status": "added",
++                "added": 3,
++                "removed": 0,
++                "call_sites": 0,
++            },
++        ],
++        "edges": [],
++    }
++
++
++def _part_missing_map() -> dict[str, Any]:
++    return {
++        "pr": "o/r#1",
++        "head_sha": "abc123def456",
++        "brief": {
++            "files": [
++                {"path": "a.py", "kind": "code"},
++                {"path": "tests/test_a.py", "kind": "test"},
++            ],
++            "checks": [],
++            "mismatches": [],
++        },
++        "files": [],
++        "symbols": [
++            {
++                "id": "a.py::one",
++                "qualname": "one",
++                "path": "a.py",
++                "status": "modified",
++                "added": 2,
++                "removed": 1,
++                "call_sites": 0,
++            },
++            {
++                "id": "a.py::two",
++                "qualname": "two",
++                "path": "a.py",
++                "status": "modified",
++                "added": 2,
++                "removed": 1,
++                "call_sites": 0,
++            },
++            {
++                "id": "tests/test_a.py::test_one",
++                "qualname": "test_one",
++                "path": "tests/test_a.py",
++                "status": "added",
++                "added": 5,
++                "removed": 0,
++                "call_sites": 0,
++            },
++        ],
++        "edges": [
++            {
++                "source": "tests/test_a.py::test_one",
++                "target": "a.py::one",
++                "status": "added",
++                "resolution": "exact",
++            },
++        ],
++    }
++
++
++def test_all_live_missing_uses_any_verdict() -> None:
++    m = _all_missing_map()
++    facts = compute_facts(m)
++    assert [u.id for u in facts.no_direct_test] == ["a.py::one", "a.py::two"]
++    assert facts.test_verdict == (
++        "No direct test evidence in this map for any live changed production symbol."
++    )
++    assert facts.test_verdict in render_comment(m)
++    assert facts.test_verdict in build_card_html(m)
++
++
++def test_part_live_missing_uses_some_verdict() -> None:
++    m = _part_missing_map()
++    facts = compute_facts(m)
++    assert [u.id for u in facts.no_direct_test] == ["a.py::two"]
++    assert facts.test_verdict == (
++        "No direct test evidence in this map for some live changed production symbols."
++    )
++    assert facts.test_verdict in render_comment(m)
++    assert facts.test_verdict in build_card_html(m)

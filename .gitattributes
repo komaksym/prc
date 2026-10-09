@@ -1,1 +1,3 @@
 eval/runs/2026-10-08-release-check/packets/**/doc.txt -whitespace
+.audit/trust-final-inspection.diff whitespace=-blank-at-eol
+.audit/trust-inspection-d18-d22.delta.diff whitespace=-blank-at-eol

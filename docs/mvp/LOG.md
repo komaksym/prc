@@ -150,3 +150,37 @@ The user is the only human reviewer. The worksheet retains three pending decisio
 External project tests and human narration listening remain unverified. Kokoro is not installed.
 No push or new PR is approved. License, package-name and publication decisions remain separate.
 The full milestone record is `docs/launch/TRUSTWORTHY-PR-EXPLANATIONS.md`.
+
+## Final trustworthy PR inspection, 2026-10-09
+
+The machine work for the trustworthy PR explanation milestone is complete at source 548d8ab.
+The user is the only human reviewer. All three acceptance decisions remain pending.
+Public release evaluation and publication decisions remain separate.
+
+The earlier entry overstated complete card inspection and 35 hub clicks at b880513.
+Those claims are superseded by the final inventory and executed browser records below.
+Historical entries and their measured test counts remain unchanged.
+
+`scripts/verify-release.sh` passed from an empty uv cache in `artifacts/release/verify/run-uVHho9`.
+It passed lint, formatting, mypy on 104 files, 812 tests without failures, errors or skips, and wheel and source builds.
+The source archive matches 237 code, test, script and metadata paths at 548d8ab.
+The installed wheel produced all five outputs outside source. Its browser record reports no errors.
+The parent inspected its five browser images. Its video is 1920x1080 at 30 fps and lasts 41.008 seconds.
+
+The final wheel rebuilt all three acceptance cases at `artifacts/trustworthiness/2026-10-09/acceptance`.
+Its installed-package verifier confirms original diffs, code quotes, per-file totals, revisions, merge evidence and hashes.
+All 35 local links passed in background Vercel agent-browser with a screenshot per result. The session is closed.
+Proof is `acceptance/verification.json` and `acceptance/hub-browser-548d8ab/checks.json` within that directory.
+
+Direct model inspection covers three cards, 21 complete-walkthrough segments and 19 decoded video scenes.
+All 43 image hashes match. Video pixels match each final MP4. The walkthrough segments cover every page without gaps.
+Proof is `artifacts/trustworthiness/2026-10-09/inspection-548d8ab/inspection-results.json` and `artifact-bindings.json`.
+These checks do not replace human judgment of usefulness or narration.
+
+Tests for D18 to D24 landed at cadf6f9 before fixes at 548d8ab. All 15 final regressions pass.
+Independent GLM correctness review found no remaining defect in that delta.
+The final comment review requested two narrative removals; both are complete without changing executable test logic.
+The focused test, full ruff checks, mypy and git diff checks pass after those removals.
+Reports are `.audit/trust-final-inspection-review.md`, `.audit/trust-inspection-comments-review.md` and `.audit/trust-final-inspection-closure.md`.
+
+Next step. The user reviews the three cases and completes `acceptance.md` in the final acceptance directory.

@@ -1,8 +1,26 @@
 # PRC product and repository status
 
-Summary. PRC's implemented package produces local review outputs. Product acceptance is incomplete. Repository reconciliation preserves earlier work and gives local main one baseline.
+Summary. The trustworthy PR explanation milestone passes its machine checks and awaits the user's acceptance of three real PR cases.
+Public release acceptance remains incomplete. Repository reconciliation preserves the earlier baseline and evidence.
 
-Updated 2026-10-08. This file is the current status entry point. Historical plans and scoreboards retain their original results.
+Updated 2026-10-09. This file is the current status entry point. Historical plans and scoreboards retain their original results.
+
+## Trustworthy PR explanation milestone
+
+The final source is 548d8ab in the readiness worktree. The assessment's defects have passing regressions.
+The clean-cache verifier passed lint, formatting, typecheck, 812 tests without skips, build and installed-wheel rendering.
+Proof is `artifacts/release/verify/run-uVHho9` in that worktree.
+
+The acceptance package contains librarySync#98, em#5756 and swarm-deploy#116 at pinned base and head revisions.
+Every case retains its original diff and five PRC outputs from the final installed wheel.
+All 35 local review links passed in background agent-browser with screenshots.
+Direct model inspection covers three cards, 21 complete-walkthrough segments and 19 actual video scenes.
+Independent model reviews found no remaining correctness findings in the final delta.
+
+The user is the only human reviewer. All three acceptance decisions remain pending.
+Open `artifacts/trustworthiness/2026-10-09/acceptance/index.html` in the readiness worktree and complete its `acceptance.md`.
+The [milestone record](../launch/TRUSTWORTHY-PR-EXPLANATIONS.md) records exact proof and limits.
+This milestone does not certify the frozen release evaluation below. License, package name and publication remain separate.
 
 ## Repository baseline
 
@@ -12,7 +30,9 @@ Historical worktrees and their ignored caches remain intact. The branch reconcil
 
 Before reconciliation, every branch ref was saved in `artifacts/reconciliation/2026-10-08/branches-before.bundle`. All 2,290 pending file identities and contents were saved beside it. Unrelated analyzer, queue, and provider experiments were moved into its `unrelated-experiments` directory with matching hashes. These archives stay local.
 
-No GitHub remote is configured. Read-only discovery found no intended PRC repository among the authenticated account's accessible repositories. An existing URL or a new repository decision is required before sync. No GitHub main was changed.
+At reconciliation, no GitHub remote was configured. Discovery at that time found no intended PRC repository.
+The current readiness checkout has origin configured as https://github.com/komaksym/prc.git.
+No remote write was performed in this milestone. Push and PR creation still require the user's explicit approval.
 
 ## Implemented and checked behavior
 
@@ -22,7 +42,9 @@ Stored-map reconstruction now supplies one reconciled dictionary to board checks
 
 The regression invokes the real explain CLI with an older map classifying an E2E test as production code. Its checked facts and published outputs agree after reconstruction. Browser screenshots and media remain under `artifacts/e2e/explain/stored-reclassified`.
 
-The full check is `bash scripts/verify-release.sh` with the existing Chromium cache. The final proof is `artifacts/release/verify/run-MZ8PLD`. It passed 572 tests and all required checks. Lint, formatting, strict types, tests, build, clean-wheel installation, browser screenshots, and five output files are required.
+The reconciliation proof is `artifacts/release/verify/run-MZ8PLD`. It passed 572 tests and all required checks at that baseline.
+The later trustworthy milestone proof is `artifacts/release/verify/run-uVHho9`, as recorded above.
+The full check remains `bash scripts/verify-release.sh` with lint, format, strict types, tests, build and installed-wheel browser checks.
 
 ## Verification skill
 
@@ -62,7 +84,7 @@ The timing archive contains 48 successful samples, including twelve warmups and 
 4. Capture correctly scoped current-source measurements.
 5. Refresh the human comparison and its audible samples to the accepted output generation.
 6. Obtain actual human usefulness, grader agreement, grounding checks, and release approval.
-7. Establish the intended GitHub URL, content and history review, license, and publication decisions.
+7. Complete content and history review, license, package-name and publication decisions before any approved remote write.
 
 The [human comparison sheet](../../eval/human/2026-10-08-comparison.md) covers three captured PRs. Responses remain blank. It compares PRC with the plain diff, CodeRabbit, and available Coldtea PR Lens material. Historical third-party results cannot count as current-head coverage.
 
