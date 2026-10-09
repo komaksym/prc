@@ -49,9 +49,11 @@ _DEF_LINES = (
 
 
 def short_label(qualname: str) -> str:
-    if qualname.endswith("]"):
-        return qualname
-    return qualname.split(".")[-1].split("::")[-1]
+    start = 0
+    for match in re.finditer(r'\["(?:\\.|[^"\\])*"\]|::|\.', qualname):
+        if match.group() in (".", "::"):
+            start = match.end()
+    return qualname[start:]
 
 
 def mermaid_label(qualname: str) -> str:

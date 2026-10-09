@@ -141,6 +141,8 @@ def test_mermaid_edges_match_shop_map() -> None:
         ('command["nested.run"]', 'command["nested.run"]'),
         ('command["a::b"]', 'command["a::b"]'),
         ('command["nested.exec"].run', "run"),
+        ("a" * 41 + '.command["a-b"]', 'command["a-b"]'),
+        ("a" * 41 + '::command["a::b"]', 'command["a::b"]'),
         ("LinkedInMDPClient._get_paged", "_get_paged"),
     ],
 )
