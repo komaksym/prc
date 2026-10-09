@@ -1,5 +1,3 @@
-"""Check the published source archive, including untracked local files."""
-
 from __future__ import annotations
 
 import subprocess

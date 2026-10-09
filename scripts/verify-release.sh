@@ -37,9 +37,6 @@ from pathlib import Path
 
 root, checkout = map(Path, sys.argv[1:])
 sep = chr(0)
-# Release copy is restricted to committed or staged inputs (git index) plus
-# explicit fixtures below. Untracked experiments stay out: stage intended
-# files with git add before verifying.
 paths = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z']).decode().split(sep)
 for name in paths:
     if name and (root / name).is_file():

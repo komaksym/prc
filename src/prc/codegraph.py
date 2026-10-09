@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import bisect
 import itertools
+import json
 import posixpath
 import re
 from collections.abc import Callable, Iterable, Mapping
@@ -326,6 +327,66 @@ def _key(node: Node) -> tuple[int, int, str]:
     return node.start_byte, node.end_byte, node.type
 
 
+@cache
+def _property_identifier(name: str) -> bool:
+    source = f"_.{name}".encode("utf-8", "surrogatepass")
+    root = _compiled("javascript").parser.parse(source).root_node
+    if root.has_error or root.named_child_count != 1:
+        return False
+    statement = root.named_children[0]
+    if statement.type != "expression_statement" or statement.named_child_count != 1:
+        return False
+    member = statement.named_children[0]
+    if member.type != "member_expression":
+        return False
+    obj = member.child_by_field_name("object")
+    prop = member.child_by_field_name("property")
+    return (
+        obj is not None
+        and obj.type == "identifier"
+        and obj.start_byte == 0
+        and obj.end_byte == 1
+        and prop is not None
+        and prop.type == "property_identifier"
+        and prop.start_byte == 2
+        and prop.end_byte == len(source)
+    )
+
+
+def _property_segment(name: str) -> str:
+    if name.startswith(('"', "'")):
+
+        def unescape(match: re.Match[str]) -> str:
+            escape = match.group()[1:]
+            if escape.startswith(("u", "x")):
+                digits = escape[1:].strip("{}")
+                value = int(digits, 16)
+                return chr(value) if value <= 0x10FFFF else match.group()
+            return {
+                "n": "\n",
+                "r": "\r",
+                "t": "\t",
+                "b": "\b",
+                "f": "\f",
+                "v": "\v",
+                "0": "\0",
+                "\n": "",
+                "\r": "",
+                "\r\n": "",
+                "\u2028": "",
+                "\u2029": "",
+            }.get(escape, escape)
+
+        name = re.sub(
+            r"\\(?:u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|\r\n|[\s\S])",
+            unescape,
+            name[1:-1],
+        )
+    if _property_identifier(name):
+        return f".{name}"
+    return f"[{json.dumps(name)}]"
+
+
 def parse_file(path: str, data: bytes) -> ParsedFile | None:
     """None for an unsupported extension, a file over the size limit, or binary content."""
 
@@ -368,7 +429,7 @@ def parse_file(path: str, data: bytes) -> ParsedFile | None:
             if container is not None and container.type == "pair":
                 outer = container
                 container = container.parent
-            parts = [name.strip("\"'")]
+            parts = [_property_segment(name)]
             while container is not None and container.type == "object":
                 binding: Node | None = container.parent
                 if binding is None:
@@ -386,9 +447,11 @@ def parse_file(path: str, data: bytes) -> ParsedFile | None:
                 if binding.type not in ("pair", "variable_declarator") or key is None:
                     parts.insert(0, f"object@{line_of(container.start_byte)}")
                     break
-                parts.insert(0, text_of(key).strip("\"'"))
+                parts.insert(
+                    0, _property_segment(text_of(key)) if binding.type == "pair" else text_of(key)
+                )
                 container = binding.parent
-            name = ".".join(parts)
+            name = "".join(parts)
         found.setdefault(_key(node), (node, outer, name, is_class))
 
     owners: dict[tuple[int, int, str], Definition] = {}
@@ -557,6 +620,8 @@ class Index:
             family = LANGUAGES[posixpath.splitext(path)[1]].family
 
             for qualname in self.exported[path]:
+                if "[" in qualname:
+                    continue
                 names.setdefault((family, qualname.rsplit(".", 1)[-1]), set()).add(
                     f"{path}::{qualname}"
                 )
@@ -758,9 +823,8 @@ def _module_name(path: str) -> str:
 def _prefixes(qualname: str) -> list[str]:
     """Proper dotted prefixes, innermost first: `a.b.c` gives `a.b`, `a`."""
 
-    parts = qualname.split(".")
-
-    return [".".join(parts[:end]) for end in range(len(parts) - 1, 0, -1)]
+    boundaries = re.finditer(r'\["(?:\\.|[^"\\])*"\]|\.', qualname)
+    return [qualname[: match.start()] for match in boundaries if match.start()][::-1]
 
 
 @dataclass(frozen=True, slots=True)

@@ -12,11 +12,21 @@ from pathlib import Path
 from typing import Any
 
 from prc.explainer.check import find_phrase, spoken
+from prc.explainer.diffrows import DIFF_BOTTOM, diff_layout
 from prc.explainer.voice import Backend, audible, estimate_seconds, pauses
 
 LEAD, GAP, TAIL = 0.45, 0.3, 0.9
 ROW_LEAD, ROW_STAGGER, ROW_ENTER = 0.25, 0.035, 0.4
 REPLACE_DELAY, ROW_REVEAL, SCENE_FADE, STILL_MARGIN = 0.55, 0.45, 0.35, 0.5
+OUTRO_REVEAL = 0.5
+
+
+def _tail(scene: dict[str, Any]) -> float:
+    return (
+        2 * OUTRO_REVEAL + STILL_MARGIN
+        if scene.get("type") == "outro" and scene.get("fine")
+        else TAIL
+    )
 
 
 def estimated_scene(scene: dict[str, Any], start: float, end: float) -> dict[str, Any]:
@@ -79,7 +89,9 @@ def row_motion(scene: dict[str, Any]) -> list[dict[str, list[float]]]:
 
 def visible_rows(scene: dict[str, Any]) -> set[str]:
     """Rows fully visible at the walkthrough's settled frame, before scene fade."""
-    shown = set()
+    shown: set[str] = set()
+    if diff_layout(scene)["bottom"] > DIFF_BOTTOM:
+        return shown
     deadline = float(scene["end"]) - STILL_MARGIN
     for row, motion in zip(scene.get("rows", []), row_motion(scene), strict=True):
         ready = max(float(scene["start"]) + LEAD, sum(motion["enter"]))
@@ -173,7 +185,7 @@ def fit_sentences(
             clips.append((t, wav))
             s["clips"].append(wav)
             t += d + GAP
-        s["end"] = cursor = t - GAP + TAIL + float(s.get("hold", 0))
+        s["end"] = cursor = t - GAP + _tail(s) + float(s.get("hold", 0))
         for c in s.get("cues", []):
             c["t"] = at(s, c["at"], audio, log, backend)
             if "until" in c:
@@ -190,7 +202,9 @@ def fit_sentences(
 def estimate(board: dict[str, Any]) -> float:
     """Seconds of video without synthesizing: words at 3 per second plus pauses."""
     words = sum(len(t.split()) for s in board["scenes"] for t in spoken(s))
-    hold = sum(1.35 + s.get("hold", 0) + 0.3 * (len(s["say"]) - 1) for s in board["scenes"])
+    hold = sum(
+        LEAD + _tail(s) + s.get("hold", 0) + GAP * (len(s["say"]) - 1) for s in board["scenes"]
+    )
     return float(words) / 3.0 + float(hold)
 
 
@@ -220,7 +234,7 @@ def scene_windows(board: dict[str, Any]) -> list[tuple[float, float]]:
     cursor = 0.0
     for s in board.get("scenes", []):
         ds = [sentence_seconds(t) for t in spoken(s)] if "say" in s else []
-        end = cursor + LEAD + sum(ds) + GAP * (len(ds) - 1) + TAIL + float(s.get("hold", 0))
+        end = cursor + LEAD + sum(ds) + GAP * (len(ds) - 1) + _tail(s) + float(s.get("hold", 0))
         wins.append((cursor, end))
         cursor = end
     return wins
@@ -237,6 +251,11 @@ def check_stamped_cues(board: dict[str, Any], eps: float = 1e-6) -> list[str]:
     problems: list[str] = []
     for i, s in enumerate(board.get("scenes", [])):
         if s.get("type") == "diff":
+            if diff_layout(s)["bottom"] > DIFF_BOTTOM:
+                problems.append(
+                    f"scene {i}: diff cannot fit before the captions; show fewer or shorter lines"
+                )
+                continue
             shown = visible_rows(s)
             for row in s.get("rows", []):
                 if "ref" in row and str(row["ref"]) not in shown:
@@ -254,6 +273,16 @@ def check_stamped_cues(board: dict[str, Any], eps: float = 1e-6) -> list[str]:
                     f"scene {i}: cue {c.get('do')!r} stamped at {float(t):.2f}s "
                     f"is outside the scene ({float(s['start']):.2f}-"
                     f"{float(s['end']):.2f}s); the reveal would never show"
+                )
+            reveal = OUTRO_REVEAL * (2 if c.get("do") == "cmd" and s.get("fine") else 1)
+            if (
+                s.get("type") == "outro"
+                and c.get("do") in ("l1", "l2", "cmd")
+                and float(t) + reveal > float(s["end"]) - STILL_MARGIN + eps
+            ):
+                problems.append(
+                    f"scene {i}: outro {c['do']!r} cannot finish its reveal before the settled frame; "
+                    "move the cue earlier or increase hold"
                 )
             until = c.get("until")
             if "until" in c and (

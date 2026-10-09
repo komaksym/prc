@@ -100,6 +100,7 @@ You list line refs, never code. The text comes from the diff. "N" is a line afte
 
 Replacement rows open 0.55 seconds after their step cue. Row reveals take another 0.45 seconds.
 Each selected row must finish its reveal before the scene's settled frame, 0.5 seconds before its end.
+Wrapped visual lines count toward the height limit. Split a diff scene if its code block cannot fit above the captions.
 The checker tests silent timing. Rendering checks actual narration timing before encoding.
 Move a late cue earlier or increase the scene's `hold`. Coverage excludes rows that miss this interval.
 The same join validator checks quoted text before rendering and after syntax highlighting.
@@ -140,6 +141,8 @@ Give each card a `card` cue with its zero-based `i`. The checker rejects any car
 ### outro
 
 Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible. `fine` is optional small print under the command; when absent the checker fills an empty default and the video shows nothing there.
+Each outro reveal takes 0.5 seconds. Fine print starts 0.5 seconds after the command and takes another 0.5 seconds.
+All provided text must finish its reveal before the settled frame. The outro has a longer tail when it contains fine print.
 
 ```json
 { "type": "outro", "l1": "first line", "l2": "second line", "fine": "small print", "nocap": true,

@@ -555,3 +555,114 @@ def test_object_handler_shadowed_and_duplicate_has_no_false_edge() -> None:
     }
 
     assert edges(duplicate) == set()
+
+
+@pytest.mark.parametrize("extension", ["ts", "js", "tsx"])
+def test_quoted_object_paths_keep_segment_identity(extension: str) -> None:
+    path = f"command.{extension}"
+    source = (
+        "export const command = {\n"
+        '  "nested.run": () => 1,\n'
+        '  nested: { "run": () => 11 },\n'
+        '  "nested.exec": { run() { return 2; } },\n'
+        '  "": { run() { return 3; } },\n'
+        '  "a[b]": { run() { return 4; } },\n'
+        '  "a@b": { run() { return 5; } },\n'
+        '  "a\\"b": { run() { return 6; } },\n'
+        '  "plain": () => 7,\n'
+        "};\n"
+        "function caller() { command.nested.run(); command.plain(); }\n"
+    )
+    index = Index({path: parse(path, source)})
+    names = set(index.definitions[path])
+
+    assert 'command["nested.run"]' in names
+    assert "command.nested.run" in names
+    assert 'command["nested.exec"].run' in names
+    assert 'command[""].run' in names
+    assert 'command["a[b]"].run' in names
+    assert 'command["a@b"].run' in names
+    assert len(names) == 9
+    assert edges({path: source}) == {
+        (f"{path}::caller", f"{path}::command.nested.run", "exact"),
+        (f"{path}::caller", f"{path}::command.plain", "exact"),
+    }
+
+
+def test_unsafe_quoted_key_cannot_resolve_as_nested_import() -> None:
+    assert (
+        edges(
+            {
+                "command.ts": 'export const command = { "nested.run": () => 1 };\n',
+                "test.ts": (
+                    'import { command } from "./command";\n'
+                    "function test_run() { command.nested.run(); }\n"
+                ),
+            }
+        )
+        == set()
+    )
+
+
+@pytest.mark.parametrize("extension", ["ts", "js", "tsx"])
+def test_escaped_quoted_identifiers_resolve_exported_objects(extension: str) -> None:
+    path = f"command.{extension}"
+    source = r"""export const command = {
+  "\u006eested": { '\x72un': () => 11 },
+  "pl\u{61}in": () => 7,
+  "nested\x2erun": () => 1,
+  'a\'b': () => 2,
+  "a\"b": () => 3,
+};"""
+    names = set(Index({path: parse(path, source)}).definitions[path])
+    assert names == {
+        "command.nested.run",
+        "command.plain",
+        'command["nested.run"]',
+        'command["a\'b"]',
+        'command["a\\"b"]',
+    }
+    assert edges(
+        {
+            path: source,
+            f"test.{extension}": (
+                'import { command } from "./command";\n'
+                "function caller() { command.nested.run(); command.plain(); }\n"
+            ),
+        }
+    ) == {
+        (f"test.{extension}::caller", f"{path}::command.nested.run", "exact"),
+        (f"test.{extension}::caller", f"{path}::command.plain", "exact"),
+    }
+
+
+def test_quoted_path_does_not_create_nested_name_fallback() -> None:
+    assert (
+        edges(
+            {
+                "command.ts": 'export const command = { "nested.exec": { run() {} } };\n',
+                "test.ts": "function caller() { external.exec.run(); }\n",
+            }
+        )
+        == set()
+    )
+
+
+@pytest.mark.parametrize("name", ["e\u0301", "a\u200cb", "a\u200db"])
+@pytest.mark.parametrize("quoted", [False, True])
+@pytest.mark.parametrize("extension", ["ts", "js", "tsx"])
+def test_unicode_property_identifiers_keep_dot_identity(
+    name: str, quoted: bool, extension: str
+) -> None:
+    path = f"command.{extension}"
+    key = f'"{name}"' if quoted else name
+    source = (
+        f"export const command = {{ {key}: () => 1 }};\nfunction caller() {{ command.{name}(); }}\n"
+    )
+    assert set(Index({path: parse(path, source)}).definitions[path]) == {
+        f"command.{name}",
+        "caller",
+    }
+    assert edges({path: source}) == {
+        (f"{path}::caller", f"{path}::command.{name}", "exact"),
+    }

@@ -468,3 +468,40 @@ def test_object_handler_change_links_imported_test_caller(tmp_path: Path) -> Non
     missing = {entry.id for entry in compute_facts(to_jsonable(change)).no_direct_test}
 
     assert "command.ts::command.exec" not in missing
+
+
+def test_quoted_property_change_has_no_nested_test_evidence(tmp_path: Path) -> None:
+    import json
+
+    from prc.facts import compute_facts
+    from prc.identity import to_jsonable
+
+    base = {
+        "command.ts": (
+            b"export const command = {\n"
+            b'  "nested.run": () => 1,\n'
+            b"  nested: { run: () => 11 },\n"
+            b"};\n"
+        ),
+        "tests/test_command.ts": (
+            b'import { command } from "../command";\n'
+            b"function test_run() { return command.nested.run(); }\n"
+        ),
+    }
+    head = {**base, "command.ts": base["command.ts"].replace(b"=> 1,", b"=> 2,")}
+    change = custom_map(tmp_path, base, head)
+    symbols = by_id(change)
+    changed = 'command.ts::command["nested.run"]'
+
+    assert changed in symbols
+    assert symbols[changed].status == "modified"
+    assert symbols[changed].span == (2, 2)
+    assert not any(edge.target == changed for edge in change.edges)
+    facts = compute_facts(to_jsonable(change))
+    assert {entry.id for entry in facts.no_direct_test} == {changed}
+    assert facts.stats.untested_total == 1
+    assert facts.test_verdict == (
+        "No direct test evidence in this map for some live changed production symbols."
+    )
+    (tmp_path / "collision-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
+    (tmp_path / "collision-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))

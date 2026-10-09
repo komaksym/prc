@@ -82,6 +82,161 @@ def tiny_board(diff_lines: list[Any], *, fine: str | None = "fine print") -> dic
     }
 
 
+def wrapped_change() -> tuple[dict[str, Any], dict[str, Any]]:
+    m = tiny_map()
+    lines = [
+        {"op": "+", "old": None, "new": n, "text": f'value{n} = "' + "x" * 190 + '"'}
+        for n in range(1, 13)
+    ]
+    m["files"][0]["hunks"][0]["lines"] = lines
+    m["files"][0]["added"] = m["brief"]["files"][0]["added"] = 12
+    b = tiny_board([str(n) for n in range(1, 13)])
+    b["scenes"][0]["hold"] = 3
+    return m, b
+
+
+def test_check_rejects_wrapped_diff_beyond_visible_stage() -> None:
+    from prc.explainer.check import verify_board
+
+    m, b = wrapped_change()
+    with pytest.raises(SystemExit, match=r"diff.*fit|diff.*overflow"):
+        verify_board(b, m)
+
+
+def test_coverage_does_not_claim_clipped_wrapped_diff_is_complete() -> None:
+    from prc.explainer.doc import _not_covered
+    from prc.explainer.preflight import line_coverage
+
+    m, b = wrapped_change()
+    assert line_coverage(b, m)["shown"] < 12
+    assert "Everything changed is on screen" not in _not_covered(b, m)
+
+
+def test_wrapped_diff_fits_in_real_browser() -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, b = wrapped_change()
+    b["scenes"][0]["lines"] = ["1", "2", "3"]
+    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/wrapped-diff"
+    facts = verify_board(b, m)
+    render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((proof / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        page.evaluate("window.seek(window.BOARD.scenes[0].end - 0.5)")
+        page.screenshot(path=str(proof / "settled.png"))
+        bounds = page.locator(".drow:not(.gap)").evaluate_all(
+            """rows => rows.map(row => ({
+                row: row.getBoundingClientRect().toJSON(),
+                text: row.querySelector('.ct').getBoundingClientRect().toJSON()
+            }))"""
+        )
+        (proof / "bounds.json").write_text(json.dumps(bounds, indent=2))
+        assert len(bounds) == 3
+        assert all(bound["row"]["bottom"] <= 862 for bound in bounds), bounds
+        assert all(bound["text"]["bottom"] <= bound["row"]["bottom"] + 1 for bound in bounds), (
+            bounds
+        )
+        browser.close()
+
+
+@pytest.mark.parametrize("verb", ["l1", "l2", "cmd"])
+def test_check_rejects_outro_reveal_at_scene_end(verb: str) -> None:
+    from prc.explainer.check import verify_board
+    from prc.explainer.timing import scene_windows
+
+    m, b = tiny_map(), tiny_board(["2"])
+    start, end = scene_windows(b)[-1]
+    next(c for c in b["scenes"][-1]["cues"] if c["do"] == verb)["at"] = end - start
+    with pytest.raises(SystemExit, match=r"outro.*reveal"):
+        verify_board(b, m)
+
+
+def test_fitted_outro_reveal_must_finish_before_settled_frame(tmp_path: Path) -> None:
+    from prc.explainer.check import verify_board
+    from prc.explainer.timing import check_stamped_cues, fit_sentences
+    from prc.explainer.voice import NoneBackend
+
+    m, b = tiny_map(), tiny_board(["2"])
+    verify_board(b, m)
+    fit_sentences(b, NoneBackend(), tmp_path, [])
+    s = b["scenes"][-1]
+    next(c for c in s["cues"] if c["do"] == "cmd")["t"] = s["end"]
+    assert any("outro" in problem and "reveal" in problem for problem in check_stamped_cues(b))
+
+
+def test_outro_fine_print_must_finish_its_delayed_reveal() -> None:
+    from prc.explainer.check import verify_board
+    from prc.explainer.timing import scene_windows
+
+    m, b = tiny_map(), tiny_board(["2"])
+    start, end = scene_windows(b)[-1]
+    next(c for c in b["scenes"][-1]["cues"] if c["do"] == "cmd")["at"] = end - start - 1
+    with pytest.raises(SystemExit, match=r"outro.*reveal"):
+        verify_board(b, m)
+
+
+@pytest.mark.parametrize(
+    ("case", "board"),
+    [
+        ("missing-scenes", {}),
+        ("null-scenes", {"scenes": None}),
+        ("missing-type", {"scenes": [{}]}),
+        ("null-scene", {"scenes": [None]}),
+        ("missing-file", {"scenes": [{"type": "diff", "lines": ["2"]}]}),
+        ("missing-say", {"scenes": [{"type": "outro", "cues": [{"do": "cmd", "at": [0, 0.5]}]}]}),
+        ("invalid-hold", {"scenes": [{"type": "outro", "hold": "x"}]}),
+    ],
+)
+def test_malformed_board_fails_cli_without_traceback(tmp_path: Path, case: str, board: Any) -> None:
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parents[1]
+    proof = root / "artifacts/e2e/board-shape" / case
+    proof.mkdir(parents=True, exist_ok=True)
+    map_path, board_path = tmp_path / "map.json", tmp_path / "board.json"
+    map_path.write_text(json.dumps(tiny_map()))
+    board_path.write_text(json.dumps(board))
+    run = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "prc.cli",
+            "board",
+            "check",
+            str(board_path),
+            "--map",
+            str(map_path),
+        ],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    (proof / "check.json").write_text(
+        json.dumps(
+            {
+                "case": case,
+                "board": board,
+                "exit_code": run.returncode,
+                "stdout": run.stdout,
+                "stderr": run.stderr,
+            },
+            indent=2,
+        )
+    )
+    assert run.returncode == 2, run.stderr
+    assert "Traceback" not in run.stderr
+    assert "receipts failed" in run.stderr
+
+
 def test_line_coverage_counts_changed_lines_not_files() -> None:
     from prc.explainer.preflight import line_coverage
 

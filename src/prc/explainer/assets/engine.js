@@ -503,30 +503,10 @@
     const stepAt = {};
     (s.cues || []).forEach(c => { if (c.do === 'step') stepAt[c.n] = c.t; });
     // A step that replaces lines lets the removed rows tint red before the new lines open in their place.
-    // Fewer, shorter lines get a bigger font; the block is centred in the space above the captions.
-    const gutter = s.gutter || 0, GH = 30, TOP = 12;
-    const wide = c => { const n = c.codePointAt(0); return (n >= 0x1100 && n <= 0x115F) || (n >= 0x2E80 && n <= 0xA4CF) || (n >= 0xAC00 && n <= 0xD7AF) || (n >= 0xF900 && n <= 0xFAFF) || (n >= 0xFE30 && n <= 0xFE4F) || (n >= 0xFF00 && n <= 0xFF60) || (n >= 0xFFE0 && n <= 0xFFE6) ? 2 : 1; };
-    const tcols = t => [...t].reduce((a, ch) => a + wide(ch), 0);
-    // Widest visual line in columns, counting the hanging indent on continuation lines.
-    let longest = 0;
-    s.rows.forEach(r => {
-      if (r.gap || !r.tokens) { longest = Math.max(longest, (r.text || '').length); return; }
-      let w = 0;
-      r.tokens.forEach((tok, idx) => {
-        if ((r.breaks || []).includes(idx)) { longest = Math.max(longest, w); w = r.hang || 0; }
-        w += tcols(tok.text);
-      });
-      longest = Math.max(longest, w);
-    });
-    const widthBound = Math.floor(1560 / ((longest + gutter) * 0.6 + 2));
-    const rowH = fs => Math.round(fs * 1.75);
-    const tallAt = fs => s.rows.reduce((a, r) => a + (r.gap ? GH : rowH(fs) * (((r.breaks || []).length) + 1)), 2 * TOP) + (s.label ? 72 : 0) + 48;
-    const topAt = tall => Math.max(118, Math.round(489 - tall / 2));
-    let FS = Math.min(40, widthBound);
-    while (FS > 22 && topAt(tallAt(FS)) + tallAt(FS) > 862) FS -= 1;
-    FS = Math.max(22, FS);
+    const GH = 30, TOP = 12;
+    const FS = s.layout.font;
     if (FS < 28 && window.lint) window.lint.push(`scene ${s.i}: diff font ${FS} px is small at GitHub width; show fewer or shorter lines`);
-    const RH = rowH(FS);
+    const RH = s.layout.row_height;
     const digits = Math.max(1, ...s.rows.filter(r => r.num != null).map(r => String(r.num).length));
     const rows = s.rows.map((r, k) => {
       if (r.gap) return { r, k, el: D('drow gap', '<span class="sg"></span><span class="tx">⋯</span>', box), h: GH, t0: -Infinity, tin: -Infinity };
@@ -542,8 +522,7 @@
     });
     const byRef = {};
     rows.forEach(R => { if (R.r.ref) byRef[R.r.ref] = R; if (R.ct) Object.assign(R.el.style, { fontSize: FS + 'px', lineHeight: RH + 'px' }); });
-    const tallest = rows.reduce((a, R) => a + R.h, 2 * TOP) + (s.label ? 72 : 0) + 48;
-    wrap.style.top = topAt(tallest) + 'px';
+    wrap.style.top = s.layout.top + 'px';
     rows.forEach(R => { if (R.ct) R.textW = Math.min(R.ct.offsetWidth, R.tx.clientWidth - 24); });
     // A note sits after the last visual line of its row, so it never covers wrapped text.
     const lastLineW = R => {

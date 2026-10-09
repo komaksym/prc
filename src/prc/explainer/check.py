@@ -277,7 +277,72 @@ def tests_added(m: dict[str, Any]) -> int:
     )
 
 
+def _validate_shape(board: dict[str, Any]) -> None:
+    if (
+        not isinstance(board, dict)
+        or not isinstance(board.get("scenes"), list)
+        or not board["scenes"]
+    ):
+        raise SystemExit("receipts failed:\nboard needs a nonempty scenes list")
+    problems: list[str] = []
+    collections = {
+        "graph": "nodes",
+        "groups": "groups",
+        "bars": "bars",
+        "timeline": "rows",
+        "diff": "lines",
+        "list": "items",
+        "stats": "cards",
+    }
+    for i, scene in enumerate(board["scenes"]):
+        if not isinstance(scene, dict):
+            problems.append(f"scene {i}: needs an object")
+            continue
+        kind = scene.get("type")
+        if not isinstance(kind, str) or kind not in VERBS:
+            problems.append(f"scene {i}: needs a known scene type")
+            continue
+        hold = scene.get("hold", 0)
+        if (
+            not isinstance(hold, (int, float))
+            or isinstance(hold, bool)
+            or not math.isfinite(hold)
+            or hold < 0
+        ):
+            problems.append(f"scene {i}: hold needs finite nonnegative seconds")
+        field = collections.get(kind)
+        if field and not isinstance(scene.get(field), list):
+            problems.append(f"scene {i}: {field} needs a list")
+        if kind == "diff" and not isinstance(scene.get("file"), str):
+            problems.append(f"scene {i}: diff needs a file path")
+        if kind == "outro":
+            for field in ("l1", "l2"):
+                if not isinstance(scene.get(field), str):
+                    problems.append(f"scene {i}: outro needs {field} text")
+        say = scene.get("say", [])
+        if not isinstance(say, list) or any(
+            not isinstance(text, str)
+            and not (
+                isinstance(text, dict)
+                and isinstance(text.get("show"), str)
+                and isinstance(text.get("speak", text["show"]), str)
+            )
+            for text in say
+        ):
+            problems.append(f"scene {i}: say needs a list of narration text")
+            say = []
+        cues = scene.get("cues", [])
+        if not isinstance(cues, list) or any(not isinstance(cue, dict) for cue in cues):
+            problems.append(f"scene {i}: cues needs a list of objects")
+            continue
+        if not say and any(isinstance(cue.get("at"), (str, list)) for cue in cues):
+            problems.append(f"scene {i}: cue time needs narration in say")
+    if problems:
+        raise SystemExit("receipts failed:\n" + "\n".join(problems))
+
+
 def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
+    _validate_shape(board)
     verdicts: dict[int, tuple[str, str]] = {}
     bar_facts: dict[str, Any] = {}
     ck = Checker(m)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -225,3 +226,108 @@ def test_renamed_path_reports_delete_and_add_counts(tmp_path: Path) -> None:
     by_path = {f.path: f for f in change.files}
     assert (by_path["old.py"].added, by_path["old.py"].removed) == (0, 1)
     assert (by_path["new.py"].added, by_path["new.py"].removed) == (2, 0)
+
+
+def _deleted_only_map() -> dict[str, Any]:
+    return {
+        "pr": "o/r#1",
+        "head_sha": "abc123def456",
+        "brief": {"files": [{"path": "a.py", "kind": "code"}], "checks": [], "mismatches": []},
+        "files": [],
+        "symbols": [
+            {
+                "id": "a.py::gone",
+                "qualname": "gone",
+                "path": "a.py",
+                "status": "deleted",
+                "added": 0,
+                "removed": 5,
+                "call_sites": 2,
+            },
+        ],
+        "edges": [],
+    }
+
+
+def _test_only_map() -> dict[str, Any]:
+    return {
+        "pr": "o/r#1",
+        "head_sha": "abc123def456",
+        "brief": {
+            "files": [{"path": "tests/test_a.py", "kind": "test"}],
+            "checks": [],
+            "mismatches": [],
+        },
+        "files": [],
+        "symbols": [
+            {
+                "id": "tests/test_a.py::test_it",
+                "qualname": "test_it",
+                "path": "tests/test_a.py",
+                "status": "added",
+                "added": 5,
+                "removed": 0,
+                "call_sites": 0,
+            },
+        ],
+        "edges": [],
+    }
+
+
+def _mixed_live_map() -> dict[str, Any]:
+    return {
+        "pr": "o/r#1",
+        "head_sha": "abc123def456",
+        "brief": {"files": [{"path": "a.py", "kind": "code"}], "checks": [], "mismatches": []},
+        "files": [],
+        "symbols": [
+            {
+                "id": "a.py::kept",
+                "qualname": "kept",
+                "path": "a.py",
+                "status": "modified",
+                "added": 3,
+                "removed": 1,
+                "call_sites": 0,
+            },
+            {
+                "id": "a.py::gone",
+                "qualname": "gone",
+                "path": "a.py",
+                "status": "deleted",
+                "added": 0,
+                "removed": 4,
+                "call_sites": 1,
+            },
+        ],
+        "edges": [],
+    }
+
+
+def test_deleted_only_production_has_deletion_verdict() -> None:
+    m = _deleted_only_map()
+    facts = compute_facts(m)
+    assert facts.stats.symbols_changed == 1
+    assert facts.no_direct_test == ()
+    assert "delet" in facts.test_verdict.lower()
+    assert "caller" in facts.test_verdict.lower()
+    assert facts.test_verdict != "No live production symbols changed."
+    text = render_comment(m)
+    assert "delet" in text.lower()
+    assert "No live production symbols changed." not in text
+
+
+def test_test_only_keeps_no_live_verdict() -> None:
+    m = _test_only_map()
+    facts = compute_facts(m)
+    assert facts.test_verdict == "No live production symbols changed."
+    assert facts.no_direct_test == ()
+    assert "delet" not in facts.test_verdict.lower()
+
+
+def test_mixed_live_and_deleted_keeps_live_verdict() -> None:
+    m = _mixed_live_map()
+    facts = compute_facts(m)
+    assert facts.stats.symbols_changed == 2
+    assert [u.id for u in facts.no_direct_test] == ["a.py::kept"]
+    assert "No direct test evidence" in facts.test_verdict

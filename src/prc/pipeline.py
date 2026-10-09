@@ -603,6 +603,7 @@ def run_explain(
 
         card_html = out_dir / "card.html"
         card_png: Path | None = None
+        card_warning: str | None = None
         try:
             render_pr_card(
                 rebuilt, rebuilt.get("brief"), board, work / "card.html", work / "card.png"
@@ -613,9 +614,18 @@ def run_explain(
                 build_pr_card_html(rebuilt, rebuilt.get("brief"), board)
             )
             (work / "card.png").unlink(missing_ok=True)
-            warnings = [*warnings, str(error)]
+            card_warning = str(error)
+            warnings = [*warnings, card_warning]
         comment_md = out_dir / "comment.md"
-        (work / "comment.md").write_text(render_pr_comment(rebuilt, rebuilt.get("brief"), board))
+        (work / "comment.md").write_text(
+            render_pr_comment(
+                rebuilt,
+                rebuilt.get("brief"),
+                board,
+                card_available=card_png is not None,
+                card_warning=card_warning,
+            )
+        )
 
         run = {
             "source": source.label,

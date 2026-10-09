@@ -130,17 +130,27 @@ def compute_facts(m: dict[str, Any], brief: Any = None) -> Facts:
         if any(c.get("state") == "pending" for c in checks)
         else "passed"
     )
+    live_prod = [
+        s
+        for s in m.get("symbols", [])
+        if s.get("status") in ("added", "modified") and s["path"] not in tests
+    ]
+    deleted_prod = [
+        s for s in m.get("symbols", []) if s.get("status") == "deleted" and s["path"] not in tests
+    ]
     if not changed:
         verdict = (
             "No parsed symbol changes. Top-level and unrecognized changes can remain."
             if limits or any(f.get("kind") in ("code", "test") for f in b.get("files", []))
             else "No code symbols changed."
         )
-    elif not any(
-        s.get("status") in ("added", "modified") and s["path"] not in tests
-        for s in m.get("symbols", [])
-    ):
-        verdict = "No live production symbols changed."
+    elif not live_prod:
+        if deleted_prod:
+            n = len(deleted_prod)
+            noun = "1 production symbol deleted" if n == 1 else f"{n} production symbols deleted"
+            verdict = f"{noun}. Check remaining callers for broken references."
+        else:
+            verdict = "No live production symbols changed."
     elif missing:
         verdict = "No direct test evidence in this map for some live changed production symbols."
     else:

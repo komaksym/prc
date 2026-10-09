@@ -344,3 +344,40 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
                 page.screenshot(path=str(artifact / f"{name}.png"), full_page=True)
         finally:
             browser.close()
+
+
+def test_explain_card_failure_omits_png_reference(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from prc import pipeline
+    from prc.fixture_source import FixtureSource
+    from prc.model import PrRef
+    from prc.presentation.card import CardError
+    from prc.verification import EligibilityPolicy
+
+    stored = json.loads((ROOT / "tests" / "data" / "explainer" / "maps" / "pr12.json").read_text())
+    stored_path = tmp_path / "stored.json"
+    stored_path.write_text(json.dumps(stored))
+
+    def _fail(*args: Any, **kwargs: Any) -> None:
+        raise CardError("The PR card cannot fit its test-evidence lines in 1200x630.")
+
+    monkeypatch.setattr(pipeline, "render_pr_card", _fail)
+
+    result = pipeline.run_explain(
+        FixtureSource(repo=tmp_path, resources={}),
+        PrRef("acme", "shop", 1),
+        lambda: 0.0,
+        EligibilityPolicy(),
+        tmp_path / "out",
+        board_path=None,
+        map_path=stored_path,
+        voice="auto",
+    )
+    assert result.card_png is None
+    assert (result.out_dir / "card.html").exists()
+    assert not (result.out_dir / "card.png").exists()
+    run = json.loads((result.out_dir / "run.json").read_text())
+    assert run["card"] is None
+    text = (result.out_dir / "comment.md").read_text()
+    assert "card.png" not in text

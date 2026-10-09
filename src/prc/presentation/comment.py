@@ -160,7 +160,12 @@ def mermaid_block(m: dict[str, Any]) -> str:
 
 
 def render_comment(
-    m: dict[str, Any], brief: Any = None, board: dict[str, Any] | None = None
+    m: dict[str, Any],
+    brief: Any = None,
+    board: dict[str, Any] | None = None,
+    *,
+    card_available: bool = True,
+    card_warning: str | None = None,
 ) -> str:
     """comment.md in PLAN order. PR strings via span(); Mermaid labels never."""
     b = _brief_of(m, brief)
@@ -168,12 +173,20 @@ def render_comment(
     changed = [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
     missing = facts.no_direct_test
     lines = [f"# {span(headline(m, board))}", ""]
-    lines += [
-        "![PR card](card.png)",
-        "",
-        "Upload `card.png` with this comment: images do not embed from the repo.",
-        "",
-    ]
+    if card_available:
+        lines += [
+            "![PR card](card.png)",
+            "",
+            "Upload `card.png` with this comment: images do not embed from the repo.",
+            "",
+        ]
+    else:
+        lines += [
+            "PR card image was not produced. See card.html for the fallback card.",
+            "",
+        ]
+        if card_warning:
+            lines += [span(card_warning), ""]
     if changed:
         lines += [mermaid_block(m)]
     if len(changed) > MAX_NODES:

@@ -13,7 +13,7 @@ from typing import Any
 
 from prc.explainer import highlight
 from prc.explainer.check import verify_board
-from prc.explainer.diffrows import pair_rows, prepare, wrap_row
+from prc.explainer.diffrows import diff_layout, pair_rows, prepare, wrap_row
 from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
 from prc.explainer.timing import check_stamped_cues, fit_sentences
@@ -171,6 +171,7 @@ def fill(
                     continue
                 hang, breaks = wrap_row(r["tokens"], 72 - s["gutter"])
                 r["hang"], r["breaks"] = hang, breaks
+            s["layout"] = diff_layout(s)
             s["lang"] = {
                 ".py": "py",
                 ".ts": "js",
