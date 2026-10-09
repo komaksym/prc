@@ -23,7 +23,10 @@ def test_failed_release_runs_keep_separate_evidence(tmp_path: Path) -> None:
     for name in ("eval/runs/2026-10-06-full", "docs/media"):
         (root / name).mkdir(parents=True)
     subprocess.run(["git", "init", "--quiet", str(root)], check=True)
-    subprocess.run(["git", "-C", str(root), "add", "scripts"], check=True)
+    subprocess.run(
+        ["git", "-C", str(root), "add", "scripts/verify-release.sh", "tests/test_card_receipts.py"],
+        check=True,
+    )
     commands = tmp_path / "bin"
     commands.mkdir()
     uv = commands / "uv"
