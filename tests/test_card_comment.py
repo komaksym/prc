@@ -707,13 +707,10 @@ def test_card_keeps_long_risky_paths_visible(tmp_path: Path) -> None:
     assert clipped == [], f"Risk paths are clipped: {clipped}"
 
 
-# --- em#5756: a crowded card keeps every block separate and readable ---
-
 PATCH = ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch"
 
 
 def crowded_card_map() -> dict[str, Any]:
-    """The em#5756 card: long names, one analysis limit, three symbols without test calls."""
     rows = [
         ("noteCommand.multicursor.onComplete", "src/commands/note.ts", "added"),
         ("openCommandCenterCommand.exec", "src/commands/openCommandCenter.ts", "modified"),
@@ -798,7 +795,6 @@ CARD_LAYOUT = """() => {
 
 
 def test_crowded_card_keeps_every_block_visible(tmp_path: Path) -> None:
-    """Long names pushed the third entry over a shrunken, clipped evidence block."""
     pytest.importorskip("playwright.sync_api")
     from playwright.sync_api import sync_playwright
 

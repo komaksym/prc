@@ -362,7 +362,6 @@ def test_not_covered_matches_map(tmp_path: Path) -> None:
 
 
 def test_doc_states_changed_line_coverage(tmp_path: Path) -> None:
-    """The walkthrough says how many changed lines it shows, as the board check does."""
     docmod = need_doc()
     board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
@@ -372,7 +371,6 @@ def test_doc_states_changed_line_coverage(tmp_path: Path) -> None:
 
 
 def test_leftout_line_labels_are_distinct(tmp_path: Path) -> None:
-    """A removed line and an added line with one number both read path#L21."""
     docmod = need_doc()
     board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)

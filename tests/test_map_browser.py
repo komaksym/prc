@@ -307,7 +307,6 @@ def test_map_without_symbols_says_so(open_map: Callable[[ChangeMap], Opened]) ->
 
 
 def test_untested_badge_fits_inside_its_card(open_map: Callable[[ChangeMap], Opened]) -> None:
-    """em#5756: the badge text ran past the card edge and was cut mid-word."""
     opened = open_map(shop_map())
     badges = opened.page.locator(".node .badge")
     clipped = badges.evaluate_all(
@@ -326,7 +325,6 @@ def test_untested_badge_fits_inside_its_card(open_map: Callable[[ChangeMap], Ope
 def test_header_keeps_both_revisions_and_the_link_visible(
     open_map: Callable[[ChangeMap], Opened], tmp_path: Path
 ) -> None:
-    """swarm-deploy#116: seven statistics squeezed the head SHA to "2…"."""
     change = custom_map(
         tmp_path, {}, {f"internal/compose/f{i}.go": b"package compose\n" for i in range(7)}
     )
