@@ -9,9 +9,24 @@ The user is the only human reviewer. Outside reviewers are optional. Publication
 - [x] T1. Ground the fact and render paths; save design contracts and failing regression evidence.
 - [x] T2. Fix parsing, classification, line counts, shared output statistics, GitHub errors and large-map readability.
 - [x] T3. Fix line coverage, board preflight, layout, duration, preview commands and installed instructions.
-- [ ] T4. Prove clean-cache installation and verification; run full lint, typecheck, tests and build.
-- [ ] T5. Preserve three original PR diffs and PRC outputs at matching base and head commits for acceptance.
-- [ ] T6. Complete independent model review, inspect browser and video artifacts, document results and commit locally.
+- [x] T4. Prove clean-cache installation and verification; run full lint, typecheck, tests and build.
+  Evidence: artifacts/release/verify/run-TnN2MF at b880513. 802 tests passed with 0 failures, errors or skips from an empty uv cache.
+  Ruff, formatting, mypy and build passed. The installed wheel produced all five outputs outside source with no browser errors.
+- [x] T5. Preserve three original PR diffs and PRC outputs at matching base and head commits for acceptance.
+  Evidence: artifacts/trustworthiness/2026-10-09/acceptance, rebuilt with the b880513 wheel and checked in Chromium.
+  Each original diff matches its pinned revisions. All five outputs and actual MP4 playback passed.
+  Vercel agent-browser checked the review page, all 35 local links, three videos and map navigation.
+- [x] T6. Complete independent model review, inspect browser and video artifacts, document results and commit locally.
+  Evidence: .audit/trust-milestone-trail-final-review.md. DeepSeek found no high or medium trail issues.
+  Minor evidence gaps were corrected or disclosed. The final documentation and audit reports form one local commit.
+
+Review at 6dbb336 reopened T4 and T5. Fix quoted property identity, wrapped diff bounds and effective outro reveals.
+Also fix missing-card comment links, deleted-only wording and board shape errors. Add regressions before the fixes.
+Rerun the release check and the acceptance build at the new commit. Review the delta independently.
+
+All accepted findings have passing regressions at b880513. Final independent recheck found no new regression.
+The acceptance rebuild uses the installed wheel from run-TnN2MF. Human acceptance is pending.
+All six implementation and evidence milestones are complete. No push or PR is authorized.
 
 Done predicate. Each assessment defect has a passing regression result or a tested and explicit supported limit.
 All output formats must use consistent facts and explicit coverage limits.

@@ -119,3 +119,34 @@ The domain facts module supplies card, comment, and map totals. Static calls are
 Regressions include unsupported Go, TypeScript object handlers, browser-test paths, large-text counts, dependency risk, and the original librarySync decorator case.
 Proof lives under `artifacts/trustworthiness/2026-10-09/regressions/`. `stats-green.png` shows one test file for two test functions. `dense-green.png` and `dense-member-green.png` show readable groups and member names.
 The milestone is still in progress. Rendering, clean-cache installation, and human acceptance remain open.
+
+## Trustworthy PR explanation evidence, 2026-10-09
+
+The implementation and acceptance package pass at b880513. Human acceptance remains pending.
+Facts, static-call qualifications and changed-line coverage stay consistent across outputs.
+Regression fixes cover the assessment's D1 to D17 and defects found in later browser and model reviews.
+Quoted property identities, token-independent wrapping, required reveals and malformed boards have regression cases.
+
+`bash scripts/verify-release.sh` passed with an empty uv cache in `artifacts/release/verify/run-TnN2MF`.
+Ruff, formatting, mypy on 103 source files, wheel and sdist builds passed.
+Pytest passed 802 tests with no failures, errors or skips.
+The installed wheel produced all five outputs outside the source checkout. Its 1080p video lasts 41.008 seconds.
+The source archive comparison matches all source, test and script bytes to b880513.
+
+The acceptance package is `artifacts/trustworthiness/2026-10-09/acceptance/index.html`.
+It contains librarySync#98, em#5756 and swarm-deploy#116, their original diffs and their pinned base/head revisions.
+Each case includes a map, narrated video, walkthrough, card, comment, provenance and output hashes.
+Changed lines on screen are 16/79, 3/112 and 5/329. The package lists omitted lines and unsupported files.
+Chromium checks passed for every map, drawer, card, walkthrough and actual MP4 playback.
+The parent inspected final browser images and all 19 settled video scenes.
+Vercel agent-browser checked 35 local review links, three playing videos and map navigation without browser errors.
+Proof is in `acceptance/hub-browser-b880513`. The headless session is closed.
+
+Independent model reviews used GPT, Muse and GLM. Reproduced defects were corrected before final verification.
+The final GPT recheck found no new regression. Review reports are in `.audit/trust-*-review*.md`.
+DeepSeek checked the final decision trail against the transcript and durable proof. It found no high or medium issues.
+Minor evidence gaps are corrected or disclosed in `.audit/trust-milestone-trail-final-review.md`.
+The user is the only human reviewer. The worksheet retains three pending decisions.
+External project tests and human narration listening remain unverified. Kokoro is not installed.
+No push or new PR is approved. License, package-name and publication decisions remain separate.
+The full milestone record is `docs/launch/TRUSTWORTHY-PR-EXPLANATIONS.md`.
