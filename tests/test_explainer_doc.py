@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import shutil
+from collections.abc import Callable
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -33,9 +34,14 @@ def need_doc() -> Any:
 
 
 def filled(
-    board_name: str, map_name: str, tmp_path: Path
+    board_name: str,
+    map_name: str,
+    tmp_path: Path,
+    edit: Callable[[dict[str, Any]], None] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any], float]:
     board = json.loads((DATA / "boards" / board_name).read_text())
+    if edit:
+        edit(board)
     m = json.loads((DATA / "maps" / map_name).read_text())
     facts = verify_board(board, m)
     render.fill(board, m, facts, None)
@@ -52,6 +58,16 @@ def filled(
 
 def captions(scene: dict[str, Any]) -> list[str]:
     return [s if isinstance(s, str) else s["show"] for s in scene["say"]]
+
+
+def code_first_word(board: dict[str, Any]) -> None:
+    word, rest = board["scenes"][0]["say"][0].split(" ", 1)
+    board["scenes"][0]["say"][0] = f"`{word}` {rest}"
+
+
+def fixture_captions(board_name: str) -> list[str]:
+    board = json.loads((DATA / "boards" / board_name).read_text())
+    return [line for s in board["scenes"] for line in captions(s)]
 
 
 class Doc(HTMLParser):
@@ -193,21 +209,80 @@ def uncovered_rule(board: dict[str, Any], m: dict[str, Any]) -> tuple[set[str], 
 
 def test_prose_is_board_sentences(tmp_path: Path) -> None:
     docmod = need_doc()
-    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path)
+    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path, edit=code_first_word)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
     flat = [p for section in doc.prose for p in section]
-    want = [line for s in board["scenes"] for line in captions(s)]
-    assert flat == want
+    assert flat == fixture_captions("mdp17b.json")
+    assert '<p class="prose"><code>This</code> pull request changes' in html
+
+
+def _prose_section_html(docmod: Any, say: list[str]) -> Any:
+    m = {"pr": "o/r#1", "head_sha": "h" * 40, "base_sha": "b" * 40}
+    board: dict[str, Any] = {
+        "name": "t",
+        "scenes": [{"type": "title", "kicker": "Open pull request", "say": say}],
+    }
+    return docmod._scene_section(board, 0, board["scenes"][0], m)
+
+
+def test_prose_renders_backticked_names_as_code() -> None:
+    docmod = need_doc()
+    html = _prose_section_html(
+        docmod,
+        [
+            "`select_next_episode` now finds the last watched episode.",
+            "An unpaired ` stays literal.",
+            'Hostile `name` with <script> and "quotes" stays escaped.',
+        ],
+    )
+    assert "<code>select_next_episode</code>" in html
+    assert "<code>name</code>" in html
+    assert "<script>" not in html
+    assert "&lt;script&gt;" in html
+    doc = parse(html)
+    flat = [p for section in doc.prose for p in section]
+    assert flat[0] == "select_next_episode now finds the last watched episode."
+    assert "`" not in flat[0]
+    assert flat[1] == "An unpaired ` stays literal."
+    assert flat[2] == 'Hostile name with <script> and "quotes" stays escaped.'
+
+
+def test_removed_receipt_labels_name_their_side() -> None:
+    docmod = need_doc()
+    head, base = "h" * 40, "b" * 40
+    m = {"pr": "o/r#1", "head_sha": head, "base_sha": base}
+    scene: dict[str, Any] = {
+        "type": "diff",
+        "file": "internal/compose/file.go",
+        "say": ["Change the value."],
+        "rows": [
+            {"num": 77, "op": " ", "text": "x = 1"},
+            {"num": 77, "op": "-", "text": "x = 0"},
+        ],
+    }
+    board: dict[str, Any] = {"name": "t", "scenes": [scene]}
+    html = docmod._scene_section(board, 0, scene, m)
+    receipts = re.findall(r'<a class="receipt" href="([^"]+)">([^<]+)</a>', html)
+    assert len(receipts) == 2
+    by_label = {label: href for href, label in receipts}
+    assert "internal/compose/file.go#L77" in by_label
+    assert "internal/compose/file.go#L77 (removed)" in by_label
+    assert by_label["internal/compose/file.go#L77"] == (
+        f"https://github.com/o/r/blob/{head}/internal/compose/file.go#L77"
+    )
+    assert by_label["internal/compose/file.go#L77 (removed)"] == (
+        f"https://github.com/o/r/blob/{base}/internal/compose/file.go#L77"
+    )
 
 
 def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
     """Every doc string is a board sentence, a fixed template, or map-verbatim."""
     docmod = need_doc()
-    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
+    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path, edit=code_first_word)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
-    sentences = {line for s in board["scenes"] for line in captions(s)}
+    sentences = set(fixture_captions("mdp12.json"))
     # Fixed template strings: the only chrome the doc may add.
     templates = set(docmod.TEMPLATE_STRINGS)
     blob = json.dumps(board) + json.dumps(m)
@@ -254,14 +329,18 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
     for s in board["scenes"]:
         for c in s.get("cite", []):
             path, n = c["line"].rsplit(":", 1)
-            want[f"{path}#L{abs(int(n))}"] = (
+            label = f"{path}#L{abs(int(n))} (removed)" if int(n) < 0 else f"{path}#L{abs(int(n))}"
+            want[label] = (
                 m["base_sha"] if int(n) < 0 else m["head_sha"],
                 abs(int(n)),
             )
         for it in s.get("items", []):
             if "cite" in it:
                 path, n = it["cite"].rsplit(":", 1)
-                want[f"{path}#L{abs(int(n))}"] = (
+                label = (
+                    f"{path}#L{abs(int(n))} (removed)" if int(n) < 0 else f"{path}#L{abs(int(n))}"
+                )
+                want[label] = (
                     m["base_sha"] if int(n) < 0 else m["head_sha"],
                     abs(int(n)),
                 )
@@ -269,7 +348,12 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
             for r in s["rows"]:
                 if "text" not in r:
                     continue
-                want[f"{s['file']}#L{r['num']}"] = (
+                label = (
+                    f"{s['file']}#L{r['num']} (removed)"
+                    if r["op"] == "-"
+                    else f"{s['file']}#L{r['num']}"
+                )
+                want[label] = (
                     m["base_sha"] if r["op"] == "-" else m["head_sha"],
                     r["num"],
                 )

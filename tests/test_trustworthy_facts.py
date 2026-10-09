@@ -331,3 +331,108 @@ def test_mixed_live_and_deleted_keeps_live_verdict() -> None:
     assert facts.stats.symbols_changed == 2
     assert [u.id for u in facts.no_direct_test] == ["a.py::kept"]
     assert "No direct test evidence" in facts.test_verdict
+
+
+def _all_missing_map() -> dict[str, Any]:
+    return {
+        "pr": "o/r#1",
+        "head_sha": "abc123def456",
+        "brief": {"files": [{"path": "a.py", "kind": "code"}], "checks": [], "mismatches": []},
+        "files": [],
+        "symbols": [
+            {
+                "id": "a.py::one",
+                "qualname": "one",
+                "path": "a.py",
+                "status": "modified",
+                "added": 2,
+                "removed": 1,
+                "call_sites": 0,
+            },
+            {
+                "id": "a.py::two",
+                "qualname": "two",
+                "path": "a.py",
+                "status": "added",
+                "added": 3,
+                "removed": 0,
+                "call_sites": 0,
+            },
+        ],
+        "edges": [],
+    }
+
+
+def _part_missing_map() -> dict[str, Any]:
+    return {
+        "pr": "o/r#1",
+        "head_sha": "abc123def456",
+        "brief": {
+            "files": [
+                {"path": "a.py", "kind": "code"},
+                {"path": "tests/test_a.py", "kind": "test"},
+            ],
+            "checks": [],
+            "mismatches": [],
+        },
+        "files": [],
+        "symbols": [
+            {
+                "id": "a.py::one",
+                "qualname": "one",
+                "path": "a.py",
+                "status": "modified",
+                "added": 2,
+                "removed": 1,
+                "call_sites": 0,
+            },
+            {
+                "id": "a.py::two",
+                "qualname": "two",
+                "path": "a.py",
+                "status": "modified",
+                "added": 2,
+                "removed": 1,
+                "call_sites": 0,
+            },
+            {
+                "id": "tests/test_a.py::test_one",
+                "qualname": "test_one",
+                "path": "tests/test_a.py",
+                "status": "added",
+                "added": 5,
+                "removed": 0,
+                "call_sites": 0,
+            },
+        ],
+        "edges": [
+            {
+                "source": "tests/test_a.py::test_one",
+                "target": "a.py::one",
+                "status": "added",
+                "resolution": "exact",
+            },
+        ],
+    }
+
+
+def test_all_live_missing_uses_any_verdict() -> None:
+    m = _all_missing_map()
+    facts = compute_facts(m)
+    assert [u.id for u in facts.no_direct_test] == ["a.py::one", "a.py::two"]
+    assert facts.test_verdict == (
+        "No direct test evidence in this map for any live changed production symbol."
+    )
+    assert facts.test_verdict in render_comment(m)
+    assert facts.test_verdict in build_card_html(m)
+
+
+def test_part_live_missing_uses_some_verdict() -> None:
+    m = _part_missing_map()
+    facts = compute_facts(m)
+    assert [u.id for u in facts.no_direct_test] == ["a.py::two"]
+    assert facts.test_verdict == (
+        "No direct test evidence in this map for some live changed production symbols."
+    )
+    assert facts.test_verdict in render_comment(m)
+    assert facts.test_verdict in build_card_html(m)

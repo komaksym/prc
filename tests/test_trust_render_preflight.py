@@ -189,6 +189,133 @@ def test_wrapped_diff_fits_in_real_browser() -> None:
         browser.close()
 
 
+def test_wrapped_diff_sign_sits_on_first_line() -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, b = wrapped_change()
+    m["files"][0]["hunks"][0]["lines"][2]["text"] = "ok = 1"
+    b["scenes"][0]["lines"] = ["1", "2", "3"]
+    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/wrapped-diff-sign"
+    facts = verify_board(b, m)
+    render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((proof / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        page.evaluate("window.seek(window.BOARD.scenes[0].end - 0.5)")
+        page.screenshot(path=str(proof / "settled.png"))
+        bounds = page.locator(".drow:not(.gap)").evaluate_all(
+            """rows => rows.map(row => {
+                const rects = row.querySelector('.ct').getClientRects();
+                return {
+                    row: row.getBoundingClientRect().toJSON(),
+                    sg: row.querySelector('.sg').getBoundingClientRect().toJSON(),
+                    first: rects[0].toJSON(),
+                    count: rects.length,
+                    wrapped: rects.length > 1,
+                };
+            })"""
+        )
+        (proof / "bounds.json").write_text(json.dumps(bounds, indent=2))
+        assert [bound["wrapped"] for bound in bounds] == [True, True, False]
+        for bound in bounds:
+            sg_cy = bound["sg"]["y"] + bound["sg"]["height"] / 2
+            line_cy = bound["first"]["y"] + bound["first"]["height"] / 2
+            assert abs(sg_cy - line_cy) <= 2, bound
+        browser.close()
+
+
+def test_doc_prose_matches_video_captions_in_real_browser() -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.doc import render_doc
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m = tiny_map()
+    b = tiny_board(["2", "3", "4"])
+    b["scenes"][0]["say"] = [
+        '`a` now returns <x> & "y".',
+        {"show": "The `AI` step stays.", "speak": "The A.I. step stays."},
+        "An unpaired ` stays literal.",
+    ]
+    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/caption-parity"
+    facts = verify_board(b, m)
+    rendered = render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
+    render_doc(b, m, proof, rendered.duration, has_video=False)
+    read = """el => ({
+        text: el.textContent,
+        code: [...el.querySelectorAll('code')].map(c => c.textContent),
+    })"""
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((proof / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        video = []
+        for n, sentence in enumerate(page.evaluate("window.BOARD.scenes[0].sentences")):
+            page.evaluate(f"window.seek({sentence['start'] + sentence['dur'] / 2})")
+            video.append(page.locator(".ecap").evaluate(read))
+            page.screenshot(path=str(proof / f"video-caption-{n}.png"))
+        page.goto((proof / "doc.html").as_uri())
+        doc = page.locator("#scene-0 .prose").evaluate_all(f"els => els.map({read})")
+        page.locator("#scene-0").screenshot(path=str(proof / "doc-scene.png"))
+        browser.close()
+    assert video == doc
+    assert doc == [
+        {"text": 'a now returns <x> & "y".', "code": ["a"]},
+        {"text": "The AI step stays.", "code": ["AI"]},
+        {"text": "An unpaired ` stays literal.", "code": []},
+    ]
+
+
+def test_card_and_video_outro_render_code_names() -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from prc.presentation.card import render_card
+
+    m, b = tiny_map(), tiny_board(["2", "3", "4"])
+    b["scenes"][-1]["l1"] = '`a` now returns <x> & "y".'
+    b["scenes"][-1]["l2"] = "Start at `a` in `a.py`."
+    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/caption-headlines"
+    facts = verify_board(b, m)
+    render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
+    shown = {"show": "The `a` step stays.", "speak": "The A step stays."}
+    title = {"scenes": [{"type": "title", "say": [shown]}]}
+    for name, board in (("outro", b), ("spoken", title)):
+        render_card(m, m["brief"], board, proof / f"{name}.html", proof / f"{name}.png")
+    read = """el => ({
+        text: el.textContent,
+        code: [...el.querySelectorAll('code')].map(c => c.textContent),
+    })"""
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((proof / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        page.evaluate("window.seek(window.BOARD.scenes.at(-1).end - 0.5)")
+        page.screenshot(path=str(proof / "video-outro.png"))
+        outro = page.locator(".outro .l1, .outro .l2").evaluate_all(f"els => els.map({read})")
+        page.set_viewport_size({"width": 1200, "height": 630})
+        cards = []
+        for name in ("outro", "spoken"):
+            page.goto((proof / f"{name}.html").as_uri())
+            cards.append(page.locator(".headline").evaluate(read))
+        browser.close()
+    expected = {"text": 'a now returns <x> & "y".', "code": ["a"]}
+    assert outro == [expected, {"text": "Start at a in a.py.", "code": ["a", "a.py"]}]
+    assert cards == [expected, {"text": "The a step stays.", "code": ["a"]}]
+
+
 @pytest.mark.parametrize("verb", ["l1", "l2", "cmd"])
 def test_check_rejects_outro_reveal_at_scene_end(verb: str) -> None:
     from prc.explainer.check import verify_board
@@ -312,6 +439,44 @@ def test_board_coverage_and_doc_agree_on_missing_lines() -> None:
 
     cov = line_coverage(b, m)
     assert cov["missing"], "partial board must list missing changed lines"
+
+
+def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
+    import re
+
+    from prc.explainer import boards
+    from prc.explainer.doc import _not_covered
+    from prc.explainer.preflight import line_coverage
+
+    m = tiny_map()
+    m["files"][0]["hunks"][0]["lines"] = [
+        {"op": "-", "old": 178, "new": None, "text": "gone 178"},
+        {"op": "-", "old": 171, "new": None, "text": "gone 171"},
+        {"op": "-", "old": 81, "new": None, "text": "gone 81"},
+        {"op": "+", "old": None, "new": 9, "text": "new 9"},
+        {"op": "+", "old": None, "new": 3, "text": "new 3"},
+        {"op": " ", "old": 1, "new": 1, "text": "def a():"},
+    ]
+    m["files"][0].update(added=2, removed=3)
+    m["brief"]["files"][0].update(added=2, removed=3)
+    b = tiny_board([])
+    b["scenes"][0]["cues"] = []
+
+    cov = line_coverage(b, m)
+    assert cov["missing"] == ["a.py:-81", "a.py:-171", "a.py:-178", "a.py:3", "a.py:9"]
+
+    html = _not_covered(b, m)
+    labels = re.findall(r'<a class="leftout"[^>]*>([^<]+)</a>', html)
+    assert labels == [
+        "a.py#L81 (removed)",
+        "a.py#L171 (removed)",
+        "a.py#L178 (removed)",
+        "a.py#L3",
+        "a.py#L9",
+    ]
+
+    text = boards.coverage(b, m)
+    assert "missing changed lines: a.py:-81, a.py:-171, a.py:-178, a.py:3, a.py:9" in text
 
 
 def test_check_rejects_blank_changed_line_like_render() -> None:

@@ -11,6 +11,7 @@ import json
 import re
 import shutil
 import subprocess
+from html import unescape
 from pathlib import Path
 from typing import Any
 
@@ -308,6 +309,33 @@ def test_card_part_order_and_headline() -> None:
     positions = [body.lower().find(part) for part in order]
     assert all(p >= 0 for p in positions), positions
     assert positions == sorted(positions), positions
+
+
+def headline_parts(page: str) -> tuple[str, list[str]]:
+    found = re.search(r'<h1 class="headline">(.*?)</h1>', page, re.S)
+    assert found, "card has a headline"
+    inner = found.group(1)
+    return unescape(re.sub(r"<[^>]+>", "", inner)), re.findall(r"<code>([^<]*)</code>", inner)
+
+
+def test_headline_uses_the_shown_text_of_a_spoken_caption() -> None:
+    m = shop_dict()
+    spoken = {"show": "The AI step is new.", "speak": "The A.I. step is new."}
+    board = {"scenes": [{"type": "title", "say": [spoken]}]}
+    assert headline_parts(card.build_card_html(m, m["brief"], board)) == ("The AI step is new.", [])
+    first = comment.render_comment(m, m["brief"], board).splitlines()[0]
+    assert first == "# `The AI step is new.`"
+
+
+def test_card_headline_sets_backticked_names_as_code() -> None:
+    m = shop_dict()
+    say = ['`select_next_episode` now skips <gaps> & "holes"; an unpaired ` stays.']
+    page = card.build_card_html(m, m["brief"], {"scenes": [{"type": "title", "say": say}]})
+    assert headline_parts(page) == (
+        'select_next_episode now skips <gaps> & "holes"; an unpaired ` stays.',
+        ["select_next_episode"],
+    )
+    assert "<gaps>" not in page
 
 
 def test_card_look_first_shows_three_tour_symbols_with_files() -> None:
@@ -883,7 +911,7 @@ def test_analysis_limits_keep_the_evidence_sentence_and_every_path() -> None:
     ]
     text = comment.render_comment(m)
     html = card.build_card_html(m, m["brief"], None)
-    lead = "No direct test evidence in this map for some live changed production symbols."
+    lead = "No direct test evidence in this map for any live changed production symbol."
     section = text.split("## Direct test-call evidence", 1)[1]
     assert lead in section and lead in html
     assert "incomplete for 7 files" in section and "incomplete for 7 files" in html

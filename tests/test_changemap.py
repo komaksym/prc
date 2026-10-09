@@ -501,7 +501,7 @@ def test_quoted_property_change_has_no_nested_test_evidence(tmp_path: Path) -> N
     assert {entry.id for entry in facts.no_direct_test} == {changed}
     assert facts.stats.untested_total == 1
     assert facts.test_verdict == (
-        "No direct test evidence in this map for some live changed production symbols."
+        "No direct test evidence in this map for any live changed production symbol."
     )
     (tmp_path / "collision-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
     (tmp_path / "collision-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))
