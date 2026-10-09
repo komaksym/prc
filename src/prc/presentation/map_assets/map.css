@@ -135,7 +135,9 @@ button {
   letter-spacing: 0.01em;
 }
 
-.meta { overflow: hidden; text-overflow: ellipsis; }
+.meta { display: flex; align-items: baseline; min-width: 0; overflow: hidden; }
+.meta > * { flex: none; }
+.meta .who { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .meta .sep { color: var(--faint); margin: 0 6px; }
 .meta .mono { font-family: var(--mono); font-size: 11.5px; }
 
@@ -435,6 +437,9 @@ h1 {
   white-space: nowrap;
 }
 
+.n-foot > .delta { flex: none; }
+.n-foot > .sites { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
 .n-row > .path { flex: 1 1 auto; min-width: 0; }
 
 .n-row > .sites {
@@ -448,6 +453,7 @@ h1 {
 .minus { color: var(--red); }
 
 .badge {
+  flex: none;
   margin-left: auto;
   padding: 1px 6px;
   border-radius: 6px;

@@ -28,6 +28,7 @@
   const BEHIND_SUMMARY = 0.35;
   const LEGIBLE = 0.55;
   const NO_TEST = "no direct test evidence";
+  const NO_TEST_BADGE = "no test evidence";
   const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
 
   const $ = (id) => document.getElementById(id);
@@ -155,7 +156,7 @@
   (() => {
     const meta = $("meta");
     const sep = () => el("span", "sep", "\u00b7");
-    add(meta, sep(), el("span", "", MAP.pr), sep(), el("span", "", `by ${MAP.author}`), sep(),
+    add(meta, sep(), el("span", "who", MAP.pr), sep(), el("span", "who", `by ${MAP.author}`), sep(),
       el("span", "mono", `${MAP.base_sha.slice(0, 7)} \u2192 ${MAP.head_sha.slice(0, 7)}`));
     if (typeof MAP.url === "string" && GITHUB_PR.test(MAP.url)) {
       const link = el("a", "", "Open on GitHub");
@@ -176,13 +177,14 @@
     add(stats,
       stat(STATS.files, STATS.files === 1 ? "file" : "files"),
       stat(STATS.symbols_changed, STATS.symbols_changed === 1 ? "parsed symbol changed" : "parsed symbols changed"),
-      stat(callSites, "resolved call sites"),
+      stat(callSites, callSites === 1 ? "resolved call site" : "resolved call sites"),
       stat(testsTouched, testsTouched === 1 ? "test file touched" : "test files touched",
         testsTouched ? "" : "warn"),
       stat(ci.word, ci.label, ci.cls, true),
       stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
     if (FACTS.limits.length) {
-      const limit = stat(FACTS.limits.length, "files without symbol analysis", "warn");
+      const limit = stat(FACTS.limits.length,
+        FACTS.limits.length === 1 ? "file without symbol analysis" : "files without symbol analysis", "warn");
       limit.setAttribute("title", FACTS.limits.map((entry) => `${entry.path}: ${entry.reason}`).join("\n"));
       stats.appendChild(limit);
     }
@@ -333,7 +335,11 @@
     add(delta, el("span", "plus", `+${sym.added}`), document.createTextNode(" "), el("span", "minus", `${MINUS}${sym.removed}`));
     add(foot, delta);
     if (node.status !== "deleted" && !isTest(node)) foot.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
-    if (node.untested) foot.appendChild(el("span", "badge", NO_TEST));
+    if (node.untested) {
+      const badge = el("span", "badge", NO_TEST_BADGE);
+      badge.setAttribute("title", NO_TEST);
+      foot.appendChild(badge);
+    }
     card.appendChild(foot);
   }
 
@@ -937,7 +943,7 @@
       cell(STATS.symbols_changed, STATS.symbols_changed === 1 ? "parsed symbol changed" : "parsed symbols changed"),
       cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
       cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
-      cell(callSites, "resolved call sites"),
+      cell(callSites, callSites === 1 ? "resolved call site" : "resolved call sites"),
       cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
       cell(ci.word, ci.failed.length ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : `${ci.label} on the head commit`, ci.cls));
     const toured = new Set(MAP.tour.flatMap((step) => step.focus));

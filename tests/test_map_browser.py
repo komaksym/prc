@@ -304,3 +304,71 @@ def test_map_without_symbols_says_so(open_map: Callable[[ChangeMap], Opened]) ->
 
     assert "No function or class changed" in opened.page.locator(".empty").text_content()
     assert opened.problems == []
+
+
+def test_untested_badge_fits_inside_its_card(open_map: Callable[[ChangeMap], Opened]) -> None:
+    """em#5756: the badge text ran past the card edge and was cut mid-word."""
+    opened = open_map(shop_map())
+    badges = opened.page.locator(".node .badge")
+    clipped = badges.evaluate_all(
+        """badges => badges.flatMap((badge) => {
+          const card = badge.closest(".node").getBoundingClientRect();
+          const box = badge.getBoundingClientRect();
+          return box.right > card.right - 1 || box.left < card.left ? [badge.closest(".node").textContent] : [];
+        })"""
+    )
+
+    assert badges.count() == 4
+    assert clipped == []
+    assert opened.problems == []
+
+
+def test_header_keeps_both_revisions_and_the_link_visible(
+    open_map: Callable[[ChangeMap], Opened], tmp_path: Path
+) -> None:
+    """swarm-deploy#116: seven statistics squeezed the head SHA to "2…"."""
+    change = custom_map(
+        tmp_path, {}, {f"internal/compose/f{i}.go": b"package compose\n" for i in range(7)}
+    )
+    change = dataclasses.replace(
+        change,
+        pr="swarm-deploy/swarm-deploy#116",
+        url="https://github.com/swarm-deploy/swarm-deploy/pull/116",
+        author="Copilot",
+        title="Add shared faults package and structured compose errors",
+    )
+    opened = open_map(change)
+    hidden = opened.page.evaluate(
+        """() => {
+          const meta = document.getElementById("meta").getBoundingClientRect();
+          return [...document.querySelectorAll("#meta .mono, #meta a")].flatMap((el) => {
+            const box = el.getBoundingClientRect();
+            return box.right > meta.right + 0.5 || box.left < meta.left - 0.5 ? [el.textContent] : [];
+          });
+        }"""
+    )
+
+    assert opened.page.locator("#stats .stat").count() == 7
+    assert opened.page.locator("#meta a").count() == 1
+    assert hidden == []
+    assert change.head_sha[:7] in opened.page.locator("#meta .mono").text_content()
+
+
+def test_counts_of_one_read_singular_in_the_header(
+    open_map: Callable[[ChangeMap], Opened], tmp_path: Path
+) -> None:
+    change = custom_map(
+        tmp_path,
+        {"m.py": b"def run():\n    return 0\n", "x.go": b"package x\n"},
+        {
+            "m.py": b"def run():\n    return helper()\n\n\ndef helper():\n    return 1\n",
+            "x.go": b"package x\n\nvar y = 1\n",
+        },
+    )
+    assert compute_stats(to_jsonable(change)).call_sites == 1
+    opened = open_map(change)
+    labels = opened.page.locator("#stats .stat-label").all_text_contents()
+
+    assert "resolved call site" in labels
+    assert "file without symbol analysis" in labels
+    assert opened.problems == []
