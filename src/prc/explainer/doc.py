@@ -155,10 +155,11 @@ def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
     cov = line_coverage(board, m)
     missing = cov["missing"]
     unavail = cov["unavailable"]
+    count = f"<p>{cov['shown']} of {cov['total']} changed lines are on screen.</p>"
     if not missing and not files and not syms and not unavail:
-        body = "<p>Everything changed is on screen.</p>"
+        body = f"{count}\n<p>Everything changed is on screen.</p>"
     else:
-        parts = ["<p>Files and symbols this board leaves out.</p>"]
+        parts = [count, "<p>Files and symbols this board leaves out.</p>"]
         if unavail:
             parts.append("<p>Some changed lines have no line refs and cannot be quoted.</p>")
         if missing:
@@ -169,9 +170,10 @@ def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
                 removed = n.startswith("-")
                 num = abs(int(n))
                 href = receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, num, removed)
+                label = f"{path}#L{num} (removed)" if removed else f"{path}#L{num}"
                 items.append(
                     f'<li><a class="leftout" href="{html.escape(href)}">'
-                    f"{html.escape(path)}#L{num}</a></li>"
+                    f"{html.escape(label)}</a></li>"
                 )
             rows = "\n".join(items)
             parts.append(f'<h3>Changed lines not shown</h3>\n<ul class="receipts">\n{rows}\n</ul>')

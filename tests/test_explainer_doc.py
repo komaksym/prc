@@ -21,6 +21,7 @@ import pytest
 from prc.explainer import render
 from prc.explainer.check import verify_board
 from prc.explainer.jointest import run as join_run
+from prc.explainer.preflight import line_coverage
 from prc.explainer.voice import NoneBackend
 
 DATA = Path(__file__).resolve().parent / "data" / "explainer"
@@ -222,6 +223,8 @@ def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
             continue
         if re.fullmatch(r"Scene \d+ of \d+ · \w+", text):
             continue
+        if re.fullmatch(r"\d+ of \d+ changed lines are on screen\.", text):
+            continue
         assert text in blob, f"doc says {text!r}, which is in neither board, map nor templates"
 
 
@@ -356,6 +359,29 @@ def test_not_covered_matches_map(tmp_path: Path) -> None:
     shown_files = {p for p, _ in shown_refs(board)}
     for path in shown_files:
         assert f"<code>{path}</code>" not in html.split("Not covered", 1)[1], path
+
+
+def test_doc_states_changed_line_coverage(tmp_path: Path) -> None:
+    """The walkthrough says how many changed lines it shows, as the board check does."""
+    docmod = need_doc()
+    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
+    html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
+    cov = line_coverage(board, m)
+    assert cov["shown"] < cov["total"], "mdp12 must leave lines out for this test to mean anything"
+    assert f"{cov['shown']} of {cov['total']} changed lines are on screen." in html
+
+
+def test_leftout_line_labels_are_distinct(tmp_path: Path) -> None:
+    """A removed line and an added line with one number both read path#L21."""
+    docmod = need_doc()
+    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
+    html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
+    links = re.findall(r'<a class="leftout" href="([^"]+)">([^<]+)</a>', html)
+    labels = [label for _, label in links]
+    removed = [label for href, label in links if f"/blob/{m['base_sha']}/" in href]
+    assert removed, "mdp12 must leave removed lines out for this test to mean anything"
+    assert len(labels) == len(set(labels))
+    assert all(label.endswith("(removed)") for label in removed), removed
 
 
 def test_csp_matches_map_style(tmp_path: Path) -> None:
