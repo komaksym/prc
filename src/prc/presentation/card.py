@@ -5,9 +5,6 @@ of files in the brief, symbols changed counts added/modified/deleted, call
 sites sums `call_sites` over changed symbols, tests touched counts brief files
 of kind `test`, CI is passed/total checks or "no CI", and no-direct-test is a
 changed symbol outside test files with no incoming edge from a test symbol.
-
-The card has a fixed size. When long names overfill a list, its trailing entries
-give way to a "+N more" line, so no entry covers the test-evidence lines.
 """
 
 from __future__ import annotations
@@ -25,8 +22,6 @@ from prc.facts import (
 from prc.facts import (
     TEST_NOTE,
     compute_facts,
-    limits_lead,
-    test_evidence,
     test_paths,
 )
 from prc.facts import (
@@ -298,7 +293,6 @@ def _label(count: int, one: str, many: str) -> str:
 
 
 def _breakable(value: str) -> str:
-    """Escape, then let long names wrap after dots, slashes and :: instead of mid-word."""
     return re.sub(r"(::|[./])", r"\1<wbr>", _escape(value))
 
 
@@ -306,13 +300,9 @@ def build_card_html(
     m: dict[str, Any],
     brief: Any = None,
     board: dict[str, Any] | None = None,
-    look: int = LOOK_LIMIT,
-    risk: int = RISK_LIMIT,
+    look_shown: int = LOOK_LIMIT,
+    risk_shown: int = RISK_LIMIT,
 ) -> str:
-    """Render the card.html template. Every PR-controlled string is HTML-escaped.
-
-    `look` and `risk` cap the entries shown in each list; the rest become "+N more".
-    """
     facts = compute_facts(m, brief)
     stats = facts.stats
     entries = look_first(m, brief, LOOK_LIMIT, board)
@@ -352,33 +342,34 @@ def build_card_html(
         "".join(
             f'<li class="st-{_escape(e.status)}"><span class="name">{_breakable(e.name)}</span>'
             f'<br><span class="path">{_breakable(e.path)}</span></li>'
-            for e in entries[:look]
+            for e in entries[:look_shown]
         )
         if entries
         else '<li><span class="reason">Nothing stands out.</span></li>'
     )
-    if len(entries) > look:
-        look_html += f'<li><span class="reason">+{len(entries) - look} more</span></li>'
+    if len(entries) > look_shown:
+        look_html += f'<li><span class="reason">+{len(entries) - look_shown} more</span></li>'
     risky_html = (
         "".join(
             f'<li class="st-modified"><span class="name">{_breakable(r.path)}</span><br>'
             f'<span class="reason">{_escape(r.reason)}</span></li>'
-            for r in surfaces[:risk]
+            for r in surfaces[:risk_shown]
         )
         if surfaces
         else '<li><span class="reason">None.</span></li>'
     )
-    if len(surfaces) > risk:
-        shown_reasons = {r.reason for r in surfaces[:risk]}
-        hidden = sorted({r.reason for r in surfaces[risk:] if r.reason not in shown_reasons})
+    if len(surfaces) > risk_shown:
+        shown_reasons = {r.reason for r in surfaces[:risk_shown]}
+        hidden = sorted({r.reason for r in surfaces[risk_shown:] if r.reason not in shown_reasons})
         suffix = _escape(f": {', '.join(hidden)}") if hidden else ""
-        risky_html += f'<li><span class="reason">+{len(surfaces) - risk} more{suffix}</span></li>'
+        more = len(surfaces) - risk_shown
+        risky_html += f'<li><span class="reason">+{more} more{suffix}</span></li>'
     lines = []
-    lead = limits_lead(facts.limits)
+    lead = facts.limits_lead
     if lead:
         listed = ", ".join(f"{entry.path} ({entry.reason})" for entry in facts.limits)
         lines.append(f"<strong>{_escape(lead)}</strong> {_escape(listed)}")
-    lines.append(_escape(test_evidence(m, brief)))
+    lines.append(_escape(facts.test_verdict))
     if missing:
         shown = ", ".join(f'<span class="mono">{_escape(u.name)}</span>' for u in missing[:3])
         rest = f" +{len(missing) - 3} more" if len(missing) > 3 else ""
@@ -410,14 +401,8 @@ def render_card(
     html_path: Path,
     out_path: Path,
 ) -> Path:
-    """Write card.html, fit its lists in Chromium, and screenshot it at 1200x630, scale 2.
-
-    card.html is written first, so it exists even when Chromium cannot start. A list
-    that runs past its column loses its last entry to "+N more" until every entry fits.
-    """
     from prc.presentation.map_video import CARD_SCALE, CARD_VIEWPORT
 
-    html_path.write_text(build_card_html(m, brief, board))
     try:
         import playwright.sync_api  # noqa: F401
     except ImportError as error:
@@ -442,22 +427,22 @@ def render_card(
                 color_scheme="dark",
             )
             page = context.new_page()
-            look, risk = LOOK_LIMIT, RISK_LIMIT
+            look_shown, risk_shown = LOOK_LIMIT, RISK_LIMIT
             while True:
+                html_path.write_text(build_card_html(m, brief, board, look_shown, risk_shown))
                 page.goto(html_path.resolve().as_uri())
                 page.evaluate("document.fonts.ready.then(() => true)")
                 over = page.evaluate(_FIT)
                 if over["evidence"]:
                     raise CardError("The PR card cannot fit its test-evidence lines in 1200x630.")
-                if over["look"] and look > 0:
-                    look -= 1
-                elif over["risky"] and risk > 0:
-                    risk -= 1
+                if over["look"] and look_shown > 0:
+                    look_shown -= 1
+                elif over["risky"] and risk_shown > 0:
+                    risk_shown -= 1
                 elif over["look"] or over["risky"]:
                     raise CardError("The PR card cannot fit its lists in 1200x630.")
                 else:
                     break
-                html_path.write_text(build_card_html(m, brief, board, look, risk))
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_bytes(page.screenshot(type="png"))
         finally:

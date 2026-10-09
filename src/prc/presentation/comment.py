@@ -18,7 +18,7 @@ import re
 import unicodedata
 from typing import Any
 
-from prc.facts import TEST_NOTE, compute_facts, limits_lead, test_evidence
+from prc.facts import TEST_NOTE, compute_facts
 from prc.facts import brief_of as _brief_of
 from prc.presentation.card import (
     headline,
@@ -199,12 +199,12 @@ def render_comment(
     elif not surfaces:
         lines += ["No description mismatch detected by the checked rules."]
     lines += ["", "## Direct test-call evidence", ""]
-    lead = limits_lead(facts.limits)
+    lead = facts.limits_lead
     if lead:
         lines += [lead, ""]
         lines += [f"- {span(entry.path)} ({entry.reason})" for entry in facts.limits]
         lines += [""]
-    lines += [test_evidence(m, b)]
+    lines += [facts.test_verdict]
     if missing:
         lines += [""] + [f"- {span(u.name)} in {span(u.path)}" for u in missing]
     lines += ["", TEST_NOTE]

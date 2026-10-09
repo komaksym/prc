@@ -47,7 +47,15 @@ class Facts:
     edges_added: int
     edges_removed: int
     ci_state: str
+    test_verdict: str
     test_note: str = TEST_NOTE
+
+    @property
+    def limits_lead(self) -> str:
+        if not self.limits:
+            return ""
+        count = "1 file" if len(self.limits) == 1 else f"{len(self.limits)} files"
+        return f"Symbol and call analysis is incomplete for {count}:"
 
 
 def brief_of(m: dict[str, Any], brief: Any = None) -> dict[str, Any]:
@@ -122,6 +130,23 @@ def compute_facts(m: dict[str, Any], brief: Any = None) -> Facts:
         if any(c.get("state") == "pending" for c in checks)
         else "passed"
     )
+    if not changed:
+        verdict = (
+            "No parsed symbol changes. Top-level and unrecognized changes can remain."
+            if limits or any(f.get("kind") in ("code", "test") for f in b.get("files", []))
+            else "No code symbols changed."
+        )
+    elif not any(
+        s.get("status") in ("added", "modified") and s["path"] not in tests
+        for s in m.get("symbols", [])
+    ):
+        verdict = "No live production symbols changed."
+    elif missing:
+        verdict = "No direct test evidence in this map for some live changed production symbols."
+    else:
+        verdict = (
+            "Direct test-call evidence found for all live changed production symbols in this map."
+        )
     return Facts(
         CardStats(
             len(b.get("files", [])),
@@ -139,36 +164,9 @@ def compute_facts(m: dict[str, Any], brief: Any = None) -> Facts:
         sum(e.get("status") == "added" for e in m.get("edges", [])),
         sum(e.get("status") == "removed" for e in m.get("edges", [])),
         state,
+        verdict,
     )
 
 
 def compute_stats(m: dict[str, Any], brief: Any = None) -> CardStats:
     return compute_facts(m, brief).stats
-
-
-def limits_lead(limits: tuple[ParseLimit, ...]) -> str:
-    """The counted lead-in for the files symbol analysis skipped. Empty when none were skipped."""
-    if not limits:
-        return ""
-    count = "1 file" if len(limits) == 1 else f"{len(limits)} files"
-    return f"Symbol and call analysis is incomplete for {count}:"
-
-
-def test_evidence(m: dict[str, Any], brief: Any = None) -> str:
-    """The direct test-call verdict for parsed code. `limits_lead` reports unparsed files."""
-    facts = compute_facts(m, brief)
-    if not any(s.get("status") in CHANGED for s in m.get("symbols", [])):
-        if facts.limits or any(
-            f.get("kind") in ("code", "test") for f in brief_of(m, brief).get("files", [])
-        ):
-            return "No parsed symbol changes. Top-level and unrecognized changes can remain."
-        return "No code symbols changed."
-    tests = test_paths(m, brief)
-    if not any(
-        s.get("status") in ("added", "modified") and s["path"] not in tests
-        for s in m.get("symbols", [])
-    ):
-        return "No live production symbols changed."
-    if facts.no_direct_test:
-        return "No direct test evidence in this map for some live changed production symbols."
-    return "Direct test-call evidence found for all live changed production symbols in this map."
