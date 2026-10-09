@@ -471,8 +471,7 @@ def test_jsx_components_count_in_the_javascript_grammar() -> None:
 
 def test_object_handler_same_file_resolves() -> None:
     source = (
-        "const command = { exec() { return 1; } };\n"
-        "function caller() { return command.exec(); }\n"
+        "const command = { exec() { return 1; } };\nfunction caller() { return command.exec(); }\n"
     )
 
     assert {(q, k) for q, k, _ in defs("command.ts", source)} == {
@@ -513,8 +512,7 @@ def test_nested_object_handler_resolves_same_file_and_imported() -> None:
     files = {
         "nested.ts": "export const a = { b: { c() { return 1; } } };\n",
         "tests/test_nested.ts": (
-            'import { a } from "../nested";\n'
-            "function test_nested() { return a.b.c(); }\n"
+            'import { a } from "../nested";\nfunction test_nested() { return a.b.c(); }\n'
         ),
     }
 

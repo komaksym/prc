@@ -731,11 +731,7 @@ class Index:
         scopes.append("")
 
         return next(
-            (
-                q
-                for s in scopes
-                if (q := f"{s}.{name}" if s else name) in local or q in namespaces
-            ),
+            (q for s in scopes if (q := f"{s}.{name}" if s else name) in local or q in namespaces),
             None,
         )
 
