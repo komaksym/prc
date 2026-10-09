@@ -12,6 +12,7 @@ import html
 from pathlib import Path
 from typing import Any
 
+from prc.captions import shown, shown_html
 from prc.explainer.preflight import cited_refs, line_coverage
 from prc.explainer.render import ASSETS, board_json
 
@@ -38,7 +39,7 @@ TEMPLATE_STRINGS = frozenset(
 
 def captions(scene: dict[str, Any]) -> list[str]:
     """Caption prose: the show text, not the voice spelling."""
-    return [s if isinstance(s, str) else s.get("show", s.get("speak", "")) for s in scene["say"]]
+    return [shown(s) for s in scene["say"]]
 
 
 def receipt_refs(scene: dict[str, Any]) -> list[tuple[str, int, bool]]:
@@ -122,20 +123,26 @@ def header_html(m: dict[str, Any]) -> str:
 
 def _scene_section(board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str, Any]) -> str:
     owner_repo = m["pr"].split("#")[0]
-    prose = "\n".join(f'<p class="prose">{html.escape(line)}</p>' for line in captions(s))
+    prose = "\n".join(f'<p class="prose">{shown_html(line)}</p>' for line in captions(s))
     receipts = ""
     links = [
-        (receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed), path, n)
+        (
+            receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed),
+            path,
+            n,
+            removed,
+        )
         for path, n, removed in receipt_refs(s)
     ]
     seen: set[str] = set()
     items = []
-    for href, path, n in links:
+    for href, path, n, removed in links:
         if href in seen:
             continue
         seen.add(href)
+        label = f"{path}#L{n} (removed)" if removed else f"{path}#L{n}"
         items.append(
-            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(path)}#L{n}</a></li>'
+            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(label)}</a></li>'
         )
     if items:
         receipts = "<h3>Receipts</h3>\n" + '<ul class="receipts">\n' + "\n".join(items) + "\n</ul>"

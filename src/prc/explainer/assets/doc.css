@@ -15,6 +15,7 @@ body.doc section.scene { position: static; opacity: 1; }
 .scene h2, .not-covered h2 { font: 700 14px system-ui; letter-spacing: 0.14em; text-transform: uppercase; color: #8A93A6; margin-bottom: 14px; }
 .scene h3, .not-covered h3 { font: 700 13px system-ui; letter-spacing: 0.12em; text-transform: uppercase; color: #5B6475; margin: 20px 0 8px; }
 .prose { font: 400 20px/1.6 Charter, "Iowan Old Style", Georgia, serif; color: #ECEFF4; max-width: 68ch; margin: 8px 0; }
+.prose code { font-size: 0.9em; color: #F0AC5F; }
 .shot { width: 100%; margin: 22px 0; border: 1px solid #1F2738; border-radius: 14px; }
 .shot .efoot, .shot .ebar { display: none; }
 .receipts { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font: 15px ui-monospace, Menlo, monospace; }

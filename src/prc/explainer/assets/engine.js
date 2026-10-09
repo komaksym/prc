@@ -482,7 +482,7 @@
 
   MAKERS.outro = (s, root) => {
     const wrap = D('outro', null, root);
-    const l1 = D('l1', esc(s.l1), wrap), l2 = D('l2', esc(s.l2), wrap);
+    const l1 = D('l1', fmt(s.l1), wrap), l2 = D('l2', fmt(s.l2), wrap);
     const cmd = D('cmd', `<b>prc map</b> ${esc(s.url)}`, wrap);
     const fine = D('fine', esc(s.fine == null ? '' : s.fine), wrap);
     const at = name => cueT(s, q => q.do === name);

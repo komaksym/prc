@@ -11,6 +11,7 @@ import math
 from pathlib import Path
 from typing import Any
 
+from prc.captions import shown
 from prc.explainer.check import find_phrase, spoken
 from prc.explainer.diffrows import DIFF_BOTTOM, diff_layout
 from prc.explainer.voice import Backend, audible, estimate_seconds, pauses
@@ -175,7 +176,7 @@ def fit_sentences(
                 on, off = 0.0, d
             s["sentences"].append(
                 {
-                    "text": line if isinstance(line, str) else line["show"],
+                    "text": shown(line),
                     "start": t,
                     "dur": d,
                     "on": on,

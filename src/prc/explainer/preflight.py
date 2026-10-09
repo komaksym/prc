@@ -117,7 +117,10 @@ def line_coverage(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
     rendered = rendered_refs(board, m)
     cited = cited_refs(board)
     shown = {k for k in changed if k in rendered}
-    missing = sorted((k for k in changed if k not in shown), key=lambda k: (k[0], k[1]))
+    missing = sorted(
+        (k for k in changed if k not in shown),
+        key=lambda k: (k[0], 0 if k[1] < 0 else 1, abs(k[1])),
+    )
     total = sum(f.get("added", 0) + f.get("removed", 0) for f in m.get("files", []))
     unavailable = max(0, total - len(changed))
     kinds: dict[str, Any] = {}

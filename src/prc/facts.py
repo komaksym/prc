@@ -152,7 +152,13 @@ def compute_facts(m: dict[str, Any], brief: Any = None) -> Facts:
         else:
             verdict = "No live production symbols changed."
     elif missing:
-        verdict = "No direct test evidence in this map for some live changed production symbols."
+        missing_ids = {entry.id for entry in missing}
+        live_ids = {s["id"] for s in live_prod}
+        verdict = (
+            "No direct test evidence in this map for any live changed production symbol."
+            if missing_ids >= live_ids
+            else "No direct test evidence in this map for some live changed production symbols."
+        )
     else:
         verdict = (
             "Direct test-call evidence found for all live changed production symbols in this map."

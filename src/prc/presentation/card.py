@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 from xml.sax.saxutils import escape as _escape
 
+from prc.captions import shown, shown_html
 from prc.facts import (
     CHANGED as CHANGED,
 )
@@ -93,7 +94,7 @@ def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
                 return str(scene["l1"])
         for scene in board.get("scenes", []):
             if scene.get("type") == "title" and scene.get("say"):
-                return str(scene["say"][0])
+                return shown(scene["say"][0])
     return str(m.get("title", ""))
 
 
@@ -380,7 +381,7 @@ def build_card_html(
     page = TEMPLATE.read_text()
     for token, value in (
         ("EYEBROW", f"PR card · {repo}"),
-        ("HEADLINE", headline(m, board)),
+        ("HEADLINE", shown_html(headline(m, board))),
         ("STATS", stats_html),
         ("LOOK_FIRST", look_html),
         ("RISKY", risky_html),
@@ -389,7 +390,7 @@ def build_card_html(
     ):
         page = page.replace(
             "{{" + token + "}}",
-            _escape(value) if token in ("EYEBROW", "HEADLINE", "FOOTER") else value,
+            _escape(value) if token in ("EYEBROW", "FOOTER") else value,
         )
     return page
 
