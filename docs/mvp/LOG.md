@@ -184,3 +184,20 @@ The focused test, full ruff checks, mypy and git diff checks pass after those re
 Reports are `.audit/trust-final-inspection-review.md`, `.audit/trust-inspection-comments-review.md` and `.audit/trust-final-inspection-closure.md`.
 
 Next step. The user reviews the three cases and completes `acceptance.md` in the final acceptance directory.
+
+## GitHub browser baseline, 2026-10-09
+
+The user chose the normal GitHub PR page as the human review baseline.
+The packet and worksheet now direct the user to review on GitHub.
+The baseline includes description, Files changed, discussion, checks and navigation.
+Scores measure the extra help each PRC output adds beyond that baseline, from 1 to 5.
+Each case has fields for baseline notes, added help, preferred formats, would-use judgment and correctness findings.
+All three human decisions remain pending. Retained raw diffs are optional verification evidence.
+
+Read-only `gh api` checks confirm all three GitHub base/head pairs, file counts and line totals match the captured cases.
+The browser check initially lacked the baseline and grading instructions. Both appear after the update.
+Background Vercel agent-browser screenshots confirm readable instructions. All 35 local and three GitHub destinations are preserved.
+Proof is `.audit/github-review-baseline.json` and `artifacts/trustworthiness/2026-10-09/github-baseline/{before,after}.png`.
+Product source and rendered outputs remain unchanged. The frozen agent evaluation keeps its existing protocol.
+
+Next step. The user reviews the three PRs on GitHub and records the extra help from PRC in the worksheet.

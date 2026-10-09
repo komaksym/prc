@@ -8,7 +8,7 @@ Public release, license, package name, push and PR creation remain separate deci
 ![Three fixed-revision PR cases, machine checks and the user's acceptance boundary](assets/trustworthy-pr-review.png)
 
 Each PR has its own base and head pair. That pair matches between its original diff and its PRC outputs.
-The figure describes the review method. The verification record below establishes its completion.
+The figure describes the retained inputs and verification. Human review uses the normal GitHub PR page as its baseline.
 
 ## What changed
 
@@ -145,6 +145,12 @@ PLAYWRIGHT_BROWSERS_PATH=/Users/koval/dev/prc/artifacts/release/browser-cache UV
 ## Acceptance package
 
 Open artifacts/trustworthiness/2026-10-09/acceptance/index.html. Record each decision in acceptance.md in the same folder.
+The user's baseline is the normal GitHub PR page, including description, Files changed, discussion, checks and navigation.
+Review there first, then assess the five PRC outputs. Rate each output from 1 to 5 for its extra help.
+The worksheet defines the score anchors and records baseline notes, added help, preferred formats and acceptance findings.
+Check questionable claims in GitHub's code view. The retained raw diff is optional verification evidence.
+This three-case human review uses the GitHub browser baseline. The frozen agent evaluation remains a separate protocol.
+
 Each case keeps the original diff, its numstat, the provenance and the five PRC outputs for one base and head pair.
 The 548d8ab wheel built every output. Chromium opened each map, drawer, walkthrough and card, and played each video.
 The installed-package verifier compares original diffs, per-file counts and quoted code with the pinned Git objects.
