@@ -802,12 +802,15 @@ def test_crowded_card_keeps_every_block_visible(tmp_path: Path) -> None:
     pytest.importorskip("playwright.sync_api")
     from playwright.sync_api import sync_playwright
 
+    try:
+        with sync_playwright() as driver:
+            driver.chromium.launch().close()
+    except Exception as error:  # noqa: BLE001
+        pytest.skip(f"Chromium cannot launch here: {str(error).splitlines()[0]}")
+
     m = crowded_card_map()
     html_path = tmp_path / "card.html"
-    try:
-        card.render_card(m, m["brief"], None, html_path, tmp_path / "card.png")
-    except card.CardError as error:
-        pytest.skip(str(error))
+    card.render_card(m, m["brief"], None, html_path, tmp_path / "card.png")
     proof = ROOT / "artifacts" / "e2e" / "card-crowded"
     proof.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(tmp_path / "card.png", proof / "card.png")
