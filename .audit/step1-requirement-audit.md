@@ -21,6 +21,6 @@ The automatic approval reviewer temporarily rejected one audio-check command bec
 
 The parent accepted the independent claims and visual reports within their stated scopes. Neither supplies human acceptance. A transcript difference is not automatically an audible defect.
 
-The goal remains active. Do not claim all step 1 requirements are complete or mark the goal achieved while direct listening is missing. Do not push, open a PR or publish without explicit approval under D21.
+The goal is not achieved. The same audio-input limitation remains across three goal turns. All unaffected work is complete, and the three listener fields remain pending. Direct listening now requires human input or an audio-capable review environment. Do not mark the goal achieved while that requirement is missing. Do not push, open a PR or publish without explicit approval under D21.
 
 Next step. The sole human reviewer listens at the worksheet's named times and records the three acceptance judgments.
