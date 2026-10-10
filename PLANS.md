@@ -24,13 +24,21 @@ Design: .audit/step1-design.md. Push, PR, license, package name and publication 
   - [x] Actual browser rendering, drawer, tour, inline infographic, phone sizing and video playback for all three cases. All 41 local hub links passed.
   - [x] Visual inspection of 44 inventory images and 39 active-caption samples. Hash and pixel bindings match. Truncated card warnings, small embedded text and faint tertiary text are recorded.
   - [x] Actual audio streams, full transcripts and first-line waveform comparisons favor Kokoro. The source and installed wheel match be2e7fa.
-  - [ ] Direct listening. This runtime cannot receive audio input. ASR ambiguities in s2e3, onComplete and ErrNotExist remain explicit. The review page and worksheet identify their time ranges.
+  - [ ] Machine listening replaces direct listening, per the user on 2026-10-11. Calibrated speech recognizers found two narration defects: s2e3 is heard as "SC" and ErrNotExist as "or not exist". next_episode.py is heard as "next episode, pie". Evidence: acceptance/listening/results.md. S9 closes this item.
 - [x] S8. Docs, decisions, trail and local commits. Human acceptance stays with the user. .audit/step1-requirement-audit.md keeps direct listening open.
+- [ ] S9. Spoken-text normalization with a pronunciation gate. Added to the goal by the user on 2026-10-11.
+  - [x] Before Kokoro runs, PRC rewrites code tokens into speakable words. Examples: s2e3 becomes "S 2 E 3", ErrNotExist becomes "error not exist", next_episode.py becomes "next episode dot P Y", and camelCase and snake_case split into words. Captions keep the code. Commits 6736af2 and ea3d1da.
+  - [x] `prc listen` transcribes the narration and checks that every code token is heard as many times as it is said. It writes listening.json with the engine, model and version.
+  - [x] The gate checks itself on each run. Planted good and bad versions of the same tokens, in the same voice, must pass and fail.
+  - [x] Use the best recognizer available. Parakeet through Muesli's muesli-cli comes first, at the user's preference. Whisper base is the fallback. Clips are resampled to 16 kHz mono for Parakeet (a864203).
+  - [x] verify-release.sh fails when any code token is lost or the controls fail (012649e). Run artifacts/release/verify/run-Zi9CUJ passed from an empty cache: 878 tests, 0 skipped, Parakeet listening passed.
+  - [ ] Rebuild the three acceptance videos and pass the gate. em-5756 passes. s2e3, ErrNotExist and next_episode.py now come through. Two tokens still fail: find_next_episode is heard as "fine next episode" (librarysync-98), and ReadComposeError as "red compose error" (swarm-116).
+  - [ ] Update acceptance.md, index.html and listening/results.md with the gate verdicts, and recheck the hub pages in a browser.
 
 Done predicate. All tests pass with 0 skipped, and verify-release.sh passes from an empty cache.
 Each acceptance PR shows a gated infographic or a recorded fallback, and the PR Lens map with a working drawer and tour.
 Each acceptance PR has a Kokoro video whose narration matches its board. Automatic transcripts alone cannot prove that match.
-Current evidence is incomplete for direct listening. The goal stays open until that requirement is verified.
+The listening requirement is met when S9 passes on all three acceptance videos and in verify-release.sh. Until then the goal stays open.
 
 # Trustworthy PR explanations, 2026-10-09
 
