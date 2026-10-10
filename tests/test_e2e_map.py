@@ -149,19 +149,26 @@ def test_shop_map_is_computed_safe_and_repeatable() -> None:
     executable = [body for attrs, body in scripts if "application/json" not in attrs]
     blocks = [body for attrs, body in scripts if 'id="map-data"' in attrs]
 
-    assert len(scripts) == 2 and len(executable) == 1 and len(blocks) == 1
+    assert len(scripts) == 3 and len(executable) == 2 and len(blocks) == 1
     embedded = json.loads(blocks[0])
-    summary = embedded.pop("summary")
-    assert embedded == data and "summary" not in data
+    assert set(embedded) == {"map", "graph", "steps", "dropped"}
+    summary = embedded["map"].pop("summary")
+    assert embedded["map"].pop("groups") == []
+    assert embedded["map"] == data and "summary" not in data
+    assert len(embedded["graph"]["nodes"]) == 14
+    assert len(embedded["graph"]["edges"]) == 12
+    assert len(embedded["steps"]) == 10
     assert (summary["stats"]["files"], summary["stats"]["symbols_changed"]) == (8, 7)
     assert (summary["stats"]["call_sites"], summary["stats"]["tests_touched"]) == (7, 1)
     assert summary["ci_state"] == "passed"
 
-    digest = base64.b64encode(hashlib.sha256(executable[0].encode()).digest()).decode()
     csp = re.search(r'http-equiv="Content-Security-Policy" content="([^"]+)"', html)
 
     assert csp is not None
-    assert "default-src 'none'" in csp[1] and f"'sha256-{digest}'" in csp[1]
+    assert "default-src 'none'" in csp[1]
+    for script in executable:
+        digest = base64.b64encode(hashlib.sha256(script.encode()).digest()).decode()
+        assert f"'sha256-{digest}'" in csp[1]
     assert not re.search(
         r"""(src|href)\s*=\s*["']?(https?:)?//|@import|url\(\s*["']?https?:""", html
     )
@@ -177,6 +184,33 @@ def test_hostile_map_renders_inert() -> None:
     result = run_fixture("hostile")
     html = Path(result["html"]).read_text()
 
-    assert html.count("<script") == 2
+    assert html.count("<script") == 3
     assert "<img" not in html
     assert "</text><script>" not in html
+
+
+def test_map_cli_no_playwright_required(tmp_path: Path) -> None:
+    code = """
+import importlib.abc
+import runpy
+import sys
+class BlockPlaywright(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname.split('.')[0] == 'playwright':
+            raise ImportError('Playwright forbidden during plain map generation')
+sys.meta_path.insert(0, BlockPlaywright())
+sys.argv = ['prc', 'map', '--source', 'fixture:shop', '--store', sys.argv[1], '--out', sys.argv[2]]
+runpy.run_module('prc.cli', run_name='__main__')
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", code, str(tmp_path / "store"), str(tmp_path / "out")],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    result = json.loads(completed.stdout)
+    html = Path(result["html"]).read_text()
+    assert "prcLens" in html and "window.prcTour" in html
+    assert Path(result["json"]).is_file()

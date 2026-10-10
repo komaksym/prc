@@ -1,0 +1,337 @@
+{
+  "edges": [
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s2",
+      "id": "e0",
+      "kind": "call",
+      "to": "s1"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s3",
+      "id": "e1",
+      "kind": "call",
+      "to": "s0"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s3",
+      "id": "e2",
+      "kind": "call",
+      "to": "s1"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s4",
+      "id": "e3",
+      "kind": "call",
+      "to": "s5"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s5",
+      "id": "e4",
+      "kind": "call",
+      "to": "s1"
+    }
+  ],
+  "flows": [],
+  "kind": "graph",
+  "lanes": [
+    {
+      "id": "files",
+      "label": "Changed files"
+    },
+    {
+      "id": "callers",
+      "label": "Callers"
+    },
+    {
+      "id": "changed",
+      "label": "Changed code"
+    },
+    {
+      "id": "callees",
+      "label": "Callees"
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "files",
+      "callers",
+      "changed",
+      "callees"
+    ]
+  },
+  "lenses": [
+    "architecture"
+  ],
+  "nodes": [
+    {
+      "badges": [
+        "+3 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 25,
+          "path": "src/commands/note.ts",
+          "revision": "head",
+          "startLine": 23
+        }
+      ],
+      "id": "s2",
+      "kind": "function",
+      "label": "noteCommand.multicursor.onComplete",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+3 / -0"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 67,
+          "path": "src/commands/openCommandCenter.ts",
+          "revision": "head",
+          "startLine": 24
+        }
+      ],
+      "id": "s3",
+      "kind": "function",
+      "label": "openCommandCenterCommand.exec",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -0"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 337,
+          "path": "src/components/CommandCenter/CommandCenter.tsx",
+          "revision": "head",
+          "startLine": 124
+        }
+      ],
+      "id": "s5",
+      "kind": "function",
+      "label": "CommandCenter",
+      "lane": "changed"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 30,
+          "path": "src/actions/dismissKeyboard.ts",
+          "revision": "head",
+          "startLine": 16
+        }
+      ],
+      "id": "s0",
+      "kind": "function",
+      "label": "dismissKeyboardActionCreator",
+      "lane": "callees"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 44,
+          "path": "src/actions/toggleDropdown.ts",
+          "revision": "head",
+          "startLine": 40
+        }
+      ],
+      "id": "s1",
+      "kind": "function",
+      "label": "toggleDropdownActionCreator",
+      "lane": "callees"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 258,
+          "path": "src/components/AppComponent.tsx",
+          "revision": "head",
+          "startLine": 130
+        }
+      ],
+      "id": "s4",
+      "kind": "function",
+      "label": "AppComponent",
+      "lane": "callers"
+    },
+    {
+      "badges": [
+        "+18 / -0",
+        "dependency patch"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch",
+          "revision": "head"
+        }
+      ],
+      "id": "f0",
+      "kind": "module",
+      "label": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+2 / -2",
+        "dependency lockfile"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "yarn.lock",
+          "revision": "head"
+        }
+      ],
+      "id": "f6",
+      "kind": "package",
+      "label": "yarn.lock",
+      "lane": "files"
+    }
+  ],
+  "provenance": {
+    "base": {
+      "sha": "9e2db120d3ea98e1e37fe939972ef364ab4508a9"
+    },
+    "generator": {
+      "name": "prc"
+    },
+    "head": {
+      "sha": "3755cd396c0075e29d3ea6638e0fd2e572f3ed3b"
+    },
+    "pullRequest": {
+      "number": 5756,
+      "title": "Close the Command Center when Note enters edit mode on touch",
+      "url": "https://github.com/cybersemics/em/pull/5756"
+    },
+    "repo": {
+      "name": "em",
+      "owner": "cybersemics"
+    }
+  },
+  "schemaVersion": "0.2.0",
+  "title": "Close the Command Center when Note enters edit mode on touch",
+  "views": [],
+  "walkthrough": {
+    "steps": [
+      {
+        "body": "Close the Command Center when Note enters edit mode on touch - 7 files, 3 symbols, 2 calls added, 0 removed.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "What changed",
+        "id": "w0"
+      },
+      {
+        "body": "dependency patch: .yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "f0"
+          ]
+        },
+        "heading": "Risky:",
+        "id": "w1"
+      },
+      {
+        "body": "dependency lockfile: yarn.lock",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "f6"
+          ]
+        },
+        "heading": "Risky: yarn.lock",
+        "id": "w2"
+      },
+      {
+        "body": "New +3 -0; src/commands/note.ts.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s2"
+          ]
+        },
+        "heading": "noteCommand.multicursor.onComplete",
+        "id": "w3"
+      },
+      {
+        "body": "Changed +3 -0; src/commands/openCommandCenter.ts.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s3"
+          ]
+        },
+        "heading": "openCommandCenterCommand.exec",
+        "id": "w4"
+      },
+      {
+        "body": "Changed +2 -0; src/components/CommandCenter/CommandCenter.tsx.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s5"
+          ]
+        },
+        "heading": "CommandCenter",
+        "id": "w5"
+      },
+      {
+        "body": "No direct test evidence in this map for any live changed production symbol.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "Summary",
+        "id": "w6"
+      }
+    ]
+  }
+}

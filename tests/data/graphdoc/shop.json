@@ -1,0 +1,558 @@
+{
+  "edges": [
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "hero",
+      "files": [],
+      "from": "s2",
+      "id": "e1",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s9",
+      "id": "e9",
+      "kind": "call",
+      "to": "s2"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s10",
+      "id": "e10",
+      "kind": "call",
+      "to": "s11"
+    },
+    {
+      "animated": false,
+      "delta": "removed",
+      "emphasis": "muted",
+      "files": [],
+      "from": "s2",
+      "id": "e2",
+      "kind": "call",
+      "to": "s3"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s2",
+      "id": "e3",
+      "kind": "call",
+      "to": "s7"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s9",
+      "id": "e8",
+      "kind": "call",
+      "to": "s0"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "muted",
+      "files": [],
+      "from": "s2",
+      "id": "e0",
+      "kind": "call",
+      "label": "name-only",
+      "to": "s1"
+    },
+    {
+      "animated": false,
+      "delta": "removed",
+      "emphasis": "muted",
+      "files": [],
+      "from": "s3",
+      "id": "e4",
+      "kind": "call",
+      "label": "name-only",
+      "to": "s1"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s5",
+      "id": "e5",
+      "kind": "call",
+      "to": "s2"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s6",
+      "id": "e6",
+      "kind": "call",
+      "to": "s2"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s8",
+      "id": "e7",
+      "kind": "call",
+      "to": "s2"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s10",
+      "id": "e11",
+      "kind": "call",
+      "to": "s12"
+    }
+  ],
+  "flows": [],
+  "kind": "graph",
+  "lanes": [
+    {
+      "id": "files",
+      "label": "Changed files"
+    },
+    {
+      "id": "callers",
+      "label": "Callers"
+    },
+    {
+      "id": "changed",
+      "label": "Changed code"
+    },
+    {
+      "id": "callees",
+      "label": "Callees"
+    },
+    {
+      "id": "tests",
+      "label": "Tests"
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "files",
+      "callers",
+      "changed",
+      "callees",
+      "tests"
+    ]
+  },
+  "lenses": [
+    "architecture"
+  ],
+  "nodes": [
+    {
+      "badges": [
+        "+2 / -2"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 15,
+          "path": "src/shop/cart.py",
+          "revision": "head",
+          "startLine": 13
+        }
+      ],
+      "id": "s2",
+      "kind": "function",
+      "label": "checkout",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+4 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 4,
+          "path": "src/shop/discounts.py",
+          "revision": "head",
+          "startLine": 1
+        }
+      ],
+      "id": "s4",
+      "kind": "function",
+      "label": "apply_discount",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 6,
+          "path": "src/shop/tax.py",
+          "revision": "head",
+          "startLine": 4
+        }
+      ],
+      "id": "s7",
+      "kind": "function",
+      "label": "compute_tax",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+3 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 7,
+          "path": "web/src/cart.ts",
+          "revision": "head",
+          "startLine": 5
+        }
+      ],
+      "id": "s11",
+      "kind": "function",
+      "label": "formatPrice",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+0 / -2"
+      ],
+      "delta": "removed",
+      "files": [
+        {
+          "endLine": 13,
+          "path": "src/shop/cart.py",
+          "revision": "base",
+          "startLine": 12
+        }
+      ],
+      "id": "s3",
+      "kind": "function",
+      "label": "legacy_total",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 9,
+          "path": "tests/test_cart.py",
+          "revision": "head",
+          "startLine": 8
+        }
+      ],
+      "id": "s9",
+      "kind": "test",
+      "label": "test_checkout_without_code_keeps_total",
+      "lane": "tests"
+    },
+    {
+      "badges": [
+        "+1 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 5,
+          "path": "web/src/CartView.tsx",
+          "revision": "head",
+          "startLine": 3
+        }
+      ],
+      "id": "s10",
+      "kind": "function",
+      "label": "CartView",
+      "lane": "changed"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 10,
+          "path": "src/shop/cart.py",
+          "revision": "head",
+          "startLine": 5
+        }
+      ],
+      "id": "s0",
+      "kind": "module",
+      "label": "Cart",
+      "lane": "callees"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 10,
+          "path": "src/shop/cart.py",
+          "revision": "head",
+          "startLine": 9
+        }
+      ],
+      "id": "s1",
+      "kind": "function",
+      "label": "Cart.subtotal",
+      "lane": "callees"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 6,
+          "path": "src/shop/api.py",
+          "revision": "head",
+          "startLine": 4
+        }
+      ],
+      "id": "s5",
+      "kind": "function",
+      "label": "post_checkout",
+      "lane": "callers"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 10,
+          "path": "src/shop/api.py",
+          "revision": "head",
+          "startLine": 9
+        }
+      ],
+      "id": "s6",
+      "kind": "function",
+      "label": "post_preview",
+      "lane": "callers"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 5,
+          "path": "tests/test_cart.py",
+          "revision": "head",
+          "startLine": 4
+        }
+      ],
+      "id": "s8",
+      "kind": "test",
+      "label": "test_checkout_adds_tax",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 3,
+          "path": "web/src/cart.ts",
+          "revision": "head",
+          "startLine": 1
+        }
+      ],
+      "id": "s12",
+      "kind": "function",
+      "label": "total",
+      "lane": "callees"
+    },
+    {
+      "badges": [
+        "+1 / -0",
+        "CI workflow"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "revision": "head"
+        }
+      ],
+      "id": "f0",
+      "kind": "config",
+      "label": ".github/workflows/ci.yml",
+      "lane": "files"
+    }
+  ],
+  "provenance": {
+    "base": {
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "generator": {
+      "name": "prc"
+    },
+    "head": {
+      "sha": "ffffffffffffffffffffffffffffffffffffffff"
+    },
+    "pullRequest": {
+      "number": 7,
+      "title": "Add discount codes at checkout"
+    },
+    "repo": {
+      "name": "shop",
+      "owner": "acme"
+    }
+  },
+  "schemaVersion": "0.2.0",
+  "title": "Add discount codes at checkout",
+  "views": [],
+  "walkthrough": {
+    "steps": [
+      {
+        "body": "Add discount codes at checkout - 8 files, 7 symbols, 5 calls added, 2 removed.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "What changed",
+        "id": "w0"
+      },
+      {
+        "body": "CI workflow: .github/workflows/ci.yml",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "f0"
+          ]
+        },
+        "heading": "Risky: ci.yml",
+        "id": "w1"
+      },
+      {
+        "body": "Changed +2 -2; src/shop/cart.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s2"
+          ]
+        },
+        "heading": "checkout",
+        "id": "w2"
+      },
+      {
+        "body": "New +4 -0; called by checkout.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s4"
+          ]
+        },
+        "heading": "apply_discount",
+        "id": "w3"
+      },
+      {
+        "body": "Changed +2 -1; called by checkout.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s7"
+          ]
+        },
+        "heading": "compute_tax",
+        "id": "w4"
+      },
+      {
+        "body": "Deleted +0 -2; called by checkout.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s3"
+          ]
+        },
+        "heading": "legacy_total",
+        "id": "w5"
+      },
+      {
+        "body": "Changed +1 -1; web/src/CartView.tsx.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s10"
+          ]
+        },
+        "heading": "CartView",
+        "id": "w6"
+      },
+      {
+        "body": "New +3 -0; called by CartView.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s11"
+          ]
+        },
+        "heading": "formatPrice",
+        "id": "w7"
+      },
+      {
+        "body": "New test calls Cart, checkout.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s9"
+          ]
+        },
+        "heading": "Test test_checkout_without_code_keeps_total",
+        "id": "w8"
+      },
+      {
+        "body": "No direct test evidence in this map for some live changed production symbols.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "Summary",
+        "id": "w9"
+      }
+    ]
+  }
+}

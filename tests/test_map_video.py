@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import struct
@@ -12,15 +13,16 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from playwright.sync_api import sync_playwright
 
+from map_sample import shop_map
+from pngcheck import luminance, variance
 from prc.presentation import map_video
 from prc.presentation.map_video import VideoError, encode, frame_count, frame_times
+from prc.presentation.render_map import render_map
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT = ROOT / "artifacts" / "e2e" / "maps" / "video"
-needs_ffmpeg = pytest.mark.skipif(
-    not (shutil.which("ffmpeg") and shutil.which("ffprobe")), reason="ffmpeg/ffprobe not on PATH"
-)
 
 
 def probe(path: Path) -> dict[str, Any]:
@@ -64,8 +66,7 @@ def test_missing_playwright_names_the_extra(monkeypatch: pytest.MonkeyPatch) -> 
 
 @pytest.fixture
 def lavfi_frames(tmp_path: Path) -> list[bytes]:
-    if not shutil.which("ffmpeg"):
-        pytest.skip("ffmpeg not on PATH")
+    assert shutil.which("ffmpeg"), "ffmpeg is required for video tests"
 
     pattern = tmp_path / "f%02d.jpg"
     subprocess.run(
@@ -77,7 +78,6 @@ def lavfi_frames(tmp_path: Path) -> list[bytes]:
     return [p.read_bytes() for p in sorted(tmp_path.glob("f*.jpg"))]
 
 
-@needs_ffmpeg
 def test_encode_pipes_frames_into_h264(tmp_path: Path, lavfi_frames: list[bytes]) -> None:
     out = tmp_path / "t.mp4"
     encode(iter(lavfi_frames), out)
@@ -89,7 +89,6 @@ def test_encode_pipes_frames_into_h264(tmp_path: Path, lavfi_frames: list[bytes]
     assert int(stream["nb_read_frames"]) == len(lavfi_frames)
 
 
-@needs_ffmpeg
 def test_encode_reports_ffmpeg_failure(tmp_path: Path) -> None:
     with pytest.raises(VideoError, match="ffmpeg"):
         encode(iter([b"not a jpeg"] * 3), tmp_path / "bad.mp4")
@@ -99,20 +98,12 @@ def test_encode_reports_ffmpeg_failure(tmp_path: Path) -> None:
 
 @pytest.fixture(scope="module")
 def chromium() -> Iterator[None]:
-    pytest.importorskip("playwright.sync_api")
-    from playwright.sync_api import sync_playwright
-
     with sync_playwright() as driver:
-        try:
-            driver.chromium.launch().close()
-        except Exception as error:  # noqa: BLE001
-            lines = str(error).splitlines()
-            pytest.skip(f"Chromium cannot launch here: {lines[0]}")
+        driver.chromium.launch().close()
 
     yield
 
 
-@needs_ffmpeg
 def test_cli_writes_video_and_card(chromium: None) -> None:
     shutil.rmtree(ARTIFACT, ignore_errors=True)
     completed = subprocess.run(
@@ -140,3 +131,34 @@ def test_cli_writes_video_and_card(chromium: None) -> None:
 
     assert header[:8] == b"\x89PNG\r\n\x1a\n"
     assert struct.unpack(">II", header[16:24]) == (2400, 1260)
+
+
+def test_map_video_seeks_record(tmp_path: Path) -> None:
+    html = tmp_path / "map.html"
+    html.write_text(render_map(shop_map()))
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        try:
+            page = map_video._open(browser, html, map_video.VIDEO_VIEWPORT, 1)
+            problems: list[str] = []
+            page.on("pageerror", lambda error: problems.append(str(error)))
+            steps = page.evaluate("window.prcTour.steps")
+            times = [step["start"] + step["duration"] / 2 for step in steps[:-1]]
+            frames: list[bytes] = []
+            cameras: set[str] = set()
+            for i, frame in enumerate(map_video._frames(page, times)):
+                frames.append(frame)
+                cameras.add(page.locator("#world").evaluate("world => world.style.transform"))
+                path = tmp_path / f"frame-{i:02d}.png"
+                page.screenshot(path=str(path))
+                assert variance(luminance(str(path))) > 100
+            assert len(cameras) >= 4, cameras
+            assert len({hashlib.sha256(frame).hexdigest() for frame in frames}) == len(times)
+            first = next(map_video._frames(page, [times[0]]))
+            assert first == frames[0]
+            out = tmp_path / "seeks.mp4"
+            encode(iter(frames), out, fps=2)
+            assert int(probe(out)["streams"][0]["nb_read_frames"]) == len(times)
+            assert problems == []
+        finally:
+            browser.close()

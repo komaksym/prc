@@ -1,0 +1,1934 @@
+{
+  "author": "Copilot",
+  "base_sha": "e3742c159512078753c40da9226cb5fd72de5444",
+  "brief": {
+    "checks": [
+      {
+        "name": ".github/dependabot.yml",
+        "state": "passed"
+      },
+      {
+        "name": "Alembic migrations",
+        "state": "passed"
+      },
+      {
+        "name": "CodeQL",
+        "state": "passed"
+      },
+      {
+        "name": "Docker image",
+        "state": "passed"
+      },
+      {
+        "name": "Frontend CSS",
+        "state": "passed"
+      },
+      {
+        "name": "Lint & test (Python 3.13)",
+        "state": "passed"
+      },
+      {
+        "name": "Lint & test (Python 3.14)",
+        "state": "passed"
+      },
+      {
+        "name": "analyze (javascript-typescript)",
+        "state": "passed"
+      },
+      {
+        "name": "analyze (python)",
+        "state": "passed"
+      },
+      {
+        "name": "dependency-review",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 30,
+        "kind": "code",
+        "named": true,
+        "path": "backend/src/librarysync/core/next_episode.py",
+        "removed": 7,
+        "sensitive": null
+      },
+      {
+        "added": 42,
+        "kind": "test",
+        "named": false,
+        "path": "backend/tests/test_next_episode.py",
+        "removed": 0,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "d24bcde9cfb3b1bb93dc77147d0d31f7598a264c",
+    "look_first": [
+      {
+        "lines": [],
+        "path": "backend/src/librarysync/core/next_episode.py",
+        "reason": "largest code change (+30 \u22127)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "willtho89/librarySync#98",
+    "title": "Fix up-next episode selection for season progression"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "backend/src/librarysync/api/routes_dashboard.py::get_up_next",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/src/librarysync/api/routes_history.py::_attach_next_episodes",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/src/librarysync/core/next_episode.py::find_next_episode",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk",
+      "status": "added",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/src/librarysync/core/watch_state_pull.py::_build_complete_snapshot",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+      "status": "added",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+      "status": "added",
+      "target": "backend/tests/test_next_episode.py::_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_first_episode_when_nothing_watched",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_first_unwatched_episode",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_none_for_empty_list",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_none_when_all_watched",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+      "status": "added",
+      "target": "backend/src/librarysync/core/next_episode.py::select_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+      "status": "added",
+      "target": "backend/tests/test_next_episode.py::_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::test_find_next_episode_and_bulk_return_first_released_unwatched",
+      "status": "kept",
+      "target": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "status": "added",
+      "target": "backend/src/librarysync/core/next_episode.py::find_next_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "status": "added",
+      "target": "backend/src/librarysync/db/models.py::WatchedItem"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "status": "added",
+      "target": "backend/tests/test_next_episode.py::_create_episode"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "status": "added",
+      "target": "backend/tests/test_next_episode.py::_create_show"
+    },
+    {
+      "resolution": "exact",
+      "source": "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "status": "added",
+      "target": "backend/tests/test_next_episode.py::_create_user"
+    }
+  ],
+  "files": [
+    {
+      "added": 30,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 18,
+              "old": 18,
+              "op": " ",
+              "text": "    released_episodes: Iterable[EpisodeItem],"
+            },
+            {
+              "new": 19,
+              "old": 19,
+              "op": " ",
+              "text": "    watched_episode_ids: set[str],"
+            },
+            {
+              "new": 20,
+              "old": 20,
+              "op": " ",
+              "text": ") -> EpisodeItem | None:"
+            },
+            {
+              "new": null,
+              "old": 21,
+              "op": "-",
+              "text": "    \"\"\"Return the first episode not in ``watched_episode_ids``."
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Return the next episode after the user's latest watched point."
+            },
+            {
+              "new": 22,
+              "old": 22,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 23,
+              "old": 23,
+              "op": " ",
+              "text": "    ``released_episodes`` must already be ordered by season/episode number."
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "    This avoids recommending an earlier, previously-unwatched episode from an"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "    older season when the user has already progressed to a later season."
+            },
+            {
+              "new": 26,
+              "old": 24,
+              "op": " ",
+              "text": "    \"\"\""
+            },
+            {
+              "new": null,
+              "old": 25,
+              "op": "-",
+              "text": "    for episode in released_episodes:"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "    ordered_episodes = list(released_episodes)"
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "    if not ordered_episodes:"
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "        return None"
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "    last_watched = None"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "    for episode in ordered_episodes:"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "        if episode.id in watched_episode_ids:"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "            last_watched = episode"
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "    if last_watched is None:"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "        for episode in ordered_episodes:"
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "            if episode.id not in watched_episode_ids:"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "                return episode"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "        return None"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "    last_key = (last_watched.season_number, last_watched.episode_number)"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "    for episode in ordered_episodes:"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "        episode_key = (episode.season_number, episode.episode_number)"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "        if episode_key <= last_key:"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "            continue"
+            },
+            {
+              "new": 47,
+              "old": 26,
+              "op": " ",
+              "text": "        if episode.id not in watched_episode_ids:"
+            },
+            {
+              "new": 48,
+              "old": 27,
+              "op": " ",
+              "text": "            return episode"
+            },
+            {
+              "new": 49,
+              "old": 28,
+              "op": " ",
+              "text": "    return None"
+            }
+          ],
+          "new_start": 18,
+          "old_start": 18
+        },
+        {
+          "lines": [
+            {
+              "new": 127,
+              "old": 106,
+              "op": " ",
+              "text": "    released = await _released_episodes(db, show_ids, now_date)"
+            },
+            {
+              "new": 128,
+              "old": 107,
+              "op": " ",
+              "text": "    watched_ids = await _watched_episode_ids(db, user_id, show_ids, now_date)"
+            },
+            {
+              "new": 129,
+              "old": 108,
+              "op": " ",
+              "text": "    next_episodes: dict[str, EpisodeItem] = {}"
+            },
+            {
+              "new": 130,
+              "old": null,
+              "op": "+",
+              "text": "    per_show_episodes: dict[str, list[EpisodeItem]] = {}"
+            },
+            {
+              "new": 131,
+              "old": 109,
+              "op": " ",
+              "text": "    for episode in released:"
+            },
+            {
+              "new": null,
+              "old": 110,
+              "op": "-",
+              "text": "        if episode.show_media_item_id in next_episodes:"
+            },
+            {
+              "new": null,
+              "old": 111,
+              "op": "-",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 112,
+              "op": "-",
+              "text": "        if episode.id in watched_ids:"
+            },
+            {
+              "new": null,
+              "old": 113,
+              "op": "-",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 114,
+              "op": "-",
+              "text": "        next_episodes[episode.show_media_item_id] = episode"
+            },
+            {
+              "new": 132,
+              "old": null,
+              "op": "+",
+              "text": "        per_show_episodes.setdefault(episode.show_media_item_id, []).append(episode)"
+            },
+            {
+              "new": 133,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 134,
+              "old": null,
+              "op": "+",
+              "text": "    for show_id, episodes in per_show_episodes.items():"
+            },
+            {
+              "new": 135,
+              "old": null,
+              "op": "+",
+              "text": "        next_episode = select_next_episode(episodes, watched_ids)"
+            },
+            {
+              "new": 136,
+              "old": null,
+              "op": "+",
+              "text": "        if next_episode is not None:"
+            },
+            {
+              "new": 137,
+              "old": null,
+              "op": "+",
+              "text": "            next_episodes[show_id] = next_episode"
+            },
+            {
+              "new": 138,
+              "old": 115,
+              "op": " ",
+              "text": "    return next_episodes"
+            },
+            {
+              "new": 139,
+              "old": 116,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 140,
+              "old": 117,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 127,
+          "old_start": 106
+        }
+      ],
+      "kind": "code",
+      "language": "python",
+      "path": "backend/src/librarysync/core/next_episode.py",
+      "removed": 7,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "backend/src/librarysync/core/next_episode.py::find_next_episode",
+        "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk",
+        "backend/src/librarysync/core/next_episode.py::select_next_episode"
+      ]
+    },
+    {
+      "added": 42,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 36,
+              "old": 36,
+              "op": " ",
+              "text": "        episodes = [_episode(\"e1\", 1, 1), _episode(\"e2\", 1, 2)]"
+            },
+            {
+              "new": 37,
+              "old": 37,
+              "op": " ",
+              "text": "        assert select_next_episode(episodes, set()) is episodes[0]"
+            },
+            {
+              "new": 38,
+              "old": 38,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "    def test_uses_latest_watched_episode_instead_of_earliest_unwatched(self):"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "        episodes = ["
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s1e1\", 1, 1),"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s1e2\", 1, 2),"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s1e3\", 1, 3),"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s2e1\", 2, 1),"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s2e2\", 2, 2),"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s2e3\", 2, 3),"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "        ]"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "        assert select_next_episode(episodes, {\"s2e2\"}) is episodes[5]"
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 50,
+              "old": 39,
+              "op": " ",
+              "text": "    def test_returns_none_when_all_watched(self):"
+            },
+            {
+              "new": 51,
+              "old": 40,
+              "op": " ",
+              "text": "        episodes = [_episode(\"e1\", 1, 1), _episode(\"e2\", 1, 2)]"
+            },
+            {
+              "new": 52,
+              "old": 41,
+              "op": " ",
+              "text": "        assert select_next_episode(episodes, {\"e1\", \"e2\"}) is None"
+            },
+            {
+              "new": 53,
+              "old": 42,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "    def test_does_not_return_earlier_gaps_after_the_last_released_episode(self):"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "        episodes = [_episode(\"s1e1\", 1, 1), _episode(\"s2e1\", 2, 1), _episode(\"s2e2\", 2, 2)]"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "        assert select_next_episode(episodes, {\"s2e2\"}) is None"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 58,
+              "old": 43,
+              "op": " ",
+              "text": "    def test_returns_none_for_empty_list(self):"
+            },
+            {
+              "new": 59,
+              "old": 44,
+              "op": " ",
+              "text": "        assert select_next_episode([], set()) is None"
+            },
+            {
+              "new": 60,
+              "old": 45,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 36,
+          "old_start": 36
+        },
+        {
+          "lines": [
+            {
+              "new": 268,
+              "old": 253,
+              "op": " ",
+              "text": "    assert bulk_next[second_show.id].id == second_show_ep2.id"
+            },
+            {
+              "new": 269,
+              "old": 254,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 270,
+              "old": 255,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 271,
+              "old": null,
+              "op": "+",
+              "text": "@pytest.mark.asyncio"
+            },
+            {
+              "new": 272,
+              "old": null,
+              "op": "+",
+              "text": "async def test_find_next_episode_uses_last_watched_episode_across_seasons(db_session: AsyncSession):"
+            },
+            {
+              "new": 273,
+              "old": null,
+              "op": "+",
+              "text": "    user = await _create_user(db_session)"
+            },
+            {
+              "new": 274,
+              "old": null,
+              "op": "+",
+              "text": "    show = await _create_show(db_session, \"Season Hopping Show\")"
+            },
+            {
+              "new": 275,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 276,
+              "old": null,
+              "op": "+",
+              "text": "    await _create_episode(db_session, show.id, 1, 1, date(2024, 1, 1), title=\"S1E1\")"
+            },
+            {
+              "new": 277,
+              "old": null,
+              "op": "+",
+              "text": "    await _create_episode(db_session, show.id, 1, 2, date(2024, 1, 2), title=\"S1E2\")"
+            },
+            {
+              "new": 278,
+              "old": null,
+              "op": "+",
+              "text": "    await _create_episode(db_session, show.id, 2, 1, date(2024, 2, 1), title=\"S2E1\")"
+            },
+            {
+              "new": 279,
+              "old": null,
+              "op": "+",
+              "text": "    season_two_ep2 = await _create_episode(db_session, show.id, 2, 2, date(2024, 2, 2), title=\"S2E2\")"
+            },
+            {
+              "new": 280,
+              "old": null,
+              "op": "+",
+              "text": "    season_two_ep3 = await _create_episode(db_session, show.id, 2, 3, date(2024, 2, 3), title=\"S2E3\")"
+            },
+            {
+              "new": 281,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 282,
+              "old": null,
+              "op": "+",
+              "text": "    db_session.add("
+            },
+            {
+              "new": 283,
+              "old": null,
+              "op": "+",
+              "text": "        WatchedItem("
+            },
+            {
+              "new": 284,
+              "old": null,
+              "op": "+",
+              "text": "            user_id=user.id,"
+            },
+            {
+              "new": 285,
+              "old": null,
+              "op": "+",
+              "text": "            media_item_id=None,"
+            },
+            {
+              "new": 286,
+              "old": null,
+              "op": "+",
+              "text": "            episode_item_id=season_two_ep2.id,"
+            },
+            {
+              "new": 287,
+              "old": null,
+              "op": "+",
+              "text": "            watched_at=datetime(2024, 2, 10, tzinfo=timezone.utc),"
+            },
+            {
+              "new": 288,
+              "old": null,
+              "op": "+",
+              "text": "            source=\"manual\","
+            },
+            {
+              "new": 289,
+              "old": null,
+              "op": "+",
+              "text": "        )"
+            },
+            {
+              "new": 290,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 291,
+              "old": null,
+              "op": "+",
+              "text": "    await db_session.flush()"
+            },
+            {
+              "new": 292,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 293,
+              "old": null,
+              "op": "+",
+              "text": "    next_episode = await find_next_episode(db_session, user.id, show.id, date(2024, 2, 10))"
+            },
+            {
+              "new": 294,
+              "old": null,
+              "op": "+",
+              "text": "    assert next_episode is not None"
+            },
+            {
+              "new": 295,
+              "old": null,
+              "op": "+",
+              "text": "    assert next_episode.id == season_two_ep3.id"
+            },
+            {
+              "new": 296,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 297,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 298,
+              "old": 256,
+              "op": " ",
+              "text": "@pytest.mark.asyncio"
+            },
+            {
+              "new": 299,
+              "old": 257,
+              "op": " ",
+              "text": "async def test_mark_next_episode_watched_creates_watched_event_and_internal_outbox_job("
+            },
+            {
+              "new": 300,
+              "old": 258,
+              "op": " ",
+              "text": "    db_session: AsyncSession,"
+            }
+          ],
+          "new_start": 268,
+          "old_start": 253
+        }
+      ],
+      "kind": "test",
+      "language": "python",
+      "path": "backend/tests/test_next_episode.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_first_episode_when_nothing_watched",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_first_unwatched_episode",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_none_for_empty_list",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_none_when_all_watched",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+        "backend/tests/test_next_episode.py::_create_episode",
+        "backend/tests/test_next_episode.py::_create_show",
+        "backend/tests/test_next_episode.py::_create_user",
+        "backend/tests/test_next_episode.py::_episode",
+        "backend/tests/test_next_episode.py::test_find_next_episode_and_bulk_return_first_released_unwatched",
+        "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons"
+      ]
+    }
+  ],
+  "head_sha": "d24bcde9cfb3b1bb93dc77147d0d31f7598a264c",
+  "pr": "willtho89/librarySync#98",
+  "symbols": [
+    {
+      "added": 0,
+      "base_span": [
+        39,
+        95
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "backend/src/librarysync/api/routes_dashboard.py::get_up_next",
+      "kind": "function",
+      "path": "backend/src/librarysync/api/routes_dashboard.py",
+      "qualname": "get_up_next",
+      "removed": 0,
+      "span": [
+        39,
+        95
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        1250,
+        1265
+      ],
+      "call_sites": 1,
+      "hunks": [],
+      "id": "backend/src/librarysync/api/routes_history.py::_attach_next_episodes",
+      "kind": "function",
+      "path": "backend/src/librarysync/api/routes_history.py",
+      "qualname": "_attach_next_episodes",
+      "removed": 0,
+      "span": [
+        1250,
+        1265
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        84,
+        92
+      ],
+      "call_sites": 5,
+      "hunks": [],
+      "id": "backend/src/librarysync/core/next_episode.py::find_next_episode",
+      "kind": "function",
+      "path": "backend/src/librarysync/core/next_episode.py",
+      "qualname": "find_next_episode",
+      "removed": 0,
+      "span": [
+        105,
+        113
+      ],
+      "status": "context"
+    },
+    {
+      "added": 7,
+      "base_span": [
+        95,
+        115
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 127,
+              "old": 106,
+              "op": " ",
+              "text": "    released = await _released_episodes(db, show_ids, now_date)"
+            },
+            {
+              "new": 128,
+              "old": 107,
+              "op": " ",
+              "text": "    watched_ids = await _watched_episode_ids(db, user_id, show_ids, now_date)"
+            },
+            {
+              "new": 129,
+              "old": 108,
+              "op": " ",
+              "text": "    next_episodes: dict[str, EpisodeItem] = {}"
+            },
+            {
+              "new": 130,
+              "old": null,
+              "op": "+",
+              "text": "    per_show_episodes: dict[str, list[EpisodeItem]] = {}"
+            },
+            {
+              "new": 131,
+              "old": 109,
+              "op": " ",
+              "text": "    for episode in released:"
+            },
+            {
+              "new": null,
+              "old": 110,
+              "op": "-",
+              "text": "        if episode.show_media_item_id in next_episodes:"
+            },
+            {
+              "new": null,
+              "old": 111,
+              "op": "-",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 112,
+              "op": "-",
+              "text": "        if episode.id in watched_ids:"
+            },
+            {
+              "new": null,
+              "old": 113,
+              "op": "-",
+              "text": "            continue"
+            },
+            {
+              "new": null,
+              "old": 114,
+              "op": "-",
+              "text": "        next_episodes[episode.show_media_item_id] = episode"
+            },
+            {
+              "new": 132,
+              "old": null,
+              "op": "+",
+              "text": "        per_show_episodes.setdefault(episode.show_media_item_id, []).append(episode)"
+            },
+            {
+              "new": 133,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 134,
+              "old": null,
+              "op": "+",
+              "text": "    for show_id, episodes in per_show_episodes.items():"
+            },
+            {
+              "new": 135,
+              "old": null,
+              "op": "+",
+              "text": "        next_episode = select_next_episode(episodes, watched_ids)"
+            },
+            {
+              "new": 136,
+              "old": null,
+              "op": "+",
+              "text": "        if next_episode is not None:"
+            },
+            {
+              "new": 137,
+              "old": null,
+              "op": "+",
+              "text": "            next_episodes[show_id] = next_episode"
+            },
+            {
+              "new": 138,
+              "old": 115,
+              "op": " ",
+              "text": "    return next_episodes"
+            }
+          ],
+          "new_start": 127,
+          "old_start": 106
+        }
+      ],
+      "id": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk",
+      "kind": "function",
+      "path": "backend/src/librarysync/core/next_episode.py",
+      "qualname": "find_next_episodes_bulk",
+      "removed": 5,
+      "span": [
+        116,
+        138
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 23,
+      "base_span": [
+        17,
+        28
+      ],
+      "call_sites": 7,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 18,
+              "old": 18,
+              "op": " ",
+              "text": "    released_episodes: Iterable[EpisodeItem],"
+            },
+            {
+              "new": 19,
+              "old": 19,
+              "op": " ",
+              "text": "    watched_episode_ids: set[str],"
+            },
+            {
+              "new": 20,
+              "old": 20,
+              "op": " ",
+              "text": ") -> EpisodeItem | None:"
+            },
+            {
+              "new": null,
+              "old": 21,
+              "op": "-",
+              "text": "    \"\"\"Return the first episode not in ``watched_episode_ids``."
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "    \"\"\"Return the next episode after the user's latest watched point."
+            },
+            {
+              "new": 22,
+              "old": 22,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 23,
+              "old": 23,
+              "op": " ",
+              "text": "    ``released_episodes`` must already be ordered by season/episode number."
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "    This avoids recommending an earlier, previously-unwatched episode from an"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "    older season when the user has already progressed to a later season."
+            },
+            {
+              "new": 26,
+              "old": 24,
+              "op": " ",
+              "text": "    \"\"\""
+            },
+            {
+              "new": null,
+              "old": 25,
+              "op": "-",
+              "text": "    for episode in released_episodes:"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "    ordered_episodes = list(released_episodes)"
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "    if not ordered_episodes:"
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "        return None"
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "    last_watched = None"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "    for episode in ordered_episodes:"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "        if episode.id in watched_episode_ids:"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "            last_watched = episode"
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "    if last_watched is None:"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "        for episode in ordered_episodes:"
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "            if episode.id not in watched_episode_ids:"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "                return episode"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "        return None"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "    last_key = (last_watched.season_number, last_watched.episode_number)"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "    for episode in ordered_episodes:"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "        episode_key = (episode.season_number, episode.episode_number)"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "        if episode_key <= last_key:"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "            continue"
+            },
+            {
+              "new": 47,
+              "old": 26,
+              "op": " ",
+              "text": "        if episode.id not in watched_episode_ids:"
+            },
+            {
+              "new": 48,
+              "old": 27,
+              "op": " ",
+              "text": "            return episode"
+            },
+            {
+              "new": 49,
+              "old": 28,
+              "op": " ",
+              "text": "    return None"
+            }
+          ],
+          "new_start": 18,
+          "old_start": 18
+        }
+      ],
+      "id": "backend/src/librarysync/core/next_episode.py::select_next_episode",
+      "kind": "function",
+      "path": "backend/src/librarysync/core/next_episode.py",
+      "qualname": "select_next_episode",
+      "removed": 2,
+      "span": [
+        17,
+        49
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        41,
+        207
+      ],
+      "call_sites": 1,
+      "hunks": [],
+      "id": "backend/src/librarysync/core/watch_state_pull.py::_build_complete_snapshot",
+      "kind": "function",
+      "path": "backend/src/librarysync/core/watch_state_pull.py",
+      "qualname": "_build_complete_snapshot",
+      "removed": 0,
+      "span": [
+        41,
+        207
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        250,
+        285
+      ],
+      "call_sites": 21,
+      "hunks": [],
+      "id": "backend/src/librarysync/db/models.py::WatchedItem",
+      "kind": "class",
+      "path": "backend/src/librarysync/db/models.py",
+      "qualname": "WatchedItem",
+      "removed": 0,
+      "span": [
+        250,
+        285
+      ],
+      "status": "context"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        30,
+        44
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": ""
+            }
+          ],
+          "new_start": 49,
+          "old_start": 39
+        },
+        {
+          "lines": [
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": ""
+            }
+          ],
+          "new_start": 57,
+          "old_start": 43
+        }
+      ],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode",
+      "kind": "class",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode",
+      "removed": 0,
+      "span": [
+        30,
+        59
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 3,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "    def test_does_not_return_earlier_gaps_after_the_last_released_episode(self):"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "        episodes = [_episode(\"s1e1\", 1, 1), _episode(\"s2e1\", 2, 1), _episode(\"s2e2\", 2, 2)]"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "        assert select_next_episode(episodes, {\"s2e2\"}) is None"
+            }
+          ],
+          "new_start": 54,
+          "old_start": 43
+        }
+      ],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+      "kind": "method",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+      "removed": 0,
+      "span": [
+        54,
+        56
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        35,
+        37
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_first_episode_when_nothing_watched",
+      "kind": "method",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode.test_returns_first_episode_when_nothing_watched",
+      "removed": 0,
+      "span": [
+        35,
+        37
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        31,
+        33
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_first_unwatched_episode",
+      "kind": "method",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode.test_returns_first_unwatched_episode",
+      "removed": 0,
+      "span": [
+        31,
+        33
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        43,
+        44
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_none_for_empty_list",
+      "kind": "method",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode.test_returns_none_for_empty_list",
+      "removed": 0,
+      "span": [
+        58,
+        59
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        39,
+        41
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_returns_none_when_all_watched",
+      "kind": "method",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode.test_returns_none_when_all_watched",
+      "removed": 0,
+      "span": [
+        50,
+        52
+      ],
+      "status": "context"
+    },
+    {
+      "added": 10,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "    def test_uses_latest_watched_episode_instead_of_earliest_unwatched(self):"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "        episodes = ["
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s1e1\", 1, 1),"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s1e2\", 1, 2),"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s1e3\", 1, 3),"
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s2e1\", 2, 1),"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s2e2\", 2, 2),"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "            _episode(\"s2e3\", 2, 3),"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": "        ]"
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "        assert select_next_episode(episodes, {\"s2e2\"}) is episodes[5]"
+            }
+          ],
+          "new_start": 39,
+          "old_start": 39
+        }
+      ],
+      "id": "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+      "kind": "method",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+      "removed": 0,
+      "span": [
+        39,
+        48
+      ],
+      "status": "added"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        152,
+        170
+      ],
+      "call_sites": 12,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::_create_episode",
+      "kind": "function",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "_create_episode",
+      "removed": 0,
+      "span": [
+        167,
+        185
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        140,
+        149
+      ],
+      "call_sites": 5,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::_create_show",
+      "kind": "function",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "_create_show",
+      "removed": 0,
+      "span": [
+        155,
+        164
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        133,
+        137
+      ],
+      "call_sites": 4,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::_create_user",
+      "kind": "function",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "_create_user",
+      "removed": 0,
+      "span": [
+        148,
+        152
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        19,
+        27
+      ],
+      "call_sites": 18,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::_episode",
+      "kind": "function",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "_episode",
+      "removed": 0,
+      "span": [
+        19,
+        27
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        173,
+        253
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "backend/tests/test_next_episode.py::test_find_next_episode_and_bulk_return_first_released_unwatched",
+      "kind": "function",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "test_find_next_episode_and_bulk_return_first_released_unwatched",
+      "removed": 0,
+      "span": [
+        188,
+        268
+      ],
+      "status": "context"
+    },
+    {
+      "added": 25,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 271,
+              "old": null,
+              "op": "+",
+              "text": "@pytest.mark.asyncio"
+            },
+            {
+              "new": 272,
+              "old": null,
+              "op": "+",
+              "text": "async def test_find_next_episode_uses_last_watched_episode_across_seasons(db_session: AsyncSession):"
+            },
+            {
+              "new": 273,
+              "old": null,
+              "op": "+",
+              "text": "    user = await _create_user(db_session)"
+            },
+            {
+              "new": 274,
+              "old": null,
+              "op": "+",
+              "text": "    show = await _create_show(db_session, \"Season Hopping Show\")"
+            },
+            {
+              "new": 275,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 276,
+              "old": null,
+              "op": "+",
+              "text": "    await _create_episode(db_session, show.id, 1, 1, date(2024, 1, 1), title=\"S1E1\")"
+            },
+            {
+              "new": 277,
+              "old": null,
+              "op": "+",
+              "text": "    await _create_episode(db_session, show.id, 1, 2, date(2024, 1, 2), title=\"S1E2\")"
+            },
+            {
+              "new": 278,
+              "old": null,
+              "op": "+",
+              "text": "    await _create_episode(db_session, show.id, 2, 1, date(2024, 2, 1), title=\"S2E1\")"
+            },
+            {
+              "new": 279,
+              "old": null,
+              "op": "+",
+              "text": "    season_two_ep2 = await _create_episode(db_session, show.id, 2, 2, date(2024, 2, 2), title=\"S2E2\")"
+            },
+            {
+              "new": 280,
+              "old": null,
+              "op": "+",
+              "text": "    season_two_ep3 = await _create_episode(db_session, show.id, 2, 3, date(2024, 2, 3), title=\"S2E3\")"
+            },
+            {
+              "new": 281,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 282,
+              "old": null,
+              "op": "+",
+              "text": "    db_session.add("
+            },
+            {
+              "new": 283,
+              "old": null,
+              "op": "+",
+              "text": "        WatchedItem("
+            },
+            {
+              "new": 284,
+              "old": null,
+              "op": "+",
+              "text": "            user_id=user.id,"
+            },
+            {
+              "new": 285,
+              "old": null,
+              "op": "+",
+              "text": "            media_item_id=None,"
+            },
+            {
+              "new": 286,
+              "old": null,
+              "op": "+",
+              "text": "            episode_item_id=season_two_ep2.id,"
+            },
+            {
+              "new": 287,
+              "old": null,
+              "op": "+",
+              "text": "            watched_at=datetime(2024, 2, 10, tzinfo=timezone.utc),"
+            },
+            {
+              "new": 288,
+              "old": null,
+              "op": "+",
+              "text": "            source=\"manual\","
+            },
+            {
+              "new": 289,
+              "old": null,
+              "op": "+",
+              "text": "        )"
+            },
+            {
+              "new": 290,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 291,
+              "old": null,
+              "op": "+",
+              "text": "    await db_session.flush()"
+            },
+            {
+              "new": 292,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 293,
+              "old": null,
+              "op": "+",
+              "text": "    next_episode = await find_next_episode(db_session, user.id, show.id, date(2024, 2, 10))"
+            },
+            {
+              "new": 294,
+              "old": null,
+              "op": "+",
+              "text": "    assert next_episode is not None"
+            },
+            {
+              "new": 295,
+              "old": null,
+              "op": "+",
+              "text": "    assert next_episode.id == season_two_ep3.id"
+            }
+          ],
+          "new_start": 271,
+          "old_start": 256
+        }
+      ],
+      "id": "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "kind": "function",
+      "path": "backend/tests/test_next_episode.py",
+      "qualname": "test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "removed": 0,
+      "span": [
+        271,
+        295
+      ],
+      "status": "added"
+    }
+  ],
+  "title": "Fix up-next episode selection for season progression",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "backend/src/librarysync/core/next_episode.py::select_next_episode"
+      ],
+      "kind": "callee",
+      "via": "backend/src/librarysync/core/next_episode.py::find_next_episodes_bulk"
+    },
+    {
+      "focus": [
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+        "backend/tests/test_next_episode.py::TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+        "backend/tests/test_next_episode.py::test_find_next_episode_uses_last_watched_episode_across_seasons"
+      ],
+      "kind": "test",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/willtho89/librarySync/pull/98"
+}
