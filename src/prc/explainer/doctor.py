@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import subprocess
 
 
 def _ffmpeg() -> str:
@@ -48,6 +49,20 @@ def _voice() -> str:
     return "voice " + ", ".join(parts)
 
 
+def _tesseract() -> str:
+    if shutil.which("tesseract") is None:
+        return "tesseract missing (infographic gate unavailable; the card is used). Install it (for example `brew install tesseract`)."
+    try:
+        done = subprocess.run(
+            ["tesseract", "--version"], capture_output=True, text=True, timeout=60
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "tesseract ok (version unknown)."
+    if done.returncode != 0 or not done.stdout:
+        return "tesseract ok (version unknown)."
+    return f"tesseract {done.stdout.splitlines()[0].strip()} ok"
+
+
 def _token() -> str:
     return "GITHUB_TOKEN " + ("set" if os.environ.get("GITHUB_TOKEN") else "unset")
 
@@ -59,6 +74,7 @@ def report() -> str:
         f"python {sys.version.split()[0]} ok",
         _ffmpeg(),
         _chromium(),
+        _tesseract(),
         _voice(),
         _token(),
     ]

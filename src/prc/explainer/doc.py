@@ -15,6 +15,7 @@ from typing import Any
 from prc.captions import shown, shown_html
 from prc.explainer.preflight import cited_refs, line_coverage
 from prc.explainer.render import ASSETS, board_json
+from prc.presentation.infographic import DISCLOSURE
 
 # Fixed template strings: the only chrome the doc may add. Every other string
 # is a board sentence or map-verbatim (titles, paths, numbers, shas).
@@ -33,6 +34,7 @@ TEMPLATE_STRINGS = frozenset(
         "Some changed lines have no line refs and cannot be quoted.",
         "Everything changed is on screen.",
         "Built by prc explain from the checked board.",
+        DISCLOSURE,
     }
 )
 
@@ -204,7 +206,12 @@ def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
 
 
 def render_doc(
-    board: dict[str, Any], m: dict[str, Any], out_dir: Path, duration: float, has_video: bool
+    board: dict[str, Any],
+    m: dict[str, Any],
+    out_dir: Path,
+    duration: float,
+    has_video: bool,
+    infographic: bytes | None = None,
 ) -> str:
     """Write doc.html beside video.mp4. `board` must be filled and timed (as render leaves it)."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -214,6 +221,15 @@ def render_doc(
         else ""
     )
     sections = "\n".join(_scene_section(board, i, s, m) for i, s in enumerate(board["scenes"]))
+    figure = ""
+    if infographic is not None:
+        src = base64.b64encode(infographic).decode()
+        figure = (
+            '<figure class="infographic">'
+            f'<img src="data:image/png;base64,{src}" alt="{DISCLOSURE}">'
+            f"<figcaption>{DISCLOSURE}</figcaption></figure>"
+        )
+
     script = (
         f"window.DOC = {board_json(board)};\n"
         + (ASSETS / "engine.js").read_text()
@@ -253,7 +269,7 @@ def render_doc(
         '<link rel="icon" href="data:,">'
         f"<title>{html.escape(m['title'])}</title><style>{css}</style></head>\n"
         '<body class="doc">\n'
-        f"{header_html(m)}\n{video}"
+        f"{header_html(m)}\n{video}{figure}"
         f"{sections}\n{_not_covered(board, m)}\n"
         "<footer><p>Built by prc explain from the checked board.</p>"
         f"<p><code>{m['head_sha']}</code></p></footer>\n"

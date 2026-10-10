@@ -25,6 +25,7 @@ from prc.presentation.card import (
     look_first,
     risky,
 )
+from prc.presentation.infographic import DISCLOSURE
 from prc.presentation.render_brief import span
 
 MAX_NODES = 12
@@ -176,6 +177,7 @@ def render_comment(
     *,
     card_available: bool = True,
     card_warning: str | None = None,
+    infographic: bool = False,
 ) -> str:
     """comment.md in PLAN order. PR strings via span(); Mermaid labels never."""
     b = _brief_of(m, brief)
@@ -183,7 +185,9 @@ def render_comment(
     changed = [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
     missing = facts.no_direct_test
     lines = [f"# {span(headline(m, board))}", ""]
-    if card_available:
+    if infographic:
+        lines += [f"![{DISCLOSURE}](infographic.png)", ""]
+    elif card_available:
         lines += [
             "![PR card](card.png)",
             "",

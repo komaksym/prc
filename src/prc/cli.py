@@ -139,6 +139,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="narration backend; auto is the first one that works",
     )
     explain.add_argument("--out", type=Path, default=Path("artifacts/explain"))
+    explain.add_argument(
+        "--infographic",
+        type=Path,
+        action="append",
+        default=[],
+        help="candidate infographic PNG to gate (repeatable; first pass wins)",
+    )
 
     board = sub.add_parser("board", help="board tools for the story a video tells")
     board_sub = board.add_subparsers(dest="board_command", required=True)
@@ -299,6 +306,14 @@ def _main(argv: list[str] | None = None) -> int:
         from prc.explainer.voice import VoiceError
 
         source, ref = _resolve(args.source, args.store)
+        cands: list[Path] = []
+        for cand in args.infographic:
+            if not cand.is_file():
+                raise SystemExit(f"prc explain: no such --infographic file: {cand}")
+            magic = bytes((137, 80, 78, 71, 13, 10, 26, 10))
+            if cand.read_bytes()[:8] != magic:
+                raise SystemExit(f"prc explain: --infographic must be a PNG: {cand}")
+            cands.append(cand)
 
         try:
             explained = run_explain(
@@ -311,6 +326,7 @@ def _main(argv: list[str] | None = None) -> int:
                 map_path=args.map,
                 voice=args.voice,
                 git_dir=str(args.git_dir) if args.git_dir else None,
+                infographics=cands,
             )
         except ExplainCheckError as error:
             print(str(error), file=sys.stderr)
@@ -330,6 +346,7 @@ def _main(argv: list[str] | None = None) -> int:
                     "doc": str(explained.doc_html) if explained.doc_html else None,
                     "card": str(explained.card_png) if explained.card_png else None,
                     "comment": str(explained.comment_md),
+                    "infographic": (str(explained.infographic) if explained.infographic else None),
                     "duration": explained.duration,
                     "estimate": explained.estimate,
                     "check_passed": explained.check_passed,

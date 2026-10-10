@@ -202,3 +202,45 @@ Also report `map.json`, `board.json`, and `run.json` as evidence and run metadat
 Say how many tries `prc board check` needed, what the board
 leaves out (step 6), and that prc posted nothing: the files are local,
 and publishing the video or the comment text is the user's own step.
+
+## 10. Gate one AI infographic per PR
+
+Every explain run writes an image vocabulary first: read
+`infographic/brief.json` in the output folder. It holds the title, the
+allowed lines, the sorted allowed words, the disclosure, the image
+profile, the fixed prompt rules, and the gate constants. PRC publishes an
+image only when its OCR text matches those words.
+
+Keep prompt files and candidate images outside the explain output folder,
+for example in `<out-root>/<slug>-infographic/`. Each explain run
+replaces the whole output folder, so anything written inside it is lost.
+Save the prompt file before generating, then generate one candidate at a
+time with the baoyu-infographic technical profile from the brief
+(structural-breakdown layout, technical-schematic style, 16:9, English).
+Show every brief line exactly once, spelled exactly. Add no other words,
+numbers, titles, legends, or watermarks. Keep icons and decorations free
+of letters and digits, draw every line as plain dark text on a light
+background, and keep the disclosure line visible.
+
+Gate each candidate by re-running explain with repeatable flags, in the
+order drawn:
+
+```sh
+prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.json --infographic cand1.png --infographic cand2.png
+```
+
+PRC gates the candidates in argument order and publishes the first one
+that passes as `infographic.png` with the exact candidate bytes.
+`run.json` records the status and every attempt; `infographic/check.json`
+records the verdict with missing and invented words. On a pass the comment
+embeds `infographic.png` and the walkthrough shows it at the top. The card
+stays in the bundle as the fallback.
+
+On a failure, read `infographic/check.json` first. It names the words OCR
+read that the brief does not hold and the lines OCR could not confirm.
+Change the next prompt to fix exactly those, for example by drawing an
+unconfirmed line larger and away from icons. Redraw from a new prompt
+file, at most two times. Never
+paint over text in an image editor: a redraw is a fresh generation from an
+updated prompt. After that the card stays as the fallback, and the run
+records the failed status.

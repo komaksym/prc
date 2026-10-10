@@ -1,0 +1,26 @@
+{
+  "lines": [
+    "How one matched pair works",
+    "PR A",
+    "PR B",
+    "Two similar PRs",
+    "Same size and kind",
+    "Both new to you",
+    "Coin flip",
+    "Picks the PR that gets PRC",
+    "A second coin picks which you read first",
+    "PR A",
+    "GitHub + PRC",
+    "Answer questions",
+    "Score",
+    "PR B",
+    "GitHub only",
+    "Answer questions",
+    "Score",
+    "Difference",
+    "PRC score minus GitHub score",
+    "Repeat for every pair, then average the differences.",
+    "No PR is read twice. More pairs average out differences between PRs."
+  ],
+  "title": "How one matched pair works"
+}
