@@ -7,6 +7,9 @@ body.doc pre { overflow-x: auto; max-width: 100%; }
 .doc-head .meta { font: 16px ui-monospace, Menlo, monospace; color: #8A93A6; margin: 6px 0; overflow-wrap: anywhere; }
 .doc-head .meta .lbl { display: inline-block; min-width: 64px; font: 700 12px system-ui; letter-spacing: 0.14em; text-transform: uppercase; color: #5B6475; }
 .video { margin: 22px 0 0; }
+.infographic { margin: 26px 0; }
+.infographic img { display: block; width: 100%; height: auto; border-radius: 14px; }
+.infographic figcaption { margin-top: 8px; font: 14px system-ui; color: #8A93A6; }
 .video a { display: inline-block; padding: 12px 22px; border: 2px solid #2A3348; border-radius: 12px; background: #121828; font: 600 17px system-ui; text-decoration: none; }
 .scene { margin-top: 54px; border-top: 1px solid #1F2738; padding-top: 26px; }
 /* engine.css parks its own .scene layers absolutely inside the stage;

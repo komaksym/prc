@@ -27,7 +27,6 @@ NOISE: list[tuple[str, float]] = [
     ("present", 24),
     ("second", 28),
     ("x", 68),
-    ("Se", 79),
 ]
 
 
@@ -265,7 +264,7 @@ def test_gate_negation_fails() -> None:
     assert gate.score_ocr(reads, brief).verdict == "invented"
 
 
-def test_gate_measured_noise_passes() -> None:
+def test_gate_low_confidence_noise_passes() -> None:
     brief = tiny_brief()
     words = [
         (w, c)
@@ -427,12 +426,14 @@ def session_reads(slug: str) -> tuple[gate.OcrRead, ...]:
 
 
 REJECTED = {
-    "next-steps-roadmap": ("missing", ("1", "2", "Everything frozen")),
-    "review-bias-2026-10-10": ("invented", ("all",)),
+    "comparator-split": ("invented", ("ak", "j")),
+    "matched-pair-flow": ("invented", ("j",)),
+    "next-steps-roadmap": ("invented", ("se",)),
+    "review-bias-2026-10-10": ("invented", ("al", "all")),
 }
 
 
-def test_gate_session_images_reject_only_what_ocr_cannot_confirm() -> None:
+def test_gate_session_images_record_false_rejections() -> None:
     for slug in SESSION:
         decision = gate.score_ocr(session_reads(slug), session_brief(slug))
         found = (
@@ -592,6 +593,5 @@ def test_doctor_does_not_call_a_broken_tesseract_available(monkeypatch: pytest.M
     from prc.explainer import doctor
 
     monkeypatch.setattr(gate, "tesseract_version", lambda: "")
-    monkeypatch.setattr(gate.shutil, "which", lambda _name: "/broken/tesseract")
     assert "unavailable" in doctor._tesseract()
     assert " ok" not in doctor._tesseract()

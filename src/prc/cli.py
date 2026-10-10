@@ -24,7 +24,7 @@ from prc.pipeline import (
     run_review,
     run_status,
 )
-from prc.presentation import map_video
+from prc.presentation import infographic, map_video
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
 from prc.source import PullRequestSource, SourceError
 from prc.store import StaleExpectation, Store
@@ -310,9 +310,10 @@ def _main(argv: list[str] | None = None) -> int:
         for cand in args.infographic:
             if not cand.is_file():
                 raise SystemExit(f"prc explain: no such --infographic file: {cand}")
-            magic = bytes((137, 80, 78, 71, 13, 10, 26, 10))
-            if cand.read_bytes()[:8] != magic:
-                raise SystemExit(f"prc explain: --infographic must be a PNG: {cand}")
+            try:
+                infographic.read_png(cand)
+            except ValueError as error:
+                raise SystemExit(f"prc explain: --{error}") from error
             cands.append(cand)
 
         try:

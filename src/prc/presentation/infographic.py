@@ -20,29 +20,6 @@ WORD_SIM = 0.80
 WINDOW = 6
 MAX_WORDS = 80
 LINE_LIMIT = 96
-STOPWORDS = frozenset(
-    {
-        "a",
-        "an",
-        "and",
-        "are",
-        "as",
-        "at",
-        "be",
-        "by",
-        "for",
-        "from",
-        "in",
-        "is",
-        "it",
-        "of",
-        "on",
-        "or",
-        "the",
-        "to",
-        "with",
-    }
-)
 DISCLOSURE = "Infographic drawn by AI. Words from prc."
 PROFILE = {
     "aspect": "16:9",
@@ -136,11 +113,13 @@ def _fold(token: str) -> str:
 
 
 def _match(word: str, tok: str, code: frozenset[str] = frozenset()) -> bool:
+    if word == tok:
+        return True
+    if word in code or _has_digit(word) or _has_digit(tok):
+        return False
     if _fold(word) == _fold(tok):
         return True
-    if word in code or len(word) <= 3 or len(tok) <= 3:
-        return False
-    if _has_digit(word) or _has_digit(tok):
+    if len(word) <= 3 or len(tok) <= 3:
         return False
     return _ratio(word, tok) >= WORD_SIM
 
@@ -152,8 +131,8 @@ def _label(count: int, one: str, many: str) -> str:
 def _trim_line(text: str) -> str:
     if len(text) <= LINE_LIMIT:
         return text
-    cut = text[:LINE_LIMIT].rsplit(" ", 1)[0].rstrip()
-    return cut if cut else text[:LINE_LIMIT]
+    cut = text[: LINE_LIMIT - 1].rsplit(" ", 1)[0].rstrip()
+    return (cut or text[: LINE_LIMIT - 1]) + "…"
 
 
 def _word_count(lines: tuple[BriefLine, ...]) -> int:
@@ -198,7 +177,20 @@ def _fit_words(lines: tuple[BriefLine, ...]) -> tuple[BriefLine, ...]:
         elif len(_section_rows(kept, LOOK_LABEL)) > 1:
             _drop_last_row(kept, LOOK_LABEL)
         else:
-            break
+            head = next(i for i, line in enumerate(kept) if line.role == "headline")
+            room = MAX_WORDS - _word_count(tuple(line for i, line in enumerate(kept) if i != head))
+            if room > 0:
+                words = kept[head].text.split()
+                while len(tokenize(" ".join(words))) > room:
+                    words.pop()
+                kept[head] = BriefLine("headline", " ".join(words).rstrip("…") + "…")
+            elif _drop_last_row(kept, LOOK_LABEL):
+                continue
+            else:
+                chips = [i for i, line in enumerate(kept) if line.role == "chip"]
+                if not chips:
+                    raise ValueError("infographic verdict and disclosure exceed the word budget")
+                del kept[chips[-1]]
     for label in (LOOK_LABEL, RISKY_LABEL):
         if not _section_rows(kept, label):
             kept = [line for line in kept if not (line.role == "label" and line.text == label)]
@@ -234,11 +226,12 @@ def infobrief(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> In
     head.append(BriefLine("verdict", found.test_verdict))
     head.append(BriefLine("note", DISCLOSURE))
     trimmed = tuple(BriefLine(line.role, _trim_line(line.text)) for line in head)
-    return InfographicBrief(_trim_line(title), _fit_words(trimmed))
+    fitted = _fit_words(trimmed)
+    return InfographicBrief(fitted[0].text, fitted)
 
 
 def allowed_words(br: InfographicBrief) -> set[str]:
-    words = set(tokenize(br.title))
+    words: set[str] = set()
     for line in br.lines:
         words.update(tokenize(line.text))
     return words
@@ -246,7 +239,7 @@ def allowed_words(br: InfographicBrief) -> set[str]:
 
 def joined_words(br: InfographicBrief) -> set[str]:
     joins: set[str] = set()
-    for text in (br.title, *(line.text for line in br.lines)):
+    for text in (line.text for line in br.lines):
         toks = tokenize(text)
         joins.update(one + other for one, other in pairwise(toks))
     return joins
@@ -254,7 +247,7 @@ def joined_words(br: InfographicBrief) -> set[str]:
 
 def code_words(br: InfographicBrief) -> frozenset[str]:
     found: set[str] = set()
-    for text in (br.title, *(line.text for line in br.lines)):
+    for text in (line.text for line in br.lines):
         for word in text.split():
             if _CODE_WORD.search(word.rstrip(".,;:")):
                 found.update(tok for tok in tokenize(word) if not tok.isdigit())
@@ -266,7 +259,6 @@ def gate_constants() -> dict[str, Any]:
         "CONF_FLOOR": CONF_FLOOR,
         "LINE_LIMIT": LINE_LIMIT,
         "MAX_WORDS": MAX_WORDS,
-        "STOPWORDS": sorted(STOPWORDS),
         "WINDOW": WINDOW,
         "WORD_SIM": WORD_SIM,
     }
@@ -287,14 +279,14 @@ def brief_dict(br: InfographicBrief) -> dict[str, Any]:
 def write_brief_json(br: InfographicBrief, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(brief_dict(br), indent=2, sort_keys=True)
-    path.write_text(payload + chr(10))
+    path.write_text(payload + "\n")
     return path
 
 
 def parse_tsv(tsv: str) -> tuple[OcrWord, ...]:
     words: list[OcrWord] = []
     for raw in tsv.splitlines():
-        cols = raw.split(chr(9))
+        cols = raw.split("\t")
         if len(cols) != 12 or cols[0] != "5":
             continue
         text = cols[11].strip()
@@ -318,10 +310,19 @@ def _covers(line_toks: list[str], ocr: list[str], code: frozenset[str] = frozens
         found: list[tuple[int, int]] = []
         if _match(here, ocr[pos], code):
             found.append((1, 1))
-        if pos + 1 < len(ocr) and _match(here, ocr[pos] + ocr[pos + 1], code):
+        if (
+            here not in code
+            and not _has_digit(here)
+            and pos + 1 < len(ocr)
+            and _match(here, ocr[pos] + ocr[pos + 1], code)
+        ):
             found.append((1, 2))
-        if bi + 1 < len(line_toks) and _fold(here + line_toks[bi + 1]) == _fold(ocr[pos]):
-            found.append((2, 1))
+        if bi + 1 < len(line_toks):
+            next_word = line_toks[bi + 1]
+            joined = here + next_word
+            exact = here in code or next_word in code or _has_digit(joined)
+            if joined == ocr[pos] or (not exact and _fold(joined) == _fold(ocr[pos])):
+                found.append((2, 1))
         return found
 
     def rec(bi: int, oi: int) -> bool:
@@ -346,7 +347,12 @@ def _seen_anywhere(token: str, streams: list[list[str]], code: frozenset[str]) -
         for i, other in enumerate(ocr):
             if _match(token, other, code):
                 return True
-            if i + 1 < len(ocr) and _match(token, other + ocr[i + 1], code):
+            if (
+                token not in code
+                and not _has_digit(token)
+                and i + 1 < len(ocr)
+                and _match(token, other + ocr[i + 1], code)
+            ):
                 return True
     return False
 
@@ -361,9 +367,9 @@ def score_ocr(
     reads: tuple[OcrRead, ...], br: InfographicBrief, tesseract: str = ""
 ) -> GateDecision:
     allowed = allowed_words(br)
-    folded = {_fold(word) for word in allowed}
-    joins = {_fold(word) for word in joined_words(br)}
     code = code_words(br)
+    prose = {_fold(word) for word in allowed if word not in code and not _has_digit(word)}
+    joins = joined_words(br)
     streams: list[list[str]] = []
     scored: list[list[tuple[str, float]]] = []
     for read in reads:
@@ -380,6 +386,7 @@ def score_ocr(
         "brief_lines": len(br.lines),
         "constants": gate_constants(),
         "modes": {read.mode: len(streams[i]) for i, read in enumerate(reads)},
+        "failed_modes": [],
         "tesseract": tesseract,
     }
     if not any(conf >= CONF_FLOOR for stream in scored for _, conf in stream):
@@ -390,21 +397,14 @@ def score_ocr(
         for pos, (tok, conf) in enumerate(stream):
             if conf < CONF_FLOOR:
                 continue
-            if _fold(tok) in joins or _fold(tok) in folded:
+            if tok in joins or any(_match(word, tok, code) for word in allowed):
                 good = True
             elif _has_digit(tok):
                 good = False
-            elif (
-                len(tok) < 3 or tok in STOPWORDS or any(_match(word, tok, code) for word in allowed)
-            ):
-                good = True
             else:
-                good = _allowed_neighbor(tok, pos, ocr, folded)
+                good = _allowed_neighbor(tok, pos, ocr, prose)
             if not good:
                 invented[tok] = max(invented.get(tok, conf), conf)
-    if invented:
-        items = tuple(sorted(invented.items()))
-        return GateDecision("invented", (), items, detail)
     missing: list[tuple[str, tuple[str, ...]]] = []
     for line in br.lines:
         ltoks = tokenize(line.text)
@@ -412,6 +412,8 @@ def score_ocr(
             continue
         lost = tuple(t for t in ltoks if not _seen_anywhere(t, streams, code))
         missing.append((line.text, lost if lost else tuple(ltoks)))
+    if invented:
+        return GateDecision("invented", tuple(missing), tuple(sorted(invented.items())), detail)
     if missing:
         return GateDecision("missing", tuple(missing), (), detail)
     return GateDecision("pass", (), (), detail)
@@ -431,13 +433,16 @@ def tesseract_version() -> str:
     return done.stdout.splitlines()[0].strip() if done.stdout else ""
 
 
-def tool_decision() -> GateDecision:
+def tool_decision(
+    tesseract: str = "", failed_modes: list[str] | None = None, reads: tuple[OcrRead, ...] = ()
+) -> GateDecision:
     detail: dict[str, Any] = {
         "allowed": 0,
         "brief_lines": 0,
         "constants": gate_constants(),
-        "modes": {},
-        "tesseract": tesseract_version(),
+        "modes": {read.mode: len(read.words) for read in reads},
+        "failed_modes": failed_modes or [],
+        "tesseract": tesseract,
     }
     return GateDecision("tool", (), (), detail)
 
@@ -460,10 +465,21 @@ def gate(png: Path, br: InfographicBrief) -> GateDecision:
     if not version:
         return tool_decision()
     reads: list[OcrRead] = []
+    failed: list[str] = []
     for psm, dpi in READS:
+        mode = f"psm-{psm}-dpi-{dpi}" if dpi else f"psm-{psm}"
         words = _read_mode(png, psm, dpi)
-        if words is not None:
-            reads.append(OcrRead(f"psm-{psm}-dpi-{dpi}" if dpi else f"psm-{psm}", words))
-    if not reads:
-        return tool_decision()
+        if words is None:
+            failed.append(mode)
+        else:
+            reads.append(OcrRead(mode, words))
+    if failed:
+        return tool_decision(version, failed, tuple(reads))
     return score_ocr(tuple(reads), br, tesseract=version)
+
+
+def read_png(path: Path) -> bytes:
+    raw = path.read_bytes()
+    if not raw.startswith(_PNG_MAGIC):
+        raise ValueError(f"infographic must be a PNG: {path}")
+    return raw

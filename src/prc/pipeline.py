@@ -602,17 +602,19 @@ def run_explain(
             duration, warnings = rendered.duration, rendered.layout_warnings
             video = out_dir / "video.mp4"
             predicted = predict_seconds(board, backend)
-        brief = infographic.infobrief(rebuilt, rebuilt.get("brief"), board)
+        info_brief = infographic.infobrief(rebuilt, rebuilt.get("brief"), board)
         info_dir = work / "infographic"
         info_dir.mkdir(parents=True, exist_ok=True)
-        infographic.write_brief_json(brief, info_dir / "brief.json")
+        infographic.write_brief_json(info_brief, info_dir / "brief.json")
         records: list[dict[str, object]] = []
         published_path: Path | None = None
         published_sha: str | None = None
-        attempts: list[dict[str, object]] = []
-        for cand in infographics:
-            raw = cand.read_bytes()
-            verdict = infographic.gate(cand, brief)
+        graphic_bytes: bytes | None = None
+        for n, cand in enumerate(infographics):
+            raw = infographic.read_png(cand)
+            snapshot = info_dir / f"candidate-{n + 1:02d}.png"
+            snapshot.write_bytes(raw)
+            verdict = infographic.gate(snapshot, info_brief)
             sha = sha256_hex(raw)
             records.append(
                 {
@@ -620,27 +622,25 @@ def run_explain(
                     "constants": verdict.detail.get("constants"),
                     "invented": [[tok, conf] for tok, conf in verdict.invented],
                     "missing": [[line, list(toks)] for line, toks in verdict.missing],
+                    "modes": verdict.detail.get("modes"),
+                    "failed_modes": verdict.detail.get("failed_modes"),
                     "name": cand.name,
                     "sha256": sha,
                     "tesseract": verdict.detail.get("tesseract"),
                     "verdict": verdict.verdict,
                 }
             )
-            attempts.append({"name": cand.name, "sha256": sha, "verdict": verdict.verdict})
             if published_path is None and verdict.verdict == "pass":
                 (work / "infographic.png").write_bytes(raw)
                 published_path = out_dir / "infographic.png"
                 published_sha = sha
+                graphic_bytes = raw
         (info_dir / "check.json").write_text(json.dumps(records, indent=2, sort_keys=True))
         if infographics:
             info_status = "passed" if published_path is not None else "failed"
         else:
             info_status = "missing"
-        graphic_path = work / "infographic.png"
-        graphic_bytes: bytes | None = None
-        if graphic_path.exists():
-            graphic_bytes = graphic_path.read_bytes()
-        if board_path is not None and board is not None:
+        if board is not None:
             render_explain_doc(
                 board, used, work, duration, has_video=True, infographic=graphic_bytes
             )
@@ -692,7 +692,10 @@ def run_explain(
             "infographic": {
                 "status": info_status,
                 "published_sha256": published_sha,
-                "attempts": attempts,
+                "attempts": [
+                    {key: record[key] for key in ("name", "sha256", "verdict")}
+                    for record in records
+                ],
             },
             "layout_warnings": warnings,
         }

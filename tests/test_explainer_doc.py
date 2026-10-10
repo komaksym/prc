@@ -52,7 +52,7 @@ def test_doc_infographic_fits_the_content_column(tmp_path: Path, width: int) -> 
             page.set_viewport_size({"width": width, "height": 844})
             page.goto((tmp_path / "doc.html").as_uri())
             page.wait_for_function("window.docReady === true")
-            page.screenshot(path=str(proof / f"doc-scaling-{width}.png"), full_page=True)
+            page.screenshot(path=str(proof / f"doc-scaling-{width}.png"))
             fit = page.locator("figure.infographic img").evaluate(
                 "img => { const image = img.getBoundingClientRect(); "
                 "const figure = img.parentElement.getBoundingClientRect(); "

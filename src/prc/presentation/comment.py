@@ -186,7 +186,12 @@ def render_comment(
     missing = facts.no_direct_test
     lines = [f"# {span(headline(m, board))}", ""]
     if infographic:
-        lines += [f"![{DISCLOSURE}](infographic.png)", ""]
+        lines += [
+            f"![{DISCLOSURE}](infographic.png)",
+            "",
+            "Upload `infographic.png` with this comment: images do not embed from the repo.",
+            "",
+        ]
     elif card_available:
         lines += [
             "![PR card](card.png)",

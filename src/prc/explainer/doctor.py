@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import os
 import shutil
-import subprocess
+
+from prc.presentation import infographic
 
 
 def _ffmpeg() -> str:
@@ -50,17 +51,13 @@ def _voice() -> str:
 
 
 def _tesseract() -> str:
-    if shutil.which("tesseract") is None:
-        return "tesseract missing (infographic gate unavailable; the card is used). Install it (for example `brew install tesseract`)."
-    try:
-        done = subprocess.run(
-            ["tesseract", "--version"], capture_output=True, text=True, timeout=60
+    version = infographic.tesseract_version()
+    if not version:
+        return (
+            "tesseract missing or unavailable (infographic gate unavailable; the card is used). "
+            "Install it (for example `brew install tesseract`)."
         )
-    except (OSError, subprocess.SubprocessError):
-        return "tesseract ok (version unknown)."
-    if done.returncode != 0 or not done.stdout:
-        return "tesseract ok (version unknown)."
-    return f"tesseract {done.stdout.splitlines()[0].strip()} ok"
+    return f"{version} ok"
 
 
 def _token() -> str:
