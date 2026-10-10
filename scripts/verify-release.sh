@@ -50,7 +50,7 @@ for name in ['eval/runs/2026-10-06-full', 'docs/media']:
 PY
 printf '%s\n' "$checkout" > "$proof/checkout.txt"
 cd "$checkout"
-uv sync --frozen $UV_OFFLINE > "$proof/sync.log" 2>&1
+uv sync --frozen --extra voice $UV_OFFLINE > "$proof/sync.log" 2>&1
 uv run $UV_OFFLINE ruff check . > "$proof/lint.log" 2>&1
 uv run $UV_OFFLINE ruff format --check . > "$proof/format.log" 2>&1
 uv run $UV_OFFLINE mypy > "$proof/typecheck.log" 2>&1
@@ -96,7 +96,15 @@ if [ ! -d "$hf_hub/models--hexgrad--Kokoro-82M" ]; then
 fi
 export HF_HUB_OFFLINE=1
 "$proof/wheel-env/bin/prc" doctor > "$proof/doctor.log"
-"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$checkout/tests/data/boards/shop.json" --voice kokoro --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
+python3 - "$checkout/tests/data/boards/shop.json" "$proof/board-code-names.json" <<'PY'
+import json
+import sys
+
+board = json.load(open(sys.argv[1]))
+board['scenes'][-1]['say'].append('Start review at `apply_discount` in cart.py, with the WELCOME10 code.')
+json.dump(board, open(sys.argv[2], 'w'))
+PY
+"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$proof/board-code-names.json" --voice kokoro --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
 "$proof/wheel-env/bin/python" - "$proof" <<'PY'
 import importlib.util
 import json
@@ -139,6 +147,7 @@ heard = subprocess.run(
 assert heard.returncode == 0, heard.stdout + heard.stderr
 listening = json.loads((folder / 'listening.json').read_text())
 assert listening['passed'] and listening['calibration']['passed'], listening['lost']
+assert {'apply_discount', 'cart.py', 'WELCOME10'} <= {t['token'] for t in listening['tokens']}
 screenshots.mkdir(exist_ok=True)
 errors = []
 with sync_playwright() as driver:

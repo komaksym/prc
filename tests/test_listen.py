@@ -12,6 +12,7 @@ import pytest
 
 from prc.explainer import listen
 from prc.explainer.listen import ListenError, check_tokens, find_engine
+from prc.explainer.voice import available
 
 SHOP_BOARD = Path(__file__).resolve().parent / "data" / "boards" / "shop.json"
 
@@ -72,7 +73,12 @@ def test_no_engine_fails_with_install_hint(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_explain_then_listen_hears_every_code_name(tmp_path: Path) -> None:
-    """E2E: a Kokoro video naming code passes the gate, which checks itself on planted controls."""
+    """E2E: a Kokoro video naming code passes the gate, which checks itself on planted controls.
+
+    macOS say reads "S 2 E 3" as "season 2, episode 3", so only Kokoro can stand in here.
+    """
+    if not available("kokoro"):
+        pytest.skip("needs the voice extra: uv sync --extra voice")
     try:
         find_engine("auto")
     except ListenError as error:
