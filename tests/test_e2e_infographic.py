@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from prc.presentation import infographic as gate
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,6 +121,54 @@ def brief_texts(out: Path) -> list[str]:
     payload = json.loads((out / "infographic" / "brief.json").read_text())
     assert payload["disclosure"] == gate.DISCLOSURE
     return [str(line["text"]) for line in payload["lines"]]
+
+
+@pytest.mark.parametrize("stage", ["version", "ocr"])
+def test_explain_records_binary_tesseract_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, stage: str
+) -> None:
+    binary = tmp_path / "bin"
+    binary.mkdir()
+    tool = binary / "tesseract"
+    tool.write_text(
+        f"#!{sys.executable}\n"
+        "import sys\n"
+        f"stage = {stage!r}\n"
+        "if '--version' in sys.argv and stage == 'ocr':\n"
+        "    print('tesseract 5.5.0')\n"
+        "else:\n"
+        "    sys.stderr.buffer.write(b'\\x89bad PNG\\n')\n"
+        "    sys.exit(1)\n"
+    )
+    tool.chmod(0o755)
+    monkeypatch.setenv("PATH", str(binary) + os.pathsep + os.environ["PATH"])
+    monkeypatch.setenv("PYTHONUTF8", "1")
+    candidate = render_lines_png(LINES, tmp_path / "candidate.png")
+    printed = run_cli(
+        tmp_path,
+        "explain",
+        "--source",
+        "fixture:shop",
+        "--store",
+        str(tmp_path / "store"),
+        "--out",
+        str(tmp_path / "out"),
+        "--infographic",
+        str(candidate),
+    )
+    out = tmp_path / printed["out"]
+    checks = json.loads((out / "infographic" / "check.json").read_text())
+    assert len(checks) == 1
+    assert checks[0]["verdict"] == "tool"
+    assert len(checks[0]["failed_modes"]) == (4 if stage == "ocr" else 0)
+    run = json.loads((out / "run.json").read_text())
+    assert run["infographic"]["status"] == "failed"
+    assert run["infographic"]["published_sha256"] is None
+    assert not (out / "infographic.png").exists()
+    assert "![PR card](card.png)" in (out / "comment.md").read_text()
+    PROOF.mkdir(parents=True, exist_ok=True)
+    PROOF.joinpath(f"binary-{stage}-check.json").write_text(json.dumps(checks, indent=2))
+    PROOF.joinpath(f"binary-{stage}-card.png").write_bytes((out / "card.png").read_bytes())
 
 
 def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:

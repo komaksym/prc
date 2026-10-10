@@ -14,6 +14,7 @@ Design: .audit/step1-design.md. Push, PR, license, package name and publication 
 - [x] S3. Infographic step: brief, OCR gate, records, embedding, CLI flag and skill loop. The gate needed seven measured changes; see the reconciliation in .audit/step1-design.md.
 - [x] S4. Map on PR Lens: converter, vendored bundle and lock, player and deletions. Integrated suite 816 passed, 0 skipped.
 - [ ] S5. Integrate. Run the full checks, deslop, no-comments and an independent review. Run verify-release.sh from an empty cache.
+  - Clean-cache run-Mu5RiG passed 853 tests at 458b4ae, with the installed wheel and Kokoro smoke. The final independent review confirmed all 13 accepted defects. Reproduce and close its new binary Tesseract output failure before the final verification run.
   - [ ] Close review defects with regression evidence. Require all OCR readings, remove foreign-word exemptions, check immutable PNG bytes, fit the brief budget, and size the inline image.
   - [ ] Keep all changed files navigable, cap graphs without hangs, state graph omissions and failures, and verify bundle pins when vendoring and rendering.
   - Model reports are saved in .audit/step1-reviews/. The parent review and comment pass hit HTTP 429; the completed reports remain valid evidence.
