@@ -4,13 +4,19 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import os
 import re
+import subprocess
+import sys
 from pathlib import Path
 from typing import Literal
+
+import pytest
 
 from map_sample import large_map, shop_map
 from prc.changemap import ChangeMap, Edge, Step
 from prc.pipeline import _change_map_from_stored
+from prc.presentation import graphdoc
 from prc.presentation.graphdoc import (
     GROUPED_AT,
     MAX_BODY,
@@ -45,6 +51,149 @@ def cases() -> dict[str, ChangeMap]:
 
 def canon(doc: object) -> str:
     return json.dumps(doc, sort_keys=True, indent=2, ensure_ascii=False) + "\n"
+
+
+def flood_map(status: str = "context", risky: bool = False) -> ChangeMap:
+    base = shop_map()
+    symbols = tuple(
+        dataclasses.replace(
+            base.symbols[0],
+            id=f"pkg{i}/code.py::func_{i}",
+            path=f"pkg{i}/code.py",
+            qualname=f"func_{i}",
+            status=status,
+            added=300 - i,
+            removed=0,
+        )
+        for i in range(300)
+    )
+    files = tuple(
+        dataclasses.replace(base.files[2], path=s.path, symbols=(s.id,), sensitive=None)
+        for s in symbols
+    )
+    return dataclasses.replace(
+        base,
+        symbols=symbols,
+        files=files,
+        edges=tuple(Edge(symbols[0].id, s.id, "added", "exact") for s in symbols[1:]),
+        tour=(
+            Step("overview", (), None),
+            *((Step("risky_file", (f.path,), None) for f in files) if risky else ()),
+            Step("entry", (symbols[-1].id,), None),
+            Step("summary", (), None),
+        ),
+    )
+
+
+def assert_bounded(change_map: ChangeMap) -> None:
+    plotted = to_graph_doc(change_map)
+    doc = plotted.doc
+    assert validate_contract(doc) == ()
+    assert len(doc["nodes"]) <= MAX_NODES
+    assert len(doc["edges"]) <= MAX_EDGES
+    assert len(doc["walkthrough"]["steps"]) <= MAX_STEPS
+    assert plotted.dropped_symbols == len(change_map.symbols) - len(plotted.symbol_index)
+    assert plotted.dropped_edges == len(change_map.edges) - len(doc["edges"])
+    node_ids = {n["id"] for n in doc["nodes"]}
+    assert {"s" + str(i) for i in plotted.symbol_index.values()} <= node_ids
+    assert {"f" + str(i) for i in plotted.file_index.values()} <= node_ids
+    assert plotted == to_graph_doc(change_map)
+
+
+@pytest.mark.parametrize("status", ["context", "modified"])
+@pytest.mark.parametrize("risky", [False, True])
+def test_graphdoc_flood_terminates(status: str, risky: bool) -> None:
+    code = (
+        "from test_graphdoc import flood_map, assert_bounded; "
+        f"assert_bounded(flood_map({status!r}, {risky!r}))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=Path(__file__).resolve().parents[1],
+        env={**os.environ, "PYTHONPATH": "src:tests"},
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("change_map", [shop_map(), large_map(60)])
+def test_graphdoc_retains_ordinary_files(change_map: ChangeMap) -> None:
+    plotted = to_graph_doc(change_map)
+    symbols = {s.path for s in change_map.symbols}
+    ordinary = {f.path: i for i, f in enumerate(change_map.files) if f.path not in symbols}
+    assert ordinary.items() <= plotted.file_index.items()
+    nodes = {n["id"]: n for n in plotted.doc["nodes"]}
+    for path, i in ordinary.items():
+        assert nodes["f" + str(i)]["files"][0]["path"] == path
+    assert_bounded(change_map)
+
+
+@pytest.mark.parametrize("status", ["context", "modified"])
+def test_graphdoc_small_budget_prioritizes_risky_files(
+    monkeypatch: pytest.MonkeyPatch, status: str
+) -> None:
+    monkeypatch.setattr(graphdoc, "MAX_NODES", 4)
+    plotted = to_graph_doc(flood_map(status, risky=True))
+    assert [n["id"] for n in plotted.doc["nodes"]] == ["f0", "f1", "f2", "f3"]
+    assert plotted.symbol_index == {}
+    assert plotted.file_index == {f"pkg{i}/code.py": i for i in range(4)}
+    assert_bounded(flood_map(status, risky=True))
+
+
+def test_graphdoc_file_only_flood_prioritizes_risky_target() -> None:
+    base = flood_map(risky=True)
+    change_map = dataclasses.replace(
+        base, symbols=(), edges=(), tour=(Step("risky_file", (base.files[-1].path,), None),)
+    )
+    plotted = to_graph_doc(change_map)
+    assert base.files[-1].path in plotted.file_index
+    assert len(plotted.doc["nodes"]) == MAX_NODES
+    assert_bounded(change_map)
+
+
+@pytest.mark.parametrize(
+    "status, partial", [("context", False), ("context", True), ("modified", True)]
+)
+def test_graphdoc_omitted_focus_is_named(status: str, partial: bool) -> None:
+    base = flood_map(status)
+    refs = ((base.symbols[0].id,) if partial else ()) + (base.symbols[-1].id,)
+    change_map = dataclasses.replace(base, tour=(Step("entry", refs, None),))
+    if status == "modified":
+        refs = tuple(s.id for s in base.symbols)
+        change_map = dataclasses.replace(base, tour=(Step("entry", refs, None),))
+    plotted = to_graph_doc(change_map)
+    step = plotted.doc["walkthrough"]["steps"][1]
+    assert "not shown" in step["body"].lower()
+    if status == "context":
+        assert "func_299" in step["body"]
+        assert step["focus"]["kind"] == ("selection" if partial else "all")
+    else:
+        assert "func_256" in step["body"]
+    assert len(step["body"]) <= MAX_BODY
+    assert_bounded(change_map)
+
+
+def test_graphdoc_long_body_preserves_omitted_focus_name() -> None:
+    base = flood_map()
+    last = dataclasses.replace(
+        base.symbols[-1], path="long/" + "x" * 150 + ".py", qualname="missing_target"
+    )
+    last = dataclasses.replace(last, id=last.path + "::" + last.qualname)
+    change_map = dataclasses.replace(
+        base, symbols=base.symbols[:-1] + (last,), tour=(Step("entry", (last.id,), None),)
+    )
+    body = to_graph_doc(change_map).doc["walkthrough"]["steps"][1]["body"]
+    assert "missing_target" in body and "not shown" in body.lower()
+    assert len(body) <= MAX_BODY
+
+
+def test_graphdoc_grouped_drop_counts_are_exact() -> None:
+    change_map = large_map(60)
+    plotted = to_graph_doc(change_map)
+    assert 0 < len(plotted.doc["edges"]) < len(change_map.edges)
+    assert_bounded(change_map)
 
 
 def test_graphdoc_matches_goldens() -> None:
@@ -166,10 +315,7 @@ def test_graphdoc_limits() -> None:
     for step in doc["walkthrough"]["steps"]:
         assert 1 <= len(step["heading"]) <= MAX_HEADING
         assert 1 <= len(step["body"]) <= MAX_BODY
-    aggs = [node for node in doc["nodes"] if "subtitle" in node]
-    assert aggs
-    for node in aggs:
-        assert node["subtitle"] and node["subtitle"].endswith("symbols shown")
+    assert len(plotted.symbol_index) == MAX_NODES
     assert plotted.dropped_symbols == len(change_map.symbols) - len(plotted.symbol_index)
     assert plotted.dropped_edges == len(change_map.edges) - len(doc["edges"])
 
@@ -307,8 +453,7 @@ def test_graphdoc_large_pr_groups() -> None:
     for sid in walk_symbols:
         if sid in by_id:
             assert sid in plotted.symbol_index
-    risky = [s for s in picked_steps(change_map) if s is not None and s.kind == "risky_file"]
-    assert len(doc["nodes"]) <= len(groups) + len(plotted.symbol_index) + len(risky)
+    assert len(doc["nodes"]) <= len(groups) + len(plotted.symbol_index) + len(plotted.file_index)
     for node in doc["nodes"]:
         if node["id"].startswith("s"):
             assert by_id[change_map.symbols[int(node["id"][1:])].id].status != "context"
