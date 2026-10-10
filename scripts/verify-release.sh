@@ -79,12 +79,24 @@ export PLAYWRIGHT_BROWSERS_PATH
 cp -R artifacts/e2e "$proof/e2e"
 printf 'Verified isolated release copy at %s\n' "$checkout"
 uv venv --python "$checkout/.venv/bin/python" "$proof/wheel-env" > "$proof/wheel-env.log" 2>&1
-uv export --frozen --no-dev --extra video --no-hashes --no-emit-project $UV_OFFLINE --output-file "$proof/dist/wheel-requirements.txt" > "$proof/wheel-export.log" 2>&1
-uv pip install $UV_OFFLINE --python "$proof/wheel-env/bin/python" --requirement "$proof/dist/wheel-requirements.txt" "$proof/dist/prc-0.1.0-py3-none-any.whl[video]" > "$proof/wheel-install.log" 2>&1
+uv export --frozen --no-dev --extra video --extra voice --no-hashes --no-emit-project $UV_OFFLINE --output-file "$proof/dist/wheel-requirements.txt" > "$proof/wheel-export.log" 2>&1
+uv pip install $UV_OFFLINE --python "$proof/wheel-env/bin/python" --requirement "$proof/dist/wheel-requirements.txt" "$proof/dist/prc-0.1.0-py3-none-any.whl[video,voice]" > "$proof/wheel-install.log" 2>&1
 mkdir -p "$proof/smoke"
 cd "$proof/smoke"
+if [ -n "${HF_HUB_CACHE:-}" ]; then
+  hf_hub="$HF_HUB_CACHE"
+elif [ -n "${HF_HOME:-}" ]; then
+  hf_hub="$HF_HOME/hub"
+else
+  hf_hub="$HOME/.cache/huggingface/hub"
+fi
+if [ ! -d "$hf_hub/models--hexgrad--Kokoro-82M" ]; then
+  echo "verify-release.sh found no cached hexgrad/Kokoro-82M weights under $hf_hub; warm the cache once with network access instead of downloading during release verification." >&2
+  exit 2
+fi
+export HF_HUB_OFFLINE=1
 "$proof/wheel-env/bin/prc" doctor > "$proof/doctor.log"
-"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$checkout/tests/data/boards/shop.json" --voice none --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
+"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$checkout/tests/data/boards/shop.json" --voice kokoro --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
 "$proof/wheel-env/bin/python" - "$proof" <<'PY'
 import importlib.util
 import json
@@ -108,6 +120,19 @@ probe = json.loads(subprocess.check_output([
 stream = probe['streams'][0]
 assert (stream['width'], stream['height'], stream['r_frame_rate']) == (1920, 1080, '30/1')
 screenshots = proof / 'screenshots'
+doctor = (proof / 'doctor.log').read_text()
+assert 'kokoro ok' in doctor, doctor
+run = json.loads((folder / 'run.json').read_text())
+assert run['voice'] == 'kokoro', run['voice']
+media = json.loads(subprocess.check_output([
+    'ffprobe', '-v', 'error', '-show_entries',
+    'stream=index,codec_type,duration:format=duration', '-of', 'json', str(folder / 'video.mp4')
+]))
+video_dur = float(media['format']['duration'])
+audio = [s for s in media['streams'] if s.get('codec_type') == 'audio']
+assert audio, 'video.mp4 has no audio stream'
+assert audio[0].get('duration'), 'audio stream reports no duration'
+assert abs(float(audio[0]['duration']) - video_dur) <= 0.5, (audio[0]['duration'], video_dur)
 screenshots.mkdir(exist_ok=True)
 errors = []
 with sync_playwright() as driver:
