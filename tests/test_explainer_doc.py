@@ -33,6 +33,38 @@ def need_doc() -> Any:
     return pytest.importorskip("prc.explainer.doc")
 
 
+@pytest.mark.parametrize("width", [1280, 390])
+def test_doc_infographic_fits_the_content_column(tmp_path: Path, width: int) -> None:
+    from playwright.sync_api import sync_playwright
+
+    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/infographic"
+    proof.mkdir(parents=True, exist_ok=True)
+    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": 2048, "height": 512})
+            page.set_content(
+                '<body style="background:white;color:black;font:48px Georgia">Infographic test</body>'
+            )
+            image = page.screenshot(path=str(proof / "wide-fixture.png"))
+            need_doc().render_doc(board, m, tmp_path, cursor, has_video=False, infographic=image)
+            page.set_viewport_size({"width": width, "height": 844})
+            page.goto((tmp_path / "doc.html").as_uri())
+            page.wait_for_function("window.docReady === true")
+            page.screenshot(path=str(proof / f"doc-scaling-{width}.png"), full_page=True)
+            fit = page.locator("figure.infographic img").evaluate(
+                "img => { const image = img.getBoundingClientRect(); "
+                "const figure = img.parentElement.getBoundingClientRect(); "
+                "return {decoded: img.complete && img.naturalWidth > 1000, "
+                "inside: image.left >= figure.left && image.right <= figure.right + 1, "
+                "pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1}; }"
+            )
+            assert fit == {"decoded": True, "inside": True, "pageFits": True}
+        finally:
+            browser.close()
+
+
 def filled(
     board_name: str,
     map_name: str,
