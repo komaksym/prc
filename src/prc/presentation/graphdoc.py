@@ -1,5 +1,3 @@
-"""ChangeMap to PR Lens GraphDoc (graph contract 0.2.0)."""
-
 from __future__ import annotations
 
 import re
@@ -99,7 +97,6 @@ def _lanes(change_map: ChangeMap) -> dict[str, LaneName]:
 
 
 def _shorten(text: str, cap: int) -> str:
-    """Cut at a whole word to cap characters; fall back to a hard cut."""
     if len(text) <= cap:
         return text
     cut = text[:cap].rsplit(" ", 1)[0]
@@ -107,7 +104,6 @@ def _shorten(text: str, cap: int) -> str:
 
 
 def _left_cut(path: str, cap: int) -> str:
-    """Cut from the left so the file name stays."""
     if len(path) <= cap:
         return path
     return "..." + path[-(cap - 3) :]
@@ -166,8 +162,6 @@ def _risky_paths(change_map: ChangeMap) -> list[str]:
 
 @dataclass(frozen=True, slots=True)
 class Group:
-    """One overview card: a folder, or one file when its folder holds few files."""
-
     label: str
     is_dir: bool
     members: tuple[str, ...]
@@ -240,11 +234,6 @@ def _group_subtitle(group: Group) -> str:
 
 
 def _select(change_map: ChangeMap) -> tuple[list[int], list[int], list[str]]:
-    """Map indices of plotted symbols and files, plus aggregate file paths.
-
-    Deterministic under the 256-node cap: risky files first, then changed
-    symbols by churn, then context symbols, then remaining file nodes.
-    """
     symbols = list(change_map.symbols)
     files = list(change_map.files)
     file_at = {f.path: i for i, f in enumerate(files)}
@@ -287,7 +276,6 @@ def _walk_ids(middle: tuple[Step, ...]) -> set[str]:
 def _order_edges(
     change_map: ChangeMap, at: dict[str, int], walk: set[str]
 ) -> tuple[list[int], int | None]:
-    """Edge map indices between plotted nodes in priority order, plus hero index."""
     order = {"added": 0, "removed": 1, "kept": 2}
     scored: list[tuple[tuple[int, int, int, int], int]] = []
     for k, e in enumerate(change_map.edges):
@@ -498,7 +486,6 @@ def _group_node(
 
 
 def to_graph_doc(change_map: ChangeMap) -> Plotted:
-    """Convert a ChangeMap into a fully inflated GraphDoc with index maps."""
     lanes = _lanes(change_map)
     symbols = list(change_map.symbols)
     files = list(change_map.files)
@@ -723,7 +710,6 @@ def _check_files(refs: Any, where: str, issues: list[str]) -> None:
 
 
 def validate_contract(doc: dict[str, Any]) -> tuple[str, ...]:
-    """Restate the pinned graph contract 0.2.0 in Python."""
     issues: list[str] = []
     if doc.get("schemaVersion") != SCHEMA_VERSION:
         issues.append("schemaVersion must be " + SCHEMA_VERSION)

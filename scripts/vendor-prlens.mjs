@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// Node runs only during vendoring; the generated page must run offline.
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";

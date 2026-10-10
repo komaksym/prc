@@ -1,5 +1,3 @@
-"""The rendered page in real Chromium, with settled pixel evidence."""
-
 from __future__ import annotations
 
 import base64

@@ -1,5 +1,3 @@
-"""Maintainer-only vendor CLI checks. Run explicitly with pytest and offline inputs."""
-
 from __future__ import annotations
 
 import hashlib
@@ -32,7 +30,6 @@ def _offline_inputs() -> None:
 
 
 def _stage(tmp_path: Path) -> Path:
-    """Copy the vendor surface into an isolated repo layout."""
     stage = tmp_path / "repo"
     (stage / "scripts").mkdir(parents=True)
     asset_dir = stage / "src" / "prc" / "presentation" / "map_assets"

@@ -1,5 +1,3 @@
-"""The rendered page: CSP hashes, one JSON block, deterministic bytes, inert data."""
-
 from __future__ import annotations
 
 import base64

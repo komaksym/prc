@@ -1,5 +1,3 @@
-"""One AI-drawn infographic per PR, gated by OCR before it is published."""
-
 from __future__ import annotations
 
 import json
@@ -426,7 +424,7 @@ def tesseract_version() -> str:
         done = subprocess.run(
             ["tesseract", "--version"], capture_output=True, text=True, timeout=60
         )
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError, UnicodeDecodeError):
         return ""
     if done.returncode != 0:
         return ""
@@ -453,7 +451,7 @@ def _read_mode(png: Path, psm: str, dpi: str) -> tuple[OcrWord, ...] | None:
         args += ["--dpi", dpi]
     try:
         done = subprocess.run([*args, "tsv"], capture_output=True, text=True, timeout=180)
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError, UnicodeDecodeError):
         return None
     if done.returncode != 0:
         return None

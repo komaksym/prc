@@ -1,5 +1,3 @@
-"""The PR map page on the PR Lens renderer: trusted markup, one JSON data block."""
-
 from __future__ import annotations
 
 import base64

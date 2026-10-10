@@ -1,5 +1,3 @@
-"""Part A tests 13-15: real Chromium pixels and CLI publishing."""
-
 from __future__ import annotations
 
 import hashlib
@@ -56,12 +54,11 @@ def render_lines_png(lines: list[str], path: Path) -> Path:
 
     path.parent.mkdir(parents=True, exist_ok=True)
     items = "".join("<div>" + html.escape(line) + "</div>" for line in lines)
-    # Georgia keeps I and l distinct (sans reads AI as Al); tracking keeps c. distinct (psm 11 reads prc. as pre.).
-    css = "body{background:#fff;color:#111;font:44px/1.7 Georgia,serif;letter-spacing:2px;margin:48px}div{margin:0 0 14px}"
+    ocr_style = "body{background:#fff;color:#111;font:44px/1.7 Georgia,serif;letter-spacing:2px;margin:48px}div{margin:0 0 14px}"
     html_path = path.with_suffix(".html")
     html_path.write_text(
         "<!doctype html><html><head><meta charset='utf-8'>"
-        "<style>" + css + "</style></head><body>" + items + "</body></html>"
+        "<style>" + ocr_style + "</style></head><body>" + items + "</body></html>"
     )
     with sync_playwright() as driver:
         browser = driver.chromium.launch()

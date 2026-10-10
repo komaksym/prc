@@ -1,5 +1,3 @@
-"""Part A gate tests 1-12: brief sources, determinism, and pure OCR scoring."""
-
 from __future__ import annotations
 
 import json

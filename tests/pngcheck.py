@@ -1,5 +1,3 @@
-"""Minimal PNG variance probe for browser screenshots (stdlib only)."""
-
 from __future__ import annotations
 
 import struct

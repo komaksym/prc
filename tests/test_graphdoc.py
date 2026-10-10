@@ -1,5 +1,3 @@
-"""GraphDoc converter: goldens, integrity, limits, deltas and the D18 overview."""
-
 from __future__ import annotations
 
 import dataclasses
