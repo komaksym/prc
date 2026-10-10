@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from prc.explainer.check import find_phrase, spoken
-from prc.explainer.speech import code_tokens, speakable
+from prc.explainer.speech import code_tokens, heard_as, speakable
 
 
 @pytest.mark.parametrize(
@@ -13,20 +13,45 @@ from prc.explainer.speech import code_tokens, speakable
     [
         ("the user gets s2e3.", "the user gets S 2 E 3."),
         ("Up next used to pick s1e1.", "Up next used to pick S 1 E 1."),
-        ("It preserves ErrNotExist.", "It preserves error not exist."),
-        ("Now it returns ReadComposeError.", "Now it returns read compose error."),
-        ("Start at onComplete in note.ts.", "Start at on complete in note dot T S."),
+        ("It preserves ErrNotExist.", "It preserves error, not exist."),
+        ("Now it returns ReadComposeError.", "Now it returns reed, compose error."),
+        ("Start at onComplete in note.ts.", "Start at on, complete in note dot T S."),
         (
             "Start at select_next_episode in next_episode.py.",
-            "Start at select next episode in next episode dot P Y.",
+            "Start at select, next episode in next, episode dot P Y.",
         ),
         ("A WELCOME10 code.", "A WELCOME 10 code."),
-        ("It reads parseYAMLFile.", "It reads parse YAML file."),
+        ("It reads parseYAMLFile.", "It reads parse, YAML file."),
     ],
 )
 def test_code_names_become_words(text: str, said: str) -> None:
     """Defect: Kokoro read s2e3 as "ess ee" and ErrNotExist as "earn not exist"."""
     assert speakable(text) == said
+
+
+def test_first_word_of_a_code_name_keeps_its_last_sound() -> None:
+    """Defect: Kokoro ran "find next" together, and Parakeet and Whisper heard "fine next"."""
+    assert speakable("Now it calls find_next_episode.") == "Now it calls find, next episode."
+
+
+def test_homograph_in_a_code_name_is_said_as_the_verb() -> None:
+    """Defect: Kokoro said ReadComposeError with the past tense "red", heard as "red compose"."""
+    assert speakable("ReadComposeError") == "reed, compose error"
+    assert speakable("It read the file.") == "It read the file."
+
+
+@pytest.mark.parametrize(
+    ("token", "heard"),
+    [
+        ("ReadComposeError", "read compose error"),
+        ("find_next_episode", "find next episode"),
+        ("s2e3", "S 2 E 3"),
+        ("next_episode.py", "next episode dot P Y"),
+    ],
+)
+def test_gate_expects_the_written_words(token: str, heard: str) -> None:
+    """Defect: the gate expects the respelling "reed", which no recognizer writes."""
+    assert heard_as(token) == heard
 
 
 @pytest.mark.parametrize(
@@ -62,7 +87,7 @@ def test_code_tokens_are_found_in_spoken_order() -> None:
 def test_captions_keep_code_and_cues_still_match() -> None:
     """Defect: the rewrite leaks into captions, or a cue phrase naming code stops matching."""
     scene = {"say": ["Now it calls `select_next_episode` for each show."]}
-    assert spoken(scene) == ["Now it calls select next episode for each show."]
+    assert spoken(scene) == ["Now it calls select, next episode for each show."]
     assert find_phrase(scene, "calls select_next_episode") == [(0, 7)]
 
 

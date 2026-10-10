@@ -2,7 +2,10 @@
 
 Captions keep the code; only the voice hears the rewrite. Kokoro reads
 `s2e3` as "ess ee" and `ErrNotExist` as "earn not exist", so each code
-token is split into its parts before synthesis.
+token is split into its parts before synthesis. A comma after the first word
+keeps its last sound ("find next" ran together into "fine next"), and verbs
+Kokoro reads in the past tense get a respelling ("read" became "red").
+The listening gate expects the plain written words, from `heard_as`.
 """
 
 from __future__ import annotations
@@ -37,6 +40,7 @@ EXTENSIONS = frozenset(
     ]
 )
 ABBREVIATIONS = {"err": "error", "ctx": "context", "cfg": "config", "msg": "message"}
+SOUNDS = {"read": "reed"}
 
 WORD = re.compile(r"(?<![\w.])[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*")
 PART = re.compile(r"[A-Z]+(?=[A-Z][a-z]|\d|$)|[A-Z]?[a-z]+|[A-Z]+|\d+")
@@ -66,12 +70,28 @@ def _say_part(part: str) -> str:
     return ABBREVIATIONS.get(part.lower(), part.lower())
 
 
-def say_token(word: str) -> str:
+def _words(word: str) -> list[str]:
+    return [_say_part(p) for chunk in word.split("_") for p in PART.findall(chunk)]
+
+
+def say_token(word: str, voice: bool = True) -> str:
+    """A code token as words: with pauses and respellings for the voice, or as written."""
     if _is_file(word):
         stem, _, ext = word.rpartition(".")
-        name = " dot ".join(say_token(p) if is_code(p) else p for p in stem.split("."))
+        name = " dot ".join(say_token(p, voice) if is_code(p) else p for p in stem.split("."))
         return f"{name} dot {' '.join(ext.upper()) if len(ext) <= 3 else ext}"
-    return " ".join(_say_part(p) for chunk in word.split("_") for p in PART.findall(chunk))
+    words = _words(word)
+    if not voice:
+        return " ".join(words)
+    words = [SOUNDS.get(w, w) for w in words]
+    if len(words) > 1 and len(words[0]) > 1 and words[0].isalpha() and words[1].isalpha():
+        words[0] += ","
+    return " ".join(words)
+
+
+def heard_as(token: str) -> str:
+    """How a listener writes a code token down: the words, without voice respellings."""
+    return say_token(token, voice=False)
 
 
 def code_tokens(text: str) -> list[str]:

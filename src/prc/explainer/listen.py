@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from prc.explainer.check import scripted
-from prc.explainer.speech import code_tokens, speakable
+from prc.explainer.speech import code_tokens, heard_as, speakable
 from prc.explainer.voice import Backend, select
 
 MUESLI_APP_CLI = Path("/Applications/Muesli.app/Contents/MacOS/muesli-cli")
@@ -95,7 +95,7 @@ def check_tokens(board: dict[str, Any], transcript: str) -> list[TokenCheck]:
     heard = compact(transcript)
     checks = []
     for token, count in said.items():
-        expect = compact(speakable(token))
+        expect = compact(heard_as(token))
         checks.append(TokenCheck(token, expect, count, heard.count(expect)))
     return checks
 
