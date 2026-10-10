@@ -191,6 +191,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("doctor", help="check the tools explain needs")
 
+    hear = sub.add_parser(
+        "listen", help="check that a speech recognizer hears every code name in a video"
+    )
+    hear.add_argument("folder", type=Path, help="an explain output folder")
+    hear.add_argument("--engine", default="auto", choices=["auto", "parakeet", "whisper"])
+
     analyze = sub.add_parser("eval-analyze", help="analyze recorded pilot pair outcomes")
     analyze.add_argument("results", type=Path)
 
@@ -222,6 +228,23 @@ def _main(argv: list[str] | None = None) -> int:
         print(json.dumps(_report_json(analyze(load_pairs(args.results))), indent=2, default=str))
 
         return 0
+
+    if args.command == "listen":
+        from prc.explainer.listen import ListenError, listen
+
+        try:
+            checked = listen(args.folder, args.engine)
+        except ListenError as error:
+            print(f"prc: {error}", file=sys.stderr)
+            return 2
+        if not checked["calibration"]["passed"]:
+            print("prc: the recognizer failed its planted controls", file=sys.stderr)
+        for token in checked["lost"]:
+            print(f"prc: the narration loses {token}", file=sys.stderr)
+        summary = {k: checked[k] for k in ("engine", "lost", "passed")}
+        print(json.dumps(summary | {"report": str(args.folder / "listening.json")}, indent=2))
+
+        return 0 if checked["passed"] else 1
 
     required = getattr(args, "required_check", None)
     has_source = getattr(args, "source", None)

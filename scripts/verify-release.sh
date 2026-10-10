@@ -133,6 +133,12 @@ audio = [s for s in media['streams'] if s.get('codec_type') == 'audio']
 assert audio, 'video.mp4 has no audio stream'
 assert audio[0].get('duration'), 'audio stream reports no duration'
 assert abs(float(audio[0]['duration']) - video_dur) <= 0.5, (audio[0]['duration'], video_dur)
+heard = subprocess.run(
+    [str(proof / 'wheel-env' / 'bin' / 'prc'), 'listen', str(folder)], capture_output=True, text=True
+)
+assert heard.returncode == 0, heard.stdout + heard.stderr
+listening = json.loads((folder / 'listening.json').read_text())
+assert listening['passed'] and listening['calibration']['passed'], listening['lost']
 screenshots.mkdir(exist_ok=True)
 errors = []
 with sync_playwright() as driver:

@@ -90,6 +90,17 @@ The comment and the walkthrough then show that image first.
 `infographic/check.json` lists each candidate's verdict, missing lines, foreign words and successful or failed reading modes.
 It records the hash of the exact checked PNG bytes. `run.json` records the attempts.
 Without a passing candidate, nothing is published and the card stays.
+
+To check that the narration says every code name clearly, run `prc listen` on an explain output folder.
+
+```sh
+uv run prc listen artifacts/explain/<run>
+```
+
+It transcribes the video's voice with Parakeet through Muesli's `muesli-cli` when Muesli is installed, or with Whisper base when `openai-whisper` is.
+First it checks the recognizer on planted controls: clear and garbled readings of the same code names, in the run's own voice.
+It exits 1 when a code name is heard fewer times than it is said, or when the controls fail.
+`listening.json` records the recognizer, its model and version, the transcript and every code name's verdict.
 The gate checks detected text. It cannot prove that every word or visual relationship is correct.
 It tolerates small OCR errors in prose words, so a small misspelling can pass.
 Extra text below the confidence floor can escape detection. Icons that resemble letters can cause false rejection.

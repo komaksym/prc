@@ -16,6 +16,7 @@ from prc.explainer.preflight import (
     note_risks,
     silent_estimate,
 )
+from prc.explainer.speech import speakable
 
 CHANGED = ("added", "modified")
 ROWS = 12
@@ -35,16 +36,21 @@ VERBS: dict[str, set[str]] = {
 NEEDS = {"list": "items", "receipt": "rows"}
 
 
-def spoken(scene: dict[str, Any]) -> list[str]:
+def scripted(scene: dict[str, Any]) -> list[str]:
+    """What each sentence gives the voice, before code names are rewritten."""
     return [
         (s if isinstance(s, str) else s.get("speak", s["show"])).replace("`", "")
         for s in scene["say"]
     ]
 
 
+def spoken(scene: dict[str, Any]) -> list[str]:
+    return [speakable(text) for text in scripted(scene)]
+
+
 def find_phrase(scene: dict[str, Any], phrase: str) -> list[tuple[int, int]]:
     """Every place the narration says `phrase`, as (sentence, character offset)."""
-    pattern = re.compile(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", re.IGNORECASE)
+    pattern = re.compile(r"(?<!\w)" + re.escape(speakable(phrase)) + r"(?!\w)", re.IGNORECASE)
     return [
         (k, hit.start()) for k, text in enumerate(spoken(scene)) for hit in pattern.finditer(text)
     ]

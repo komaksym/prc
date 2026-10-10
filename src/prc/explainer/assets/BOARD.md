@@ -23,7 +23,9 @@ The video sits in the pull request description on GitHub. The viewer is the revi
 
 Every scene has a `type`, a `say` list and usually `cues`. Optional fields are `cite`, `hold` and `assert`.
 
-`say` is a list of sentences. A sentence is a string, or `{"show": "caption text", "speak": "what the voice reads"}` when the voice needs a different spelling (for example "A.I." for "AI"). Text in backticks shows as code in the caption and is read without the backticks, so give the voice words it can pronounce.
+`say` is a list of sentences. A sentence is a string, or `{"show": "caption text", "speak": "what the voice reads"}` when the voice needs a different spelling (for example "A.I." for "AI"). Text in backticks shows as code in the caption and is read without the backticks.
+
+The caption keeps code names as written. The voice hears them split into words: `select_next_episode` becomes "select next episode", `ErrNotExist` becomes "error not exist", `s2e3` becomes "S 2 E 3" and `note.ts` becomes "note dot T S". When a name means something a listener would say differently, such as "season 2, episode 3", write it in `speak`. `prc listen` checks that a speech recognizer hears every code name the narration says.
 
 `cues` start animations. Each cue is `{"at": <time>, "do": <verb>, ...}`. The verbs depend on the scene type and are listed below. Unknown verbs and unknown ids fail the check.
 
