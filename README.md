@@ -167,8 +167,11 @@ Choose `--voice none` explicitly for silent output and estimated timing without 
 `--voice say` uses `/usr/bin/say` on macOS and ffmpeg for audio conversion.
 
 Kokoro needs the optional `voice` extra and Python 3.12 with this package's Python requirement.
-Installing that extra brings PyTorch and spaCy. First use can download `en_core_web_sm` and Kokoro weights.
+Installing that extra brings PyTorch, spaCy and the spaCy model `en_core_web_sm` 3.8.0.
+First use downloads the Kokoro weights (`hexgrad/Kokoro-82M`) from Hugging Face.
 Review those downloads before choosing voice installation.
+Install the extra with uv from the lock. The spaCy model comes from its GitHub release,
+so a plain `pip install` cannot resolve the extra from package metadata alone.
 To keep the video extra when installing voice, use `uv sync --extra video --extra voice`.
 Kokoro also needs the eSpeak phonemizer runtime. The backend currently defaults to Homebrew paths on macOS.
 Set `ESPEAK_DATA_PATH` and `PHONEMIZER_ESPEAK_LIBRARY` for a different installation.
