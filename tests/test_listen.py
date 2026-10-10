@@ -97,6 +97,7 @@ def test_explain_then_listen_hears_every_code_name(tmp_path: Path) -> None:
     assert report["passed"] is True
     assert report["engine"]["name"] in ("parakeet", "whisper") and report["engine"]["model"]
     assert report["calibration"]["passed"] is True
+    assert (folder / "listening" / "control-good.wav").is_file()
     heard = {t["token"]: t for t in report["tokens"]}
     assert {"apply_discount", "cart.py", "WELCOME10"} <= set(heard)
     assert all(t["ok"] for t in heard.values())

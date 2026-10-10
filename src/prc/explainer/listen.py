@@ -121,11 +121,14 @@ def _parakeet() -> Engine | None:
     )
 
     def transcribe(wav: Path) -> str:
-        out = subprocess.run(
-            [str(cli), "transcribe", str(wav), "--format", "json", "--model", "parakeet-unified"],
-            capture_output=True,
-            text=True,
-        )
+        with tempfile.TemporaryDirectory() as work:
+            mono = Path(work) / "speech.wav"
+            resample = ["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-ar", "16000", "-ac", "1"]
+            subprocess.run([*resample, str(mono)], check=True)
+            command = [str(cli), "transcribe", str(mono), "--format", "json"]
+            out = subprocess.run(
+                [*command, "--model", "parakeet-unified"], capture_output=True, text=True
+            )
         try:
             result = json.loads(out.stdout)
         except json.JSONDecodeError:
@@ -185,14 +188,15 @@ def calibrate(engine: Engine, voice: Backend, work: Path) -> dict[str, Any]:
 
 
 def listen(folder: Path, choice: str = "auto") -> dict[str, Any]:
-    """Check a rendered explainer folder; write and return listening.json."""
+    """Check a rendered explainer folder; write listening.json and the control clips beside it."""
     narration = folder / "narration.wav"
     run = json.loads((folder / "run.json").read_text())
     if not narration.is_file() or run.get("voice") == "none":
         raise ListenError(f"{folder} has no narration audio to check.")
     engine = find_engine(choice)
-    with tempfile.TemporaryDirectory() as work:
-        calibration = calibrate(engine, select(run["voice"]), Path(work))
+    controls = folder / "listening"
+    controls.mkdir(exist_ok=True)
+    calibration = calibrate(engine, select(run["voice"]), controls)
     transcript = engine.transcribe(narration)
     checks = check_tokens(json.loads((folder / "board.json").read_text()), transcript)
     report = {
