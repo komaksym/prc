@@ -333,6 +333,53 @@ def test_map_browser_grouped(open_map: Callable[[ChangeMap], Opened], tmp_path: 
     assert "func_000" in drawer.text_content()
     assert_drawer_fits(page)
     shot(page, tmp_path, "grouped-member-diff")
+
+
+@pytest.mark.parametrize("grouped", [False, True])
+def test_map_keeps_every_changed_file_navigable(
+    open_map: Callable[[ChangeMap], Opened], tmp_path: Path, grouped: bool
+) -> None:
+    data = large_map(60) if grouped else shop_map()
+    target = "pyproject.toml" if grouped else "README.md"
+    opened = open_map(data)
+    page = opened.page
+    shot(page, tmp_path, f"all-files-{'grouped' if grouped else 'plain'}-before")
+    page.locator("#changed-files summary").click(timeout=2000)
+    assert page.locator("#changed-files .flink").count() == len(data.files)
+    page.locator("#changed-files .flink").filter(has_text=target).click()
+    assert_drawer_fits(page)
+    assert target in page.locator("#drawer").inner_text()
+    assert "Diff" in page.locator("#drawer").inner_text()
+    shot(page, tmp_path, f"all-files-{'grouped' if grouped else 'plain'}-drawer")
+    assert not opened.problems
+
+
+def test_map_discloses_omitted_graph_arrows(
+    open_map: Callable[[ChangeMap], Opened], tmp_path: Path
+) -> None:
+    data = large_map(60)
+    plotted = to_graph_doc(data)
+    page = open_map(data).page
+    shot(page, tmp_path, "graph-coverage-before")
+    text = page.locator("#graph-coverage").inner_text(timeout=2000)
+    assert f"{len(data.edges) - plotted.dropped_edges} of {len(data.edges)} call arrows" in text
+    assert plotted.dropped_edges > 0
+
+
+def test_map_conversion_failure_does_not_claim_empty_pr(
+    open_map: Callable[[ChangeMap], Opened], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from prc.presentation import render_map as renderer
+
+    def fail(_map: object) -> None:
+        raise ValueError("node contract failed")
+
+    monkeypatch.setattr(renderer, "to_graph_doc", fail)
+    page = open_map(shop_map()).page
+    shot(page, tmp_path, "graph-contract-failure-before")
+    assert page.locator(".empty").count() == 0
+    assert "Diagram unavailable" in page.locator(".fallback").inner_text()
+    assert page.locator("#changed-files .flink").count() == 3
     assert opened.problems == []
 
 

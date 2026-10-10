@@ -7,6 +7,9 @@ import hashlib
 import json
 import re
 from importlib.resources import files
+from pathlib import Path
+
+import pytest
 
 from map_sample import hostile_map, shop_map
 from prc.presentation.graphdoc import to_graph_doc
@@ -104,3 +107,30 @@ def test_page_data_marks_dropped_counts_and_groups() -> None:
     assert data["dropped"] == {"symbols": plotted.dropped_symbols, "edges": plotted.dropped_edges}
     assert [g["id"] for g in data["map"]["groups"]] == ["g0", "g1"]
     assert data_block(shop_map()) == data_block(shop_map())
+
+
+def test_render_rejects_a_modified_vendor_bundle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from prc.presentation import render_map as renderer
+
+    for name in ("prlens.bundle.js", "prlens.lock.json", "map.js", "map.css"):
+        (tmp_path / name).write_bytes((ASSETS / name).read_bytes())
+    with (tmp_path / "prlens.bundle.js").open("a") as bundle:
+        bundle.write("\nconsole.log('tampered');\n")
+    monkeypatch.setattr(renderer, "_ASSETS", tmp_path)
+    with pytest.raises(ValueError, match="bundle hash"):
+        renderer.render_map(shop_map())
+
+
+def test_conversion_failure_is_explicit(monkeypatch: pytest.MonkeyPatch) -> None:
+    from prc.presentation import render_map as renderer
+
+    def fail(_map: object) -> None:
+        raise ValueError("node contract failed")
+
+    monkeypatch.setattr(renderer, "to_graph_doc", fail)
+    data = renderer.page_data(shop_map())
+    assert data["graph"] is None
+    assert data["layoutError"] == "node contract failed"
+    assert len(data["map"]["files"]) == 3
