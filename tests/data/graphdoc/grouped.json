@@ -216,6 +216,36 @@
       "kind": "config",
       "label": ".github/workflows/ci.yml",
       "lane": "files"
+    },
+    {
+      "badges": [
+        "dependency manifest"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "pyproject.toml",
+          "revision": "head"
+        }
+      ],
+      "id": "f21",
+      "kind": "config",
+      "label": "pyproject.toml",
+      "lane": "files"
+    },
+    {
+      "badges": [],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "docs/guide.md",
+          "revision": "head"
+        }
+      ],
+      "id": "f22",
+      "kind": "other",
+      "label": "docs/guide.md",
+      "lane": "files"
     }
   ],
   "provenance": {

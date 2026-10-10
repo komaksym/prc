@@ -51,6 +51,7 @@ _BODY = (
     '<button id="zoom-fit" type="button">Fit</button></div>'
     '<aside id="drawer" class="drawer" aria-hidden="true"></aside></main>'
     f'<footer class="foot"><span class="brand-line">{BRAND}</span>'
+    '<span id="graph-coverage" class="graph-coverage"></span>'
     '<span class="hints">Click a node for its diff \u00b7 Drag to pan, pinch or Ctrl+scroll to zoom '
     "\u00b7 Space steps the tour \u00b7 F fits</span></footer></div>"
 )
@@ -60,11 +61,13 @@ def page_data(change_map: ChangeMap) -> dict[str, Any]:
     """One JSON block: the stored map, the GraphDoc, the tour kinds, drop counts, groups."""
     data = to_jsonable(change_map)
     data["summary"] = to_jsonable(compute_facts(data))
+    error = None
     try:
         plotted = to_graph_doc(change_map)
-    except ValueError:
+    except ValueError as issue:
         graph: dict[str, Any] | None = None
         dropped = {"symbols": len(change_map.symbols), "edges": len(change_map.edges)}
+        error = str(issue)
     else:
         graph = plotted.doc
         dropped = {"symbols": plotted.dropped_symbols, "edges": plotted.dropped_edges}
@@ -89,7 +92,10 @@ def page_data(change_map: ChangeMap) -> dict[str, Any]:
         for n, group in enumerate(groups_of(change_map))
     ]
     data["groups"] = groups
-    return {"map": data, "graph": graph, "steps": steps, "dropped": dropped}
+    result = {"map": data, "graph": graph, "steps": steps, "dropped": dropped}
+    if error is not None:
+        result["layoutError"] = error
+    return result
 
 
 def data_block(change_map: ChangeMap) -> str:
@@ -101,12 +107,16 @@ def data_block(change_map: ChangeMap) -> str:
 
 
 def render_map(change_map: ChangeMap) -> str:
-    bundle = (_ASSETS / "prlens.bundle.js").read_text()
+    raw = (_ASSETS / "prlens.bundle.js").read_bytes()
+    lock = json.loads((_ASSETS / "prlens.lock.json").read_text())
+    if hashlib.sha256(raw).hexdigest() != lock["bundle_sha256"]:
+        raise ValueError("PR Lens bundle hash does not match prlens.lock.json")
+    bundle = raw.decode("utf-8")
     player = (_ASSETS / "map.js").read_text()
-    first = base64.b64encode(hashlib.sha256(bundle.encode()).digest()).decode()
-    second = base64.b64encode(hashlib.sha256(player.encode()).digest()).decode()
+    bundle_digest = base64.b64encode(hashlib.sha256(raw).digest()).decode()
+    player_digest = base64.b64encode(hashlib.sha256(player.encode()).digest()).decode()
     csp = (
-        "default-src 'none'; script-src 'sha256-" + first + "' 'sha256-" + second + "'; "
+        f"default-src 'none'; script-src 'sha256-{bundle_digest}' 'sha256-{player_digest}'; "
         "style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"
     )
     return (

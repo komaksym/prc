@@ -708,6 +708,7 @@ h1 {
 
 .foot {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 16px;
   padding: 8px 24px;
@@ -745,6 +746,10 @@ h1 {
 .ring { position: absolute; border: 2px solid var(--accent); border-radius: 10px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); }
 .via { position: absolute; border: 2px solid color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 10px; }
 .fallback { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); padding: 12px 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); color: var(--muted); font-size: 14px; white-space: nowrap; pointer-events: none; }
-.fallback-files { position: absolute; left: 16px; bottom: 96px; display: grid; gap: 4px; max-height: 40%; overflow: auto; padding: 8px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+.changed-files { position: absolute; z-index: 2; left: 16px; bottom: 96px; max-width: min(460px, 80%); padding: 10px; background: var(--panel-solid); border: 1px solid var(--border); border-radius: 12px; }
+.changed-files summary { cursor: pointer; color: var(--text); font-size: 13px; }
+.file-links { display: grid; gap: 4px; max-height: 32vh; overflow: auto; margin-top: 8px; }
+.touring .changed-files { display: none; }
+#graph-coverage { white-space: normal; color: var(--muted); flex: 1; min-width: 0; }
 .flink { text-align: left; background: transparent; border: 0; padding: 4px 8px; font: 12px var(--mono); color: var(--muted); cursor: pointer; border-radius: 6px; }
 .flink:hover { color: var(--text); background: var(--band); }

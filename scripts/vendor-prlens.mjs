@@ -2,8 +2,7 @@
 // Node runs only during vendoring; the generated page must run offline.
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
-import { rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -83,9 +82,8 @@ function main() {
   if (existsSync(LOCK_PATH)) {
     lock = JSON.parse(readFileSync(LOCK_PATH, "utf8"));
   }
-  const pinned = lock.tarball_sha256;
-  if (pinned && !update) {
-    if (pinned.renderer !== tarballSha.renderer || pinned.schema !== tarballSha.schema) {
+  if (lock.tarball_sha256 && !update) {
+    if (lock.tarball_sha256.renderer !== tarballSha.renderer || lock.tarball_sha256.schema !== tarballSha.schema) {
       throw new Error("tarball hash mismatch against prlens.lock.json; rerun with --update");
     }
   }
@@ -108,10 +106,7 @@ function main() {
   if (rendererVersion !== RENDERER_PIN || schemaVersion !== SCHEMA_PIN) {
     throw new Error("unpinned package: " + rendererVersion + " / " + schemaVersion);
   }
-  let esbuildModule = "esbuild";
-  if (modulesDir) {
-    esbuildModule = createRequire(import.meta.url).resolve("esbuild", { paths: [modulesDir] });
-  }
+  const esbuildModule = createRequire(import.meta.url).resolve("esbuild", { paths: [modulesDir] });
   const { buildSync } = createRequire(import.meta.url)(esbuildModule);
   const goldens = readdirSync(GOLDENS).filter((n) => n.endsWith(".json")).sort();
   if (!goldens.length) {
@@ -202,6 +197,23 @@ function main() {
     validated_goldens: validated,
     zod: pkgVersion(modulesForVersions, "zod"),
   };
+  if (lock.bundle_sha256 !== undefined && !update) {
+    const pins = [];
+    if (lock.bundle_sha256 !== next.bundle_sha256) {
+      pins.push("bundle_sha256 mismatch against prlens.lock.json; rerun with --update");
+    }
+    if (lock.validated_goldens) {
+      for (const name of new Set([...Object.keys(lock.validated_goldens), ...Object.keys(next.validated_goldens)])) {
+        if (lock.validated_goldens[name] !== next.validated_goldens[name]) {
+          pins.push("validated_goldens mismatch against prlens.lock.json; rerun with --update");
+        }
+      }
+    }
+    if (pins.length) {
+      rmSync(scratch, { recursive: true, force: true });
+      throw new Error(pins.join("; "));
+    }
+  }
   writeFileSync(BUNDLE_PATH, code);
   writeFileSync(LOCK_PATH, JSON.stringify(next, null, 2) + "\n");
   rmSync(scratch, { recursive: true, force: true });

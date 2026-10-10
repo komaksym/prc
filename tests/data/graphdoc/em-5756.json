@@ -219,6 +219,38 @@
       "kind": "package",
       "label": "yarn.lock",
       "lane": "files"
+    },
+    {
+      "badges": [
+        "+5 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "docs/commands.md",
+          "revision": "head"
+        }
+      ],
+      "id": "f1",
+      "kind": "other",
+      "label": "docs/commands.md",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+72 / -0"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "src/e2e/puppeteer/__tests__/commandCenter.ts",
+          "revision": "head"
+        }
+      ],
+      "id": "f5",
+      "kind": "test",
+      "label": "src/e2e/puppeteer/__tests__/commandCenter.ts",
+      "lane": "files"
     }
   ],
   "provenance": {

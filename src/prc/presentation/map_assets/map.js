@@ -117,7 +117,12 @@
   let atlas = { lanes: {}, nodes: {}, edges: {}, messages: {} };
   let renderFailed = false;
   if (!GRAPH || !GRAPH.nodes.length) {
-    viewport.appendChild(el("div", "empty", "No function or class changed in a parsed file."));
+    if (BLOCK.layoutError || MAP.files.length || changed.length) {
+      renderFailed = true;
+      viewport.appendChild(el("div", "fallback", "Diagram unavailable" + DOT + "all changed files remain below."));
+    } else {
+      viewport.appendChild(el("div", "empty", "No changed files or parsed symbols in this capture."));
+    }
   } else {
     const theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches
       ? "light"
@@ -138,16 +143,29 @@
     } catch (err) {
       renderFailed = true;
       viewport.appendChild(el("div", "fallback", "Diagram unavailable" + DOT + "the drawer still lists every change."));
-      const files = el("div", "fallback-files");
-      MAP.files.forEach((file, i) => {
-        const link = el("button", "flink", file.path);
-        link.setAttribute("type", "button");
-        link.addEventListener("click", () => openNode("f" + i, false));
-        files.appendChild(link);
-      });
-      viewport.appendChild(files);
     }
   }
+  const files = el("details", "changed-files");
+  files.id = "changed-files";
+  files.open = renderFailed;
+  files.appendChild(el("summary", "", "Changed files (" + MAP.files.length + ")"));
+  const fileLinks = el("div", "file-links");
+  MAP.files.forEach((file, i) => {
+    const link = el("button", "flink", file.path);
+    link.setAttribute("type", "button");
+    link.addEventListener("click", () => openNode("f" + i, false));
+    fileLinks.appendChild(link);
+  });
+  files.appendChild(fileLinks);
+  viewport.appendChild(files);
+  const dropped = BLOCK.dropped;
+  const omittedTour = Math.max(0, MAP.tour.length - PSTEPS.length);
+  const coverage = dropped.symbols || dropped.edges || omittedTour
+    ? "Diagram shows " + (MAP.symbols.length - dropped.symbols) + " of " + MAP.symbols.length
+      + " individual symbols, " + (MAP.edges.length - dropped.edges) + " of " + MAP.edges.length
+      + " call arrows. Tour uses " + PSTEPS.length + " of " + MAP.tour.length + " steps."
+    : "";
+  $("graph-coverage").textContent = coverage;
   world.style.width = diagramW + "px";
   world.style.height = diagramH + "px";
   const ringLayer = el("div", "rings");
@@ -574,11 +592,13 @@
       cell(callSites, callSites === 1 ? "resolved call site" : "resolved call sites"),
       cell(untested.length, "changed " + (untested.length === 1 ? "symbol" : "symbols") + " with " + NO_TEST, untested.length ? "warn" : "good"),
       cell(ci.word, ci.failed.length ? "CI failed: " + ci.failed.map((c) => c.name).join(", ") : ci.label + " on the head commit", ci.cls));
-    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
+    const toured = new Set(GW.flatMap((step) => step.focus.kind === "selection" ? step.focus.nodes || [] : [])
+      .map((id) => mapIdOfGraph.get(id)).filter(Boolean));
     const skipped = changedCode.filter((n) => !toured.has(n.id)).length;
-    const note = skipped ? el("div", "sum-note", plural(skipped, "more changed symbol", "more changed symbols") + " on the map, not in this tour") : null;
+    const note = skipped ? el("div", "sum-note", plural(skipped, "changed symbol", "changed symbols") + " not individually highlighted in this tour") : null;
     const limits = FACTS.limits.map((entry) => entry.path + ": " + entry.reason).join("; ");
     add(summary, el("div", "sum-note", FACTS.test_note),
+      coverage ? el("div", "sum-note", coverage) : null,
       limits ? el("div", "sum-note", "Symbol analysis limits: " + limits) : null);
     add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
       el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));

@@ -243,43 +243,23 @@ def _select(change_map: ChangeMap) -> tuple[list[int], list[int], list[str]]:
     """Map indices of plotted symbols and files, plus aggregate file paths.
 
     Deterministic under the 256-node cap: risky files first, then changed
-    symbols by churn, then context symbols, then one aggregate file node
-    per file whose symbols all dropped.
+    symbols by churn, then context symbols, then remaining file nodes.
     """
     symbols = list(change_map.symbols)
     files = list(change_map.files)
     file_at = {f.path: i for i, f in enumerate(files)}
-    risky = [file_at[p] for p in _risky_paths(change_map) if p in file_at]
+    risky = [file_at[p] for p in _risky_paths(change_map) if p in file_at][: max(0, MAX_NODES)]
     if not symbols:
-        return [], [f for f in range(len(files))][:MAX_NODES], []
+        remaining = [i for i in range(len(files)) if i not in risky]
+        return [], sorted(risky + remaining[: max(0, MAX_NODES - len(risky))]), []
     changed = [i for i, s in enumerate(symbols) if s.status != "context"]
     changed.sort(key=lambda i: (-(symbols[i].added + symbols[i].removed), i))
     context = [i for i, s in enumerate(symbols) if s.status == "context"]
-    picked = (changed + context)[: MAX_NODES - len(risky)]
-    by_file: dict[str, list[int]] = {}
-    for i, s in enumerate(symbols):
-        by_file.setdefault(s.path, []).append(i)
-    chosen = set(picked)
-
-    def aggregates() -> list[str]:
-        out = []
-        for path in sorted(by_file):
-            if (
-                by_file[path]
-                and not (set(by_file[path]) & chosen)
-                and file_at.get(path) not in risky
-            ):
-                out.append(path)
-        return out
-
-    if len(set(by_file) | {files[i].path for i in risky}) > MAX_NODES:
-        return picked, risky, aggregates()[: MAX_NODES - len(risky) - len(picked)]
-    while len(risky) + len(picked) + len(aggregates()) > MAX_NODES:
-        tail = [i for i in reversed(picked) if symbols[i].status == "context"]
-        drop = tail[0] if tail else picked[-1]
-        picked.remove(drop)
-        chosen = set(picked)
-    return picked, risky, aggregates()
+    picked = (changed + context)[: max(0, MAX_NODES - len(risky))]
+    shown_paths = {symbols[i].path for i in picked} | {files[i].path for i in risky}
+    aggregates = [path for path in sorted(file_at) if path not in shown_paths]
+    room = max(0, MAX_NODES - len(risky) - len(picked))
+    return picked, risky, aggregates[:room]
 
 
 def picked_steps(change_map: ChangeMap) -> tuple[Step | None, ...]:
@@ -565,7 +545,7 @@ def to_graph_doc(change_map: ChangeMap) -> Plotted:
                 f.added,
                 f.removed,
                 f.sensitive,
-                str(shown) + " of " + str(total) + " symbols shown",
+                str(shown) + " of " + str(total) + " symbols shown" if total else None,
             )
         )
     return _finish(change_map, symbols, files, nodes, at, plotted_files)
@@ -621,6 +601,19 @@ def _finish(
         else:
             heading, body = _shorten(step.kind, MAX_HEADING), _shorten(step.kind, MAX_BODY)
             focus = {"kind": "all"}
+        if step is not None:
+            missing = [ref for ref in step.focus if ref not in at and ref not in file_index]
+            if missing:
+                names = [
+                    _short_name(ref) if "::" in ref else ref.rsplit("/", 1)[-1]
+                    for ref in missing[:2]
+                ]
+                names = [name if len(name) <= 32 else name[:29] + "..." for name in names]
+                note = "Not shown: " + ", ".join(names)
+                if len(missing) > len(names):
+                    note += " (+" + str(len(missing) - len(names)) + " more)"
+                note += "."
+                body = _shorten(body, max(0, MAX_BODY - len(note) - 1)) + " " + note
         steps_doc.append({"id": "w" + str(n), "heading": heading, "body": body, "focus": focus})
     used = [lane for lane in LANE_ORDER if any(node["lane"] == lane for node in nodes)]
     doc: dict[str, Any] = {
@@ -670,14 +663,18 @@ def _overview_doc(
                 if i is not None and i not in walk:
                     walk.append(i)
     walk.sort(key=lambda i: (-(symbols[i].added + symbols[i].removed), i))
-    risky = [file_at[p] for p in _risky_paths(change_map) if p in file_at]
-    walk = walk[: MAX_NODES - len(risky)]
-    room = MAX_NODES - len(walk) - len(risky)
+    risky = [file_at[p] for p in _risky_paths(change_map) if p in file_at][: max(0, MAX_NODES)]
+    walk = walk[: max(0, MAX_NODES - len(risky))]
+    room = max(0, MAX_NODES - len(walk) - len(risky))
     nodes = [_group_node(group, n, kinds, lines) for n, group in enumerate(groups[:room])]
     at = {symbols[i].id: i for i in walk}
     for i in walk:
         nodes.append(_symbol_node(symbols, i, lanes[symbols[i].id]))
-    for j in risky:
+    symbol_paths = {s.path for s in symbols}
+    ordinary = [i for i, f in enumerate(files) if f.path not in symbol_paths and i not in risky]
+    room = max(0, room - len(groups))
+    plotted_files = risky + ordinary[:room]
+    for j in plotted_files:
         f = files[j]
         nodes.append(
             _file_node(
@@ -691,7 +688,7 @@ def _overview_doc(
                 None,
             )
         )
-    return _finish(change_map, symbols, files, nodes, at, set(risky))
+    return _finish(change_map, symbols, files, nodes, at, set(plotted_files))
 
 
 def _selection(ids: list[str]) -> dict[str, Any]:
