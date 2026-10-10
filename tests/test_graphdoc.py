@@ -14,7 +14,7 @@ from typing import Literal
 import pytest
 
 from map_sample import large_map, shop_map
-from prc.changemap import ChangeMap, Edge, Step
+from prc.changemap import ChangeMap, Edge, Step, SymbolStatus
 from prc.pipeline import _change_map_from_stored
 from prc.presentation import graphdoc
 from prc.presentation.graphdoc import (
@@ -53,7 +53,7 @@ def canon(doc: object) -> str:
     return json.dumps(doc, sort_keys=True, indent=2, ensure_ascii=False) + "\n"
 
 
-def flood_map(status: str = "context", risky: bool = False) -> ChangeMap:
+def flood_map(status: SymbolStatus = "context", risky: bool = False) -> ChangeMap:
     base = shop_map()
     symbols = tuple(
         dataclasses.replace(
@@ -132,7 +132,7 @@ def test_graphdoc_retains_ordinary_files(change_map: ChangeMap) -> None:
 
 @pytest.mark.parametrize("status", ["context", "modified"])
 def test_graphdoc_small_budget_prioritizes_risky_files(
-    monkeypatch: pytest.MonkeyPatch, status: str
+    monkeypatch: pytest.MonkeyPatch, status: SymbolStatus
 ) -> None:
     monkeypatch.setattr(graphdoc, "MAX_NODES", 4)
     plotted = to_graph_doc(flood_map(status, risky=True))
@@ -156,7 +156,7 @@ def test_graphdoc_file_only_flood_prioritizes_risky_target() -> None:
 @pytest.mark.parametrize(
     "status, partial", [("context", False), ("context", True), ("modified", True)]
 )
-def test_graphdoc_omitted_focus_is_named(status: str, partial: bool) -> None:
+def test_graphdoc_omitted_focus_is_named(status: SymbolStatus, partial: bool) -> None:
     base = flood_map(status)
     refs = ((base.symbols[0].id,) if partial else ()) + (base.symbols[-1].id,)
     change_map = dataclasses.replace(base, tour=(Step("entry", refs, None),))

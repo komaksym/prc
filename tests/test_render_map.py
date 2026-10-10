@@ -133,4 +133,4 @@ def test_conversion_failure_is_explicit(monkeypatch: pytest.MonkeyPatch) -> None
     data = renderer.page_data(shop_map())
     assert data["graph"] is None
     assert data["layoutError"] == "node contract failed"
-    assert len(data["map"]["files"]) == 3
+    assert len(data["map"]["files"]) == len(shop_map().files)

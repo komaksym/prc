@@ -155,7 +155,8 @@ def test_shop_map_is_computed_safe_and_repeatable() -> None:
     summary = embedded["map"].pop("summary")
     assert embedded["map"].pop("groups") == []
     assert embedded["map"] == data and "summary" not in data
-    assert len(embedded["graph"]["nodes"]) == 14
+    assert len(embedded["graph"]["nodes"]) == 15
+    assert any(node["files"][0]["path"] == "README.md" for node in embedded["graph"]["nodes"])
     assert len(embedded["graph"]["edges"]) == 12
     assert len(embedded["steps"]) == 10
     assert (summary["stats"]["files"], summary["stats"]["symbols_changed"]) == (8, 7)

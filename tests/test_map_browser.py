@@ -23,7 +23,7 @@ from prc.presentation.graphdoc import to_graph_doc
 from prc.presentation.render_map import render_map
 
 VIEWPORT = {"width": 1440, "height": 900}
-SHOTS = Path("/private/tmp/step1-workB-shots")
+SHOTS = Path(__file__).resolve().parents[1] / "artifacts/e2e/map-browser"
 WORLD_VARIANCE_MIN = 100.0
 
 
@@ -333,6 +333,7 @@ def test_map_browser_grouped(open_map: Callable[[ChangeMap], Opened], tmp_path: 
     assert "func_000" in drawer.text_content()
     assert_drawer_fits(page)
     shot(page, tmp_path, "grouped-member-diff")
+    assert opened.problems == []
 
 
 @pytest.mark.parametrize("grouped", [False, True])
@@ -349,7 +350,12 @@ def test_map_keeps_every_changed_file_navigable(
     page.locator("#changed-files .flink").filter(has_text=target).click()
     assert_drawer_fits(page)
     assert target in page.locator("#drawer").inner_text()
-    assert "Diff" in page.locator("#drawer").inner_text()
+    file = next(f for f in data.files if f.path == target)
+    content = page.locator("#drawer").text_content()
+    assert "Diff" in content
+    for hunk in file.hunks:
+        for line in hunk.lines:
+            assert line.text in content
     shot(page, tmp_path, f"all-files-{'grouped' if grouped else 'plain'}-drawer")
     assert not opened.problems
 
@@ -375,11 +381,12 @@ def test_map_conversion_failure_does_not_claim_empty_pr(
         raise ValueError("node contract failed")
 
     monkeypatch.setattr(renderer, "to_graph_doc", fail)
-    page = open_map(shop_map()).page
+    opened = open_map(shop_map())
+    page = opened.page
     shot(page, tmp_path, "graph-contract-failure-before")
     assert page.locator(".empty").count() == 0
     assert "Diagram unavailable" in page.locator(".fallback").inner_text()
-    assert page.locator("#changed-files .flink").count() == 3
+    assert page.locator("#changed-files .flink").count() == len(shop_map().files)
     assert opened.problems == []
 
 
