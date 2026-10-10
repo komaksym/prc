@@ -13,18 +13,24 @@ Design: .audit/step1-design.md. Push, PR, license, package name and publication 
 - [x] S2. Design by architect arena and synthesis. Candidate 3 base with three grafts.
 - [x] S3. Infographic step: brief, OCR gate, records, embedding, CLI flag and skill loop. The gate needed seven measured changes; see the reconciliation in .audit/step1-design.md.
 - [x] S4. Map on PR Lens: converter, vendored bundle and lock, player and deletions. Integrated suite 816 passed, 0 skipped.
-- [ ] S5. Integrate. Run the full checks, deslop, no-comments and an independent review. Run verify-release.sh from an empty cache.
-  - Clean-cache run-Mu5RiG passed 853 tests at 458b4ae, with the installed wheel and Kokoro smoke. The final independent review confirmed all 13 accepted defects. Reproduce and close its new binary Tesseract output failure before the final verification run.
-  - [ ] Close review defects with regression evidence. Require all OCR readings, remove foreign-word exemptions, check immutable PNG bytes, fit the brief budget, and size the inline image.
-  - [ ] Keep all changed files navigable, cap graphs without hangs, state graph omissions and failures, and verify bundle pins when vendoring and rendering.
-  - Model reports are saved in .audit/step1-reviews/. The parent review and comment pass hit HTTP 429; the completed reports remain valid evidence.
-- [ ] S6. Rebuild the three acceptance PRs with Kokoro, the new map and a gated infographic inline on the review page.
+- [x] S5. Integrate. Run the full checks, deslop, no-comments and an independent review. Run verify-release.sh from an empty cache.
+  - Final run-NYgULN at be2e7fa passed 855 tests with no skips, static checks, build and the installed-wheel browser/Kokoro smoke. The uv package cache started empty. Chromium and Kokoro weights were reused. The checkout matches 281 code and metadata paths. The archive matches 75 included inputs.
+  - run-Mu5RiG at 458b4ae passed 853 tests before the independent reviewer found binary Tesseract output. Two CLI failures landed at 03d198a before the fix at be2e7fa. Both now produce tool records and keep the card.
+  - [x] Close review defects with regression evidence. Require all OCR readings, remove foreign-word exemptions, check immutable PNG bytes, fit the brief budget, and size the inline image.
+  - [x] Keep all changed files navigable, cap graphs without hangs, state graph omissions and failures, and verify bundle pins when vendoring and rendering.
+  - Final-code.md confirms all 13 accepted defects. closure.md records the added binary-output correction and comment judgments. Early reviewers that hit HTTP 429 supplied no verdict. Replacement model review and comment passes are complete.
+- [x] S6. Rebuild the three acceptance PRs with Kokoro, the new map and a gated infographic inline on the review page.
 - [ ] S7. Verify in a real browser with screenshots. Listen to each video: audio stream, transcript against the board narration and run.json voice.
-- [ ] S8. Docs, decisions, trail and local commits. Human acceptance stays with the user.
+  - [x] Actual browser rendering, drawer, tour, inline infographic, phone sizing and video playback for all three cases. All 41 local hub links passed.
+  - [x] Visual inspection of 44 inventory images and 39 active-caption samples. Hash and pixel bindings match. Truncated card warnings, small embedded text and faint tertiary text are recorded.
+  - [x] Actual audio streams, full transcripts and first-line waveform comparisons favor Kokoro. The source and installed wheel match be2e7fa.
+  - [ ] Direct listening. This runtime cannot receive audio input. ASR ambiguities in s2e3, onComplete and ErrNotExist remain explicit. The review page and worksheet identify their time ranges.
+- [x] S8. Docs, decisions, trail and local commits. Human acceptance stays with the user. .audit/step1-requirement-audit.md keeps direct listening open.
 
 Done predicate. All tests pass with 0 skipped, and verify-release.sh passes from an empty cache.
 Each acceptance PR shows a gated infographic or a recorded fallback, and the PR Lens map with a working drawer and tour.
-Each acceptance PR has a Kokoro video whose transcript matches its board.
+Each acceptance PR has a Kokoro video whose narration matches its board. Automatic transcripts alone cannot prove that match.
+Current evidence is incomplete for direct listening. The goal stays open until that requirement is verified.
 
 # Trustworthy PR explanations, 2026-10-09
 

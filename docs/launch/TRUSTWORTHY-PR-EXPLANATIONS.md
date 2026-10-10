@@ -1,7 +1,7 @@
 # Trustworthy PR explanation milestone
 
-Summary. Final source 548d8ab passes clean-cache verification and the complete acceptance artifact inspection.
-The assessment defects and seven final inspection defects have passing regression cases.
+Summary. Step 1 source be2e7fa passes 855 tests with no skips. The installed-wheel check and three acceptance rebuilds pass. Direct listening remains unverified.
+The voice lock, gated infographic and PR Lens map are implemented. All 13 accepted step 1 review defects are closed.
 The user is the only human reviewer, and human acceptance is pending. Model reviews are supplemental defect checks.
 Public release, license, package name, push and PR creation remain separate decisions.
 
@@ -120,7 +120,7 @@ Coverage counts only rendered changed diff rows that finish before the settled f
 List quotes and other textual citations do not add to the on-screen line count.
 This conservative rule can undercount visible quotations. The walkthrough still lists omitted changed lines.
 
-## Final verification
+## Previous verification at 548d8ab
 
 scripts/verify-release.sh passed at 548d8ab from an empty uv cache. The proof is artifacts/release/verify/run-uVHho9.
 
@@ -142,7 +142,74 @@ PRC_FRESH_CACHE=$(mktemp -d /private/tmp/prc-trust-cold-XXXXXX)
 PLAYWRIGHT_BROWSERS_PATH=/Users/koval/dev/prc/artifacts/release/browser-cache UV_CACHE_DIR="$PRC_FRESH_CACHE" bash scripts/verify-release.sh
 ```
 
-## Acceptance package
+## Step 1 verification
+
+The current release run is artifacts/release/verify/run-NYgULN at be2e7fa.
+It starts with an empty uv package cache. Chromium and Kokoro model weights are reused.
+Ruff, formatting and mypy pass. All 855 tests pass with no skips in 381.64 seconds.
+The isolated checkout matches 281 tracked source, test, script and build metadata paths at be2e7fa.
+The source archive matches its 75 tracked inputs. Tests and maintainer scripts are intentionally excluded from the archive.
+Proof is source-archive-compare.json in the release run.
+The voice extra installed from the empty package cache. The installed wheel passed the browser and Kokoro smoke checks outside the source checkout.
+Doctor reports Kokoro, Chromium and ffmpeg available. The smoke video has an audio stream and run.json records Kokoro.
+
+PRC freezes each candidate PNG before OCR. Publication uses those same bytes and their SHA-256 hash.
+All four Tesseract readings must succeed. Code tokens and numbers use exact matching.
+The gate records missing text and invented words together. Tool failures keep the card fallback.
+Two real CLI cases reproduce binary Tesseract output. Both now produce tool records without aborting the explanation.
+The brief stays within 80 words. Inline images fit desktop and phone viewports.
+OCR checks detected words. It cannot prove every pixel, faint text, or visual relationships.
+
+The PR Lens bundle is pinned by version and hash. Rendering and vendoring reject changed bytes.
+Graph budgets remain bounded. The map discloses omitted symbols, edges and tour focus.
+Every changed file remains available through the file navigation, including files outside the plotted graph.
+A converter failure states that the diagram is unavailable.
+
+The independent final model review confirmed all 13 accepted step 1 defects.
+The parent corrected its additional binary-output finding before the final release run.
+Reports and judgments are in .audit/step1-reviews/final-code.md and closure.md.
+The comment pass removed 20 narrative blocks. Five public contracts and the MIT legal notice remain.
+
+## Current acceptance build
+
+The three PRC packages were rebuilt from the verified wheel, with Kokoro and one baoyu infographic each.
+The original diffs and captured base/head pairs stay fixed.
+Read-only GitHub checks on 2026-10-10 confirm that all three current PR pages still have those revisions and counts.
+Proof is acceptance/github-current-step1.json. A pinned commit does not freeze the GitHub page.
+The worksheet includes an infographic score. Rebuilds preserve the existing review fields and score anchors.
+Human acceptance remains pending. The current artifacts replace the earlier say videos for review.
+The previous outputs, screenshots and identity records remain under before-step1-be2e7fa beside the acceptance folder.
+
+Chromium verified the map, drawer, tour, walkthrough, inline infographic, phone layout, card and actual video playback for each case.
+The verifier compared every original diff, count and quoted code row with the fixed Git objects.
+The published PNGs match their immutable candidates and the preview brief words. All four OCR readings passed.
+Vercel agent-browser clicked all 41 local hub links successfully and saved a screenshot for each result.
+Proof is acceptance/hub-browser-be2e7fa/checks.json. The browser session is closed after the final page check.
+
+Independent visual inspection covered 3 cards, 22 walkthrough crops and 19 decoded video frames.
+All inventory hashes and 41 derived image bindings match the current artifacts.
+The reviewer also inspected 39 active-caption samples. Thirty-five show complete captions matching their board text.
+Four outro samples have no separate caption region. Their main outro text is complete in the inspected scene frames.
+No inspected main heading, selected code row or active caption has destructive clipping or overlap.
+The inspection does not cover every animation frame. Report is .audit/step1-reviews/visual-final.md.
+
+The videos last 73.600 seconds, 63.550 seconds and 59.450 seconds respectively.
+Those are video durations, not pipeline generation times.
+All three have audio streams. Their first spoken lines correlate 0.995, 0.995 and 0.994 with fresh Kokoro synthesis.
+The tested say references correlate 0.107, 0.151 and 0.103. This samples voice identity, not the entire soundtrack.
+Complete soundtrack transcriptions are retained in each case's audio-transcript.json.
+They differ from their boards on technical names, joined words and an episode label.
+These differences do not establish audible defects or complete a listening review.
+
+This runtime cannot receive audio input. A direct audio-input attempt returned that limitation.
+Listening remains unverified. The review page and worksheet name exact time ranges for s2e3, onComplete and ErrNotExist.
+The goal's listening requirement remains open. The user is the only human reviewer.
+
+Darwin independently checked the machine claims, package bytes, source identities, infographic embeddings and the decode fix.
+It found no unsupported core machine claim or introduced decode regression within that scope.
+Report is .audit/step1-reviews/claims-final.md. Model inspection does not provide human acceptance.
+
+## Previous acceptance package at 548d8ab
 
 Open artifacts/trustworthiness/2026-10-09/acceptance/index.html. Record each decision in acceptance.md in the same folder.
 The user's baseline is the normal GitHub PR page, including description, Files changed, discussion, checks and navigation.
@@ -175,7 +242,7 @@ The current image inventory and executed click records provide the complete evid
 
 The walkthrough states each count and lists the changed lines it leaves out.
 
-## Independent review
+## Previous independent reviews
 
 Three model reviewers checked the larger milestone at 6dbb336.
 Harvey used gpt-6.1-sol, Gibbs used muse-spark-1.3-contributor, and Socrates used glm-5.3-flash.
@@ -212,10 +279,13 @@ These are model reviews. They do not supply human acceptance.
 
 - Card evidence lines are single lines that end in an ellipsis. The swarm-deploy#116 card names one full unparsed path and part of a second. Its lead says 7 files, and the comment and the map tooltip list all seven.
 - A crowded card hides look-first entries behind "+N more". The em#5756 card shows two of three.
-- A map symbol card with the test badge cuts its call-site text, for example "0 call sit…".
 - The acceptance runs did not run the tests of the three external projects.
-- No person has listened to the narration. Kokoro is not installed, so the videos use the macOS say voice.
+- The previous acceptance videos used macOS say because the render script selected it explicitly. This was not an automatic fallback.
+- The step 1 videos use Kokoro. Direct listening and human acceptance remain pending.
+- The em card truncates the unsupported-language reason. The swarm card truncates the affected-path list after a meaningful seven-file warning. Full disclosures remain in the walkthrough, comment and map.
+- Embedded scene citations and fine print are small at an 800-pixel walkthrough width. Video receipt footers have weak visual contrast. These are visual findings, not a measured accessibility audit.
+- Plain pip installation of the voice extra does not inherit the uv source URL for the spaCy model. The verified wheel installation uses the exported pinned requirements. Public packaging remains a separate gate.
 - Note-risk warnings retain a conservative geometry estimate. Actual note placement uses browser measurements and has real browser checks.
 - Board shape checks cover tested scene and collection forms. This milestone does not add a complete JSON schema.
 
-Next step: the user reviews the three cases and records each decision in acceptance.md.
+Next step. The user reviews the three cases and records each decision in acceptance.md.

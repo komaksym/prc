@@ -1,0 +1,505 @@
+{
+  "root": "/private/tmp/step1-comments-final",
+  "head": "e26262691ac34aca40438087e1a511653e90ebab",
+  "range": "972756e..e262626",
+  "scope": "Added or modified comments/docstrings in src/, scripts/vendor-prlens.mjs, scripts/verify_prlens_vendor.py, tests/*.py; bundle and all fixture paths excluded",
+  "baseline_clean": true,
+  "counts": {
+    "reviewed_diff_blocks": 25,
+    "deleted_blocks": 20,
+    "kept_public_contract_blocks": 5,
+    "touched_files": 11,
+    "deleted_comment_docstring_lines": 24,
+    "deleted_lines_including_whitespace": 35,
+    "must_kill_flags": 3,
+    "unchanged_context_blocks_skipped": 46
+  },
+  "keeps": [
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 71,
+      "end": 71,
+      "raw": "\"\"\"A converted map: the GraphDoc, index maps into map.json, and drop counts.\"\"\"",
+      "symbol": "Plotted",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 35,
+      "final_line": 69
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 198,
+      "end": 203,
+      "raw": "\"\"\"Overview cards for PRs changing more than GROUPED_AT symbols, else none.\n\n    One card per folder, or per file when a folder holds fewer than 3 changed files.\n    Members are the changed symbols; context symbols stay outside the groups.\n    Sorted by label, so the result never depends on input order.\n    \"\"\"",
+      "symbol": "groups_of",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 39,
+      "final_line": 192
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 266,
+      "end": 266,
+      "raw": "\"\"\"Tour steps behind the walkthrough: None marks synthetic overview/summary.\"\"\"",
+      "symbol": "picked_steps",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 41,
+      "final_line": 255
+    },
+    {
+      "path": "src/prc/presentation/render_map.py",
+      "kind": "docstring",
+      "start": 61,
+      "end": 61,
+      "raw": "\"\"\"One JSON block: the stored map, the GraphDoc, the tour kinds, drop counts, groups.\"\"\"",
+      "symbol": "page_data",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 47,
+      "final_line": 59
+    },
+    {
+      "path": "src/prc/presentation/render_map.py",
+      "kind": "docstring",
+      "start": 102,
+      "end": 102,
+      "raw": "\"\"\"The page data as JSON that cannot close its script element or break a line terminator.\"\"\"",
+      "symbol": "data_block",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 48,
+      "final_line": 100
+    }
+  ],
+  "deletions": [
+    {
+      "path": "scripts/vendor-prlens.mjs",
+      "kind": "comment",
+      "start": 2,
+      "end": 2,
+      "raw": "// Node runs only during vendoring; the generated page must run offline.",
+      "symbol": null,
+      "added": true,
+      "begin": 20,
+      "finish": 92,
+      "id": 1
+    },
+    {
+      "path": "scripts/verify_prlens_vendor.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"Maintainer-only vendor CLI checks. Run explicitly with pytest and offline inputs.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 2
+    },
+    {
+      "path": "scripts/verify_prlens_vendor.py",
+      "kind": "docstring",
+      "start": 35,
+      "end": 35,
+      "raw": "\"\"\"Copy the vendor surface into an isolated repo layout.\"\"\"",
+      "symbol": "_stage",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 3
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"ChangeMap to PR Lens GraphDoc (graph contract 0.2.0).\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 34
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 102,
+      "end": 102,
+      "raw": "\"\"\"Cut at a whole word to cap characters; fall back to a hard cut.\"\"\"",
+      "symbol": "_shorten",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 36
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 110,
+      "end": 110,
+      "raw": "\"\"\"Cut from the left so the file name stays.\"\"\"",
+      "symbol": "_left_cut",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 37
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 169,
+      "end": 169,
+      "raw": "\"\"\"One overview card: a folder, or one file when its folder holds few files.\"\"\"",
+      "symbol": "Group",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 38
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 243,
+      "end": 247,
+      "raw": "\"\"\"Map indices of plotted symbols and files, plus aggregate file paths.\n\n    Deterministic under the 256-node cap: risky files first, then changed\n    symbols by churn, then context symbols, then remaining file nodes.\n    \"\"\"",
+      "symbol": "_select",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 40
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 290,
+      "end": 290,
+      "raw": "\"\"\"Edge map indices between plotted nodes in priority order, plus hero index.\"\"\"",
+      "symbol": "_order_edges",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 42
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 501,
+      "end": 501,
+      "raw": "\"\"\"Convert a ChangeMap into a fully inflated GraphDoc with index maps.\"\"\"",
+      "symbol": "to_graph_doc",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 43
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "kind": "docstring",
+      "start": 726,
+      "end": 726,
+      "raw": "\"\"\"Restate the pinned graph contract 0.2.0 in Python.\"\"\"",
+      "symbol": "validate_contract",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 44
+    },
+    {
+      "path": "src/prc/presentation/infographic.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"One AI-drawn infographic per PR, gated by OCR before it is published.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 45
+    },
+    {
+      "path": "src/prc/presentation/render_map.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"The PR map page on the PR Lens renderer: trusted markup, one JSON data block.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 46
+    },
+    {
+      "path": "tests/pngcheck.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"Minimal PNG variance probe for browser screenshots (stdlib only).\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 49
+    },
+    {
+      "path": "tests/test_e2e_infographic.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"Part A tests 13-15: real Chromium pixels and CLI publishing.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 50
+    },
+    {
+      "path": "tests/test_e2e_infographic.py",
+      "kind": "comment",
+      "start": 57,
+      "end": 57,
+      "raw": "# Georgia keeps I and l distinct (sans reads AI as Al); tracking keeps c. distinct (psm 11 reads prc. as pre.).",
+      "symbol": "render_lines_png",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 51
+    },
+    {
+      "path": "tests/test_graphdoc.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"GraphDoc converter: goldens, integrity, limits, deltas and the D18 overview.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 64
+    },
+    {
+      "path": "tests/test_infographic.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"Part A gate tests 1-12: brief sources, determinism, and pure OCR scoring.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 65
+    },
+    {
+      "path": "tests/test_map_browser.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"The rendered page in real Chromium, with settled pixel evidence.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 66
+    },
+    {
+      "path": "tests/test_render_map.py",
+      "kind": "docstring",
+      "start": 1,
+      "end": 1,
+      "raw": "\"\"\"The rendered page: CSP hashes, one JSON block, deterministic bytes, inert data.\"\"\"",
+      "symbol": "<module>",
+      "added": true,
+      "begin": null,
+      "finish": null,
+      "id": 71
+    }
+  ],
+  "files": [
+    {
+      "path": "scripts/vendor-prlens.mjs",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 1,
+      "proof": "Exact bytes identical after deleting the single authorized comment line",
+      "sha256": "e105a2eabe0ac598e55fdc145a2f071a3d3f0c59e46cdfd6c81e51cdb2b9c398"
+    },
+    {
+      "path": "scripts/verify_prlens_vendor.py",
+      "deleted_blocks": 2,
+      "deleted_lines_including_whitespace": 3,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "8d882a3f6abf32876c7b71ed2be5395d38fcd29bb4d8e761d6f09701fa9caaa0"
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "deleted_blocks": 8,
+      "deleted_lines_including_whitespace": 14,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "ecf6ef800509782b08e3eed6d0e61fc5e73cb122d36cd5b6612e140b6107b7df"
+    },
+    {
+      "path": "src/prc/presentation/infographic.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "33ce1ee3ff6b71b142377e2137228befc052a6797e71012dc93a5a4bcf3bc44b"
+    },
+    {
+      "path": "src/prc/presentation/render_map.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "9d6ec969e741a6b3376c1c537f6a4d015506e876985812b5108693cb535b03fe"
+    },
+    {
+      "path": "tests/pngcheck.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "811c0d06a1f71fd4bb3fc462d9c02c56586b7396588a7f1a9575c7febe7b95fc"
+    },
+    {
+      "path": "tests/test_e2e_infographic.py",
+      "deleted_blocks": 2,
+      "deleted_lines_including_whitespace": 3,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "11d277bd9f815181f97a118d7685577898614faa051c28281415f64e51f9e918"
+    },
+    {
+      "path": "tests/test_graphdoc.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "85a4ebeeba2f3252815f31ca38e89c31ce7157dc701feaddbbec7822ea1e20a7"
+    },
+    {
+      "path": "tests/test_infographic.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "2dce96c735549a4a7d9af2bcdbf807c3d8c36a79916e5898625e3f7f0b07e568"
+    },
+    {
+      "path": "tests/test_map_browser.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "8346a9b8e9c50117356c8754c78cb94c9924da27fcee60a79bdffa814ad1a48e"
+    },
+    {
+      "path": "tests/test_render_map.py",
+      "deleted_blocks": 1,
+      "deleted_lines_including_whitespace": 2,
+      "proof": "Python AST identical after removing documentation nodes",
+      "sha256": "253318d255c90f9286085f5e1e9f974a494147a2b59d2ed3e47e2db21b907862"
+    }
+  ],
+  "must_kill": [
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "symbol": "_select",
+      "reason": "The private name hides node-budget allocation, risky-file precedence, and three positional result collections. Encode that selection policy through named results or an explicit selection name.",
+      "line": 236
+    },
+    {
+      "path": "src/prc/presentation/graphdoc.py",
+      "symbol": "_order_edges",
+      "reason": "The private function also filters and caps edges, then selects a hero index. Rename the selection or extract the hero choice so the extra responsibility is visible.",
+      "line": 276
+    },
+    {
+      "path": "tests/test_e2e_infographic.py",
+      "symbol": "render_lines_png",
+      "reason": "The generic renderer owns OCR-oriented Georgia and tracking choices inside an unnamed CSS string. Name the OCR test styling. The removed claims about exact OCR failures lack live proof today.",
+      "line": 50
+    }
+  ],
+  "additional_preserved_constructs": [
+    {
+      "path": "scripts/vendor-prlens.mjs",
+      "symbol": "main",
+      "line": 159,
+      "reason": "Embedded MIT license comment generator, legal exception; preserved byte-for-byte"
+    },
+    {
+      "path": "scripts/vendor-prlens.mjs",
+      "line": 1,
+      "reason": "Node shebang is an executable directive; not a prose comment"
+    }
+  ],
+  "imports": [
+    {
+      "module": "prc",
+      "path": "/private/tmp/step1-comments-final/src/prc/__init__.py"
+    },
+    {
+      "module": "prc.presentation.graphdoc",
+      "path": "/private/tmp/step1-comments-final/src/prc/presentation/graphdoc.py"
+    },
+    {
+      "module": "prc.presentation.infographic",
+      "path": "/private/tmp/step1-comments-final/src/prc/presentation/infographic.py"
+    },
+    {
+      "module": "prc.presentation.render_map",
+      "path": "/private/tmp/step1-comments-final/src/prc/presentation/render_map.py"
+    }
+  ],
+  "patch": "/private/tmp/step1-comments-final.patch",
+  "head_unchanged": true,
+  "index_unchanged": true,
+  "application_code_unchanged": true,
+  "verification": {
+    "baseline_tests": "75 passed in 2.97s",
+    "baseline_ruff": "All checks passed!",
+    "diff_check": "passed",
+    "final_tests": "75 passed in 3.25s",
+    "pytest_command": "PYTHONPATH=src /Users/koval/dev/prc/.claude/worktrees/readiness/.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_infographic.py tests/test_infographic_pipeline.py tests/test_graphdoc.py tests/test_render_map.py",
+    "final_ruff": "All checks passed!",
+    "ruff_version": "0.16.10",
+    "ruff_command": "/Users/koval/dev/prc/.claude/worktrees/readiness/.venv/bin/ruff check --no-cache scripts/verify_prlens_vendor.py src/prc/cli.py src/prc/explainer/doc.py src/prc/explainer/doctor.py src/prc/pipeline.py src/prc/presentation/comment.py src/prc/presentation/graphdoc.py src/prc/presentation/infographic.py src/prc/presentation/render_map.py tests/pngcheck.py tests/test_e2e_infographic.py tests/test_e2e_map.py tests/test_explainer_doc.py tests/test_graphdoc.py tests/test_infographic.py tests/test_infographic_pipeline.py tests/test_map_browser.py tests/test_map_video.py tests/test_render_map.py",
+    "pytest_log": "/private/tmp/step1-comments-final-tests.log",
+    "ruff_log": "/private/tmp/step1-comments-final-ruff.log",
+    "python_ast_files": 10,
+    "ruff_scoped_python_files": 19,
+    "patch_reverse_check": "passed",
+    "final_file_hashes_match": true,
+    "clone_git_dir": "/private/tmp/step1-comments-final/.git",
+    "clone_git_common_dir": "/private/tmp/step1-comments-final/.git",
+    "runtime_note": "PYTHONDONTWRITEBYTECODE=1 added to Python commands to avoid cache files; no pytest cache provider and no Ruff cache"
+  },
+  "skips": [
+    "prlens.bundle.js comment review and edits",
+    "All fixtures comment review and edits",
+    "Deleted files in the requested range",
+    "Comments/docstrings not intersecting diff additions",
+    "Full suite",
+    "Browser",
+    "Video",
+    "Typecheck",
+    "Build",
+    "Application-code edits",
+    "Commit, push, PR"
+  ],
+  "patch_sha256": "92b2b8e0701d0d2618bae18ee994753c50da462cdcaf798c60954cf7669a1572",
+  "how_investigation": {
+    "agent_id": "01a125dd-4787-7d72-a40c-c03f5bbda993",
+    "model": "opencode-go/muse-spark-1.3-contributor",
+    "effort": "xhigh",
+    "routing_note": "Host exposes xhigh as Muse maximum; configured max effort unavailable",
+    "target": "tests/test_e2e_infographic.py::render_lines_png",
+    "result": "Delete. Test CSS owns Georgia and tracking. Exact OCR confusion claims have no current live proof under no-browser/no-fixture review restrictions.",
+    "history": "Scoped history places original typography note in file creation at 8d88263; no recorded failing-read experiment was found.",
+    "writes": false,
+    "browser": false,
+    "tests": false
+  }
+}

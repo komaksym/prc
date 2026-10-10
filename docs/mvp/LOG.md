@@ -201,3 +201,17 @@ Proof is `.audit/github-review-baseline.json` and `artifacts/trustworthiness/202
 Product source and rendered outputs remain unchanged. The frozen agent evaluation keeps its existing protocol.
 
 Next step. The user reviews the three PRs on GitHub and records the extra help from PRC in the worksheet.
+
+
+## Step 1 machine verification, 2026-10-10
+
+Source be2e7fa passes run-NYgULN from an empty uv package cache. All 855 tests pass with no skips.
+Static checks, build, installed-wheel browser interaction and forced Kokoro audio smoke pass. Chromium and model weights were reused.
+The three frozen real PRs now include one gated baoyu infographic, the PR Lens map and Kokoro narration.
+Original revisions, diffs, counts, quoted code and output hashes match. All 41 local hub links pass.
+Independent visual inspection covers 44 inventory images and 39 active-caption samples. Readability limits remain documented.
+Full soundtrack transcription and sampled waveform comparison support the machine audio checks. They do not prove listening.
+This runtime cannot receive audio input. s2e3, onComplete and ErrNotExist have explicit listening checks in the worksheet.
+The goal stays open for direct listening. Human acceptance, public release, push and PR creation remain gated.
+
+Next step. Review the complete three-case package and record the listening and usefulness judgments.
