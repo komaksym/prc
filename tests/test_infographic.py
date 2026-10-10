@@ -537,3 +537,61 @@ def test_brief_over_max_words_keeps_no_label_without_a_row() -> None:
         if line.role == "label":
             assert i + 1 < len(kept) and kept[i + 1].role == "row", line.text
     assert ("label", gate.RISKY_LABEL) not in [(line.role, line.text) for line in kept]
+
+
+@pytest.mark.parametrize("word", ["no", "if", "or", "we", "as", "the", "q", "zx"])
+def test_gate_foreign_short_words_and_stopwords_fail(word: str) -> None:
+    text = "Cart totals 2 files Infographic drawn by AI Words from prc"
+    decision = gate.score_ocr((read(text + " " + word, "psm-3"),), tiny_brief())
+    assert decision.verdict == "invented"
+    assert word in dict(decision.invented)
+
+
+@pytest.mark.parametrize("drawn", ["kiii in src/kiii.py", "k ill in src/kill.py"])
+def test_gate_code_tokens_cannot_fold_or_split(drawn: str) -> None:
+    brief = gate.InfographicBrief("t", (gate.BriefLine("row", "kill in src/kill.py"),))
+    decision = gate.score_ocr((read(drawn, "psm-3"),), brief)
+    assert decision.verdict != "pass"
+    assert decision.missing
+
+
+def test_gate_reports_foreign_words_and_missing_lines_together() -> None:
+    decision = gate.score_ocr(
+        (read("Cart 2 files watermelon Infographic drawn by AI Words from prc", "psm-3"),),
+        tiny_brief(),
+    )
+    assert decision.verdict == "invented"
+    assert "watermelon" in dict(decision.invented)
+    assert ("Cart totals", ("totals",)) in decision.missing
+
+
+def test_gate_requires_every_reading(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(gate, "tesseract_version", lambda: "tesseract 5")
+    text = "Cart totals 2 files Infographic drawn by AI Words from prc"
+    words = read(text, "psm-3").words
+    monkeypatch.setattr(
+        gate, "_read_mode", lambda _png, psm, dpi: words if (psm, dpi) == ("3", "") else None
+    )
+    decision = gate.gate(blank_png(tmp_path / "partial.png"), tiny_brief())
+    assert decision.verdict == "tool"
+    assert len(decision.detail["failed_modes"]) == 3
+    assert len(decision.detail["modes"]) == 1
+
+
+def test_infobrief_long_mandatory_content_stays_in_budget() -> None:
+    m = sample_map()
+    m["title"] = "a " * 48
+    m["brief"]["title"] = m["title"]
+    brief = gate.infobrief(m, m["brief"], None)
+    assert sum(len(gate.tokenize(line.text)) for line in brief.lines) <= gate.MAX_WORDS
+    assert brief.title.endswith("…")
+    assert any(line.text == gate.DISCLOSURE for line in brief.lines)
+
+
+def test_doctor_does_not_call_a_broken_tesseract_available(monkeypatch: pytest.MonkeyPatch) -> None:
+    from prc.explainer import doctor
+
+    monkeypatch.setattr(gate, "tesseract_version", lambda: "")
+    monkeypatch.setattr(gate.shutil, "which", lambda _name: "/broken/tesseract")
+    assert "unavailable" in doctor._tesseract()
+    assert " ok" not in doctor._tesseract()
