@@ -17,6 +17,15 @@ Copied 2026-10-04 from the design/audit workspace (unchanged, read-only source).
 
 Added 2026-10-10. scripts/vendor-prlens.mjs rebuilds the bundle and checks every hash below. src/prc/presentation/map_assets/prlens.lock.json holds the same pins.
 
+The browser bundle replaces unused manifest exports with small shims to remove `node:crypto`.
+PRC uses only the rendered SVG and hit-target atlas, not the renderer's asset manifests.
+Golden validation uses the unmodified pinned schema before bundling. Python validates each page contract.
+The license header remains in the bundle. Rendering checks its recorded hash before embedding it.
+
+Maintainer regression checks use `scripts/verify_prlens_vendor.py` through pytest.
+Set `PRC_VENDOR_TARBALLS` and `PRC_VENDOR_NODE_MODULES` to the pinned offline inputs first.
+These explicit checks need Node.js. They do not run in the default Python test suite.
+
 | Local file | Source | SHA-256 |
 |---|---|---|
 | src/prc/presentation/map_assets/prlens.bundle.js | npm @coldtea/pr-lens-renderer 0.3.2 (MIT, license header kept), bundled with esbuild 0.25.10. Tarball SHA-256 c6c7ca978643392574cde90bddaf3031a3bb3d7cf664f86b8a8819e1731638a1. The schema package @coldtea/pr-lens-schema 0.7.0 (MIT, tarball SHA-256 540133ec9b8196a10bb578fe8692e17641dd84161fc3b47800fc207ff523e8b5) and zod 4.6.5 validate the GraphDoc goldens at vendoring time and are not shipped. | 036f2ae251209bf7649b09afcd6d8ac4ace457d2b6023ad9fa4ab83d6f1f80b4 |

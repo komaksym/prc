@@ -56,7 +56,7 @@ Every word comes from sources that already feed the card, comment and doc:
 - verdict: the facts test verdict.
 - note: the disclosure, exactly "Infographic drawn by AI. Words from prc."
 
-The PR title is not part of the brief. Caps are 80 words and 96 characters per line. When the brief is too long, risky rows drop first and look-first rows second. Headline, chips, verdict and note never drop.
+The headline follows card.headline, including its PR-title fallback without a board. Caps are 80 words and 96 characters per line. Risky rows drop first and extra look-first rows second. If mandatory content still exceeds the budget, the headline shortens with an ellipsis. Further rows or chips can drop if needed. The verdict and disclosure remain. A character limit also adds an ellipsis.
 
 brief.json holds the lines, the sorted allowed words and numbers, the disclosure, the baoyu profile, fixed prompt rules and the gate constants. It is written with sorted keys and no clock. The prompt rules are:
 
@@ -69,30 +69,29 @@ brief.json holds the lines, the sorted allowed words and numbers, the disclosure
 
 Both sides use the same tokenization: NFKD, drop combining marks, casefold, split on every character outside a-z and 0-9, drop empty tokens. A tesseract word can give several tokens, and each inherits the word's confidence.
 
-Coverage. Each brief line's tokens must match in order inside one mode's token sequence, with at most WINDOW = 6 unmatched tokens between two matches. Coverage uses all tokens, whatever their confidence. Two tokens match when they are equal, or when both have 4 or more characters and their Levenshtein ratio is at least WORD_SIM = 0.80. Tokens of 3 or fewer characters and tokens that contain a digit must be equal. A brief token also matches the join of two adjacent OCR tokens, for words split at a line break. A line is covered when either mode covers it.
+Coverage. Each brief line's tokens must match in order inside one reading, with at most WINDOW = 6 unmatched tokens between matches. Coverage uses all tokens, whatever their confidence. Prose accepts the I/l fold and, for tokens longer than three characters, a Levenshtein ratio of at least WORD_SIM = 0.80. Code tokens and tokens with digits require exact normalized matches. Only prose accepts a split OCR word. Adjacent brief tokens can join only by equality; code and numbers do not use the I/l fold.
 
-Invented words. Check every token read at conf >= CONF_FLOOR = 30 in either mode:
+Invented words. Check every token read at conf >= CONF_FLOOR = 70 in any successful reading:
 
 - A token that contains a digit must equal an allowed token. This closes the wrong-number hole.
-- An alphabetic token shorter than 3 characters is ignored.
-- A token in STOPWORDS is ignored. STOPWORDS is small and fixed: a, an, and, are, as, at, be, by, for, from, in, is, it, of, on, or, the, to, with. It never contains negations or quantifiers, so all, every, no, none, not, never, only and without are always checked.
+- Short tokens and stopwords have no blanket exemption. They must come from a brief line.
 - Any other token passes when it equals an allowed word, or has 4 or more characters at ratio >= WORD_SIM to an allowed word, or joins with its neighbor in the same mode to match an allowed word.
 - Every other token is invented.
 
-Precedence. tool (tesseract absent or failed) comes first, then unreadable (no token at conf >= 30 in either mode), then invented, then missing, then pass.
+Precedence. tool (tesseract absent or any reading failed) comes first, then unreadable (no token at conf >= 70), then invented, then missing, then pass. Check all four readings, psm 3 and 11 at the default resolution and at 150 DPI. Missing lines remain in the record even when invented words decide the verdict.
 
-Tuning. Run the gate on the five session infographics that have prompt files. Build each allowed word list from its prompt file's exact text. All five must pass. If they do not, report the failing tokens and change only the named constants. Never loosen negations, quantifiers or numbers. Commit the tesseract TSV outputs as small test fixtures. Do not commit the images.
+Tuning. Run the gate on the five session infographics that have prompt files. Build each vocabulary from the exact brief lines. Record false rejections; do not add word exemptions to make faithful drawings pass. Commit the tesseract TSV outputs as small fixtures. Do not commit the images. OCR checks detected text and cannot prove all pixel content or visual relationships correct.
 
 ### Records
 
 - infographic/brief.json: always written.
-- infographic/check.json: one record per candidate gated in this run. A record has the file name, sha256, byte size, verdict, missing tokens, invented tokens with confidence, tesseract version and gate constants.
+- infographic/check.json: one record per candidate. The pipeline captures the PNG once, writes a private snapshot, and gates that same snapshot before publishing its exact bytes. A record has file name, sha256, byte size, verdict, missing tokens, invented tokens with confidence, successful modes, failed modes, tesseract version and gate constants.
 - run.json gets infographic = {status passed|failed|missing, published_sha256 or null, attempts [{name, sha256, verdict}]}. status is missing when no candidate was given, failed when every candidate failed, and passed when one was published. Names are file names only, never absolute paths.
 
 ### Embedding
 
-- comment.md: on a pass, the card image line becomes ![Infographic drawn by AI. Words from prc.](infographic.png). Otherwise the card line stays exactly as it is today.
-- doc.html: on a pass, a figure at the top of the walkthrough holds an img with a data:image/png;base64 source (the CSP allows only data: images), alt text set to the disclosure, and the disclosure as figcaption.
+- comment.md: on a pass, the card image line becomes ![Infographic drawn by AI. Words from prc.](infographic.png), with the instruction to upload it. Otherwise the card line stays as it is today.
+- doc.html: on a pass, a responsive figure at the top of the walkthrough holds a data:image/png;base64 image, disclosure alt text and a disclosure figcaption.
 - card.html and card.png stay in the bundle on every run.
 - doctor reports tesseract with its version, or says the infographic gate is unavailable and the card is used.
 
@@ -230,7 +229,9 @@ The tuning rule asked for all five session images to pass by changing named cons
 
 The session TSV live check was removed. It asserted only that the file parsed. The TSVs equal live tesseract 5.5.2 output (checked with diff for review-bias), and test_e2e_infographic.py runs real tesseract on rendered images.
 
-Acceptance run: the gate rejected the first librarysync-98 drawing ("Words from pnc") and the first em-5756 drawing ("onCComplete"), and passed the redraws. swarm-116 passed on the first drawing. I read all five drawings by eye, and each verdict matches what I saw.
+Before the independent review, the gate rejected the first librarysync-98 drawing ("Words from pnc") and the first em-5756 drawing ("onCComplete"), and passed their redraws. swarm-116 passed on the first drawing. The review found that short-word exemptions hid additional readings from icon strokes. The rules above now supersede that implementation.
+
+Independent review reconciliation, 2026-10-10. The new regressions reproduced 14 failures, including 101 words against the 80-word budget. Removed all short-word and stopword exemptions. Restricted the fold and split relief to prose. Require every OCR reading and persist failures. Gate an immutable PNG copy. Report missing lines alongside invented words. Fit mandatory text within the word budget and mark truncation. In Chromium, the original image overflowed at 1280 and 390 px; responsive sizing now passes both checks. The stricter gate rejects four of five faithful session diagrams and all five older acceptance candidates. The prepared redraws remove icon strokes rather than weakening the gate. Model reports and triage live in .audit/step1-reviews/.
 
 ### Map (Part B)
 

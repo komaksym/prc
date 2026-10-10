@@ -83,11 +83,18 @@ Pass the candidates to `explain` with a repeatable `--infographic` flag, in the 
 uv run prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.json --infographic cand1.png --infographic cand2.png
 ```
 
-prc reads each candidate with tesseract. It publishes the first one that shows every line and no other word as `infographic.png`.
+prc reads an unchanged copy of each candidate with tesseract in four modes. All four must succeed.
+It publishes the first candidate whose readings cover every brief line and detect no foreign word at confidence 70 or more.
+That drawing becomes `infographic.png`.
 The comment and the walkthrough then show that image first.
-`infographic/check.json` lists each candidate's verdict, missing lines and foreign words. `run.json` records the attempts.
+`infographic/check.json` lists each candidate's verdict, missing lines, foreign words and successful or failed reading modes.
+It records the hash of the exact checked PNG bytes. `run.json` records the attempts.
 Without a passing candidate, nothing is published and the card stays.
-The gate tolerates small OCR errors in prose words, so a small misspelling can pass. Read the published image before you post it.
+The gate checks detected text. It cannot prove that every word or visual relationship is correct.
+It tolerates small OCR errors in prose words, so a small misspelling can pass.
+Extra text below the confidence floor can escape detection. Icons that resemble letters can cause false rejection.
+Code tokens and numbers require exact matches after punctuation and case normalization.
+Read the published image before you post it.
 
 ## Your agent writes the board
 

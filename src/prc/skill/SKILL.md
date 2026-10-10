@@ -209,7 +209,8 @@ Every explain run writes an image vocabulary first: read
 `infographic/brief.json` in the output folder. It holds the title, the
 allowed lines, the sorted allowed words, the disclosure, the image
 profile, the fixed prompt rules, and the gate constants. PRC publishes an
-image only when its OCR text matches those words.
+image only when all four OCR readings succeed, cover the brief lines,
+and detect no foreign word at confidence 70 or more.
 
 Keep prompt files and candidate images outside the explain output folder,
 for example in `<out-root>/<slug>-infographic/`. Each explain run
@@ -221,6 +222,7 @@ Show every brief line exactly once, spelled exactly. Add no other words,
 numbers, titles, legends, or watermarks. Keep icons and decorations free
 of letters and digits, draw every line as plain dark text on a light
 background, and keep the disclosure line visible.
+Use simple panels when icons cause false letter readings.
 
 Gate each candidate by re-running explain with repeatable flags, in the
 order drawn:
@@ -232,7 +234,9 @@ prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.js
 PRC gates the candidates in argument order and publishes the first one
 that passes as `infographic.png` with the exact candidate bytes.
 `run.json` records the status and every attempt; `infographic/check.json`
-records the verdict with missing and invented words. On a pass the comment
+records the verdict with missing and invented words, successful reading
+modes and failed modes. PRC checks and hashes an unchanged copy of each
+candidate. On a pass the comment
 embeds `infographic.png` and the walkthrough shows it at the top. The card
 stays in the bundle as the fallback.
 
@@ -244,3 +248,8 @@ file, at most two times. Never
 paint over text in an image editor: a redraw is a fresh generation from an
 updated prompt. After that the card stays as the fallback, and the run
 records the failed status.
+
+Read the selected drawing by eye before presenting it. OCR can miss faint
+text and tolerate a small prose misspelling. It cannot verify visual
+relationships. Code tokens and numbers match exactly after punctuation
+and case normalization; the prose-only I/l fold does not apply to code.

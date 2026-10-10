@@ -14,6 +14,9 @@ Design: .audit/step1-design.md. Push, PR, license, package name and publication 
 - [x] S3. Infographic step: brief, OCR gate, records, embedding, CLI flag and skill loop. The gate needed seven measured changes; see the reconciliation in .audit/step1-design.md.
 - [x] S4. Map on PR Lens: converter, vendored bundle and lock, player and deletions. Integrated suite 816 passed, 0 skipped.
 - [ ] S5. Integrate. Run the full checks, deslop, no-comments and an independent review. Run verify-release.sh from an empty cache.
+  - [ ] Close review defects with regression evidence. Require all OCR readings, remove foreign-word exemptions, check immutable PNG bytes, fit the brief budget, and size the inline image.
+  - [ ] Keep all changed files navigable, cap graphs without hangs, state graph omissions and failures, and verify bundle pins when vendoring and rendering.
+  - Model reports are saved in .audit/step1-reviews/. The parent review and comment pass hit HTTP 429; the completed reports remain valid evidence.
 - [ ] S6. Rebuild the three acceptance PRs with Kokoro, the new map and a gated infographic inline on the review page.
 - [ ] S7. Verify in a real browser with screenshots. Listen to each video: audio stream, transcript against the board narration and run.json voice.
 - [ ] S8. Docs, decisions, trail and local commits. Human acceptance stays with the user.

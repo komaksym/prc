@@ -1,0 +1,28 @@
+**TL;DR:** All four known deslop candidates confirm, plus eleven additional concrete findings, for fifteen total with zero files edited. The strongest evidence is a defined-but-never-read `_PNG_MAGIC` beside two rebuilt copies of the same bytes, a duplicated tesseract probe, and a local named `brief` that collides with the serialized domain `Brief`. Focused unit tests pass (44 passed), so this audit changes nothing and leaves the cleanup edit pass open.
+
+**Known candidates — all confirmed**
+
+- **cli.py:313 PNG magic duplication —** pattern is duplication of `infographic._PNG_MAGIC` (`src/prc/presentation/infographic.py:101`); proposed edit is import the constant and replace `magic = bytes((137, 80, 78, 71, 13, 10, 26, 10))` plus its comparison with `cand.read_bytes()[:8] != _PNG_MAGIC`; behavior stays unchanged because the byte sequences are identical and the `SystemExit` paths are untouched.
+- **doctor.py:52–63 tesseract probe duplication —** pattern is a duplicated `which` plus `subprocess.run(["tesseract", "--version"])` probe matching `infographic.tesseract_version()` (`infographic.py:420–433`); proposed edit keeps doctor's three messages and replaces the subprocess block with `version = tesseract_version()`; behavior stays unchanged because the same probe produces the same missing, unknown, and version-ok outcomes.
+- **pipeline.py:605 `brief` naming collision —** pattern is a name inconsistent with nearby code, where local `brief` holds an `InfographicBrief` while `rebuilt.get("brief")` is the serialized domain `Brief`; proposed edit renames the local to `info_brief` on lines 605, 608, and 615; behavior stays unchanged because it is a pure local rename.
+- **doctor.py:54 long line —** pattern is style inconsistent with nearby wrapped returns, at 135 chars against ruff `line-length = 100`; proposed edit wraps it parenthesized without altering the space between sentences; behavior stays unchanged because the string value is identical.
+
+**Additional findings**
+
+- **scripts/vendor-prlens.mjs:5–6 duplicate `node:fs` import —** pattern is duplication; proposed edit merges `rmSync` into the line-5 import and deletes line 6; behavior stays unchanged because bindings are identical.
+- **scripts/vendor-prlens.mjs:111–113 and :195 always-true `modulesDir` guard —** pattern is a defensive check abnormal for a trusted path, since lines 92–95 force `modulesDir` truthy; proposed edit resolves `esbuild` unconditionally and sets `modulesForVersions = modulesDir`; behavior stays unchanged because the fallback never fires.
+- **render_map.py:106–107 `first`/`second` —** pattern is names inconsistent with nearby code for two sibling hashes; proposed edit renames to `bundle_digest` and `player_digest`; behavior stays unchanged because only names change.
+- **render_map.py:109–110 CSP `+` concatenation —** pattern is style inconsistent with the file's f-strings; proposed edit uses one f-string for the `script-src` hashes; behavior stays unchanged because the CSP value is identical.
+- **infographic.py:290 and :297 plus test_infographic.py:133,136,140 `chr(10)`/`chr(9)` —** pattern is needless indirection inconsistent with `"\n"`/`"\t"` literals; proposed edit swaps the literals in both files; behavior stays unchanged because the characters are identical.
+- **infographic.py:461,468 double tesseract probe —** pattern is duplication where `gate()` stores `version` then `tool_decision()` re-probes for `detail`; proposed edit parameterizes `tool_decision(tesseract="")` and passes `version`; behavior stays unchanged because the detail keeps the same empty or version string.
+- **pipeline.py:609–629 `records` plus `attempts` parallel lists —** pattern is duplication of the same name, hash, and verdict triple; proposed edit derives `attempts` from `records` after the loop; behavior stays unchanged with identical triples in identical order.
+- **pipeline.py:639–642 `exists()` plus re-read —** pattern is a defensive check abnormal for a trusted path, since the temp-dir file is written only on pass; proposed edit tracks the published bytes instead; behavior stays unchanged because existence exactly equals pass state.
+- **pipeline.py:643 double board guard —** pattern is a defensive check abnormal for a trusted path, since `board` is assigned only under `board_path is not None`; proposed edit keeps `if board is not None:`; behavior stays unchanged because the conditions are equivalent.
+- **graphdoc.py:538–551 versus :680–693 identical risky loop —** pattern is duplication of a 14-line `_file_node` block; proposed edit extracts one `_risky_nodes()` helper called in both places; behavior stays unchanged with identical nodes in identical order.
+- **test_render_map.py:99–100 local `large_map` import —** pattern is style inconsistent with the file's top-level imports; proposed edit moves it into line 11 and deletes the local import; behavior stays unchanged because the binding is identical.
+
+Pin and load show no slop: the vendor script pins and verifies renderer, schema, zod, and esbuild versions, validates goldens, caps the bundle at 100KB, rejects zod and `node:crypto`, smoke-tests rendering, and records hashes in `prlens.lock.json`, while `render_map.py` loads the bundle and player under per-script SHA256 CSP hashes.
+
+Report written to `/private/tmp/step1-deslop-report.md`; verified `44 passed` via `.venv/bin/python -m pytest -q -p no:cacheprovider tests/test_infographic.py tests/test_graphdoc.py tests/test_render_map.py`.
+
+**Next step:** Bundle these fifteen edits into one deslop cleanup scope, re-run the focused tests, then proceed to the scheduled comment pass.
