@@ -12,7 +12,7 @@ eval/runs/*/outputs/**/*.mp4
 eval/runs/*/outputs/**/*.wav
 eval/runs/*/packets/**/*.png
 .claude/
-.audit/*.py
+.audit/**/*.py
 .audit/*.todo.md
 eval/runs/*/rendered/
 eval/runs/2026-10-07-rebaseline/

@@ -12,3 +12,11 @@ Copied 2026-10-04 from the design/audit workspace (unchanged, read-only source).
 | docs/design/closure-final-report.md | /Users/koval/dev/Codex/2026-10-03/https-x-com-karpathy-status-2105819303471976479/work/critical-only/final-report.md | e521d09e702103f5440e7622a3796d6782fec0971efe9cd20d5e27f6db3c41bb |
 | docs/design/closure-verifier.md | /Users/koval/dev/Codex/2026-10-03/https-x-com-karpathy-status-2105819303471976479/work/critical-only/cycle-1/verifier.md | 738b24651a0dcd73934ce7e86926ac38ff03e944c0b580812737110c3f9e3ce3 |
 | docs/design/source-PLANS.md | /Users/koval/dev/Codex/2026-10-03/https-x-com-karpathy-status-2105819303471976479/work/PLANS.md | fa56b269f332ccd34e8aeb80166903e3e4f31877de2bd8cc93f1d809d906517c |
+
+## Vendored code
+
+Added 2026-10-10. scripts/vendor-prlens.mjs rebuilds the bundle and checks every hash below. src/prc/presentation/map_assets/prlens.lock.json holds the same pins.
+
+| Local file | Source | SHA-256 |
+|---|---|---|
+| src/prc/presentation/map_assets/prlens.bundle.js | npm @coldtea/pr-lens-renderer 0.3.2 (MIT, license header kept), bundled with esbuild 0.25.10. Tarball SHA-256 c6c7ca978643392574cde90bddaf3031a3bb3d7cf664f86b8a8819e1731638a1. The schema package @coldtea/pr-lens-schema 0.7.0 (MIT, tarball SHA-256 540133ec9b8196a10bb578fe8692e17641dd84161fc3b47800fc207ff523e8b5) and zod 4.6.5 validate the GraphDoc goldens at vendoring time and are not shipped. | 036f2ae251209bf7649b09afcd6d8ac4ace457d2b6023ad9fa4ab83d6f1f80b4 |

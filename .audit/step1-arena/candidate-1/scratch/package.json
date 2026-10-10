@@ -1,0 +1,1 @@
+{"name":"scratch","private":true,"type":"module","dependencies":{"@coldtea/pr-lens-renderer":"^0.3.2","@coldtea/pr-lens-schema":"^0.7.0","esbuild":"^0.28.2"}}

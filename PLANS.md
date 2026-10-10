@@ -1,3 +1,27 @@
+# Step 1: Kokoro voice, gated infographic and PR Lens map, 2026-10-10
+
+## Summary
+
+Make the acceptance explanations sound and look like the intended product before any study seal.
+Kokoro narrates every video, and release checks fail without it.
+Each PR gets one AI-drawn infographic. PRC writes its words, and an OCR gate decides whether it is published.
+The map is rebuilt on the MIT PR Lens renderer. PRC keeps its player, drawer and hooks.
+The three acceptance PRs are rebuilt, checked in a real browser and checked by listening to each video.
+Design: .audit/step1-design.md. Push, PR, license, package name and publication stay unapproved.
+
+- [x] S1. Voice lock and release gate. Commits 38174a4 and 972756e. Baseline 815 passed, 0 skipped, at 972756e.
+- [x] S2. Design by architect arena and synthesis. Candidate 3 base with three grafts.
+- [x] S3. Infographic step: brief, OCR gate, records, embedding, CLI flag and skill loop. The gate needed seven measured changes; see the reconciliation in .audit/step1-design.md.
+- [x] S4. Map on PR Lens: converter, vendored bundle and lock, player and deletions. Integrated suite 816 passed, 0 skipped.
+- [ ] S5. Integrate. Run the full checks, deslop, no-comments and an independent review. Run verify-release.sh from an empty cache.
+- [ ] S6. Rebuild the three acceptance PRs with Kokoro, the new map and a gated infographic inline on the review page.
+- [ ] S7. Verify in a real browser with screenshots. Listen to each video: audio stream, transcript against the board narration and run.json voice.
+- [ ] S8. Docs, decisions, trail and local commits. Human acceptance stays with the user.
+
+Done predicate. All tests pass with 0 skipped, and verify-release.sh passes from an empty cache.
+Each acceptance PR shows a gated infographic or a recorded fallback, and the PR Lens map with a working drawer and tour.
+Each acceptance PR has a Kokoro video whose transcript matches its board.
+
 # Trustworthy PR explanations, 2026-10-09
 
 ## Summary

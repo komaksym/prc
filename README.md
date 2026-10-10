@@ -32,6 +32,7 @@ uv run prc doctor
 ```
 
 Install `ffmpeg` and `ffprobe` with your system package manager if `doctor` reports them missing.
+Install `tesseract` to gate drawn infographics. `doctor` prints its version or reports it unavailable.
 Missing voice backends do not prevent a silent render with `--voice none`.
 
 ## Render the offline example
@@ -70,6 +71,23 @@ Inspect those paths before restoring a backup or removing a lock. Publication do
 A card-render failure can leave `card.png` absent. Inspect the printed `card` value and `run.json` warnings.
 
 prc writes local files. It does not post comments, upload videos, or publish a repository.
+
+## A drawn infographic (optional)
+
+Every `explain` run writes `infographic/brief.json`. It holds the only lines a drawing may show.
+These are the headline, six computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
+Your agent draws candidate images from those lines with its own image tool. The bundled skill uses baoyu-infographic.
+Pass the candidates to `explain` with a repeatable `--infographic` flag, in the order drawn.
+
+```sh
+uv run prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.json --infographic cand1.png --infographic cand2.png
+```
+
+prc reads each candidate with tesseract. It publishes the first one that shows every line and no other word as `infographic.png`.
+The comment and the walkthrough then show that image first.
+`infographic/check.json` lists each candidate's verdict, missing lines and foreign words. `run.json` records the attempts.
+Without a passing candidate, nothing is published and the card stays.
+The gate tolerates small OCR errors in prose words, so a small misspelling can pass. Read the published image before you post it.
 
 ## Your agent writes the board
 

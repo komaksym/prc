@@ -32,11 +32,14 @@ Evidence labels: **measured** means someone ran it and recorded the number. **In
 
 The narrated video, the walkthrough and the card headline come from one board. One board means one story, checked once.
 
+Since 2026-10-10 a sixth output is optional: `infographic.png`, an image drawn by the user's agent. prc publishes it only when it passes the OCR gate (D23), and the comment and walkthrough then show it first.
+
 **D8. The narrated explainer is the video.** It replaces the 30-second map tour (`map --video`) as the main video. The map tour stays as the no-agent fallback. Reason: the user iterated on the explainer through three rounds and a renderer bakeoff. The map tour has no narration and no story.
 
 **D9. Mermaid is the diagram in the PR comment.** GitHub draws a Mermaid block in a comment with no hosting and no upload. prc writes the diagram from `map.json` (computed calls only), with at most 12 nodes. Reason: the user asked to reuse what exists. Mermaid is the only diagram format that GitHub draws natively. CodeRabbit already writes model-drawn Mermaid diagrams, so the computed source is the difference (D3).
 
 **D10. The PR card is the infographic.** One 1200x630 image (rendered at 2x). It shows the board headline when a board exists, the map stats, the look-first list, the risky surfaces and the changed functions without a direct test. It replaces the existing `card.png` from `map --video`, which is only a screenshot of the map page. It must stay readable at 800 px wide (OCR check). The older `review` command's `infographic.svg` is not the MVP card.
+On 2026-10-10 the user added a drawn infographic (D23). The card is still written for every PR. It is the fallback when no drawing passes the gate.
 
 **D11. prc never posts anything.** It writes files. The user pastes the comment and uploads the video. Reason: posting is outward-facing, and GitHub has no public API to upload a video into a PR description (inferred from GitHub's REST docs; the web UI upload is the known path). A `--post` flag is out of scope for the MVP.
 
@@ -58,6 +61,12 @@ On 2026-10-10 the extra stopped installing in practice: Kokoro leaves `transform
 ## Scale
 
 **D18. Large PRs get an overview first.** Measured on open PR 19 (62 files, 311 changed symbols, 639 calls): the map page shows a grid of about 300 cards with text too small to read and no visible arrows. It mapped in 14 s, so speed is not the problem. When a PR changes more than 40 symbols, the map opens grouped by file or folder, with counts. A click expands a group. The board covers the main story, and every output states what it did not cover (for example "covers 6 of 62 files; the rest are listed below"). Reason: research pain point 2 is PR size, and reviewers ask what was not checked.
+On 2026-10-10 the map moved to the PR Lens renderer (D22). The threshold stays at 40 changed symbols. Each group is one graph node with the id `g{i}` and a count. A click opens the group's drawer, which lists its members and shows each member's diff. Above 256 nodes, tour and risky-file targets keep their nodes and groups share the rest.
+
+**D22. The map draws with the PR Lens renderer.** The user asked to reuse open-source work for the interactive map and approved this step on 2026-10-10. prc vendors `@coldtea/pr-lens-renderer` 0.3.2 (MIT, 54,919-byte browser bundle, license header kept). `prlens.lock.json` pins the package and bundle hashes. `graphdoc.py` converts the computed `map.json` into the renderer's GraphDoc (schema 0.7.0). The renderer only lays out and draws that graph, so no model draws a box or an arrow (D3). Node.js runs only when a maintainer re-vendors with `scripts/vendor-prlens.mjs`. Users and the tests need no Node (D13). Measured: five GraphDoc goldens validate against the schema. map.html is 127 to 172 KB. Median renderer time in Chromium is 3.85 ms to 7.40 ms. The old Python layout (`map_layout.py`) is deleted.
+
+**D23. One drawn infographic per PR, gated by OCR.** The user asked on 2026-10-10 for the baoyu-infographic skill. prc never calls an image model (D4). The user's agent draws with its own image tool, the same way it writes the board (D5). prc writes every word in `infographic/brief.json`: the headline, six computed fact chips, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc." The agent passes each drawing with `--infographic`. prc reads it with tesseract four ways. It publishes the first drawing with no foreign word at confidence 70 or more and with every line found. A failed drawing is redrawn from a new prompt, at most twice, and never painted over. Then the card stays. `run.json` and `infographic/check.json` record every attempt.
+Measured: icon strokes read as words at confidence 66 or less, and drawn text at 75 or more. Tesseract reads a capital I as a lowercase l, so the gate treats them as one letter. Code names must match exactly. In the 2026-10-10 acceptance run the gate rejected two drawings for real errors ("Words from pnc", "onCComplete"), and both redraws passed. It also rejects two of five faithful session drawings, where tesseract cannot read badge digits or one icon box. The gate takes 1.6 to 2.1 s per image. Limits: a small misspelling of a prose word passes, because the gate must accept OCR noise. A wrong number in a hard-to-read spot can read below 70 in every reading and pass.
 
 ## Process
 
