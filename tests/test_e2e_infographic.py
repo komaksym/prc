@@ -182,7 +182,7 @@ SCENES: dict[str, tuple[str, bool]] = {
     "bare text": (
         node(SOURCE, 100, 300, cls="")
         + node(TARGET, 800, 300, cls="")
-        + wire([(440, 355), (840, 355)]),
+        + wire([(440, 355), (756, 355)]),
         True,
     ),
     "one panel": (
@@ -223,7 +223,25 @@ def test_gate_needs_a_drawn_line_between_related_boxes(scene: str, tmp_path: Pat
         (gate.Relation(SOURCE, TARGET, "call"),),
     )
     decision = gate.gate(png, brief)
-    assert decision.verdict == ("pass" if drawn else "flat"), decision.detail["relations"]
+    assert decision.verdict == ("pass" if drawn else "flat"), decision
+
+
+def test_gate_rejects_arrowhead_that_merges_with_label(tmp_path: Path) -> None:
+    body = (
+        node(SOURCE, 100, 300, cls="")
+        + node(TARGET, 800, 300, cls="")
+        + wire([(440, 355), (840, 355)])
+    )
+    png = render_html_png(body, tmp_path / "overlap.png")
+    PROOF.mkdir(parents=True, exist_ok=True)
+    PROOF.joinpath("arrow-over-label.png").write_bytes(png.read_bytes())
+    brief = gate.InfographicBrief(
+        SOURCE,
+        (gate.BriefLine("node", SOURCE), gate.BriefLine("node", TARGET)),
+        (gate.Relation(SOURCE, TARGET, "call"),),
+    )
+    decision = gate.gate(png, brief)
+    assert decision.verdict != "pass", decision
 
 
 def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
@@ -246,8 +264,8 @@ def test_gate_real_tesseract_images(tmp_path: Path) -> None:
     PROOF.mkdir(parents=True, exist_ok=True)
     brief = page_brief(LINES)
     good = render_lines_png(LINES, tmp_path / "good.png")
-    PROOF.joinpath("pass.png").write_bytes(good.read_bytes())
-    assert gate.gate(good, brief).verdict == "pass"
+    PROOF.joinpath("flat.png").write_bytes(good.read_bytes())
+    assert gate.gate(good, brief).verdict == "flat"
 
     bad_lines = LINES + ["watermelon quokka"]
     bad = render_lines_png(bad_lines, tmp_path / "bad.png")

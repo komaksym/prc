@@ -196,6 +196,13 @@ def test_infobrief_deterministic(tmp_path: Path) -> None:
     assert list(payload) == sorted(payload)
 
 
+def test_brief_prompt_allows_icons_and_diagram_layouts() -> None:
+    rules = gate.brief_dict(case_brief("librarysync-98"))["prompt_rules"]
+    assert "Icons are allowed beside text but contain no letters or digits." in rules
+    assert any("arrow" in rule for rule in rules)
+    assert not any("Use no icons" in rule or "one text column" in rule for rule in rules)
+
+
 def test_infobrief_caps_drop_risky_then_look() -> None:
     m = sample_map()
     m["brief"]["files"] = [
@@ -365,11 +372,11 @@ def test_gate_code_name_must_be_spelled_exactly() -> None:
     assert [tok for tok, _ in decision.invented] == ["onccomplete"]
 
 
-def test_gate_prose_word_keeps_ocr_tolerance() -> None:
+def test_gate_stable_prose_misspelling_is_rejected() -> None:
     brief = gate.InfographicBrief("t", (gate.BriefLine("verdict", "No direct test evidence"),))
     drawn = "No direct test evidcnce"
     decision = gate.score_ocr((read(drawn, "psm-3"), read(drawn, "psm-11")), brief)
-    assert decision.verdict == "pass"
+    assert decision.verdict == "invented"
 
 
 def blank_png(path: Path) -> Path:
@@ -425,7 +432,24 @@ def session_reads(slug: str) -> tuple[gate.OcrRead, ...]:
 
 
 REJECTED = {
-    "next-steps-roadmap": ("missing", ("1", "2", "Everything frozen")),
+    "comparator-split": (
+        "missing",
+        ("You", "Agents give the broad ranking. You judge the interactive tools."),
+    ),
+    "next-steps-roadmap": (
+        "missing",
+        (
+            "1",
+            "2",
+            "3",
+            "4",
+            "3 practice PRs",
+            "Seal",
+            "Everything frozen",
+            "Agents: 4 options, same PRs",
+            "Change the product before the seal. After it, any change starts a new study.",
+        ),
+    ),
     "review-bias-2026-10-10": ("missing", ("Mixed result",)),
 }
 
@@ -655,7 +679,19 @@ CASES = ROOT / "tests" / "data" / "trustworthiness"
 def case_brief(slug: str) -> gate.InfographicBrief:
     m = json.loads((CASES / slug / "map.json").read_text())
     board = json.loads((CASES / slug / "board.json").read_text())
-    return gate.infobrief(m, m.get("brief"), board)
+    return gate.infobrief(m, m.get("brief"), board, case_sources(slug))
+
+
+def case_sources(slug: str) -> dict[str, str]:
+    if slug == "swarm-116":
+        return {"internal/compose/file.go": (CASES / slug / "file.go").read_text()}
+    if slug == "librarysync-98":
+        path = "backend/src/librarysync/core/next_episode.py"
+        return {
+            path: (CASES / slug / "head.txt").read_text(),
+            "base:" + path: (CASES / slug / "base.txt").read_text(),
+        }
+    return {}
 
 
 def links(brief: gate.InfographicBrief) -> set[tuple[str, str, str]]:
@@ -668,7 +704,11 @@ def test_structure_librarysync_shows_the_new_call_its_tests_and_the_changed_pick
     assert links(brief) == {
         ("find_next_episodes_bulk", "select_next_episode", "call"),
         ("2 new test calls", "select_next_episode", "call"),
-        ("Before: Up next s1e1", "After: Up next s2e3", "becomes"),
+        (
+            "Before docs: first episode not in watched_episode_ids.",
+            "After docs: next episode after the user's latest watched point.",
+            "becomes",
+        ),
     }
     legends = [line.text for line in brief.lines if line.role == "legend"]
     assert legends == [gate.MIXED_CALL_LEGEND], "the Before/After arrow is not a call"
@@ -707,11 +747,101 @@ def test_structure_does_not_promote_unchecked_group_titles() -> None:
         if scene["type"] == "groups":
             for group in scene["groups"]:
                 group["title"] = "Invented relationship"
-    assert links(gate.infobrief(m, m.get("brief"), board)) == links(case_brief("swarm-116"))
+    assert links(gate.infobrief(m, m.get("brief"), board, case_sources("swarm-116"))) == links(
+        case_brief("swarm-116")
+    )
+
+
+def test_before_after_comes_from_code_even_if_board_scenes_are_reversed() -> None:
+    m = json.loads((CASES / "librarysync-98" / "map.json").read_text())
+    board = json.loads((CASES / "librarysync-98" / "board.json").read_text())
+    for scene in board["scenes"]:
+        if scene["type"] == "groups":
+            for group in scene["groups"]:
+                group["title"] = "Invented transition"
+                for item in group["items"]:
+                    item["text"] = "invented " + item["text"]
+    board["scenes"].reverse()
+    sources = case_sources("librarysync-98")
+    assert any(r.kind == "becomes" for r in gate.structure(m, m.get("brief"), board, sources))
+    assert gate.structure(m, m.get("brief"), board, sources) == gate.structure(
+        m, m.get("brief"), None, sources
+    )
+
+
+def test_before_after_requires_a_function_docstring_and_removes_its_quotes() -> None:
+    m = sample_map()
+    file = m["files"][0]
+    file["hunks"] = [
+        {
+            "lines": [
+                {"old": 10, "new": 10, "text": "def apply_discount():"},
+                {"old": 11, "new": None, "text": '    """old docs."""'},
+                {"old": None, "new": 11, "text": '    """new docs."""'},
+            ]
+        }
+    ]
+    path = file["path"]
+    sources = {
+        path: "\n" * 9 + 'def apply_discount():\n    """new docs."""',
+        "base:" + path: "\n" * 9 + 'def apply_discount():\n    """old docs."""',
+    }
+    assert gate._before_after(m, sources) == [
+        gate.Relation("Before docs: old docs.", "After docs: new docs.", "becomes")
+    ]
+    file["hunks"][0]["lines"][0]["text"] = "    if enabled:"
+    path = file["path"]
+    sources = {
+        path: "\n" * 9 + 'def apply_discount():\n    """new docs."""',
+        "base:" + path: "\n" * 9 + 'def apply_discount():\n    """old docs."""',
+    }
+    assert gate._before_after(m, sources) == []
+
+
+@pytest.mark.parametrize("comment", ["/*\n{code}\n*/", "`\n{code}\n`"])
+def test_go_mapping_excludes_comment_and_string_contents(comment: str) -> None:
+    code = "_, err := imaginary()\nif err != nil {\nreturn nil, &ImaginaryError{Err: err}\n}"
+    text = "func load() (*File, error) {\n" + comment.format(code=code) + "\nreturn nil, nil\n}"
+    m = {
+        "files": [
+            {
+                "path": "file.go",
+                "hunks": [
+                    {
+                        "lines": [
+                            {"new": i, "old": None, "text": line}
+                            for i, line in enumerate(text.splitlines(), 1)
+                        ]
+                    }
+                ],
+            }
+        ]
+    }
+    assert gate._mapping(m, {"file.go": text}) == []
+
+
+def test_go_mapping_does_not_escape_the_error_branch() -> None:
+    text = "func load() (*File, error) {\n_, err := reader()\nif err != nil {\n}\nreturn nil, &WrongError{Err: err}\n}"
+    m = {
+        "files": [
+            {
+                "path": "file.go",
+                "hunks": [
+                    {
+                        "lines": [
+                            {"new": i, "old": None, "text": line}
+                            for i, line in enumerate(text.splitlines(), 1)
+                        ]
+                    }
+                ],
+            }
+        ]
+    }
+    assert gate._mapping(m, {"file.go": text}) == []
 
 
 def test_structure_does_not_join_an_error_with_an_unrelated_go_call() -> None:
-    m = {
+    m: dict[str, Any] = {
         "files": [
             {
                 "path": "loader.go",
@@ -733,7 +863,26 @@ def test_structure_does_not_join_an_error_with_an_unrelated_go_call() -> None:
             }
         ]
     }
-    assert gate._mapping(m) == [gate.Relation("fileReader", "ReadComposeError", "maps")]
+    source = "\n".join(line["text"] for line in m["files"][0]["hunks"][0]["lines"])
+    assert gate._mapping(m, {"loader.go": source}) == [
+        gate.Relation("fileReader", "ReadComposeError", "maps")
+    ]
+
+
+def test_go_mapping_uses_full_source_context_and_requires_matching_hunk_lines() -> None:
+    source = "/*\nfunc imaginary() (*File, error) {\n_, err := reader()\nif err != nil {\nreturn nil, &ImaginaryError{Err: err}\n}\n}\n*/"
+    rows = [{"new": i, "old": None, "text": line} for i, line in enumerate(source.splitlines(), 1)][
+        1:-1
+    ]
+    m: dict[str, Any] = {"files": [{"path": "file.go", "hunks": [{"lines": rows}]}]}
+    assert gate._mapping(m) == []
+    assert gate._mapping(m, {"file.go": source}) == []
+    source = source.replace("/*", "  ").replace("*/", "  ")
+    assert gate._mapping(m, {"file.go": source}) == [
+        gate.Relation("reader", "ImaginaryError", "maps")
+    ]
+    m["files"][0]["hunks"][0]["lines"][3]["text"] = "return nil, &WrongError{Err: err}"
+    assert gate._mapping(m, {"file.go": source}) == []
 
 
 def test_structure_excludes_name_only_calls_and_test_call_counts() -> None:
@@ -903,3 +1052,146 @@ def test_gate_stable_foreign_text_is_not_excused_by_box_geometry(extra: str) -> 
     decision = gate.score_ocr(reads, brief)
     assert decision.verdict == "invented"
     assert gate.tokenize(extra)[0] in dict(decision.invented)
+
+
+@pytest.mark.parametrize(
+    "expected,actual", [("untested code", "tested code"), ("2 files removed", "2 files moved")]
+)
+def test_gate_rejects_stable_words_that_change_meaning(expected: str, actual: str) -> None:
+    brief = gate.InfographicBrief("t", (gate.BriefLine("row", expected),))
+    decision = gate.score_ocr(tuple(read(actual, str(i), 95) for i in range(4)), brief)
+    assert decision.verdict == "invented"
+
+
+@pytest.mark.parametrize(
+    "actual", ["Tests no passed no CI", "Tests passed no no CI", "Tests passed noci noci"]
+)
+def test_gate_accounts_for_extra_occurrences_of_allowed_words(actual: str) -> None:
+    brief = gate.InfographicBrief(
+        "t", (gate.BriefLine("row", "Tests passed"), gate.BriefLine("chip", "no CI"))
+    )
+    decision = gate.score_ocr(tuple(read(actual, str(i), 95) for i in range(4)), brief)
+    assert decision.verdict != "pass"
+
+
+def test_gate_cannot_publish_a_relation_free_text_card(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    brief = gate.InfographicBrief("t", (gate.BriefLine("chip", "2 files"),))
+    monkeypatch.setattr(gate, "tesseract_version", lambda: "test")
+    monkeypatch.setattr(gate, "_read_mode", lambda *args: read("2 files", "test").words)
+    assert gate.gate(tmp_path / "card.png", brief).verdict == "flat"
+
+
+def test_go_mapping_rejects_multiple_assignment_expressions() -> None:
+    text = "func load() (*File, error) {\nresult, err := getValue(), fail()\nif err != nil {\nreturn nil, &LoadError{Err: err}\n}\n}"
+    m = {
+        "files": [
+            {
+                "path": "file.go",
+                "hunks": [
+                    {
+                        "lines": [
+                            {"new": i, "old": None, "text": line}
+                            for i, line in enumerate(text.splitlines(), 1)
+                        ]
+                    }
+                ],
+            }
+        ]
+    }
+    assert gate._mapping(m, {"file.go": text}) == []
+
+
+def test_ocr_recombines_split_words_before_counting_individual_tokens() -> None:
+    br = gate.InfographicBrief(
+        "checkout counter",
+        (
+            gate.BriefLine("headline", "checkout counter"),
+            gate.BriefLine("verdict", "check result"),
+        ),
+    )
+    reads = tuple(read("check out counter check result", str(i)) for i in range(4))
+    assert gate.score_ocr(reads, br).verdict == "pass"
+
+
+def test_ocr_requires_each_duplicate_line_occurrence() -> None:
+    br = gate.InfographicBrief(
+        "Tests passed",
+        (
+            gate.BriefLine("headline", "Tests passed"),
+            gate.BriefLine("verdict", "Tests passed"),
+        ),
+    )
+    reads = tuple(read("Tests passed", str(i)) for i in range(4))
+    assert gate.score_ocr(reads, br).verdict == "missing"
+
+
+def test_before_after_rejects_function_like_text_inside_a_multiline_string() -> None:
+    m = sample_map()
+    file = m["files"][0]
+    file["hunks"] = [
+        {
+            "lines": [
+                {"old": 10, "new": 10, "text": "def apply_discount():"},
+                {"old": 11, "new": None, "text": '    """old docs."""'},
+                {"old": None, "new": 11, "text": '    """new docs."""'},
+            ]
+        }
+    ]
+    old = (
+        "def outer():\n    value = '''\n"
+        + "\n" * 7
+        + 'def apply_discount():\n    """old docs."""\n'
+        + "'''"
+    )
+    sources = {file["path"]: old.replace("old docs", "new docs"), "base:" + file["path"]: old}
+    assert gate._before_after(m, sources) == []
+
+
+def test_before_after_does_not_pair_an_outer_doc_with_an_inner_doc() -> None:
+    m = sample_map()
+    old = (
+        "\n" * 9
+        + 'def apply_discount():\n    """Old outer docs."""\n    def inner():\n        """Inner docs."""\n        pass\n'
+    )
+    new = old.replace('    """Old outer docs."""\n', "")
+    rows = [
+        {"old": i, "new": i if i < 11 else i - 1, "text": line}
+        for i, line in enumerate(old.splitlines(), 1)
+    ]
+    rows[10]["new"] = None
+    m["files"][0]["hunks"] = [{"lines": rows}]
+    path = m["files"][0]["path"]
+    assert gate._before_after(m, {path: new, "base:" + path: old}) == []
+
+
+def test_ocr_split_words_use_their_line_context() -> None:
+    br = gate.InfographicBrief(
+        "checkout counter",
+        (
+            gate.BriefLine("headline", "checkout counter"),
+            gate.BriefLine("verdict", "check out result"),
+        ),
+    )
+    reads = tuple(read("check out counter check out result", str(i)) for i in range(4))
+    assert gate.score_ocr(reads, br).verdict == "pass"
+
+
+def test_ocr_does_not_merge_numeric_facts() -> None:
+    br = gate.InfographicBrief("CI", (gate.BriefLine("chip", "CI 1/1 passed"),))
+    reads = tuple(read("CI 11 passed", str(i), 95) for i in range(4))
+    assert gate.score_ocr(reads, br).verdict == "invented"
+
+
+@pytest.mark.parametrize("wrapper_added", [True, False])
+def test_go_mapping_preserves_leading_blank_source_lines(wrapper_added: bool) -> None:
+    text = "\n\nfunc load() (*File, error) {\nraw, err := reader()\nif err != nil {\nreturn nil, &LoadError{Err: err}\n}\n}"
+    rows = [
+        {"new": i, "old": None if (i == 6 if wrapper_added else i == 4) else i, "text": line}
+        for i, line in enumerate(text.splitlines(), 1)
+    ]
+    m = {"files": [{"path": "file.go", "hunks": [{"lines": rows}]}]}
+    assert gate._mapping(m, {"file.go": text}) == (
+        [gate.Relation("reader", "LoadError", "maps")] if wrapper_added else []
+    )
