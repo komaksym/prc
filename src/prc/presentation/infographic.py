@@ -5,6 +5,7 @@ import re
 import shutil
 import subprocess
 import unicodedata
+from collections.abc import Callable
 from dataclasses import dataclass
 from itertools import pairwise
 from pathlib import Path
@@ -13,6 +14,11 @@ from typing import Any, Literal
 from prc import facts
 from prc.presentation import card
 
+Box = tuple[int, int, int, int]
+"""Left, top, width and height of an OCR word, in image pixels."""
+STABLE_READS = 3
+SHORT_TOKEN = 2
+ICON_HEIGHT = 1.6
 CONF_FLOOR = 70
 WORD_SIM = 0.80
 WINDOW = 6
@@ -72,6 +78,7 @@ class InfographicBrief:
 class OcrWord:
     text: str
     conf: float
+    box: Box | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -416,8 +423,96 @@ def parse_tsv(tsv: str) -> tuple[OcrWord, ...]:
             conf = float(cols[10])
         except ValueError:
             continue
-        words.append(OcrWord(text, conf))
+        try:
+            left, top, width, height = (int(col) for col in cols[6:10])
+        except ValueError:
+            words.append(OcrWord(text, conf))
+            continue
+        box = (left, top, width, height) if width > 0 and height > 0 else None
+        words.append(OcrWord(text, conf, box))
     return tuple(words)
+
+
+def _same_place(one: Box, other: Box) -> bool:
+    """Two boxes cover the same place when they share half of the smaller one."""
+    wide = min(one[0] + one[2], other[0] + other[2]) - max(one[0], other[0])
+    tall = min(one[1] + one[3], other[1] + other[3]) - max(one[1], other[1])
+    if wide <= 0 or tall <= 0:
+        return False
+    return wide * tall * 2 >= min(one[2] * one[3], other[2] * other[3])
+
+
+def _text_lines(words: tuple[OcrWord, ...]) -> list[list[OcrWord]]:
+    """Words side by side at one height, with gaps no wider than the text is tall."""
+    lines: list[list[OcrWord]] = []
+    for word in sorted((w for w in words if w.box), key=lambda w: (w.box or (0, 0, 0, 0))[0]):
+        box = word.box or (0, 0, 0, 0)
+        for line in lines:
+            last = line[-1].box or (0, 0, 0, 0)
+            shared = min(box[1] + box[3], last[1] + last[3]) - max(box[1], last[1])
+            gap = box[0] - (last[0] + last[2])
+            tall = max(box[3], last[3])
+            if shared * 2 >= min(box[3], last[3]) and -tall / 2 <= gap <= tall * 1.5:
+                line.append(word)
+                break
+        else:
+            lines.append([word])
+    return lines
+
+
+def _span(line: list[OcrWord]) -> Box:
+    boxes = [w.box for w in line if w.box]
+    left = min(b[0] for b in boxes)
+    top = min(b[1] for b in boxes)
+    right = max(b[0] + b[2] for b in boxes)
+    bottom = max(b[1] + b[3] for b in boxes)
+    return (left, top, right - left, bottom - top)
+
+
+def _icon_like(words: tuple[OcrWord, ...]) -> set[int]:
+    """Ids of words alone on their text line or much taller than the other words on it."""
+    found: set[int] = set()
+    for line in _text_lines(words):
+        for word in line:
+            rest = sorted((w.box or (0, 0, 0, 0))[3] for w in line if w is not word)
+            tall = (word.box or (0, 0, 0, 0))[3]
+            if not rest or tall >= ICON_HEIGHT * rest[len(rest) // 2]:
+                found.add(id(word))
+    return found
+
+
+def region_streams(words: tuple[OcrWord, ...]) -> list[list[str]]:
+    """Token streams for stacked text lines, so wrapped text in a column reads in order.
+
+    Each text line links to the nearest text line under it that overlaps it sideways and starts
+    within one line height. A line takes at most one line above it, so columns stay apart.
+    """
+    lines = sorted(_text_lines(words), key=lambda line: _span(line)[1])
+    spans = [_span(line) for line in lines]
+    below: dict[int, int] = {}
+    taken: set[int] = set()
+    for i, top in enumerate(spans):
+        best: tuple[int, int] | None = None
+        for j in range(i + 1, len(spans)):
+            low = spans[j]
+            gap = low[1] - (top[1] + top[3])
+            sideways = min(top[0] + top[2], low[0] + low[2]) - max(top[0], low[0])
+            if j in taken or sideways <= 0 or not -top[3] / 2 <= gap <= max(top[3], low[3]):
+                continue
+            if best is None or gap < best[0]:
+                best = (gap, j)
+        if best is not None:
+            below[i] = best[1]
+            taken.add(best[1])
+    streams: list[list[str]] = []
+    for start in (i for i in range(len(lines)) if i not in taken):
+        chain: list[str] = []
+        at: int | None = start
+        while at is not None:
+            chain += [tok for w in lines[at] for tok in tokenize(w.text)]
+            at = below.get(at)
+        streams.append(chain)
+    return streams
 
 
 def _covers(line_toks: list[str], ocr: list[str], code: frozenset[str] = frozenset()) -> bool:
@@ -483,6 +578,44 @@ def _allowed_neighbor(token: str, idx: int, ocr: list[str], allowed: set[str]) -
     return _fold(left) in allowed or _fold(right) in allowed
 
 
+def _misread(
+    token: str,
+    box: Box | None,
+    read: int,
+    reads: tuple[OcrRead, ...],
+    known: Callable[[str], bool],
+    icon: bool,
+) -> bool:
+    """True when the other reads show this token is a misreading of an icon or an allowed word.
+
+    Most other reads see an allowed word at the same place. Or the token has no digit and is
+    short: one letter that looks like an icon (alone on its text line, or much taller than its
+    neighbors), or a token that fewer than STABLE_READS confident
+    reads (all reads, when there are fewer) see there.
+    """
+    if box is None:
+        return False
+    others = [r for i, r in enumerate(reads) if i != read]
+
+    def at_place(r: OcrRead, floor: float = 0.0) -> list[str]:
+        return [
+            t
+            for w in r.words
+            if w.box and w.conf >= floor and _same_place(box, w.box)
+            for t in tokenize(w.text)
+        ]
+
+    agree = sum(1 for r in others if any(known(t) for t in at_place(r)))
+    if len(others) >= 2 and agree * 2 > len(others):
+        return True
+    if _has_digit(token) or len(token) > SHORT_TOKEN:
+        return False
+    if len(token) == 1 and icon:
+        return True
+    seen = 1 + sum(1 for r in others if token in at_place(r, CONF_FLOOR))
+    return seen < min(STABLE_READS, len(reads))
+
+
 def score_ocr(
     reads: tuple[OcrRead, ...], br: InfographicBrief, tesseract: str = ""
 ) -> GateDecision:
@@ -490,17 +623,23 @@ def score_ocr(
     code = code_words(br)
     prose = {_fold(word) for word in allowed if word not in code and not _has_digit(word)}
     joins = joined_words(br)
+
+    def known(tok: str) -> bool:
+        return tok in joins or any(_match(word, tok, code) for word in allowed)
+
     streams: list[list[str]] = []
-    scored: list[list[tuple[str, float]]] = []
+    scored: list[list[tuple[str, float, Box | None, bool]]] = []
     for read in reads:
+        icons = _icon_like(read.words)
         toks: list[str] = []
-        confs: list[tuple[str, float]] = []
+        confs: list[tuple[str, float, Box | None, bool]] = []
         for word in read.words:
             for tok in tokenize(word.text):
                 toks.append(tok)
-                confs.append((tok, word.conf))
+                confs.append((tok, word.conf, word.box, id(word) in icons))
         streams.append(toks)
         scored.append(confs)
+    regions = [stream for read in reads for stream in region_streams(read.words)]
     detail: dict[str, Any] = {
         "allowed": len(allowed),
         "brief_lines": len(br.lines),
@@ -509,26 +648,28 @@ def score_ocr(
         "failed_modes": [],
         "tesseract": tesseract,
     }
-    if not any(conf >= CONF_FLOOR for stream in scored for _, conf in stream):
+    if not any(conf >= CONF_FLOOR for stream in scored for _, conf, _, _ in stream):
         return GateDecision("unreadable", (), (), detail)
     invented: dict[str, float] = {}
     for idx, stream in enumerate(scored):
         ocr = streams[idx]
-        for pos, (tok, conf) in enumerate(stream):
+        for pos, (tok, conf, box, icon) in enumerate(stream):
             if conf < CONF_FLOOR:
                 continue
-            if tok in joins or any(_match(word, tok, code) for word in allowed):
+            if known(tok):
                 good = True
             elif _has_digit(tok):
                 good = False
             else:
                 good = _allowed_neighbor(tok, pos, ocr, prose)
             if not good:
+                good = _misread(tok, box, idx, reads, known, icon)
+            if not good:
                 invented[tok] = max(invented.get(tok, conf), conf)
     missing: list[tuple[str, tuple[str, ...]]] = []
     for line in br.lines:
         ltoks = tokenize(line.text)
-        if any(_covers(ltoks, ocr, code) for ocr in streams):
+        if any(_covers(ltoks, ocr, code) for ocr in (*streams, *regions)):
             continue
         lost = tuple(t for t in ltoks if not _seen_anywhere(t, streams, code))
         missing.append((line.text, lost if lost else tuple(ltoks)))

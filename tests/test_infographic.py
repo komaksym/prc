@@ -126,12 +126,13 @@ def sample_map() -> dict[str, Any]:
 
 
 def tsv(words: list[tuple[str, float]]) -> str:
+    """One text line of words laid out left to right, 40 px wide with 10 px gaps."""
     head = ["level", "page", "block", "par", "line", "word", "l", "t", "w", "h", "conf", "text"]
     rows = [chr(9).join(head)]
     for i, (word, conf) in enumerate(words):
         rows.append(
             chr(9).join(
-                ["5", "1", "1", "1", "1", str(i + 1), "0", "0", "10", "10", str(conf), word]
+                ["5", "1", "1", "1", "1", str(i + 1), str(i * 50), "0", "40", "20", str(conf), word]
             )
         )
     return chr(10).join(rows)
@@ -424,14 +425,13 @@ def session_reads(slug: str) -> tuple[gate.OcrRead, ...]:
 
 
 REJECTED = {
-    "comparator-split": ("invented", ("ak", "j")),
-    "matched-pair-flow": ("invented", ("j",)),
-    "next-steps-roadmap": ("invented", ("se",)),
-    "review-bias-2026-10-10": ("invented", ("al", "all")),
+    "next-steps-roadmap": ("missing", ("1", "2", "Everything frozen")),
+    "review-bias-2026-10-10": ("invented", ("all",)),
 }
 
 
 def test_gate_session_images_record_false_rejections() -> None:
+    """Icon reads ("ak", "j", "se", "al") no longer reject; no read finds the lines still missing."""
     for slug in SESSION:
         decision = gate.score_ocr(session_reads(slug), session_brief(slug))
         found = (
@@ -450,6 +450,59 @@ def test_gate_session_images_with_a_clear_extra_word_fail(word: str) -> None:
         decision = gate.score_ocr((planted, *rest), session_brief(slug))
         assert decision.verdict == "invented", slug
         assert word in [tok for tok, _ in decision.invented], slug
+
+
+CANDIDATES = {
+    "librarysync-98-candidate-01": ("missing", ("Infographic drawn by AI. Words from prc.",)),
+    "librarysync-98-candidate-02": ("pass", ()),
+    "librarysync-98-candidate-03": ("pass", ()),
+    "em-5756-candidate-01": (
+        "missing",
+        ("noteCommand.multicursor.onComplete in src/commands/note.ts",),
+    ),
+    "em-5756-candidate-02": ("pass", ()),
+    "em-5756-candidate-03": ("pass", ()),
+    "swarm-116-candidate-01": ("pass", ()),
+}
+
+
+@pytest.mark.parametrize("slug", sorted(CANDIDATES))
+def test_gate_judges_drawn_candidates_by_what_they_show(slug: str) -> None:
+    """Defect: icons read as "q", "j", "en", one read saw "42" for "12", and column layouts broke
+    page order, so correct diagrams failed. Two candidates really misspell: "pnc" and
+    "onCComplete"."""
+    decision = gate.score_ocr(
+        session_reads(f"candidates/{slug}"), session_brief(f"candidates/{slug}")
+    )
+    found = (
+        decision.verdict,
+        tuple(tok for tok, _ in decision.invented) or tuple(text for text, _ in decision.missing),
+    )
+    assert found == CANDIDATES[slug]
+
+
+@pytest.mark.parametrize("word", ["if", "37", "not", "guaranteed"])
+@pytest.mark.parametrize("slug", [s for s, (v, _) in sorted(CANDIDATES.items()) if v == "pass"])
+def test_gate_word_every_read_sees_in_one_place_fails(slug: str, word: str) -> None:
+    path = f"candidates/{slug}"
+    reads = tuple(
+        gate.OcrRead(r.mode, (*r.words, gate.OcrWord(word, 90.0, (1500, 2, 80, 30))))
+        for r in session_reads(path)
+    )
+    decision = gate.score_ocr(reads, session_brief(path))
+    assert decision.verdict == "invented"
+    assert word in dict(decision.invented)
+
+
+def test_gate_lone_letter_is_an_icon_but_a_letter_in_text_is_not() -> None:
+    path = "candidates/librarysync-98-candidate-02"
+    lone = gate.OcrWord("Y", 90.0, (1500, 2, 30, 30))
+    beside = gate.OcrWord("Y", 90.0, (1500, 2, 30, 30))
+    text = gate.OcrWord("today", 90.0, (1540, 2, 90, 30))
+    alone = tuple(gate.OcrRead(r.mode, (*r.words, lone)) for r in session_reads(path))
+    inline = tuple(gate.OcrRead(r.mode, (*r.words, beside, text)) for r in session_reads(path))
+    assert gate.score_ocr(alone, session_brief(path)).verdict == "pass"
+    assert "y" in dict(gate.score_ocr(inline, session_brief(path)).invented)
 
 
 def wordy(n: int) -> str:
