@@ -37,9 +37,13 @@ PROFILE = {
 }
 PROMPT_RULES = (
     "Show every line exactly once, spelled exactly.",
-    "Add no other words, numbers, titles, legends or watermarks.",
-    "Icons and decorations contain no letters or digits.",
-    "Draw every line as plain dark text on a light background.",
+    "Add no other words, numbers, titles, legends or watermarks than the lines given.",
+    "Put each node line alone in its own box.",
+    "Join each related pair of node boxes with one straight arrow, source to target.",
+    "Draw removed calls as dashed arrows and every other relation as a solid arrow.",
+    "Leave a clear gap of plain canvas between boxes; do not let boxes touch.",
+    "Icons are allowed beside text but contain no letters or digits.",
+    "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible.",
 )
 LOOK_LABEL = "Look here first"

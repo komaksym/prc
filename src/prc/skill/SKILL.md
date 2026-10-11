@@ -207,10 +207,15 @@ and publishing the video or the comment text is the user's own step.
 
 Every explain run writes an image vocabulary first: read
 `infographic/brief.json` in the output folder. It holds the title, the
-allowed lines, the sorted allowed words, the disclosure, the image
-profile, the fixed prompt rules, and the gate constants. PRC publishes an
+allowed lines with their roles, the relations, the sorted allowed words,
+the disclosure, the image profile, the fixed prompt rules, and the gate
+constants. Node lines name what the code connects: calls the PR adds or
+removes, the tests that call them, mappings grounded in the board, and a
+before and after. Each relation joins two node lines. PRC publishes an
 image only when all four OCR readings succeed, cover the brief lines,
-and detect no foreign word at confidence 70 or more.
+detect no foreign word at confidence 70 or more, and, when the brief has
+relations, the image draws a line between every related pair of node
+boxes.
 
 Keep prompt files and candidate images outside the explain output folder,
 for example in `<out-root>/<slug>-infographic/`. Each explain run
@@ -218,11 +223,15 @@ replaces the whole output folder, so anything written inside it is lost.
 Save the prompt file before generating, then generate one candidate at a
 time with the baoyu-infographic technical profile from the brief
 (structural-breakdown layout, technical-schematic style, 16:9, English).
-Show every brief line exactly once, spelled exactly. Add no other words,
-numbers, titles, legends, or watermarks. Keep icons and decorations free
-of letters and digits, draw every line as plain dark text on a light
-background, and keep the disclosure line visible.
-Use simple panels when icons cause false letter readings.
+Copy `prompt_rules` from the brief into the prompt, and list the relations
+as "source -> target" pairs so the drawing shows the structure. Draw it as
+a diagram: each node line alone in its own box, one straight arrow per
+relation from source box to target box, dashed for a removed call, with
+plain canvas between boxes. Place the headline above the diagram, the
+legend near the arrows, and the facts, rows, verdict and disclosure
+around it. Show every brief line exactly once, spelled exactly, and add
+no other words or numbers. Icons are welcome beside text when they hold
+no letters or digits.
 
 Gate each candidate by re-running explain with repeatable flags, in the
 order drawn:
@@ -235,15 +244,19 @@ PRC gates the candidates in argument order and publishes the first one
 that passes as `infographic.png` with the exact candidate bytes.
 `run.json` records the status and every attempt; `infographic/check.json`
 records the verdict with missing and invented words, successful reading
-modes and failed modes. PRC checks and hashes an unchanged copy of each
+modes and failed modes, and for each relation whether a drawn line joins
+its two boxes. PRC checks and hashes an unchanged copy of each
 candidate. On a pass the comment
 embeds `infographic.png` and the walkthrough shows it at the top. The card
 stays in the bundle as the fallback.
 
 On a failure, read `infographic/check.json` first. It names the words OCR
 read that the brief does not hold and the lines OCR could not confirm.
+A `flat` verdict means every word passed but some relation has no drawn
+line between its boxes; the `relations` rows show which.
 Change the next prompt to fix exactly those, for example by drawing an
-unconfirmed line larger and away from icons. Redraw from a new prompt
+unconfirmed line larger and away from icons, or by drawing the missing
+arrow straight from one box to the other. Redraw from a new prompt
 file, at most two times. Never
 paint over text in an image editor: a redraw is a fresh generation from an
 updated prompt. After that the card stays as the fallback, and the run
@@ -251,5 +264,8 @@ records the failed status.
 
 Read the selected drawing by eye before presenting it. OCR can miss faint
 text and tolerate a small prose misspelling. It cannot verify visual
-relationships. Code tokens and numbers match exactly after punctuation
-and case normalization; the prose-only I/l fold does not apply to code.
+relationships beyond one fact: a drawn line joins each related pair of
+boxes. It does not check arrow direction, dashes, or which box an arrow
+points at first, so confirm those by eye. Code tokens and numbers match
+exactly after punctuation and case normalization; the prose-only I/l fold
+does not apply to code.
