@@ -477,7 +477,9 @@ def joined_words(br: InfographicBrief) -> set[str]:
     for text in (line.text for line in br.lines):
         toks = tokenize(text)
         joins.update(
-            one + other for one, other in pairwise(toks) if not (one.isdigit() and other.isdigit())
+            one + other
+            for one, other in pairwise(toks)
+            if not (_has_digit(one) and _has_digit(other))
         )
     return joins
 
@@ -657,7 +659,7 @@ def _covers(line_toks: list[str], ocr: list[str], code: frozenset[str] = frozens
             and _match(here, ocr[pos] + ocr[pos + 1], code)
         ):
             found.append((1, 2))
-        if bi + 1 < len(line_toks) and not (here.isdigit() and line_toks[bi + 1].isdigit()):
+        if bi + 1 < len(line_toks) and not (_has_digit(here) and _has_digit(line_toks[bi + 1])):
             next_word = line_toks[bi + 1]
             joined = here + next_word
             exact = here in code or next_word in code
@@ -765,7 +767,7 @@ def score_ocr(
         one + other: (one, other)
         for line in br.lines
         for one, other in pairwise(tokenize(line.text))
-        if not (one.isdigit() and other.isdigit())
+        if not (_has_digit(one) and _has_digit(other))
     }
     followers: dict[str, set[str]] = {}
     for line in br.lines:

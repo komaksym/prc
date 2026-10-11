@@ -1195,3 +1195,9 @@ def test_go_mapping_preserves_leading_blank_source_lines(wrapper_added: bool) ->
     assert gate._mapping(m, {"file.go": text}) == (
         [gate.Relation("reader", "LoadError", "maps")] if wrapper_added else []
     )
+
+
+def test_ocr_does_not_merge_compact_numeric_facts() -> None:
+    br = gate.InfographicBrief("CI", (gate.BriefLine("chip", "CI1/1 passed"),))
+    reads = tuple(read("CI11 passed", str(i), 95) for i in range(4))
+    assert gate.score_ocr(reads, br).verdict == "invented"
