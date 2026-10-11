@@ -75,7 +75,9 @@ prc writes local files. It does not post comments, upload videos, or publish a r
 ## A drawn infographic (optional)
 
 Every `explain` run writes `infographic/brief.json`. It holds the only lines a drawing may show.
-These are the headline, six computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
+These are the headline, node lines, a legend, computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
+Node lines come from the code. They name the calls the PR adds or removes, the tests that call them, mappings that the checked board grounds in code, and a before and after when the board shows one.
+`relations` in the brief lists which node lines the drawing must join with an arrow. When the brief has node lines it keeps three facts, so the drawing has room for them. Without node lines it keeps six.
 Your agent draws candidate images from those lines with its own image tool. The bundled skill uses baoyu-infographic.
 Pass the candidates to `explain` with a repeatable `--infographic` flag, in the order drawn.
 
@@ -85,9 +87,12 @@ uv run prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board b
 
 prc reads an unchanged copy of each candidate with tesseract in four modes. All four must succeed.
 It publishes the first candidate whose readings cover every brief line and detect no foreign word at confidence 70 or more.
+A word counts as a misreading when most other readings see a brief word in the same place, or when it is one letter alone or much taller than its neighbors, such as an icon read as "Q".
+When the brief has relations, the candidate must also draw each one: one connected run of drawn ink must touch both node boxes and run across the gap between them, or cross the segment between them twice.
+A candidate that shows every word but draws no such line fails as `flat`. prc decodes the pixels with ffmpeg.
 That drawing becomes `infographic.png`.
 The comment and the walkthrough then show that image first.
-`infographic/check.json` lists each candidate's verdict, missing lines, foreign words and successful or failed reading modes.
+`infographic/check.json` lists each candidate's verdict, missing lines, foreign words, successful or failed reading modes, and for each relation whether it is drawn.
 It records the hash of the exact checked PNG bytes. `run.json` records the attempts.
 Without a passing candidate, nothing is published and the card stays.
 

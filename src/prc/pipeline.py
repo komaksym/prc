@@ -625,6 +625,7 @@ def run_explain(
                     "modes": verdict.detail.get("modes"),
                     "failed_modes": verdict.detail.get("failed_modes"),
                     "name": cand.name,
+                    "relations": verdict.detail.get("relations"),
                     "sha256": sha,
                     "tesseract": verdict.detail.get("tesseract"),
                     "verdict": verdict.verdict,

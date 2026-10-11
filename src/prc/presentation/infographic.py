@@ -11,8 +11,11 @@ from itertools import pairwise
 from pathlib import Path
 from typing import Any, Literal
 
+import numpy as np
+import numpy.typing as npt
+
 from prc import facts
-from prc.presentation import card
+from prc.presentation import card, diagram
 
 Box = tuple[int, int, int, int]
 """Left, top, width and height of an OCR word, in image pixels."""
@@ -49,7 +52,7 @@ LEGEND: dict[str, str] = {
     "removed call": "Dashed arrows show removed calls",
 }
 MIXED_CALL_LEGEND = "Arrows into code names show new calls"
-Verdict = Literal["pass", "missing", "invented", "unreadable", "tool"]
+Verdict = Literal["pass", "missing", "invented", "flat", "unreadable", "tool"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -383,8 +386,12 @@ def code_words(br: InfographicBrief) -> frozenset[str]:
 def gate_constants() -> dict[str, Any]:
     return {
         "CONF_FLOOR": CONF_FLOOR,
+        "CROSSINGS": diagram.CROSSINGS,
+        "GAP": diagram.GAP,
+        "LINE_RUN": diagram.LINE_RUN,
         "LINE_LIMIT": LINE_LIMIT,
         "MAX_WORDS": MAX_WORDS,
+        "REACH": diagram.REACH,
         "WINDOW": WINDOW,
         "WORD_SIM": WORD_SIM,
     }
@@ -736,7 +743,92 @@ def gate(png: Path, br: InfographicBrief) -> GateDecision:
             reads.append(OcrRead(mode, words))
     if failed:
         return tool_decision(version, failed, tuple(reads))
-    return score_ocr(tuple(reads), br, tesseract=version)
+    decision = score_ocr(tuple(reads), br, tesseract=version)
+    if decision.verdict != "pass" or not br.relations:
+        return decision
+    rgb = diagram.decode_rgb(png)
+    if rgb is None:
+        return tool_decision(version, ["ffmpeg"], tuple(reads))
+    return score_drawing(decision, check_relations(rgb, tuple(reads), br))
+
+
+def locate(text: str, reads: tuple[OcrRead, ...], code: frozenset[str]) -> list[tuple[Box, int]]:
+    """Every place a text line, or two stacked text lines, shows the whole line, smallest first.
+
+    Each place is a box and the height of its shortest word.
+    """
+    toks = tokenize(text)
+    hits: list[tuple[Box, int]] = []
+    for read in reads:
+        lines = _text_lines(tuple(w for w in read.words if w.conf >= CONF_FLOOR))
+        groups = list(lines)
+        for upper in lines:
+            top = _span(upper)
+            for lower in lines:
+                low = _span(lower)
+                gap = low[1] - (top[1] + top[3])
+                sideways = min(top[0] + top[2], low[0] + low[2]) - max(top[0], low[0])
+                if lower is not upper and sideways > 0 and 0 <= gap <= max(top[3], low[3]):
+                    groups.append(upper + lower)
+        hits += [
+            (_span(group), min((w.box or (0, 0, 0, 0))[3] for w in group))
+            for group in groups
+            if _covers(toks, [t for w in group for t in tokenize(w.text)], code)
+        ]
+    places: list[tuple[Box, int]] = []
+    for hit in sorted(hits, key=lambda hit: hit[0][2] * hit[0][3]):
+        if not any(_same_place(hit[0], kept[0]) for kept in places):
+            places.append(hit)
+    return places
+
+
+def check_relations(
+    rgb: npt.NDArray[np.float32], reads: tuple[OcrRead, ...], br: InfographicBrief
+) -> list[dict[str, Any]]:
+    """For each relation, whether drawn ink joins the two node lines in separate shapes."""
+    code = code_words(br)
+    text = [
+        w.box
+        for read in reads
+        for w in read.words
+        if w.box and w.conf >= CONF_FLOOR and tokenize(w.text)
+    ]
+    labels = diagram.label(diagram.ink_mask(rgb, text))
+    found: list[dict[str, Any]] = []
+    for rel in br.relations:
+        sources, targets = locate(rel.source, reads, code), locate(rel.target, reads, code)
+        row: dict[str, Any] = {"from": rel.source, "to": rel.target, "kind": rel.kind}
+        if not sources or not targets:
+            found.append({**row, "drawn": False, "located": False})
+            continue
+        tried = [
+            diagram.link(labels, one, other, min(tall, low))
+            for one, tall in sources
+            for other, low in targets
+            if not _same_place(one, other)
+        ]
+        if not tried:
+            found.append({**row, "drawn": False, "located": False})
+            continue
+        seen = max(tried, key=lambda k: (k.drawn, k.run, k.crossings))
+        found.append(
+            {
+                **row,
+                "run": seen.run,
+                "crossings": seen.crossings,
+                "drawn": seen.drawn,
+                "located": True,
+                "shared": seen.shared,
+            }
+        )
+    return found
+
+
+def score_drawing(decision: GateDecision, links: list[dict[str, Any]]) -> GateDecision:
+    """A brief with relations passes only when the image draws every one of them."""
+    detail = {**decision.detail, "relations": links}
+    verdict: Verdict = "pass" if all(link["drawn"] for link in links) else "flat"
+    return GateDecision(verdict, decision.missing, decision.invented, detail)
 
 
 def read_png(path: Path) -> bytes:
