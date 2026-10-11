@@ -127,12 +127,12 @@ for verified in report["cases"]:
 (root / "index.html").write_text(
     '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     "<title>Trustworthy PR explanation acceptance</title><style>"
-    "body{margin:0;background:#111520;color:#e6edf3;font:17px/1.6 system-ui}main{max-width:1100px;margin:auto;padding:40px 24px}"
-    "h1,h2{line-height:1.25}a{color:#8ebaff}nav{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0}"
-    "section{border-top:1px solid #354258;margin-top:40px;padding-top:24px}.revision,pre{font:14px/1.5 ui-monospace,monospace;overflow:auto}"
-    "pre{padding:20px;background:#080c14;max-height:700px}.coverage{color:#7be6c6}.pending{color:#ffcc7a}video{display:block;width:100%;margin:24px 0}"
-    "summary{cursor:pointer}details{margin:20px 0}figure{margin:24px 0}figure img{display:block;width:100%;border:1px solid #354258}"
-    "figcaption{color:#9fb0c8;font-size:15px;margin-top:8px}</style></head><body><main><h1>Trustworthy PR explanation acceptance</h1>"
+    "body{margin:0;background:#ffffff;color:#1a2333;font:17px/1.6 system-ui;color-scheme:light}main{max-width:1100px;margin:auto;padding:40px 24px}"
+    "h1,h2{line-height:1.25;color:#0f1c33}a{color:#0b57d0}nav{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0}"
+    "section{border-top:1px solid #d7dde8;margin-top:40px;padding-top:24px}.revision,pre{font:14px/1.5 ui-monospace,monospace;overflow:auto}"
+    "pre{padding:20px;background:#f1f4f9;color:#1a2333;border:1px solid #d7dde8;max-height:700px}.coverage{color:#0d6e5f}.pending{color:#8a5a00}video{display:block;width:100%;margin:24px 0;background:#eef2f7}"
+    "summary{cursor:pointer}details{margin:20px 0}figure{margin:24px 0}figure img{display:block;width:100%;border:1px solid #d7dde8;background:#fff}"
+    "figcaption{color:#4b5b76;font-size:15px;margin-top:8px}</style></head><body><main><h1>Trustworthy PR explanation acceptance</h1>"
     "<p>Three real pull requests. Each original diff and every PRC output use the same base and head revisions.</p>"
     '<p class="pending">You are the only human reviewer. Review the combined verification report; human acceptance remains pending.</p>'
     "<p>License, package name, and publication remain separate decisions.</p>"
