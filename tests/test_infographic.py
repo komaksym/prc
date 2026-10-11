@@ -426,7 +426,7 @@ def session_reads(slug: str) -> tuple[gate.OcrRead, ...]:
 
 REJECTED = {
     "next-steps-roadmap": ("missing", ("1", "2", "Everything frozen")),
-    "review-bias-2026-10-10": ("invented", ("all",)),
+    "review-bias-2026-10-10": ("missing", ("Mixed result",)),
 }
 
 
@@ -453,6 +453,10 @@ def test_gate_session_images_with_a_clear_extra_word_fail(word: str) -> None:
 
 
 CANDIDATES = {
+    "v2-librarysync-98-candidate-02": ("pass", ()),
+    "v2-em-5756-candidate-01": ("pass", ()),
+    "v2-swarm-116-candidate-01": ("invented", ("9",)),
+    "v2-swarm-116-candidate-02": ("pass", ()),
     "librarysync-98-candidate-01": ("missing", ("Infographic drawn by AI. Words from prc.",)),
     "librarysync-98-candidate-02": ("pass", ()),
     "librarysync-98-candidate-03": ("pass", ()),
@@ -782,3 +786,61 @@ def test_brief_json_records_relations(tmp_path: Path) -> None:
     assert {"from": "find_next_episodes_bulk", "to": "select_next_episode", "kind": "call"} in (
         payload["relations"]
     )
+
+
+@pytest.mark.parametrize(
+    ("brief", "read", "same"),
+    [
+        ("s1e1", "sle1", True),
+        ("s1e1", "siei", False),
+        ("s2e3", "s2e8", False),
+        ("12", "l2", False),
+        ("12", "42", False),
+    ],
+)
+def test_gate_reads_one_as_l_only_inside_letter_and_digit_tokens(
+    brief: str, read: str, same: bool
+) -> None:
+    """Defect: a drawn "s1e1" read as "sle1" in every read, so a correct line was missing."""
+    assert gate._match(brief, read) is same
+
+
+def test_locate_finds_a_node_box_read_with_low_confidence() -> None:
+    """Defect: em-5756's top node read at confidence 60, so only its copy in the Look panel was
+    found and the gate missed the arrow drawn from the top box."""
+    path = "candidates/v2-em-5756-candidate-01"
+    reads = session_reads(path)
+    brief = session_brief(path)
+    places = gate.locate("noteCommand.multicursor.onComplete", reads, gate.code_words(brief))
+    tops = sorted(box[1] for box, _ in places)
+    assert len(tops) == 2
+    assert tops[0] < 230 < tops[1]
+
+
+def test_locate_ignores_a_weak_word_that_swallowed_a_drawn_line() -> None:
+    line = gate.OcrWord("----Papply", 22.0, (440, 331, 509, 49))
+    word = gate.OcrWord("apply", 96.0, (800, 331, 149, 49))
+    read = gate.OcrRead("psm-3", (line,))
+    assert gate.locate("apply", (read,), frozenset()) == []
+    assert gate.locate("apply", (gate.OcrRead("psm-3", (word,)),), frozenset()) != []
+
+
+def test_gate_square_glyph_taller_than_its_line_is_an_icon_but_a_word_is_not() -> None:
+    """Defect: a gear icon beside a code name read as "god" in three reads."""
+    path = "candidates/v2-librarysync-98-candidate-02"
+    base = session_reads(path)
+    text = gate.OcrWord("today", 90.0, (1540, 2, 90, 30))
+
+    def extra(*words: gate.OcrWord) -> gate.GateDecision:
+        reads = tuple(gate.OcrRead(r.mode, (*r.words, *words)) for r in base)
+        return gate.score_ocr(reads, session_brief(path))
+
+    gear = gate.OcrWord("god", 90.0, (1440, 0, 77, 77))
+    assert "today" in dict(extra(gear, text).invented)
+    assert "god" not in dict(extra(gear, text).invented)
+    wide = gate.OcrWord("god", 90.0, (1400, 0, 130, 77))
+    assert "god" in dict(extra(wide, text).invented)
+    lone = gate.OcrWord("if", 90.0, (1440, 0, 30, 30))
+    assert "if" in dict(extra(lone).invented)
+    digit = gate.OcrWord("9", 90.0, (1440, 0, 77, 77))
+    assert "9" in dict(extra(digit, text).invented)

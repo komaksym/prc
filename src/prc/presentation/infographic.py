@@ -22,6 +22,8 @@ Box = tuple[int, int, int, int]
 STABLE_READS = 3
 SHORT_TOKEN = 2
 ICON_HEIGHT = 1.6
+GLYPH_WIDTH = 1.2
+GLYPH_TOKEN = 3
 CONF_FLOOR = 70
 WORD_SIM = 0.80
 WINDOW = 6
@@ -40,9 +42,11 @@ PROMPT_RULES = (
     "Add no other words, numbers, titles, legends or watermarks than the lines given.",
     "Put each node line alone in its own box.",
     "Join each related pair of node boxes with one straight arrow, source to target.",
+    "Draw no other arrows or connector lines between boxes.",
     "Draw removed calls as dashed arrows and every other relation as a solid arrow.",
     "Leave a clear gap of plain canvas between boxes; do not let boxes touch.",
     "Icons are allowed beside text but contain no letters or digits.",
+    "Keep icons out of every line that holds a number, so OCR reads numbers exactly.",
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible.",
 )
@@ -56,6 +60,7 @@ LEGEND: dict[str, str] = {
     "removed call": "Dashed arrows show removed calls",
 }
 MIXED_CALL_LEGEND = "Arrows into code names show new calls"
+IconKind = Literal["lone", "tall"]
 Verdict = Literal["pass", "missing", "invented", "flat", "unreadable", "tool"]
 
 
@@ -144,6 +149,8 @@ def _fold(token: str) -> str:
 def _match(word: str, tok: str, code: frozenset[str] = frozenset()) -> bool:
     if word == tok:
         return True
+    if word not in code and _mixed(word) and _mixed(tok):
+        return _ones(word) == _ones(tok)
     if word in code or _has_digit(word) or _has_digit(tok):
         return False
     if _fold(word) == _fold(tok):
@@ -151,6 +158,15 @@ def _match(word: str, tok: str, code: frozenset[str] = frozenset()) -> bool:
     if len(word) <= 3 or len(tok) <= 3:
         return False
     return _ratio(word, tok) >= WORD_SIM
+
+
+def _mixed(token: str) -> bool:
+    return _has_digit(token) and any(ch.isalpha() for ch in token)
+
+
+def _ones(token: str) -> str:
+    """Fold the glyphs that OCR swaps for the digit one inside a letter-and-digit token."""
+    return token.replace("l", "1").replace("i", "1")
 
 
 def _label(count: int, one: str, many: str) -> str:
@@ -480,15 +496,26 @@ def _span(line: list[OcrWord]) -> Box:
     return (left, top, right - left, bottom - top)
 
 
-def _icon_like(words: tuple[OcrWord, ...]) -> set[int]:
-    """Ids of words alone on their text line or much taller than the other words on it."""
-    found: set[int] = set()
+def _icon_like(words: tuple[OcrWord, ...]) -> dict[int, IconKind]:
+    """Words alone on their text line ("lone"), or much taller than the nearest confident word
+    on it ("tall"). Other icon readings on the line do not count as neighbors."""
+    found: dict[int, IconKind] = {}
     for line in _text_lines(words):
         for word in line:
-            rest = sorted((w.box or (0, 0, 0, 0))[3] for w in line if w is not word)
-            tall = (word.box or (0, 0, 0, 0))[3]
-            if not rest or tall >= ICON_HEIGHT * rest[len(rest) // 2]:
-                found.add(id(word))
+            box = word.box or (0, 0, 0, 0)
+            rest = [w for w in line if w is not word and w.box]
+            if not rest:
+                found[id(word)] = "lone"
+                continue
+            sure = [w for w in rest if w.conf >= CONF_FLOOR and tokenize(w.text)] or rest
+
+            def gap(other: OcrWord, box: Box = box) -> int:
+                near = other.box or (0, 0, 0, 0)
+                return max(near[0] - (box[0] + box[2]), box[0] - (near[0] + near[2]), 0)
+
+            nearest = min(sure, key=gap).box or (0, 0, 0, 0)
+            if box[3] >= ICON_HEIGHT * nearest[3]:
+                found[id(word)] = "tall"
     return found
 
 
@@ -595,14 +622,15 @@ def _misread(
     read: int,
     reads: tuple[OcrRead, ...],
     known: Callable[[str], bool],
-    icon: bool,
+    icon: IconKind | None,
 ) -> bool:
     """True when the other reads show this token is a misreading of an icon or an allowed word.
 
     Most other reads see an allowed word at the same place. Or the token has no digit and is
     short: one letter that looks like an icon (alone on its text line, or much taller than its
-    neighbors), or a token that fewer than STABLE_READS confident
-    reads (all reads, when there are fewer) see there.
+    neighbors), up to GLYPH_TOKEN letters in a square box much taller than its neighbors (a gear
+    read as "god"), or a token that fewer than STABLE_READS confident reads (all reads, when
+    there are fewer) see there.
     """
     if box is None:
         return False
@@ -619,12 +647,21 @@ def _misread(
     agree = sum(1 for r in others if any(known(t) for t in at_place(r)))
     if len(others) >= 2 and agree * 2 > len(others):
         return True
-    if _has_digit(token) or len(token) > SHORT_TOKEN:
+    if _has_digit(token):
         return False
-    if len(token) == 1 and icon:
+    if icon == "tall" and len(token) <= GLYPH_TOKEN and _glyph(box):
+        return True
+    if len(token) > SHORT_TOKEN:
+        return False
+    if len(token) == 1 and icon is not None:
         return True
     seen = 1 + sum(1 for r in others if token in at_place(r, CONF_FLOOR))
     return seen < min(STABLE_READS, len(reads))
+
+
+def _glyph(box: Box) -> bool:
+    """A box about as wide as it is tall. Printed words of two or more letters are wider."""
+    return box[2] <= GLYPH_WIDTH * box[3]
 
 
 def score_ocr(
@@ -639,15 +676,15 @@ def score_ocr(
         return tok in joins or any(_match(word, tok, code) for word in allowed)
 
     streams: list[list[str]] = []
-    scored: list[list[tuple[str, float, Box | None, bool]]] = []
+    scored: list[list[tuple[str, float, Box | None, IconKind | None]]] = []
     for read in reads:
         icons = _icon_like(read.words)
         toks: list[str] = []
-        confs: list[tuple[str, float, Box | None, bool]] = []
+        confs: list[tuple[str, float, Box | None, IconKind | None]] = []
         for word in read.words:
             for tok in tokenize(word.text):
                 toks.append(tok)
-                confs.append((tok, word.conf, word.box, id(word) in icons))
+                confs.append((tok, word.conf, word.box, icons.get(id(word))))
         streams.append(toks)
         scored.append(confs)
     regions = [stream for read in reads for stream in region_streams(read.words)]
@@ -764,7 +801,7 @@ def locate(text: str, reads: tuple[OcrRead, ...], code: frozenset[str]) -> list[
     toks = tokenize(text)
     hits: list[tuple[Box, int]] = []
     for read in reads:
-        lines = _text_lines(tuple(w for w in read.words if w.conf >= CONF_FLOOR))
+        lines = _text_lines(tuple(w for w in read.words if _spells(w, toks, code)))
         groups = list(lines)
         for upper in lines:
             top = _span(upper)
@@ -786,16 +823,33 @@ def locate(text: str, reads: tuple[OcrRead, ...], code: frozenset[str]) -> list[
     return places
 
 
+def _spells(word: OcrWord, toks: list[str], code: frozenset[str]) -> bool:
+    """A confident word, or a weaker reading whose every token spells a word sought exactly.
+
+    Weak readings get no fuzzy match: a line drawn into a word ("----apply") must not count.
+    """
+    found = tokenize(word.text)
+    if not found:
+        return False
+    if word.conf >= CONF_FLOOR:
+        return True
+    return all(
+        any(
+            tok == want or (_mixed(want) and _mixed(tok) and _ones(want) == _ones(tok))
+            for want in toks
+        )
+        for tok in found
+    )
+
+
 def check_relations(
     rgb: npt.NDArray[np.float32], reads: tuple[OcrRead, ...], br: InfographicBrief
 ) -> list[dict[str, Any]]:
     """For each relation, whether drawn ink joins the two node lines in separate shapes."""
     code = code_words(br)
+    allowed = allowed_words(br)
     text = [
-        w.box
-        for read in reads
-        for w in read.words
-        if w.box and w.conf >= CONF_FLOOR and tokenize(w.text)
+        w.box for read in reads for w in read.words if w.box and _spells(w, sorted(allowed), code)
     ]
     labels = diagram.label(diagram.ink_mask(rgb, text))
     found: list[dict[str, Any]] = []

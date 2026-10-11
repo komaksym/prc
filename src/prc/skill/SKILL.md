@@ -231,7 +231,9 @@ plain canvas between boxes. Place the headline above the diagram, the
 legend near the arrows, and the facts, rows, verdict and disclosure
 around it. Show every brief line exactly once, spelled exactly, and add
 no other words or numbers. Icons are welcome beside text when they hold
-no letters or digits.
+no letters or digits. Keep icons out of lines that hold a number, such as
+the fact chips: OCR may read an icon as a digit, and the gate never
+excuses a foreign digit.
 
 Gate each candidate by re-running explain with repeatable flags, in the
 order drawn:
@@ -265,7 +267,8 @@ records the failed status.
 Read the selected drawing by eye before presenting it. OCR can miss faint
 text and tolerate a small prose misspelling. It cannot verify visual
 relationships beyond one fact: a drawn line joins each related pair of
-boxes. It does not check arrow direction, dashes, or which box an arrow
-points at first, so confirm those by eye. Code tokens and numbers match
+boxes. It does not check arrow direction, dashes, or extra arrows between
+boxes that the brief does not relate, so confirm those by eye and redraw
+a candidate with an extra arrow. Code tokens and numbers match
 exactly after punctuation and case normalization; the prose-only I/l fold
 does not apply to code.
