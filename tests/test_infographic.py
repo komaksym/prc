@@ -460,10 +460,7 @@ CANDIDATES = {
     "librarysync-98-candidate-01": ("missing", ("Infographic drawn by AI. Words from prc.",)),
     "librarysync-98-candidate-02": ("pass", ()),
     "librarysync-98-candidate-03": ("pass", ()),
-    "em-5756-candidate-01": (
-        "missing",
-        ("noteCommand.multicursor.onComplete in src/commands/note.ts",),
-    ),
+    "em-5756-candidate-01": ("invented", ("onccomplete",)),
     "em-5756-candidate-02": ("pass", ()),
     "em-5756-candidate-03": ("pass", ()),
     "swarm-116-candidate-01": ("pass", ()),
@@ -505,7 +502,7 @@ def test_gate_lone_letter_is_an_icon_but_a_letter_in_text_is_not() -> None:
     text = gate.OcrWord("today", 90.0, (1540, 2, 90, 30))
     alone = tuple(gate.OcrRead(r.mode, (*r.words, lone)) for r in session_reads(path))
     inline = tuple(gate.OcrRead(r.mode, (*r.words, beside, text)) for r in session_reads(path))
-    assert gate.score_ocr(alone, session_brief(path)).verdict == "pass"
+    assert "y" in dict(gate.score_ocr(alone, session_brief(path)).invented)
     assert "y" in dict(gate.score_ocr(inline, session_brief(path)).invented)
 
 
@@ -697,10 +694,54 @@ def test_structure_em5756_shows_both_new_calls() -> None:
 def test_structure_without_parsed_calls_uses_grounded_board_groups() -> None:
     """swarm-116 is Go, so the map has no edges; the checked board groups name the mapping."""
     assert links(case_brief("swarm-116")) == {
-        ("Read failure", "ReadComposeError", "maps"),
-        ("YAML syntax failure", "ParseComposeError", "maps"),
-        ("Schema validation failure", "ValidateComposeError", "maps"),
+        ("fileReader", "ReadComposeError", "maps"),
+        ("Unmarshal", "ParseComposeError", "maps"),
+        ("Decode", "ValidateComposeError", "maps"),
     }
+
+
+def test_structure_does_not_promote_unchecked_group_titles() -> None:
+    m = json.loads((CASES / "swarm-116" / "map.json").read_text())
+    board = json.loads((CASES / "swarm-116" / "board.json").read_text())
+    for scene in board["scenes"]:
+        if scene["type"] == "groups":
+            for group in scene["groups"]:
+                group["title"] = "Invented relationship"
+    assert links(gate.infobrief(m, m.get("brief"), board)) == links(case_brief("swarm-116"))
+
+
+def test_structure_does_not_join_an_error_with_an_unrelated_go_call() -> None:
+    m = {
+        "files": [
+            {
+                "path": "loader.go",
+                "hunks": [
+                    {
+                        "lines": [
+                            {"new": 1, "text": "func load() error {"},
+                            {"new": 2, "text": "harmless()"},
+                            {"new": 3, "text": "if err != nil {"},
+                            {"new": 4, "text": "return nil, &WrongError{Err: err}"},
+                            {"new": 5, "text": "}"},
+                            {"new": 6, "text": "raw, err := l.fileReader(ctx, path)"},
+                            {"new": 7, "text": "if err != nil {"},
+                            {"new": 8, "text": "return nil, &ReadComposeError{Err: err}"},
+                            {"new": 9, "text": "}"},
+                        ]
+                    }
+                ],
+            }
+        ]
+    }
+    assert gate._mapping(m) == [gate.Relation("fileReader", "ReadComposeError", "maps")]
+
+
+def test_structure_excludes_name_only_calls_and_test_call_counts() -> None:
+    m = call_map(("checkout", "total", "added"), ("test_a", "total", "added"), tests=("test_a",))
+    m["edges"][1]["resolution"] = "name"
+    assert links(gate.infobrief(m, m["brief"], None)) == {("checkout", "total", "call")}
+    m["edges"][0]["resolution"] = "name"
+    assert gate.structure(m, m["brief"], None) == ()
 
 
 @pytest.mark.parametrize("slug", ["librarysync-98", "em-5756", "swarm-116"])
@@ -832,7 +873,9 @@ def test_gate_square_glyph_taller_than_its_line_is_an_icon_but_a_word_is_not() -
     text = gate.OcrWord("today", 90.0, (1540, 2, 90, 30))
 
     def extra(*words: gate.OcrWord) -> gate.GateDecision:
-        reads = tuple(gate.OcrRead(r.mode, (*r.words, *words)) for r in base)
+        reads = tuple(
+            gate.OcrRead(r.mode, (*r.words, *words)) if i < 3 else r for i, r in enumerate(base)
+        )
         return gate.score_ocr(reads, session_brief(path))
 
     gear = gate.OcrWord("god", 90.0, (1440, 0, 77, 77))
@@ -841,6 +884,22 @@ def test_gate_square_glyph_taller_than_its_line_is_an_icon_but_a_word_is_not() -
     wide = gate.OcrWord("god", 90.0, (1400, 0, 130, 77))
     assert "god" in dict(extra(wide, text).invented)
     lone = gate.OcrWord("if", 90.0, (1440, 0, 30, 30))
-    assert "if" in dict(extra(lone).invented)
+    all_reads = tuple(gate.OcrRead(r.mode, (*r.words, lone)) for r in base)
+    assert "if" in dict(gate.score_ocr(all_reads, session_brief(path)).invented)
     digit = gate.OcrWord("9", 90.0, (1440, 0, 77, 77))
     assert "9" in dict(extra(digit, text).invented)
+
+
+@pytest.mark.parametrize("extra", ["9.files", "no", "X", "god"])
+def test_gate_stable_foreign_text_is_not_excused_by_box_geometry(extra: str) -> None:
+    brief = gate.InfographicBrief("2 files", (gate.BriefLine("chip", "2 files"),))
+    words = (
+        gate.OcrWord("2", 95, (0, 0, 15, 20)),
+        gate.OcrWord("files", 95, (25, 0, 50, 20)),
+        gate.OcrWord(extra, 95, (50, 75, 36, 60)),
+        gate.OcrWord("files", 95, (100, 100, 50, 20)),
+    )
+    reads = tuple(gate.OcrRead(str(i), words) for i in range(4))
+    decision = gate.score_ocr(reads, brief)
+    assert decision.verdict == "invented"
+    assert gate.tokenize(extra)[0] in dict(decision.invented)

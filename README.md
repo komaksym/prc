@@ -77,7 +77,7 @@ prc writes local files. It does not post comments, upload videos, or publish a r
 Every `explain` run writes `infographic/brief.json`. It holds the only lines a drawing may show.
 These are the headline, node lines, a legend, computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
 Node lines come from the code. They name the calls the PR adds or removes, the tests that call them, mappings that the checked board grounds in code, and a before and after when the board shows one.
-`relations` in the brief lists which node lines the drawing must join with an arrow. When the brief has node lines it keeps three facts, so the drawing has room for them. Without node lines it keeps six.
+`relations` in the brief lists which node lines the drawing must join with an arrow. When the brief has node lines it keeps three facts, so the drawing has room for them. Without node lines it keeps six. The gate checks for visible ink between endpoint boxes. It does not prove arrow direction, arrowheads, or correct relation endpoints. Review those details in the image.
 Your agent draws candidate images from those lines with its own image tool. The bundled skill uses baoyu-infographic.
 Pass the candidates to `explain` with a repeatable `--infographic` flag, in the order drawn.
 

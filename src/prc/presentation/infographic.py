@@ -45,8 +45,7 @@ PROMPT_RULES = (
     "Draw no other arrows or connector lines between boxes.",
     "Draw removed calls as dashed arrows and every other relation as a solid arrow.",
     "Leave a clear gap of plain canvas between boxes; do not let boxes touch.",
-    "Icons are allowed beside text but contain no letters or digits.",
-    "Keep icons out of every line that holds a number, so OCR reads numbers exactly.",
+    "Use no icons or pictograms. Use only labels, boxes, arrows and simple geometric separators.",
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible.",
 )
@@ -251,7 +250,11 @@ def _calls(m: dict[str, Any], brief: Any) -> list[Relation]:
     def is_test(sid: str) -> bool:
         return sid in sym and sym[sid]["path"] in tests
 
-    moved = [e for e in m.get("edges", []) if e.get("status") in ("added", "removed")]
+    moved = [
+        e
+        for e in m.get("edges", [])
+        if e.get("status") in ("added", "removed") and e.get("resolution") == "exact"
+    ]
     prod = sorted(
         (e for e in moved if e["source"] in sym and not is_test(e["source"])),
         key=lambda e: (e["status"] != "added", e["source"], e["target"]),
@@ -282,17 +285,37 @@ def _group_scenes(board: dict[str, Any] | None) -> list[dict[str, Any]]:
     return [s for s in (board or {}).get("scenes", []) if s.get("type") == "groups"]
 
 
-def _mapping(board: dict[str, Any] | None) -> list[Relation]:
-    """Board groups grounded in code: each group's title maps to its item."""
-    for scene in _group_scenes(board):
-        found = [
-            Relation(_trim_line(g["title"]), _trim_line(g["items"][0]["text"]), "maps")
-            for g in scene["groups"]
-            if g.get("ground") and g.get("items") and g["items"][0]["text"] != g["title"]
-        ]
-        if found:
-            return found[:MAX_CALLS]
-    return []
+def _mapping(m: dict[str, Any]) -> list[Relation]:
+    found: list[Relation] = []
+    for file in m.get("files", []):
+        if not file["path"].endswith(".go"):
+            continue
+        for hunk in file.get("hunks", []):
+            call: str | None = None
+            failure = False
+            for line in hunk["lines"]:
+                if line.get("new") is None:
+                    continue
+                text = line["text"].strip()
+                match = re.search(
+                    r"(?:([\w, ]+\berr)\s*:=|if\s+err\s*(?::=|=))\s*([\w.]+)\(",
+                    text,
+                )
+                if match:
+                    call = match[2]
+                    failure = bool(re.search(r";\s*err\s*!=\s*nil", text))
+                elif re.search(r"\berr\s*!=\s*nil", text) and call:
+                    failure = True
+                else:
+                    error = re.fullmatch(r"return nil, &([A-Za-z]\w*Error)\{.*", text)
+                    if error and failure and call and line.get("old") is None:
+                        found.append(Relation(call.rsplit(".", 1)[-1], error[1], "maps"))
+                        call = None
+                        failure = False
+                    elif text and text not in ("", "}") and not text.startswith("if err != nil"):
+                        call = None
+                        failure = False
+    return list(dict.fromkeys(found))[:MAX_CALLS]
 
 
 def _before_after(board: dict[str, Any] | None) -> list[Relation]:
@@ -320,7 +343,7 @@ def _before_after(board: dict[str, Any] | None) -> list[Relation]:
 
 def structure(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> tuple[Relation, ...]:
     """What the drawing connects: real calls, else grounded board groups, plus a before/after."""
-    found = _calls(m, brief) or _mapping(board)
+    found = _calls(m, brief) or _mapping(m)
     found += _before_after(board)
     return tuple(dict.fromkeys(r for r in found if r.source != r.target))
 
@@ -644,10 +667,15 @@ def _misread(
             for t in tokenize(w.text)
         ]
 
-    agree = sum(1 for r in others if any(known(t) for t in at_place(r)))
+    agree = sum(
+        1 for r in others if token not in at_place(r) and any(known(t) for t in at_place(r))
+    )
     if len(others) >= 2 and agree * 2 > len(others):
         return True
     if _has_digit(token):
+        return False
+    seen = 1 + sum(1 for r in others if token in at_place(r, CONF_FLOOR))
+    if seen == len(reads):
         return False
     if icon == "tall" and len(token) <= GLYPH_TOKEN and _glyph(box):
         return True
@@ -655,7 +683,6 @@ def _misread(
         return False
     if len(token) == 1 and icon is not None:
         return True
-    seen = 1 + sum(1 for r in others if token in at_place(r, CONF_FLOOR))
     return seen < min(STABLE_READS, len(reads))
 
 

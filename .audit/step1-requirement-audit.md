@@ -1,12 +1,12 @@
 # Step 1 requirement audit
 
-Summary. Implementation, installation, machine checks and the three review packages are complete. Listening is verified by calibrated speech recognizers, which the user chose on 2026-10-11 in place of direct listening.
+Summary. Step 1b reopened infographic acceptance because the published images were stacks of text boxes. New structural candidates pass the candidate gate. Their installed-wheel rebuild and browser checks remain pending. Earlier voice and listening evidence remains historical evidence, not proof of the new bundle.
 
 | Requirement | Current evidence | Result |
 | --- | --- | --- |
 | Fix the voice lock and use installed Kokoro. | 38174a4, be2e7fa, run-NYgULN/doctor.log, wheel install and smoke, all three run.json files, sampled soundtrack correlations. | Verified for the installed source and sampled voice identity. |
 | Fail release verification when Kokoro is missing. | tests/test_voice_gate.py, the forced --voice kokoro verifier, 855-case JUnit including missing-backend regressions. | Verified. |
-| Add baoyu infographics with PRC words and the OCR gate. | Each case's infographic-work prompt, generation-rounds.json, immutable candidate records, preview brief, published PNG hash and four successful readings. All originals were viewed directly. | Verified. OCR's limits remain explicit. |
+| Add baoyu infographics with PRC words and the OCR gate. | Step 1b adds node relations, spatial OCR and drawn-line checks. Current candidates are librarysync-98/candidate-06, em-5756/candidate-05 and swarm-116/candidate-07 in acceptance/infographic-work-v2. Each candidate passes its generated brief gate. | Reopened. Candidate checks and direct image inspection pass. Installed-wheel and browser acceptance remain pending. |
 | Rebuild the map on PR Lens. | Pinned MIT bundle, runtime and vendor tamper regressions, five maintainer CLI checks, converter tests and actual browser map/drawer/tour screenshots. | Verified. All changed files remain navigable. |
 | Rebuild three real acceptance PRs with original diffs at matching revisions and infographics inline. | acceptance/verification.json, render-identity.json, github-current-step1.json, original Git object comparisons, installed-wheel commands and doc/hash checks. Re-rendered at dae9737 with the run-Bkni85 wheel; map, card, comment and infographic files are byte-identical to the be2e7fa build. | Verified at dae9737. |
 | Verify actual browser and video outputs. | be2e7fa: three browser-check.json records, 41 agent-browser link checks, visual-final.md. dae9737: hub-browser-dae9737 with 15 screenshots, 51 local references present, three infographics rendered, three videos playing at their new lengths, walkthroughs, map drawers and tours, and caption frames that keep code names. | Verified within the stated surfaces. |
@@ -22,6 +22,6 @@ The automatic approval reviewer temporarily rejected one audio-check command bec
 
 The parent accepted the independent claims and visual reports within their stated scopes. Neither supplies human acceptance. A transcript difference is not automatically an audible defect.
 
-Every step 1 requirement now has current evidence. Human acceptance of the three PRs stays with the user. A release machine needs Muesli or openai-whisper, because the release run rejects the skipped E2E listening test. Do not push, open a PR or publish without explicit approval under D21.
+The infographic requirement remains open until the complete step 1b bundle is verified. Human acceptance of the three PRs stays with the user. A release machine needs Muesli or openai-whisper, because the release run rejects the skipped E2E listening test. Do not push, open a PR or publish without explicit approval under D21.
 
 Next step. The sole human reviewer listens at the worksheet's named times and records the three acceptance judgments.
