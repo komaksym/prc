@@ -66,6 +66,18 @@ It does not establish network isolation for every CLI command. Live GitHub acqui
 Keep fixture checks local. Avoid external link navigation, public writes, and global skill installs.
 Report tested and untested entry points. One mapped feature does not prove the whole product or release acceptance.
 
+For infographics, compare `infographic/brief.json` with the captured code evidence.
+Calls must be exact added or removed production calls.
+The test-call node counts distinct test callers with added exact calls to a displayed symbol.
+Python `Before docs:` and `After docs:` lines are source docstring excerpts, not inferred board behavior.
+Go call-to-typed-error mappings require full pinned head source that matches the captured head diff rows.
+OCR matching permits only explicit glyph confusions, with no generic edit-distance tolerance.
+Require `flat` after passing word checks when no relations exist.
+The geometric gate proves connecting ink only. Inspect direction, arrowheads, endpoints, dashes, and extra connectors in the screenshot.
+Icons can appear elsewhere on the canvas, away from numerical fact lines and other lines that contain numbers.
+Read recognizer and planted-control verdicts from the current output's `listening.json`.
+Keep human pacing, tone, and acceptance pending until the user supplies evidence.
+
 ## Cleanup
 
 The driver closes its browser and removes only its own scratch store, including on failure.

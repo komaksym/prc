@@ -24,7 +24,7 @@ from prc.explainer.timing import predict as predict_seconds
 from prc.explainer.voice import Backend
 from prc.explainer.voice import select as select_voice
 from prc.freshness import FreshnessReport, StoredBasis, reconcile
-from prc.gitutil import list_paths
+from prc.gitutil import GitError, list_paths, read_blob
 from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_hex, to_jsonable
 from prc.model import PrRef
 from prc.presentation import infographic
@@ -602,7 +602,21 @@ def run_explain(
             duration, warnings = rendered.duration, rendered.layout_warnings
             video = out_dir / "video.mp4"
             predicted = predict_seconds(board, backend)
-        info_brief = infographic.infobrief(rebuilt, rebuilt.get("brief"), board)
+        sources: dict[str, str] = {}
+        directory = Path(git_dir) if git_dir is not None else repo
+        for file in rebuilt.get("files", []):
+            if file["path"].endswith((".go", ".py")) and file["status"] != "deleted":
+                try:
+                    sources[file["path"]] = read_blob(
+                        directory, f"{stored_head}:{file['path']}"
+                    ).decode("utf-8")
+                    if file["path"].endswith(".py") and file["status"] != "added":
+                        sources["base:" + file["path"]] = read_blob(
+                            directory, f"{rebuilt['base_sha']}:{file['path']}"
+                        ).decode("utf-8")
+                except (GitError, OSError, UnicodeDecodeError):
+                    continue
+        info_brief = infographic.infobrief(rebuilt, rebuilt.get("brief"), board, sources)
         info_dir = work / "infographic"
         info_dir.mkdir(parents=True, exist_ok=True)
         infographic.write_brief_json(info_brief, info_dir / "brief.json")

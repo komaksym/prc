@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import ast
 import json
 import re
 import shutil
 import subprocess
 import unicodedata
+from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass
 from itertools import pairwise
@@ -13,6 +15,9 @@ from typing import Any, Literal
 
 import numpy as np
 import numpy.typing as npt
+from pygments import lex  # type: ignore[import-untyped]
+from pygments.lexers import GoLexer  # type: ignore[import-untyped]
+from pygments.token import Comment, String  # type: ignore[import-untyped]
 
 from prc import facts
 from prc.presentation import card, diagram
@@ -25,7 +30,6 @@ ICON_HEIGHT = 1.6
 GLYPH_WIDTH = 1.2
 GLYPH_TOKEN = 3
 CONF_FLOOR = 70
-WORD_SIM = 0.80
 WINDOW = 6
 MAX_WORDS = 80
 LINE_LIMIT = 96
@@ -45,7 +49,8 @@ PROMPT_RULES = (
     "Draw no other arrows or connector lines between boxes.",
     "Draw removed calls as dashed arrows and every other relation as a solid arrow.",
     "Leave a clear gap of plain canvas between boxes; do not let boxes touch.",
-    "Use no icons or pictograms. Use only labels, boxes, arrows and simple geometric separators.",
+    "Icons are allowed beside text but contain no letters or digits.",
+    "Keep icons out of every line that holds a number, so OCR reads numbers exactly.",
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible.",
 )
@@ -122,25 +127,6 @@ def _has_digit(token: str) -> bool:
     return any(ch.isdigit() for ch in token)
 
 
-def _lev(one: str, other: str) -> int:
-    if one == other:
-        return 0
-    prev = list(range(len(other) + 1))
-    for i, ca in enumerate(one, 1):
-        cur = [i]
-        for j, cb in enumerate(other, 1):
-            cur.append(min(prev[j] + 1, cur[-1] + 1, prev[j - 1] + (ca != cb)))
-        prev = cur
-    return prev[-1]
-
-
-def _ratio(one: str, other: str) -> float:
-    total = len(one) + len(other)
-    if total == 0:
-        return 1.0
-    return (total - _lev(one, other)) / total
-
-
 def _fold(token: str) -> str:
     return token.replace("l", "i")
 
@@ -148,15 +134,13 @@ def _fold(token: str) -> str:
 def _match(word: str, tok: str, code: frozenset[str] = frozenset()) -> bool:
     if word == tok:
         return True
-    if word not in code and _mixed(word) and _mixed(tok):
-        return _ones(word) == _ones(tok)
+    if word not in code and _mixed(word):
+        if _mixed(tok):
+            return _ones(word) == _ones(tok)
+        return "0" in word and word.replace("0", "o") == tok
     if word in code or _has_digit(word) or _has_digit(tok):
         return False
-    if _fold(word) == _fold(tok):
-        return True
-    if len(word) <= 3 or len(tok) <= 3:
-        return False
-    return _ratio(word, tok) >= WORD_SIM
+    return _fold(word) == _fold(tok)
 
 
 def _mixed(token: str) -> bool:
@@ -165,7 +149,7 @@ def _mixed(token: str) -> bool:
 
 def _ones(token: str) -> str:
     """Fold the glyphs that OCR swaps for the digit one inside a letter-and-digit token."""
-    return token.replace("l", "1").replace("i", "1")
+    return token.replace("l", "1").replace("i", "1").replace("o", "0")
 
 
 def _label(count: int, one: str, many: str) -> str:
@@ -220,6 +204,11 @@ def _fit_words(lines: tuple[BriefLine, ...]) -> tuple[BriefLine, ...]:
             _drop_last_row(kept, RISKY_LABEL)
         elif _section_rows(kept, LOOK_LABEL):
             _drop_last_row(kept, LOOK_LABEL)
+        elif (
+            any(line.role == "node" for line in kept)
+            and sum(line.role == "chip" for line in kept) > 1
+        ):
+            del kept[max(i for i, line in enumerate(kept) if line.role == "chip")]
         else:
             head = next(i for i, line in enumerate(kept) if line.role == "headline")
             room = MAX_WORDS - _word_count(tuple(line for i, line in enumerate(kept) if i != head))
@@ -281,70 +270,139 @@ def _calls(m: dict[str, Any], brief: Any) -> list[Relation]:
     return found
 
 
-def _group_scenes(board: dict[str, Any] | None) -> list[dict[str, Any]]:
-    return [s for s in (board or {}).get("scenes", []) if s.get("type") == "groups"]
-
-
-def _mapping(m: dict[str, Any]) -> list[Relation]:
+def _mapping(m: dict[str, Any], sources: dict[str, str] | None = None) -> list[Relation]:
     found: list[Relation] = []
     for file in m.get("files", []):
-        if not file["path"].endswith(".go"):
+        if not file["path"].endswith(".go") or file["path"].endswith("_test.go"):
             continue
-        for hunk in file.get("hunks", []):
+        source = (sources or {}).get(file["path"])
+        if source is None:
+            continue
+        original = source.splitlines()
+        rows = [
+            line
+            for hunk in file.get("hunks", [])
+            for line in hunk["lines"]
+            if line.get("new") is not None
+        ]
+        if any(
+            not 0 < line["new"] <= len(original) or original[line["new"] - 1] != line["text"]
+            for line in rows
+        ):
+            continue
+        added = {line["new"] for line in rows if line.get("old") is None}
+        if added:
+            clean = "".join(
+                "".join("\n" if char == "\n" else " " for char in value)
+                if kind in Comment or kind in String
+                else value
+                for kind, value in lex(source, GoLexer(stripnl=False, ensurenl=False))
+            )
+            anchored = False
             call: str | None = None
             failure = False
-            for line in hunk["lines"]:
-                if line.get("new") is None:
+            for number, code in enumerate(clean.splitlines(), 1):
+                text = code.strip()
+                if text.startswith("func "):
+                    anchored = True
+                    call, failure = None, False
                     continue
-                text = line["text"].strip()
-                match = re.search(
-                    r"(?:([\w, ]+\berr)\s*:=|if\s+err\s*(?::=|=))\s*([\w.]+)\(",
+                if not anchored or not text:
+                    continue
+                match = re.fullmatch(
+                    r"(?:[\w, ]+\berr\s*(?::=|=)|if\s+err\s*(?::=|=))\s*([\w.]+)"
+                    r"\([^(){};]*\)(;\s*err\s*!=\s*nil\s*\{)?",
                     text,
                 )
                 if match:
-                    call = match[2]
-                    failure = bool(re.search(r";\s*err\s*!=\s*nil", text))
-                elif re.search(r"\berr\s*!=\s*nil", text) and call:
+                    call = match[1]
+                    failure = match[2] is not None
+                elif text == "if err != nil {" and call:
                     failure = True
                 else:
                     error = re.fullmatch(r"return nil, &([A-Za-z]\w*Error)\{.*", text)
-                    if error and failure and call and line.get("old") is None:
+                    if (
+                        error
+                        and failure
+                        and call
+                        and number in added
+                        and re.search(r"\bErr\s*:\s*err\b", text)
+                    ):
                         found.append(Relation(call.rsplit(".", 1)[-1], error[1], "maps"))
-                        call = None
-                        failure = False
-                    elif text and text not in ("", "}") and not text.startswith("if err != nil"):
-                        call = None
-                        failure = False
+                    call, failure = None, False
     return list(dict.fromkeys(found))[:MAX_CALLS]
 
 
-def _before_after(board: dict[str, Any] | None) -> list[Relation]:
-    """The first group that changes between two consecutive board group scenes."""
-    scenes = _group_scenes(board)
-    for old, new in pairwise(scenes):
-        before = {g["id"]: g for g in old["groups"]}
-        for g in new["groups"]:
-            prev = before.get(g["id"])
-            if prev is None or prev["title"] != g["title"]:
+def _doc_lines(file: dict[str, Any], side: str, source: str | None) -> dict[int, str]:
+    if source is None:
+        return {}
+    original = source.splitlines()
+    rows = [
+        line
+        for hunk in file.get("hunks", [])
+        for line in hunk["lines"]
+        if line.get(side) is not None
+    ]
+    if any(
+        not 0 < line[side] <= len(original) or original[line[side] - 1] != line["text"]
+        for line in rows
+    ):
+        return {}
+    try:
+        tree = ast.parse(source)
+    except (SyntaxError, ValueError):
+        return {}
+    changed = {line[side] for line in rows}
+    found = {}
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or not node.body:
+            continue
+        first = node.body[0]
+        if (
+            isinstance(first, ast.Expr)
+            and isinstance(first.value, ast.Constant)
+            and isinstance(first.value.value, str)
+            and first.lineno in changed
+        ):
+            summary = first.value.value.splitlines()[0].replace("`", "").strip()
+            if summary:
+                found[node.lineno] = summary.removeprefix("Return the ")
+    return found
+
+
+def _before_after(m: dict[str, Any], sources: dict[str, str] | None = None) -> list[Relation]:
+    for file in m.get("files", []):
+        if not file["path"].endswith(".py"):
+            continue
+        source = sources or {}
+        old = _doc_lines(file, "old", source.get("base:" + file["path"]))
+        new = _doc_lines(file, "new", source.get(file["path"]))
+        for symbol in m.get("symbols", []):
+            if symbol["path"] != file["path"] or symbol["status"] != "modified":
                 continue
-            was = " ".join(item["text"] for item in prev["items"])
-            now = " ".join(item["text"] for item in g["items"])
-            if was != now:
-                title = g["title"]
+            base, head = symbol.get("base_span"), symbol.get("span")
+            if not base or not head:
+                continue
+            was, now = old.get(base[0]), new.get(head[0])
+            if was and now and was != now:
                 return [
                     Relation(
-                        _trim_line(f"Before: {title} {was}"),
-                        _trim_line(f"After: {title} {now}"),
+                        _trim_line(f"Before docs: {was}"),
+                        _trim_line(f"After docs: {now}"),
                         "becomes",
                     )
                 ]
     return []
 
 
-def structure(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> tuple[Relation, ...]:
-    """What the drawing connects: real calls, else grounded board groups, plus a before/after."""
-    found = _calls(m, brief) or _mapping(m)
-    found += _before_after(board)
+def structure(
+    m: dict[str, Any],
+    brief: Any,
+    board: dict[str, Any] | None,
+    sources: dict[str, str] | None = None,
+) -> tuple[Relation, ...]:
+    found = _calls(m, brief) or _mapping(m, sources)
+    found += _before_after(m, sources)
     return tuple(dict.fromkeys(r for r in found if r.source != r.target))
 
 
@@ -352,7 +410,12 @@ def _nodes(relations: tuple[Relation, ...]) -> list[str]:
     return list(dict.fromkeys(t for r in relations for t in (r.source, r.target)))
 
 
-def infobrief(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> InfographicBrief:
+def infobrief(
+    m: dict[str, Any],
+    brief: Any,
+    board: dict[str, Any] | None,
+    sources: dict[str, str] | None = None,
+) -> InfographicBrief:
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
     stats = found.stats
@@ -362,7 +425,7 @@ def infobrief(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> In
         f"{stats.symbols_changed} "
         f"{_label(stats.symbols_changed, 'parsed symbol changed', 'parsed symbols changed')}"
     )
-    links = structure(m, brief, board)
+    links = structure(m, brief, board, sources)
     chips = (
         [files, changed, ci]
         if links
@@ -413,7 +476,9 @@ def joined_words(br: InfographicBrief) -> set[str]:
     joins: set[str] = set()
     for text in (line.text for line in br.lines):
         toks = tokenize(text)
-        joins.update(one + other for one, other in pairwise(toks))
+        joins.update(
+            one + other for one, other in pairwise(toks) if not (one.isdigit() and other.isdigit())
+        )
     return joins
 
 
@@ -436,7 +501,6 @@ def gate_constants() -> dict[str, Any]:
         "MAX_WORDS": MAX_WORDS,
         "REACH": diagram.REACH,
         "WINDOW": WINDOW,
-        "WORD_SIM": WORD_SIM,
     }
 
 
@@ -593,11 +657,11 @@ def _covers(line_toks: list[str], ocr: list[str], code: frozenset[str] = frozens
             and _match(here, ocr[pos] + ocr[pos + 1], code)
         ):
             found.append((1, 2))
-        if bi + 1 < len(line_toks):
+        if bi + 1 < len(line_toks) and not (here.isdigit() and line_toks[bi + 1].isdigit()):
             next_word = line_toks[bi + 1]
             joined = here + next_word
-            exact = here in code or next_word in code or _has_digit(joined)
-            if joined == ocr[pos] or (not exact and _fold(joined) == _fold(ocr[pos])):
+            exact = here in code or next_word in code
+            if joined == ocr[pos] or (not exact and _match(joined, ocr[pos], code)):
                 found.append((2, 1))
         return found
 
@@ -606,9 +670,8 @@ def _covers(line_toks: list[str], ocr: list[str], code: frozenset[str] = frozens
             return True
         if (bi, oi) in dead:
             return False
-        for pos in range(oi, len(ocr)):
-            if bi > 0 and pos - oi > WINDOW:
-                break
+        positions = range(oi, len(ocr)) if bi == 0 else range(oi, min(oi + 1, len(ocr)))
+        for pos in positions:
             for used, read in steps(bi, pos):
                 if rec(bi + used, pos + read):
                     return True
@@ -698,9 +761,27 @@ def score_ocr(
     code = code_words(br)
     prose = {_fold(word) for word in allowed if word not in code and not _has_digit(word)}
     joins = joined_words(br)
+    pairs = {
+        one + other: (one, other)
+        for line in br.lines
+        for one, other in pairwise(tokenize(line.text))
+        if not (one.isdigit() and other.isdigit())
+    }
+    followers: dict[str, set[str]] = {}
+    for line in br.lines:
+        for left, right in pairwise(tokenize(line.text)):
+            followers.setdefault(left, set()).add(right)
+
+    def canonical(tok: str) -> str | None:
+        if tok in allowed:
+            return tok
+        return next((word for word in sorted(allowed) if _match(word, tok, code)), None)
+
+    def joined(tok: str) -> tuple[str, str] | None:
+        return next((parts for word, parts in pairs.items() if _match(word, tok, code)), None)
 
     def known(tok: str) -> bool:
-        return tok in joins or any(_match(word, tok, code) for word in allowed)
+        return tok in joins or canonical(tok) is not None or joined(tok) is not None
 
     streams: list[list[str]] = []
     scored: list[list[tuple[str, float, Box | None, IconKind | None]]] = []
@@ -714,7 +795,6 @@ def score_ocr(
                 confs.append((tok, word.conf, word.box, icons.get(id(word))))
         streams.append(toks)
         scored.append(confs)
-    regions = [stream for read in reads for stream in region_streams(read.words)]
     detail: dict[str, Any] = {
         "allowed": len(allowed),
         "brief_lines": len(br.lines),
@@ -741,10 +821,81 @@ def score_ocr(
                 good = _misread(tok, box, idx, reads, known, icon)
             if not good:
                 invented[tok] = max(invented.get(tok, conf), conf)
+    expected = Counter(tok for line in br.lines for tok in tokenize(line.text))
+    counts: list[Counter[str]] = []
+    totals: list[Counter[str]] = []
+    places: dict[str, list[Box]] = {}
+    confidences: dict[str, float] = {}
+    for stream in scored:
+        count: Counter[str] = Counter()
+        total: Counter[str] = Counter()
+        pos = 0
+        while pos < len(stream):
+            tok, conf, box, _ = stream[pos]
+            counted: tuple[str, ...] = ()
+            whole = (
+                canonical(tok + stream[pos + 1][0])
+                if pos + 1 < len(stream) and not _has_digit(tok + stream[pos + 1][0])
+                else None
+            )
+            if whole is not None and (tok, stream[pos + 1][0]) in pairs.values():
+                next_token = canonical(stream[pos + 2][0]) if pos + 2 < len(stream) else None
+                if next_token not in followers.get(whole, set()):
+                    whole = None
+            if whole is not None:
+                counted = (whole,)
+                conf = min(conf, stream[pos + 1][1])
+                pos += 1
+            elif (match := canonical(tok)) is not None:
+                counted = (match,)
+            elif parts := joined(tok):
+                counted = parts
+            total.update(counted)
+            if box is not None:
+                for token in counted:
+                    seen = places.setdefault(token, [])
+                    if not any(_same_place(box, other) for other in seen):
+                        seen.append(box)
+            if conf >= CONF_FLOOR:
+                count.update(counted)
+                for token in counted:
+                    confidences[token] = max(confidences.get(token, conf), conf)
+            pos += 1
+        counts.append(count)
+        totals.append(total)
+    for tok, limit in expected.items():
+        surplus = sum(count[tok] > limit for count in counts)
+        if surplus >= min(STABLE_READS, len(reads)):
+            invented[tok] = confidences[tok]
+    covered: list[list[str]] = []
+    regions: list[list[str]] = []
+    for idx, reading in enumerate(reads):
+        kept = []
+        pos = 0
+        for word in reading.words:
+            toks = tokenize(word.text)
+            if any(
+                known(tok)
+                or _allowed_neighbor(tok, pos + offset, streams[idx], prose)
+                or (
+                    word.conf >= CONF_FLOOR and not _misread(tok, word.box, idx, reads, known, None)
+                )
+                for offset, tok in enumerate(toks)
+            ):
+                kept.append(word)
+            pos += len(toks)
+        covered.append([tok for word in kept for tok in tokenize(word.text)])
+        regions.extend(region_streams(tuple(kept)))
     missing: list[tuple[str, tuple[str, ...]]] = []
     for line in br.lines:
         ltoks = tokenize(line.text)
-        if any(_covers(ltoks, ocr, code) for ocr in (*streams, *regions)):
+        enough = all(
+            max(len(places.get(tok, [])), max((count[tok] for count in totals), default=0))
+            >= expected[tok]
+            for tok in ltoks
+            if expected[tok] > 1
+        )
+        if enough and any(_covers(ltoks, ocr, code) for ocr in (*covered, *regions)):
             continue
         lost = tuple(t for t in ltoks if not _seen_anywhere(t, streams, code))
         missing.append((line.text, lost if lost else tuple(ltoks)))
@@ -812,8 +963,12 @@ def gate(png: Path, br: InfographicBrief) -> GateDecision:
     if failed:
         return tool_decision(version, failed, tuple(reads))
     decision = score_ocr(tuple(reads), br, tesseract=version)
-    if decision.verdict != "pass" or not br.relations:
+    if decision.verdict != "pass":
         return decision
+    if not br.relations:
+        return GateDecision(
+            "flat", (), (), decision.detail | {"reason": "no code relationships available"}
+        )
     rgb = diagram.decode_rgb(png)
     if rgb is None:
         return tool_decision(version, ["ffmpeg"], tuple(reads))

@@ -28,6 +28,11 @@ def main() -> int:
     parser.add_argument("--candidates", type=Path, help="folder with <case>/candidate-NN.png")
     parser.add_argument("cases", nargs="+")
     args = parser.parse_args()
+    args.acceptance = args.acceptance.resolve()
+    args.prc = args.prc.resolve()
+    args.wheel = args.wheel.resolve()
+    if args.candidates is not None:
+        args.candidates = args.candidates.resolve()
     failed = []
     for case in args.cases:
         folder = args.acceptance / case
@@ -58,17 +63,59 @@ def main() -> int:
             failed.append(f"{case}: explain exited {render.returncode}")
             continue
         run = Path(json.loads(render.stdout)["out"])
+        if not run.is_absolute():
+            run = Path(identity["cwd"]) / run
         heard = subprocess.run([str(args.prc), "listen", str(run)], capture_output=True, text=True)
         (folder / "listen.log").write_text(heard.stdout + heard.stderr)
         if heard.returncode != 0:
             failed.append(f"{case}: listen exited {heard.returncode}")
         identity |= {
             "prc_commit": args.commit,
+            "proof": str(args.wheel.parent.parent),
             "wheel": str(args.wheel),
             "wheel_sha256": hashlib.sha256(args.wheel.read_bytes()).hexdigest(),
             "command": command,
             "started_at": started,
+            "completed_at": datetime.now(UTC).isoformat(),
+            "out": str(run),
         }
+        previous = set(identity.get("output_hashes", {}))
+        names = {name for name in previous if (run / name).is_file()}
+        required = {
+            "map.json",
+            "map.html",
+            "board.json",
+            "video.mp4",
+            "doc.html",
+            "comment.md",
+            "run.json",
+        }
+        missing = (previous - names) & required
+        if missing:
+            failed.append(f"{case}: required outputs missing: {sorted(missing)}")
+        names.update(
+            name
+            for name in (
+                "map.json",
+                "map.html",
+                "board.json",
+                "video.mp4",
+                "doc.html",
+                "comment.md",
+                "run.json",
+                "card.html",
+                "card.png",
+                "infographic.png",
+                "infographic/brief.json",
+                "infographic/check.json",
+                "listening.json",
+            )
+            if (run / name).is_file()
+        )
+        identity["output_hashes"] = {
+            name: hashlib.sha256((run / name).read_bytes()).hexdigest() for name in sorted(names)
+        }
+        identity.pop("audio_checks", None)
         (folder / "render-identity.json").write_text(json.dumps(identity, indent=1) + "\n")
         print(case, "rendered", run, "listen", heard.returncode)
     for line in failed:

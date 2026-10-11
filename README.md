@@ -76,8 +76,22 @@ prc writes local files. It does not post comments, upload videos, or publish a r
 
 Every `explain` run writes `infographic/brief.json`. It holds the only lines a drawing may show.
 These are the headline, node lines, a legend, computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
-Node lines come from the code. They name the calls the PR adds or removes, the tests that call them, mappings that the checked board grounds in code, and a before and after when the board shows one.
-`relations` in the brief lists which node lines the drawing must join with an arrow. When the brief has node lines it keeps three facts, so the drawing has room for them. Without node lines it keeps six. The gate checks for visible ink between endpoint boxes. It does not prove arrow direction, arrowheads, or correct relation endpoints. Review those details in the image.
+Node lines come from code evidence. PRC selects up to three exact added or removed calls from production code.
+It can add one node counting distinct test callers with added exact calls to a displayed symbol.
+Static calls do not prove test coverage.
+When no such calls are available, PRC can show Go call-to-typed-error mappings.
+These require the full file at the pinned head revision, with every captured head diff row matching that source.
+The mapping recognizes supported call/error-return patterns in production Go files. It does not build a Go call graph.
+PRC also extracts changed Python function docstring summaries from the complete pinned base and head files as `Before docs:` and `After docs:`.
+These are source documentation excerpts, not behavior inferred from board scenes.
+
+`relations` lists the node pairs the drawing must join with arrows.
+A brief with relations starts with three fact chips. A brief without relations starts with six.
+The word budget can reduce the chips and review rows.
+The geometric gate proves connecting ink only. It does not prove arrow direction, arrowheads, or correct relation endpoints.
+Review those details, dashed removed calls, and extra connectors in the image.
+Icons are allowed beside text or elsewhere on the canvas if they contain no letters or digits.
+Keep them away from numerical fact lines and all other lines that contain numbers.
 Your agent draws candidate images from those lines with its own image tool. The bundled skill uses baoyu-infographic.
 Pass the candidates to `explain` with a repeatable `--infographic` flag, in the order drawn.
 
@@ -86,11 +100,19 @@ uv run prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board b
 ```
 
 prc reads an unchanged copy of each candidate with tesseract in four modes. All four must succeed.
-It publishes the first candidate whose readings cover every brief line and detect no foreign word at confidence 70 or more.
-A word counts as a misreading when most other readings see a brief word in the same place, or when it is one letter alone or much taller than its neighbors, such as an icon read as "Q".
-When the brief has relations, the candidate must also draw each one: one connected run of drawn ink must touch both node boxes and run across the gap between them, or cross the segment between them twice.
-A candidate that shows every word but draws no such line fails as `flat`. prc decodes the pixels with ffmpeg.
-That drawing becomes `infographic.png`.
+The word checks require coverage of every brief line and no unexcused foreign word at confidence 70 or more.
+A word can count as a misreading when most other readings see an allowed word at the same place.
+Short, inconsistent OCR tokens can also count as icon misreadings, subject to the gate's shape and agreement rules.
+OCR matching has no generic edit-distance tolerance. Prose permits only the explicit I/l glyph confusion after case normalization.
+Non-code tokens that mix letters and digits permit the explicit I/l/1 and O/0 glyph confusions.
+Code tokens and pure numbers match exactly after punctuation and case normalization.
+Split or joined OCR words must still cover the ordered brief text.
+Extra text below the confidence floor can escape detection. Icons that resemble letters can cause false rejection.
+When the brief has relations, the candidate must also have connecting ink for every pair of located node labels.
+A candidate that passes the word checks but lacks a connection returns `flat`.
+A candidate with no relations also returns `flat`, even when its word checks pass.
+PRC decodes candidate pixels with ffmpeg for the geometric check.
+The first passing drawing becomes `infographic.png`.
 The comment and the walkthrough then show that image first.
 `infographic/check.json` lists each candidate's verdict, missing lines, foreign words, successful or failed reading modes, and for each relation whether it is drawn.
 It records the hash of the exact checked PNG bytes. `run.json` records the attempts.
@@ -106,11 +128,8 @@ It transcribes the video's voice with Parakeet through Muesli's `muesli-cli` whe
 First it checks the recognizer on planted controls: clear and garbled readings of the same code names, in the run's own voice.
 It exits 1 when a code name is heard fewer times than it is said, or when the controls fail.
 `listening.json` records the recognizer, its model and version, the transcript and every code name's verdict.
-The gate checks detected text. It cannot prove that every word or visual relationship is correct.
-It tolerates small OCR errors in prose words, so a small misspelling can pass.
-Extra text below the confidence floor can escape detection. Icons that resemble letters can cause false rejection.
-Code tokens and numbers require exact matches after punctuation and case normalization.
-Read the published image before you post it.
+It also records the planted-control verdict. A recognizer pass does not decide human pacing or tone.
+Review the narration by ear and inspect the selected image before you post it.
 
 ## Your agent writes the board
 
