@@ -90,9 +90,20 @@ def classes_pyg(path: str, data: bytes) -> list[str]:
         (Name.Builtin, "f"),
         (Name.Function, "f"),
     ]
-    out = []
+    lexed: list[str] = []
     for tok, val in lexer.get_tokens(data.decode()):
-        out += [next((c for t, c in m if tok in t), "")] * len(val.encode())
+        lexed += [next((c for t, c in m if tok in t), "")] * len(val.encode())
+    if b"\r\n" not in data:
+        return lexed
+    # Pygments rewrites CRLF as LF before lexing; give each CR no class and keep byte offsets.
+    out: list[str] = []
+    j = 0
+    for i, byte in enumerate(data):
+        if byte == 0x0D and data[i + 1 : i + 2] == b"\n":
+            out.append("")
+        else:
+            out.append(lexed[j] if j < len(lexed) else "")
+            j += 1
     return out
 
 

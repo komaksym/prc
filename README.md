@@ -254,6 +254,14 @@ The [launch thread](docs/launch/TWEET.md) is an unpublished draft.
 
 `brief` computes a text brief. `review`, `status`, and `decide` retain the earlier review and freshness workflow.
 `eval-analyze` handles the earlier paired evaluation format, separate from the MVP comprehension scoreboard.
+The bounded paired evaluation (v2) adds `eval-prepare`, `eval-session`, `eval-export`, and
+`eval-grade` on top of `eval-analyze`. It runs a private sealed study: two distinct unseen PRs
+per pair (default 3 pairs, configurable), GitHub+PRC against GitHub+Coldtea PR Lens CI, one
+MC plus two short questions per PR, a server-owned 20-minute reading deadline, blinded export
+after closure, and the explicit sealed protocol carried through grading and analysis. See
+[docs/design/paired-evaluation-v2.md](docs/design/paired-evaluation-v2.md) for the contract.
+The closed-study hub shows frozen keys and score meanings, scores multiple-choice answers,
+and saves your short-answer grades before displaying the exploratory analysis.
 Run `uv run prc --help` and a command's `--help` for its arguments.
 
 The repository verification command is:

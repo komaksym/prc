@@ -123,12 +123,12 @@ Prebuild both tools; record preparation separately from the 20-minute reading de
 Keep exposed acceptance packets out. Preserve source revisions, keys, matching rationale,
 and tool provenance. Refuse to start with missing Lens output or mismatched revisions.
 
-- [ ] Ground existing protocol, scoring, CLI, artifact paths and authentic Lens capture.
-- [ ] Compare design sketches; select a small typed study/session boundary.
-- [ ] Write failing end-to-end and failure-case tests before implementation.
-- [ ] Implement paired kit preparation, randomized sessions, response export and blinded grading.
+- [x] Ground existing protocol, scoring, CLI, artifact paths and authentic Lens capture.
+- [x] Compare design sketches; select a small typed study/session boundary.
+- [x] Write failing end-to-end and failure-case tests before implementation.
+- [x] Implement paired kit preparation, randomized sessions, response export and blinded grading.
 - [ ] Prepare real unseen matched PR material and independent frozen questions and adjudication.
-- [ ] Verify the CLI and the actual browser session with screenshots, resume and export.
+- [x] Verify the CLI and the actual browser session with screenshots, resume and export.
 - [ ] Independent review; fix findings; lint, types, full tests, clean package build and install.
 - [ ] Integrate locally, preserve separate push/publication gates, report actual ready state.
 
