@@ -45,11 +45,11 @@ PURPOSE_B_TITLE = "Matched PR evaluation"
 PURPOSE_B_BODY = (
     "The scored study is in preparation. This hub has no sealed study roster.",
     "A matched pair uses two similar, distinct PRs that you have not seen. Review each PR once, in its assigned condition.",
-    "Use the normal GitHub PR page for one PR. Use GitHub plus PRC for the other PR. The GitHub baseline includes its description, Files changed, discussion, checks, and navigation.",
+    "Use GitHub plus Coldtea PR Lens CI for one PR. Use GitHub plus PRC for the other PR. Both conditions include GitHub's description, Files changed, discussion, checks, and navigation.",
     "Randomize which PR receives PRC and which PR you read first. Freeze equivalent questions and the answer key before viewing either PR.",
     "Grade answers against that key. Compare equivalent question scores per pair, then summarize the pair differences. Acceptance impressions are not study scores.",
     "The three exposed acceptance packets are excluded from the unseen study pool. Reading one PR twice mixes prior learning with the explanation's contribution.",
-    "Before a scored run, reconcile and freeze the pair count, question instrument, timing rules, and comparison arms. The requested comparisons include agent text plus Mermaid and Coldtea PR Lens. Each comparison uses distinct unseen PRs, with one scored reading per PR.",
+    "Before a scored run, reconcile and freeze the pair count, question instrument, timing rules, and these two conditions. Each comparison uses distinct unseen PRs, with one scored reading per PR. Artifact acceptance is independent and is not a prerequisite for the matched study.",
 )
 
 

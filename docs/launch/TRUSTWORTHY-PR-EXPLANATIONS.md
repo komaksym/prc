@@ -219,7 +219,7 @@ The three packets are exposed practice and acceptance material, excluded from th
 GitHub code view and the retained raw diff are optional fact-check evidence during artifact acceptance.
 
 For the separate matched PR evaluation, review two similar, distinct unseen PRs once each.
-Assign one PR to the GitHub browser baseline and the other to GitHub plus PRC.
+Assign one PR to GitHub plus Coldtea PR Lens CI and the other to GitHub plus PRC.
 Randomize assignment and reading order. Freeze equivalent questions and their answer key before viewing.
 A same-PR reread cannot isolate PRC's contribution because prior reading teaches the change.
 Reconcile and freeze the study size, questions, timing rules, and requested comparison arms before any scored run.

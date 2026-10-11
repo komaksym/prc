@@ -1,6 +1,6 @@
 # Paired-eval cross-judge (readonly, xhigh ceiling)
 
-Method: read parent and Muse end-to-end. No nested agents. GLM candidate absent at check time, so no GLM score. Ceiling is xhigh; max is unavailable on this host.
+Method: read parent and Muse end-to-end. No nested agents. GLM candidate arrived after first pass and is scored in the addendum below. Ceiling is xhigh; max is unavailable on this host.
 
 Verdict: use parent local-server design as base. Graft Muse test and type details. Parent wins on leakage, state, and analysis wiring.
 
@@ -19,3 +19,7 @@ Decisive points: static hub leaks by design. Server scope limits each reading to
 Graft from Muse: four-verb CLI names, frozen dataclass sketch (PairedKit, HubManifest, SessionCursor, ResponseRecord, BlindedResponse), single-PCG64 draw, forward-only with read-only review, two-pair fixture E2E plus unit list, and pilot-size-sim reuse.
 
 Reality check: no frozen roster exists. No scored run exists. Parent is still prose. Next work must IMPLEMENT the runnable kit, server, export, grade, and analyze path.
+
+GLM addendum (bounded, no full re-analysis): scores 8/10: 1:2 distinct unseen plus exactly one prebuilt arm per PR with provenance; 2:2 seal reuse plus keys-absent with keys_sha256 and serve-failure stays visible; 3:2 server-owned clock, one-trial asset scope, stopped trials never re-serve; 4:1 scaled Protocol plus --pair-count as sole engine change, but complete-pairs grade check risks unknowns; 5:1 stdlib server plus sqlite with single-writer session. Parent server choice stands.
+
+Graft from GLM into parent base: sqlite atomic state with trials/answers tables and restart-safe elapsed; name-to-allowed-file map where /trial/<n>/asset/<name> resolves in memory to the active trial only; keys outside served namespace with digest check; HMAC blinded sheet; Lens serve failure recorded visibly, never silent GitHub fallback.

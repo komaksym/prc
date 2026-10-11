@@ -96,6 +96,9 @@ def test_hub_separates_purposes_and_retires_same_pr_scoring(tmp_path: Path) -> N
     assert "color-scheme:light" in hub
     assert "Agent verification runs before human acceptance" in hub
     assert "verification.json" in hub
+    assert "GitHub plus Coldtea PR Lens CI" in hub
+    assert "GitHub plus PRC" in hub
+    assert "review artifact acceptance before" not in lowered
     assert "optional fact-check" in lowered
     assert "raw diff is optional" in lowered
     assert "two similar, distinct prs that you have not seen" in lowered

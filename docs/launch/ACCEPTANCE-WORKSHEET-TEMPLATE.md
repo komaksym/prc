@@ -23,13 +23,13 @@ These exposed packets are excluded from the unseen study pool.
 ## Prepare the matched PR evaluation
 
 Use two similar, distinct PRs that the reviewer has not seen.
-Assign one to the normal GitHub browser experience and the other to GitHub plus PRC.
+Assign one to GitHub plus genuine Coldtea PR Lens CI output and the other to GitHub plus PRC.
 Randomize condition assignment and reading order. Review each PR once in its assigned condition.
 Freeze equivalent questions and the answer key before either reading.
 Grade against the frozen key. Compare question scores within each pair, then summarize pair differences.
 Acceptance notes are not study scores.
 
 Before a scored run, reconcile and freeze the pair count, instrument, timing rules, and comparison arms.
-The requested comparisons include agent text plus Mermaid and Coldtea PR Lens.
-Those comparisons also use distinct unseen PRs, with one scored reading per PR.
+The current comparison has exactly these two conditions. Lens CI output must match the frozen source revision.
+Artifact acceptance is independent. It is not a prerequisite for the matched study.
 The current hub contains instructions only. It does not provide a sealed study roster or start a scored run.
