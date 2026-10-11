@@ -111,6 +111,33 @@ Reuse the installed Chromium cache and run browsers headless. No production depe
 Regression ownership. The parent owns D1 to D6, D8, D15 and D17.
 The rendering worker owns D7 and D9 to D13. The packaging worker owns D14 and D16.
 
+# Matched PR evaluation, 2026-10-11
+
+## Summary
+
+Build a usable solo evaluation. Each test has two similar distinct unseen PRs.
+One PR uses GitHub plus genuine Coldtea PR Lens CI output. The other uses GitHub plus PRC.
+Each PR is read once. Default to three pairs, six PRs, with three frozen questions per PR.
+This is an exploratory pilot, not proof of general review speed or accuracy.
+Prebuild both tools; record preparation separately from the 20-minute reading deadline.
+Keep exposed acceptance packets out. Preserve source revisions, keys, matching rationale,
+and tool provenance. Refuse to start with missing Lens output or mismatched revisions.
+
+- [ ] Ground existing protocol, scoring, CLI, artifact paths and authentic Lens capture.
+- [ ] Compare design sketches; select a small typed study/session boundary.
+- [ ] Write failing end-to-end and failure-case tests before implementation.
+- [ ] Implement paired kit preparation, randomized sessions, response export and blinded grading.
+- [ ] Prepare real unseen matched PR material and independent frozen questions and adjudication.
+- [ ] Verify the CLI and the actual browser session with screenshots, resume and export.
+- [ ] Independent review; fix findings; lint, types, full tests, clean package build and install.
+- [ ] Integrate locally, preserve separate push/publication gates, report actual ready state.
+
+Throughput checkpoint:
+- Blocking first steps: observe current pairing/scoring contracts and genuine Lens evidence before choosing a kit format.
+- Independent workstreams: read-only code and source-material explorers; one exclusive owner for coupled implementation; parent owns kit assembly and integration.
+- Shared mutable state: dedicated feature checkout and private study folders; no edits to routing or exposed packets.
+- Smallest safe decomposition: keep session state, sealing and response export with one code owner. Source collection and independent instrument preparation produce separate files.
+
 # Repository reconciliation, 2026-10-08
 
 ## Summary
