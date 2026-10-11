@@ -176,7 +176,8 @@ The three PRC packages were rebuilt from the verified wheel, with Kokoro and one
 The original diffs and captured base/head pairs stay fixed.
 Read-only GitHub checks on 2026-10-10 confirm that all three current PR pages still have those revisions and counts.
 Proof is acceptance/github-current-step1.json. A pinned commit does not freeze the GitHub page.
-The worksheet includes an infographic score. Rebuilds preserve the existing review fields and score anchors.
+The worksheet records artifact defects and acceptance decisions. Rebuilds preserve existing case notes.
+Answered old ratings remain legacy notes, excluded from study scores.
 Human acceptance remains pending. The current artifacts replace the earlier say videos for review.
 The previous outputs, screenshots and identity records remain under before-step1-be2e7fa beside the acceptance folder.
 
@@ -211,12 +212,18 @@ Report is .audit/step1-reviews/claims-final.md. Model inspection does not provid
 
 ## Previous acceptance package at 548d8ab
 
-Open artifacts/trustworthiness/2026-10-09/acceptance/index.html. Record each decision in acceptance.md in the same folder.
-The user's baseline is the normal GitHub PR page, including description, Files changed, discussion, checks and navigation.
-Review there first, then assess the five PRC outputs. Rate each output from 1 to 5 for its extra help.
-The worksheet defines the score anchors and records baseline notes, added help, preferred formats and acceptance findings.
-Check questionable claims in GitHub's code view. The retained raw diff is optional verification evidence.
-This three-case human review uses the GitHub browser baseline. The frozen agent evaluation remains a separate protocol.
+The earlier GitHub-first reading order and 1-5 extra-help scores are retired as of 2026-10-11.
+Open artifacts/trustworthiness/2026-10-09/acceptance/index.html for the corrected instructions.
+Record artifact acceptance in acceptance.md in the same folder.
+The three packets are exposed practice and acceptance material, excluded from the unseen scored pool.
+GitHub code view and the retained raw diff are optional fact-check evidence during artifact acceptance.
+
+For the separate matched PR evaluation, review two similar, distinct unseen PRs once each.
+Assign one PR to the GitHub browser baseline and the other to GitHub plus PRC.
+Randomize assignment and reading order. Freeze equivalent questions and their answer key before viewing.
+A same-PR reread cannot isolate PRC's contribution because prior reading teaches the change.
+Reconcile and freeze the study size, questions, timing rules, and requested comparison arms before any scored run.
+The corrected hub does not start that study. See [Review hub methods](ACCEPTANCE-WORKSHEET-TEMPLATE.md).
 
 Each case keeps the original diff, its numstat, the provenance and the five PRC outputs for one base and head pair.
 The 548d8ab wheel built every output. Chromium opened each map, drawer, walkthrough and card, and played each video.

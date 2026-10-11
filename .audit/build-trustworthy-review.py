@@ -11,6 +11,7 @@ from urllib.parse import quote
 root = Path(sys.argv[1]).resolve()
 report = json.loads((root / "verification.json").read_text())
 sections = []
+NL = "\n"
 
 
 def count(n: int, one: str, many: str) -> str:
@@ -37,6 +38,136 @@ questions = {
     "em-5756": "Does the explanation make the touch keyboard behavior clear? Review the dependency patch and the three browser test cases.",
     "swarm-116": "Does the explanation help you review the error paths while clearly stating the limits of Go analysis?",
 }
+
+PURPOSE_A_TITLE = "Artifact acceptance"
+PURPOSE_B_TITLE = "Matched PR evaluation"
+
+PURPOSE_B_BODY = (
+    "The scored study is in preparation. This hub has no sealed study roster.",
+    "A matched pair uses two similar, distinct PRs that you have not seen. Review each PR once, in its assigned condition.",
+    "Use the normal GitHub PR page for one PR. Use GitHub plus PRC for the other PR. The GitHub baseline includes its description, Files changed, discussion, checks, and navigation.",
+    "Randomize which PR receives PRC and which PR you read first. Freeze equivalent questions and the answer key before viewing either PR.",
+    "Grade answers against that key. Compare equivalent question scores per pair, then summarize the pair differences. Acceptance impressions are not study scores.",
+    "The three exposed acceptance packets are excluded from the unseen study pool. Reading one PR twice mixes prior learning with the explanation's contribution.",
+    "Before a scored run, reconcile and freeze the pair count, question instrument, timing rules, and comparison arms. The requested comparisons include agent text plus Mermaid and Coldtea PR Lens. Each comparison uses distinct unseen PRs, with one scored reading per PR.",
+)
+
+
+def fresh_header_text(exposed: str) -> str:
+    lines = [
+        "# Human acceptance",
+        "",
+        "You are the only human reviewer.",
+        "",
+        "Agent verification runs before human acceptance. Machine proof is in verification.json and each case's browser-check.json; it does not decide whether these explanations help you review code.",
+        "",
+        "License, package name, publication, push, and PR creation remain separate decisions.",
+        "",
+        "## " + PURPOSE_A_TITLE,
+        "",
+        "These cases ("
+        + exposed
+        + ") are exposed practice and acceptance material. They are excluded from the unseen scored pool.",
+        "",
+        "Check each PRC output for this PR: false claims, misleading omissions, broken references, rendering problems, and audio problems. Record the decision below.",
+        "",
+        "GitHub code view is an optional fact-check. The retained raw diff is optional verification evidence.",
+        "",
+        "The agent requirement audit records direct inspection of the selected diagrams and the limits of machine checks. Human pacing and tone review remains pending.",
+        "",
+        "Choose accepted, changes requested, or deferred for each packet. Record concrete defects and optional preference notes. These decisions are not comprehension scores.",
+        "",
+        "## " + PURPOSE_B_TITLE,
+        "",
+        *[line for paragraph in PURPOSE_B_BODY for line in (paragraph, "")],
+    ]
+    return NL.join(lines)
+
+
+def fresh_case_text(slug: str, url: str) -> str:
+    lines = [
+        "## " + slug,
+        "",
+        questions[slug],
+        "",
+        "GitHub PR: " + url + " (optional fact-check; not a first-reading baseline)",
+        "",
+        "Decision: pending.",
+        "",
+        "Factual errors: awaiting your review.",
+        "",
+        "Misleading omissions: awaiting your review.",
+        "",
+        "Broken references: awaiting your review.",
+        "",
+        "Rendering problems (including audio): awaiting your review.",
+        "",
+        "GitHub fact-check notes (optional): awaiting your review.",
+        "",
+    ]
+    return NL.join(lines)
+
+
+def migrate_case_line(line: str) -> str | None:
+    retired_fields = (
+        "Usefulness scores",
+        "Extra help from PRC:",
+        "Most useful / least useful",
+        "Would use PRC",
+        "Useful for reviewing this PR:",
+    )
+    if any(line.strip().startswith(field) for field in retired_fields):
+        answer = line.partition(":")[2].strip()
+        placeholders = {"", "awaiting your review.", "pending."}
+        score_parts = answer.rstrip(".").split(";")
+        untouched_scores = all(part.strip().endswith(" pending") for part in score_parts)
+        if answer in placeholders or untouched_scores:
+            return None
+        return "Legacy acceptance note, excluded from study scores: " + answer
+    stripped = line.strip()
+    if stripped.startswith("GitHub baseline notes:"):
+        return "GitHub fact-check notes (optional):" + line.split(":", 1)[1]
+    if stripped.startswith("GitHub baseline:"):
+        return "GitHub PR:" + line.split(":", 1)[1]
+    return line
+
+
+def case_section(existing: str, start: int, slugs: list[str]) -> str:
+    end = len(existing)
+    for other in slugs:
+        nxt = existing.find("## " + other, start)
+        if nxt != -1 and nxt < end:
+            end = nxt
+    return existing[start:end]
+
+
+def migrate_worksheet(existing: str, slugs: list[str], urls: dict[str, str], exposed: str) -> str:
+    parts = [fresh_header_text(exposed)]
+    for slug in slugs:
+        at = existing.find("## " + slug)
+        if at == -1:
+            parts.append(fresh_case_text(slug, urls[slug]))
+            continue
+        body = case_section(existing, at + len("## " + slug), slugs)
+        kept: list[str] = []
+        for raw in body.split(NL):
+            new = migrate_case_line(raw)
+            if new is None:
+                continue
+            kept.append(new)
+        while kept and kept[0].strip() == "":
+            kept.pop(0)
+        section = ("## " + slug + NL + NL.join(kept)).rstrip() + NL
+        while NL * 3 in section:
+            section = section.replace(NL * 3, NL * 2)
+        if "Broken references:" not in section:
+            section = section + "Broken references: awaiting your review." + NL
+        if "Decision:" not in section:
+            section = section + "Decision: pending." + NL
+        parts.append(section)
+    return NL.join(parts)
+
+
 for verified in report["cases"]:
     slug = verified["case"]
     case = root / slug
@@ -124,6 +255,8 @@ for verified in report["cases"]:
         + "</p>"
         '<p class="pending">Your acceptance is pending.</p></section>'
     )
+slugs = [item["case"] for item in report["cases"]]
+exposed = ", ".join(slugs)
 (root / "index.html").write_text(
     '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     "<title>Trustworthy PR explanation acceptance</title><style>"
@@ -133,49 +266,41 @@ for verified in report["cases"]:
     "pre{padding:20px;background:#f1f4f9;color:#1a2333;border:1px solid #d7dde8;max-height:700px}.coverage{color:#0d6e5f}.pending{color:#8a5a00}video{display:block;width:100%;margin:24px 0;background:#eef2f7}"
     "summary{cursor:pointer}details{margin:20px 0}figure{margin:24px 0}figure img{display:block;width:100%;border:1px solid #d7dde8;background:#fff}"
     "figcaption{color:#4b5b76;font-size:15px;margin-top:8px}</style></head><body><main><h1>Trustworthy PR explanation acceptance</h1>"
+    '<nav aria-label="Review tasks"><a href="#artifact-acceptance">Artifact acceptance</a><a href="#matched-evaluation">Matched PR evaluation</a><a href="#acceptance-packets">Acceptance packets</a></nav>'
     "<p>Three real pull requests. Each original diff and every PRC output use the same base and head revisions.</p>"
-    '<p class="pending">You are the only human reviewer. Review the combined verification report; human acceptance remains pending.</p>'
+    '<p>You are the only human reviewer. Agent verification runs before human acceptance. Machine proof is in <a href="verification.json">the combined verification report</a> and each case\'s browser-check.json. It does not decide whether these explanations help you review code.</p>'
     "<p>License, package name, and publication remain separate decisions.</p>"
-    "<p>Use each normal GitHub PR page as the baseline. Review its description, Files changed, discussion, checks and navigation.</p>"
-    "<p>Then assess the extra help from PRC. Score each output from 1 to 5 in the acceptance worksheet.</p>"
-    "<p>1 adds no help or confusion. 2 adds a small benefit. 3 adds useful context. 4 guides your review. 5 is substantial help you would use again.</p>"
-    "<p>False claims and misleading omissions block acceptance regardless of scores. This repeated reading does not measure an independent speed improvement.</p>"
-    "<p>The infographic gate checks detected words and connecting ink. Inspect direction, arrowheads, endpoints, dashes, and extra connectors yourself. Original diffs remain optional verification evidence.</p>"
-    "<p>Each narration verdict below comes from the current output folder's listening.json. Human pacing and tone review is pending.</p>"
+    '<section id="artifact-acceptance"><h2>' + PURPOSE_A_TITLE + "</h2>"
+    "<p>These cases ("
+    + exposed
+    + ") are exposed practice and acceptance material. They are excluded from the unseen scored pool.</p>"
+    "<p>Check each PRC output for false claims, misleading omissions, broken references, rendering problems, and audio problems.</p>"
+    "<p>Choose accepted, changes requested, or deferred for each packet. Record concrete defects in the worksheet. False claims and misleading omissions require changes. Personal preferences are acceptance notes, not study scores.</p>"
+    "<p>GitHub code view is an optional fact-check. The retained raw diff is optional verification evidence.</p>"
+    "<p>The infographic gate checks words and connecting ink. It does not prove arrow direction, arrowheads, or correct endpoints. The selected diagrams were also inspected directly. "
+    '<a href="../../../../.audit/step1-requirement-audit.md">Agent verification scope and limits</a>.</p>'
+    "<p>Each narration verdict below comes from the output folder's listening.json. Human pacing and tone review remains pending.</p>"
     '<p><a href="verification.json">Combined verification report</a> · <a href="acceptance.md">Acceptance worksheet</a></p>'
+    '</section><section id="matched-evaluation"><h2>'
+    + PURPOSE_B_TITLE
+    + "</h2>"
+    + "".join(f"<p>{html.escape(paragraph)}</p>" for paragraph in PURPOSE_B_BODY)
+    + '</section><h2 id="acceptance-packets">Acceptance packets</h2>'
     + "".join(sections)
-    + "</main></body></html>\n"
+    + "</main></body></html>"
+    + NL
 )
-worksheet = [
-    "# Human acceptance",
-    "",
-    "You are the only human reviewer.",
-    "",
-    "Automated verification does not decide whether these explanations help you review code.",
-    "",
-    "License, package name, publication, push, and PR creation remain separate decisions.",
-    "",
-]
-for verified in report["cases"]:
-    slug = verified["case"]
-    worksheet.extend(
-        [
-            f"## {slug}",
-            "",
-            questions[slug],
-            "",
-            "Decision: pending.",
-            "",
-            "Factual errors: awaiting your review.",
-            "",
-            "Misleading omissions: awaiting your review.",
-            "",
-            "Rendering problems: awaiting your review.",
-            "",
-            "Useful for reviewing this PR: awaiting your review.",
-            "",
-        ]
+urls: dict[str, str] = {}
+for item in report["cases"]:
+    slug = item["case"]
+    urls[slug] = json.loads((root / slug / "provenance.json").read_text())["url"]
+sheet = root / "acceptance.md"
+if sheet.exists():
+    sheet.write_text(migrate_worksheet(sheet.read_text(), slugs, urls, exposed))
+else:
+    sheet.write_text(
+        fresh_header_text(exposed)
+        + NL
+        + NL.join(fresh_case_text(slug, urls[slug]) for slug in slugs)
     )
-if not (root / "acceptance.md").exists():
-    (root / "acceptance.md").write_text("\n".join(worksheet))
 print(root / "index.html")

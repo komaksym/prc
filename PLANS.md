@@ -540,6 +540,35 @@ evaluation/  protocol.py (assignment, roster seal) → scoring.py → analysis.p
 - [x] M8 CLI + E2E: `prc review|decide|status|eval-analyze`; E2E test through CLI ending in `artifacts/e2e/` repeatable artifact.
 - [x] M9 Independent validation by a fresh-context agent (finite: one pass, fix confirmed defects), docs (README), final verify: ruff, mypy --strict, pytest, build.
 
+## Review hub methods, 2026-10-11
+
+Summary: separate artifact acceptance from the matched PR evaluation. The three exposed
+packets support quality acceptance only. Each scored PR must be unseen and read once.
+Keep the existing light theme and packet bytes. The study size and comparison arms need
+reconciliation before a scored run; this change does not select or start that run.
+
+- [x] Reproduce the same-PR usefulness instructions through the real hub builder.
+- [x] Separate acceptance and matched evaluation in the builder, worksheet and launch notes.
+- [x] Preserve existing human worksheet entries across rebuilds; exclude the three exposed cases.
+- [x] Rebuild the current local hub; verify both sections and local navigation in a real browser.
+- [x] Run lint, types, tests and build; retain screenshot and regression evidence.
+
+Verification is retained in `artifacts/verification/review-hub-method` in the readiness checkout.
+The full suite passed 992 tests with zero failures, errors, or skips. Lint, formatting, strict types,
+wheel, and source distribution passed. Thirteen agent-browser screenshots cover desktop and mobile
+instructions, links, the worksheet, inspection evidence, map, walkthrough, and three muted videos.
+All 1,573 packet files and 47 original links are preserved. A second live rebuild is byte-identical.
+The independent source review found one stale scoring sentence in the launch notes; it is corrected.
+The reviewer found no other actionable defect. The scored study remains unprepared.
+
+Throughput checkpoint:
+- Blocking first steps: inspect the generator and existing worksheet before changing instructions.
+- Independent workstreams: one writer owns the linked generator and worksheet; parent owns integration proof.
+- Shared mutable state: isolated feature worktree, separate from routing and the live acceptance folder.
+- Smallest safe decomposition: one worker keeps instructions consistent across generated and saved content.
+
+Model routing is handled separately. Existing publication and human acceptance gates remain in force.
+
 ## Verify command
 
 `uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest && uv build`
