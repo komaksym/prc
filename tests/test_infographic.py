@@ -593,3 +593,139 @@ def test_doctor_does_not_call_a_broken_tesseract_available(monkeypatch: pytest.M
     monkeypatch.setattr(gate, "tesseract_version", lambda: "")
     assert "unavailable" in doctor._tesseract()
     assert " ok" not in doctor._tesseract()
+
+
+CASES = ROOT / "tests" / "data" / "trustworthiness"
+
+
+def case_brief(slug: str) -> gate.InfographicBrief:
+    m = json.loads((CASES / slug / "map.json").read_text())
+    board = json.loads((CASES / slug / "board.json").read_text())
+    return gate.infobrief(m, m.get("brief"), board)
+
+
+def links(brief: gate.InfographicBrief) -> set[tuple[str, str, str]]:
+    return {(r.source, r.target, r.kind) for r in brief.relations}
+
+
+def test_structure_librarysync_shows_the_new_call_its_tests_and_the_changed_pick() -> None:
+    """Defect: the infographic drew six counts and no structure, so nothing showed how it works."""
+    brief = case_brief("librarysync-98")
+    assert links(brief) == {
+        ("find_next_episodes_bulk", "select_next_episode", "call"),
+        ("2 new test calls", "select_next_episode", "call"),
+        ("Before: Up next s1e1", "After: Up next s2e3", "becomes"),
+    }
+    legends = [line.text for line in brief.lines if line.role == "legend"]
+    assert legends == [gate.MIXED_CALL_LEGEND], "the Before/After arrow is not a call"
+
+
+def test_structure_keeps_the_headline_whole_by_dropping_look_rows_first() -> None:
+    """Defect: the structure brief cut the librarysync headline to '...watched...'."""
+    m = json.loads((CASES / "librarysync-98" / "map.json").read_text())
+    board = json.loads((CASES / "librarysync-98" / "board.json").read_text())
+    brief = case_brief("librarysync-98")
+    assert brief.lines[0].text == card.headline(m, board)
+    assert not brief.lines[0].text.endswith("…")
+    assert gate.LOOK_LABEL not in [line.text for line in brief.lines]
+
+
+def test_structure_em5756_shows_both_new_calls() -> None:
+    assert links(case_brief("em-5756")) == {
+        ("noteCommand.multicursor.onComplete", "toggleDropdownActionCreator", "call"),
+        ("openCommandCenterCommand.exec", "dismissKeyboardActionCreator", "call"),
+    }
+
+
+def test_structure_without_parsed_calls_uses_grounded_board_groups() -> None:
+    """swarm-116 is Go, so the map has no edges; the checked board groups name the mapping."""
+    assert links(case_brief("swarm-116")) == {
+        ("Read failure", "ReadComposeError", "maps"),
+        ("YAML syntax failure", "ParseComposeError", "maps"),
+        ("Schema validation failure", "ValidateComposeError", "maps"),
+    }
+
+
+@pytest.mark.parametrize("slug", ["librarysync-98", "em-5756", "swarm-116"])
+def test_structure_fits_the_budget_and_every_endpoint_is_a_drawn_line(slug: str) -> None:
+    brief = case_brief(slug)
+    texts = [line.text for line in brief.lines]
+    assert sum(len(gate.tokenize(t)) for t in texts) <= gate.MAX_WORDS
+    assert len(texts) == len(set(texts))
+    for r in brief.relations:
+        assert r.source in texts and r.target in texts
+    nodes = {line.text for line in brief.lines if line.role == "node"}
+    assert nodes == {r.source for r in brief.relations} | {r.target for r in brief.relations}
+
+
+def call_map(*edges: tuple[str, str, str], tests: tuple[str, ...] = ()) -> dict[str, Any]:
+    m = sample_map()
+    names = {name for edge in edges for name in edge[:2]}
+    m["symbols"] = [
+        {
+            "id": f"{'tests/test_cart.py' if n in tests else 'cart.py'}::{n}",
+            "path": "tests/test_cart.py" if n in tests else "cart.py",
+            "qualname": n,
+            "kind": "function",
+            "status": "added" if n in tests else "modified",
+            "span": [1, 2],
+            "base_span": [1, 2],
+            "added": 1,
+            "removed": 0,
+            "hunks": [],
+            "call_sites": 0,
+        }
+        for n in sorted(names)
+    ]
+    path = {s["qualname"]: s["id"] for s in m["symbols"]}
+    m["edges"] = [
+        {"source": path[a], "target": path[b], "status": status, "resolution": "exact"}
+        for a, b, status in edges
+    ]
+    return m
+
+
+def test_structure_removed_call_and_kept_calls() -> None:
+    m = call_map(("checkout", "apply_discount", "removed"), ("checkout", "total", "kept"))
+    brief = gate.infobrief(m, m["brief"], None)
+    assert links(brief) == {("checkout", "apply_discount", "removed call")}
+    assert ("legend", "Dashed arrows show removed calls") in [
+        (line.role, line.text) for line in brief.lines
+    ]
+
+
+def test_structure_counts_distinct_tests_once_for_the_most_tested_target() -> None:
+    m = call_map(
+        ("checkout", "total", "added"),
+        ("test_a", "total", "added"),
+        ("test_b", "total", "added"),
+        ("test_c", "checkout", "added"),
+        ("test_d", "total", "kept"),
+        tests=("test_a", "test_b", "test_c", "test_d"),
+    )
+    brief = gate.infobrief(m, m["brief"], None)
+    assert links(brief) == {
+        ("checkout", "total", "call"),
+        ("2 new test calls", "total", "call"),
+    }
+
+
+def test_structure_caps_production_calls() -> None:
+    m = call_map(*[(f"caller{i}", f"callee{i}", "added") for i in range(5)])
+    brief = gate.infobrief(m, m["brief"], None)
+    assert len(brief.relations) == gate.MAX_CALLS
+
+
+def test_structure_absent_keeps_all_six_chips_and_no_relations() -> None:
+    m = sample_map()
+    brief = gate.infobrief(m, m["brief"], None)
+    assert brief.relations == ()
+    assert [line.role for line in brief.lines].count("chip") == 6
+
+
+def test_brief_json_records_relations(tmp_path: Path) -> None:
+    brief = case_brief("librarysync-98")
+    payload = json.loads(gate.write_brief_json(brief, tmp_path / "b.json").read_text())
+    assert {"from": "find_next_episodes_bulk", "to": "select_next_episode", "kind": "call"} in (
+        payload["relations"]
+    )

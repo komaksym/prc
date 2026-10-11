@@ -35,7 +35,14 @@ PROMPT_RULES = (
 )
 LOOK_LABEL = "Look here first"
 RISKY_LABEL = "Risky surfaces"
-Role = Literal["headline", "label", "chip", "row", "verdict", "note"]
+MAX_CALLS = 3
+Role = Literal["headline", "node", "legend", "label", "chip", "row", "verdict", "note"]
+RelationKind = Literal["call", "removed call", "maps", "becomes"]
+LEGEND: dict[str, str] = {
+    "call": "Arrows show new calls",
+    "removed call": "Dashed arrows show removed calls",
+}
+MIXED_CALL_LEGEND = "Arrows into code names show new calls"
 Verdict = Literal["pass", "missing", "invented", "unreadable", "tool"]
 
 
@@ -46,9 +53,19 @@ class BriefLine:
 
 
 @dataclass(frozen=True, slots=True)
+class Relation:
+    """An arrow the drawing must show, between two node lines named by their text."""
+
+    source: str
+    target: str
+    kind: RelationKind
+
+
+@dataclass(frozen=True, slots=True)
 class InfographicBrief:
     title: str
     lines: tuple[BriefLine, ...]
+    relations: tuple[Relation, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -172,7 +189,7 @@ def _fit_words(lines: tuple[BriefLine, ...]) -> tuple[BriefLine, ...]:
     while _word_count(tuple(kept)) > MAX_WORDS:
         if _section_rows(kept, RISKY_LABEL):
             _drop_last_row(kept, RISKY_LABEL)
-        elif len(_section_rows(kept, LOOK_LABEL)) > 1:
+        elif _section_rows(kept, LOOK_LABEL):
             _drop_last_row(kept, LOOK_LABEL)
         else:
             head = next(i for i, line in enumerate(kept) if line.role == "headline")
@@ -182,8 +199,6 @@ def _fit_words(lines: tuple[BriefLine, ...]) -> tuple[BriefLine, ...]:
                 while len(tokenize(" ".join(words))) > room:
                     words.pop()
                 kept[head] = BriefLine("headline", " ".join(words).rstrip("…") + "…")
-            elif _drop_last_row(kept, LOOK_LABEL):
-                continue
             else:
                 chips = [i for i, line in enumerate(kept) if line.role == "chip"]
                 if not chips:
@@ -195,23 +210,129 @@ def _fit_words(lines: tuple[BriefLine, ...]) -> tuple[BriefLine, ...]:
     return tuple(kept)
 
 
+def _calls(m: dict[str, Any], brief: Any) -> list[Relation]:
+    """Calls the PR adds or removes from production code, plus one node for its new test calls."""
+    tests = facts.test_paths(m, brief)
+    sym = {s["id"]: s for s in m.get("symbols", [])}
+
+    def name(sid: str) -> str:
+        return _trim_line(str(sym[sid]["qualname"]) if sid in sym else sid.rsplit("::", 1)[-1])
+
+    def is_test(sid: str) -> bool:
+        return sid in sym and sym[sid]["path"] in tests
+
+    moved = [e for e in m.get("edges", []) if e.get("status") in ("added", "removed")]
+    prod = sorted(
+        (e for e in moved if e["source"] in sym and not is_test(e["source"])),
+        key=lambda e: (e["status"] != "added", e["source"], e["target"]),
+    )[:MAX_CALLS]
+    found = [
+        Relation(
+            name(e["source"]),
+            name(e["target"]),
+            "call" if e["status"] == "added" else "removed call",
+        )
+        for e in prod
+    ]
+    shown = {e["source"] for e in prod} | {e["target"] for e in prod}
+    callers: dict[str, set[str]] = {}
+    for e in moved:
+        if e["status"] == "added" and is_test(e["source"]) and e["target"] in shown:
+            callers.setdefault(e["target"], set()).add(e["source"])
+    if callers:
+        target = max(sorted(callers), key=lambda t: len(callers[t]))
+        count = len(callers[target])
+        found.append(
+            Relation(f"{count} new test {_label(count, 'call', 'calls')}", name(target), "call")
+        )
+    return found
+
+
+def _group_scenes(board: dict[str, Any] | None) -> list[dict[str, Any]]:
+    return [s for s in (board or {}).get("scenes", []) if s.get("type") == "groups"]
+
+
+def _mapping(board: dict[str, Any] | None) -> list[Relation]:
+    """Board groups grounded in code: each group's title maps to its item."""
+    for scene in _group_scenes(board):
+        found = [
+            Relation(_trim_line(g["title"]), _trim_line(g["items"][0]["text"]), "maps")
+            for g in scene["groups"]
+            if g.get("ground") and g.get("items") and g["items"][0]["text"] != g["title"]
+        ]
+        if found:
+            return found[:MAX_CALLS]
+    return []
+
+
+def _before_after(board: dict[str, Any] | None) -> list[Relation]:
+    """The first group that changes between two consecutive board group scenes."""
+    scenes = _group_scenes(board)
+    for old, new in pairwise(scenes):
+        before = {g["id"]: g for g in old["groups"]}
+        for g in new["groups"]:
+            prev = before.get(g["id"])
+            if prev is None or prev["title"] != g["title"]:
+                continue
+            was = " ".join(item["text"] for item in prev["items"])
+            now = " ".join(item["text"] for item in g["items"])
+            if was != now:
+                title = g["title"]
+                return [
+                    Relation(
+                        _trim_line(f"Before: {title} {was}"),
+                        _trim_line(f"After: {title} {now}"),
+                        "becomes",
+                    )
+                ]
+    return []
+
+
+def structure(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> tuple[Relation, ...]:
+    """What the drawing connects: real calls, else grounded board groups, plus a before/after."""
+    found = _calls(m, brief) or _mapping(board)
+    found += _before_after(board)
+    return tuple(dict.fromkeys(r for r in found if r.source != r.target))
+
+
+def _nodes(relations: tuple[Relation, ...]) -> list[str]:
+    return list(dict.fromkeys(t for r in relations for t in (r.source, r.target)))
+
+
 def infobrief(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> InfographicBrief:
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
     stats = found.stats
     ci = "no CI" if found.ci_state == "none" else f"CI {stats.ci_text} {found.ci_state}"
-    chips = [
-        f"{stats.files} {_label(stats.files, 'file', 'files')}",
+    files = f"{stats.files} {_label(stats.files, 'file', 'files')}"
+    changed = (
         f"{stats.symbols_changed} "
-        f"{_label(stats.symbols_changed, 'parsed symbol changed', 'parsed symbols changed')}",
-        f"{stats.call_sites} "
-        f"{_label(stats.call_sites, 'resolved call site', 'resolved call sites')}",
-        f"{stats.tests_touched} "
-        f"{_label(stats.tests_touched, 'test file touched', 'test files touched')}",
-        ci,
-        f"{stats.untested_total} parsed code without test evidence",
-    ]
+        f"{_label(stats.symbols_changed, 'parsed symbol changed', 'parsed symbols changed')}"
+    )
+    links = structure(m, brief, board)
+    chips = (
+        [files, changed, ci]
+        if links
+        else [
+            files,
+            changed,
+            f"{stats.call_sites} "
+            f"{_label(stats.call_sites, 'resolved call site', 'resolved call sites')}",
+            f"{stats.tests_touched} "
+            f"{_label(stats.tests_touched, 'test file touched', 'test files touched')}",
+            ci,
+            f"{stats.untested_total} parsed code without test evidence",
+        ]
+    )
     head: list[BriefLine] = [BriefLine("headline", title)]
+    taken = {title, *chips}
+    links = tuple(r for r in links if r.source not in taken and r.target not in taken)
+    head += [BriefLine("node", text) for text in _nodes(links)]
+    kinds = {r.kind for r in links}
+    legend = dict(LEGEND)
+    if kinds - {"call", "removed call"}:
+        legend["call"] = MIXED_CALL_LEGEND
+    head += [BriefLine("legend", text) for kind, text in legend.items() if kind in kinds]
     head += [BriefLine("chip", text) for text in chips]
     look = list(card.look_first(m, brief, 3, board))
     if look:
@@ -225,7 +346,7 @@ def infobrief(m: dict[str, Any], brief: Any, board: dict[str, Any] | None) -> In
     head.append(BriefLine("note", DISCLOSURE))
     trimmed = tuple(BriefLine(line.role, _trim_line(line.text)) for line in head)
     fitted = _fit_words(trimmed)
-    return InfographicBrief(fitted[0].text, fitted)
+    return InfographicBrief(fitted[0].text, fitted, links)
 
 
 def allowed_words(br: InfographicBrief) -> set[str]:
@@ -270,6 +391,7 @@ def brief_dict(br: InfographicBrief) -> dict[str, Any]:
         "lines": [{"role": line.role, "text": line.text} for line in br.lines],
         "profile": dict(PROFILE),
         "prompt_rules": list(PROMPT_RULES),
+        "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
         "title": br.title,
     }
 

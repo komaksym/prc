@@ -1,3 +1,19 @@
+# Step 1b: Real infographics with a structure brief and a geometric gate, 2026-10-11
+
+## Summary
+
+The published step 1 infographics are stacks of text boxes. Baoyu drew real diagrams, but the OCR gate rejected them. Icon shapes read as letters ("Q", "J", "EN"), one of four reads saw "42" where the image says "12", and the page-level read order mixed wrapped lines from neighboring columns. My prompts then banned icons, arrows and columns, and SKILL.md told agents to "use simple panels".
+This step gives the artist real structure to draw and makes the gate judge position-aware evidence.
+Measured on the 10 existing candidates: pixel measures of "is this a diagram" (edge density, saturation, thin strokes, connected objects) did not separate text cards from diagrams. A connector between two named boxes did: text cards scored 0 to 0.03. So the diagram check tests arrows between related brief lines, which PRC knows from the code.
+No push, PR or publication without explicit approval (D21).
+
+- [x] M1. Structure brief. `infobrief` adds node lines and relations. Calls come from map.json edges added or removed by the PR (production source to target, plus a "N new tests" node). Grounded board groups give mapping relations (title to item). Two board group scenes that differ give a before/after pair. Chips shrink to make room inside MAX_WORDS. brief.json records relations and layout rules. Done: the Look rows go before the headline is cut, and a brief that mixes calls with other arrows uses the legend "Arrows into code names show new calls".
+- [ ] M2. Gate geometry. OcrWord keeps its box. Brief lines may be covered inside one spatial region (words grouped into text lines, text lines into stacked blocks), as well as in the page stream. An unknown token is a misread when most other reads see an allowed token at the same place. Unknown non-digit tokens of one or two characters need three reads at one place. Unplaced or digit tokens stay strict.
+- [ ] M3. Diagram check. For each relation, PRC finds both line boxes and needs a continuous drawn line across the gap between them, with plain canvas on both sides. A brief with relations fails as "flat" when no relation is drawn. Thresholds are calibrated on rendered test images and on new candidates.
+- [ ] M4. Prompt rules and SKILL.md. Remove the "simple panels" fallback. Ask for nodes in separate boxes joined by straight arrows, icons allowed without letters or digits.
+- [ ] M5. Regenerate the three acceptance infographics with baoyu-infographic, gate them through prc explain, and view every candidate.
+- [ ] M6. Rebuild the acceptance outputs, recheck hub, walkthrough and comment in a real browser with screenshots, run verify-release.sh from an empty cache, update docs and the audit.
+
 # Step 1: Kokoro voice, gated infographic and PR Lens map, 2026-10-10
 
 ## Summary
