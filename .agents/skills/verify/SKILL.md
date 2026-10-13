@@ -49,6 +49,7 @@ The driver runs the real `map --source fixture:shop` entry point with its own st
 It opens generated HTML in headless Chromium, clicks checkout, and presses Escape.
 Require `PASS` and inspect the printed proof directory.
 For other paths, use [the feature map](features/README.md). Every browser check must save a screenshot.
+For paired session hub changes, run `.venv/bin/python scripts/verify_paired_hub.py` instead of API-only checks. Require PASS, every button screenshot, refusal recovery text, and cited proof from [paired hub](features/paired.md).
 The scripted driver uses the repo's Playwright harness. If Vercel agent-browser is required and available, use the same visible controls.
 Record a driver limitation if unavailable. DOM-only checks do not establish GUI behavior.
 
