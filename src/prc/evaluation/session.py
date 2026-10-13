@@ -356,9 +356,15 @@ class StudySession:
         return self.study_dir / "snapshots" / trial["snapshot_id"], aid
 
     def preview(self) -> dict[str, Any]:
+        if self.state.get("active_trial") is not None:
+            raise SessionError(
+                "a reading is already active; submit or abort it before preparing another"
+            )
         trial_id = self.next_trial()
-        if trial_id is None or self.state.get("active_trial") is not None:
-            raise SessionError("no reading is available to prepare")
+        if trial_id is None:
+            if self.state.get("closed"):
+                raise SessionError("the study is closed; no readings remain to prepare")
+            raise SessionError("no readings remain to prepare; close the study to continue")
         meta = self.study["snapshots"][self._trial(trial_id)["snapshot_id"]]
         return {
             "trial_id": trial_id,
@@ -453,7 +459,7 @@ def serve(study_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
             try:
                 self._post()
             except SessionError as error:
-                self._json(409 if "close" not in str(error) else 409, {"error": str(error)})
+                self._json(409, {"error": str(error)})
 
         def _read_body(self) -> dict[str, Any]:
             length = int(self.headers.get("Content-Length") or 0)
@@ -497,8 +503,8 @@ def serve(study_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
             if path == "/api/close":
                 try:
                     s.close_study()
-                except SessionError:
-                    self._json(409, {"error": "close refused"})
+                except SessionError as error:
+                    self._json(409, {"error": str(error)})
                     return
                 self._json(200, s.public_state())
                 return
