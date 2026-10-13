@@ -8,9 +8,10 @@ import math
 import mimetypes
 import re
 import subprocess
+import threading
 import time
 from dataclasses import asdict
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import IO, Any, cast
@@ -423,8 +424,11 @@ def serve(study_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
     load_study(study_dir)
     study_path = study_dir.resolve()
     current = StudySession(study_path)
+    request_lock = threading.Lock()
 
     class Handler(BaseHTTPRequestHandler):
+        timeout = 15
+
         def log_message(self, fmt: str, *args: Any) -> None:  # noqa: N802
             return
 
@@ -448,18 +452,20 @@ def serve(study_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
             return origin == f"http://{expected}" and host == expected
 
         def do_GET(self) -> None:  # noqa: N802
-            try:
-                self._get()
-            except SessionError as error:
-                self._json(403, {"error": str(error)})
-            except (BrokenPipeError, ConnectionResetError):
-                self.close_connection = True
+            with request_lock:
+                try:
+                    self._get()
+                except SessionError as error:
+                    self._json(403, {"error": str(error)})
+                except (BrokenPipeError, ConnectionResetError, TimeoutError):
+                    self.close_connection = True
 
         def do_POST(self) -> None:  # noqa: N802
-            try:
-                self._post()
-            except SessionError as error:
-                self._json(409, {"error": str(error)})
+            with request_lock:
+                try:
+                    self._post()
+                except SessionError as error:
+                    self._json(409, {"error": str(error)})
 
         def _read_body(self) -> dict[str, Any]:
             length = int(self.headers.get("Content-Length") or 0)
@@ -600,7 +606,7 @@ def serve(study_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
             self.end_headers()
             self.wfile.write(content)
 
-    class Server(HTTPServer):
+    class Server(ThreadingHTTPServer):
         def server_close(self) -> None:
             super().server_close()
             current.close()

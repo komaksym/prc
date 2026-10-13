@@ -235,3 +235,20 @@ def test_close_refuses_active_and_export_needs_closed(server: str, prepared: Pat
     assert post(server, "/api/close", {})[0] == 200
     assert state(server)["closed"] is True
     assert start(server)[0] == 409  # closed study: no further mutation
+
+
+def test_silent_browser_connection_cannot_block_the_hub(server: str, study_dir: Path) -> None:
+    """A preconnected socket that sends nothing must not freeze every later request."""
+    import socket
+    from urllib.parse import urlparse
+
+    parsed = urlparse(server)
+    assert parsed.hostname is not None and parsed.port is not None
+    silent = socket.create_connection((parsed.hostname, parsed.port))
+    try:
+        started = time.monotonic()
+        status, body = get(server, "/api/state")
+        assert status == 200, body
+        assert time.monotonic() - started < 5, "a silent connection blocked the hub"
+    finally:
+        silent.close()
