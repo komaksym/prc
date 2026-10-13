@@ -50,6 +50,7 @@ It opens generated HTML in headless Chromium, clicks checkout, and presses Escap
 Require `PASS` and inspect the printed proof directory.
 For other paths, use [the feature map](features/README.md). Every browser check must save a screenshot.
 For paired session hub changes, run `.venv/bin/python scripts/verify_paired_hub.py` instead of API-only checks. Require PASS, every button screenshot, refusal recovery text, and cited proof from [paired hub](features/paired.md).
+Before any operator-facing handoff of the hub URL, run .venv/bin/python scripts/handoff_study_hub.py against the exact handed-off server and require its handoff record. Require the printed exact URL, the supervised pidfile, and the handoff record JSON under artifacts/handoff/ with url, port, pid, pidfile, screenshot, and checks. Do not hand off a hub URL without that record; the script refuses to print a URL when any check fails.
 The scripted driver uses the repo's Playwright harness. If Vercel agent-browser is required and available, use the same visible controls.
 Record a driver limitation if unavailable. DOM-only checks do not establish GUI behavior.
 

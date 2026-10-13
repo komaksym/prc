@@ -29,3 +29,18 @@ def test_hub_button_pass_row_is_present() -> None:
 def test_hub_row_names_its_enforcement() -> None:
     text = _agents_text()
     assert "test_verify_paired_hub" in text
+
+
+HANDOFF_MARKERS = ("handoff_study_hub", "artifacts/handoff")
+
+
+def test_handoff_row_is_present() -> None:
+    text = _agents_text()
+    for marker in HANDOFF_MARKERS:
+        assert marker in text, "AGENTS.md rule table must name the supervised handoff"
+
+
+def test_handoff_row_names_its_enforcement() -> None:
+    text = _agents_text()
+    assert "test_verify_paired_hub" in text
+    assert "test_dispatch_collection" in text

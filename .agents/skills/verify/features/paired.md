@@ -35,3 +35,13 @@ Preconditions: use a temp copy, never `artifacts/paired-study/private/`. Fixture
 - Familiar and exposed trials stay in grading as unknown. They must not vanish.
 - The sealed human study stays untouched. Drive a temp copy only.
 - Use `tests/test_paired_browser.py` for single-path browser detail. This recipe requires the full button path.
+
+## Handoff (operator-facing)
+
+Before any handoff message with a hub URL, prove the exact handed-off server with the supervised handoff script. Copy the study outside artifacts/paired-study/private first; never serve the sealed original.
+
+Run .venv/bin/python scripts/handoff_study_hub.py <study-copy> from the repo root. The script starts or reuses one supervised hub process (detached setsid background nohup pidfile, with --stop), waits until the exact printed URL answers, and loads that exact URL in real Chromium with PLAYWRIGHT_BROWSERS_PATH set to the project browser cache.
+
+Require the hub to render with Prepare next reading visible and zero page errors. Require one safe read-only interaction: click Prepare next reading and require the preview panel with a non-empty title. The check must not start a trial or mutate session.json. Hold a silent preconnect socket open during the check and require the hub to keep answering afterwards.
+
+Require the handoff record JSON under artifacts/handoff/ with url, port, pid, pidfile, screenshot, and each check result. Cite the record and screenshot in the handoff note. Do not hand off a URL when the script exits nonzero or prints HANDOFF REFUSED; it refuses to print a URL when any check fails.

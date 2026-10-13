@@ -54,3 +54,46 @@ def test_driver_covers_every_button_and_evidence() -> None:
 def test_skill_index_points_to_recipe() -> None:
     assert "paired.md" in INDEX.read_text(encoding="utf-8")
     assert "verify_paired_hub" in SKILL.read_text(encoding="utf-8")
+
+
+HANDOFF = REPO / "scripts" / "handoff_study_hub.py"
+
+
+def test_handoff_recipe_requires_supervised_handoff() -> None:
+    text = RECIPE.read_text(encoding="utf-8")
+    assert "scripts/handoff_study_hub.py" in text
+    assert "artifacts/handoff" in text
+    lowered = text.lower()
+    assert "pidfile" in lowered
+    assert "exact url" in lowered
+    assert "supervised" in lowered
+
+
+def test_skill_drive_requires_handoff_record() -> None:
+    text = SKILL.read_text(encoding="utf-8")
+    assert "handoff_study_hub" in text
+    assert "artifacts/handoff" in text
+    lowered = text.lower()
+    assert "exact url" in lowered
+    assert "pidfile" in lowered or "supervised" in lowered
+
+
+def test_handoff_script_meets_contract() -> None:
+    assert HANDOFF.is_file(), "handoff script is missing"
+    text = HANDOFF.read_text(encoding="utf-8")
+    assert "start_new_session" in text or "setsid" in text
+    assert "nohup" in text.lower()
+    assert "pidfile" in text.lower()
+    assert "silent" in text.lower()
+    assert "preconnect" in text.lower()
+    assert "Prepare next reading" in text
+    assert "preview" in text.lower()
+    assert "session.json" in text
+    assert "--stop" in text
+    assert "artifacts/handoff" in text
+    assert "pageerror" in text.lower()
+    assert "PLAYWRIGHT_BROWSERS_PATH" in text
+    assert "HANDOFF REFUSED" in text
+    for field in ('"url"', '"port"', '"pid"', '"pidfile"', '"screenshot"', '"checks"'):
+        assert field in text
+    assert os.access(HANDOFF, os.X_OK), "handoff script must stay executable"
