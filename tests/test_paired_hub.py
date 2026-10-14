@@ -169,6 +169,8 @@ def test_hub_scripts_guidance_and_recovery() -> None:
     assert "Prepare next reading to continue" in html
     assert "recoveryNote" in html
     assert "Saved answers are kept" in html
+    assert "20-minute" in html
+    assert 'id="back"' in html
 
 
 def test_browser_refusal_guides_operator_to_next_reading(make_paired: Any) -> None:
@@ -181,6 +183,7 @@ def test_browser_refusal_guides_operator_to_next_reading(make_paired: Any) -> No
             page = browser.new_page()
             errors: list[str] = []
             page.on("pageerror", lambda error: errors.append(str(error)))
+            page.on("dialog", lambda dialog: dialog.accept())
             page.goto(url)
             page.get_by_role("button", name="Prepare next reading").click()
             page.get_by_role("button", name="Start timed reading").wait_for()
@@ -209,6 +212,7 @@ def test_browser_stale_start_recovers_to_current_reading(make_paired: Any) -> No
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
             page = browser.new_page()
+            page.on("dialog", lambda dialog: dialog.accept())
             page.goto(url)
             page.get_by_role("button", name="Prepare next reading").click()
             page.get_by_role("button", name="Start timed reading").wait_for()
@@ -240,6 +244,7 @@ def test_browser_timeout_notifies_and_keeps_saved_answers(
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
             page = browser.new_page()
+            page.on("dialog", lambda dialog: dialog.accept())
             page.goto(url)
             page.get_by_role("button", name="Prepare next reading").click()
             page.get_by_role("button", name="Start timed reading").wait_for()
@@ -279,3 +284,58 @@ def test_browser_early_close_freezes_study_for_grading(make_paired: Any) -> None
         httpd.server_close()
     saved = json.loads(Path(fixture.study, "session.json").read_text())
     assert saved["closed"] is True
+
+
+def test_browser_start_confirm_and_back_guard(make_paired: Any) -> None:
+    fixture = make_paired(pairs=1)
+    kit.prepare_study(fixture.manifest, fixture.study)
+    httpd, url = _serve(fixture)
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            page = browser.new_page()
+            errors: list[str] = []
+            page.on("pageerror", lambda error: errors.append(str(error)))
+            decisions = {"accept": False}
+            page.on(
+                "dialog",
+                lambda dialog: dialog.accept() if decisions["accept"] else dialog.dismiss(),
+            )
+            page.goto(url)
+            page.get_by_role("button", name="Prepare next reading").click()
+            page.get_by_role("button", name="Start timed reading").wait_for()
+            preview_text = page.locator("#preview").inner_text()
+            assert "20-minute" in preview_text
+            assert "six readings" in preview_text
+            page.get_by_role("button", name="Back without starting").click()
+            page.get_by_role("button", name="Prepare next reading").wait_for()
+            status, body = _get(url, "/api/state")
+            assert status == 200
+            assert json.loads(body)["active"] is None
+            saved = json.loads(Path(fixture.study, "session.json").read_text())
+            assert all(t["state"] == "pending" for t in saved["trials"].values())
+            page.get_by_role("button", name="Prepare next reading").click()
+            page.get_by_role("button", name="Start timed reading").wait_for()
+            decisions["accept"] = False
+            page.get_by_role("button", name="Start timed reading").click()
+            page.wait_for_timeout(500)
+            assert page.locator("#preview").is_visible()
+            status, body = _get(url, "/api/state")
+            assert json.loads(body)["active"] is None
+            decisions["accept"] = True
+            page.get_by_role("button", name="Start timed reading").click()
+            page.get_by_role("button", name="Submit reading").wait_for()
+            status, body = _get(url, "/api/state")
+            assert json.loads(body)["active"] is not None
+            assert not errors, errors
+            browser.close()
+        active = json.loads(_get(url, "/api/state")[1])["active"]
+        assert active is not None
+        _post(
+            url,
+            "/api/abort",
+            {"trial_id": active["trial_id"], "cross_tool_exposure": {"saw_other_aid": False}},
+        )
+    finally:
+        httpd.shutdown()
+        httpd.server_close()

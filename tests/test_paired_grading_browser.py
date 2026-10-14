@@ -30,6 +30,7 @@ def test_browser_close_grade_analyze_with_frozen_blinded_items(make_paired: Any)
             errors: list[str] = []
             grade_posts: list[str] = []
             page.on("pageerror", lambda error: errors.append(str(error)))
+            page.on("dialog", lambda dialog: dialog.accept())
             page.on(
                 "request",
                 lambda request: (

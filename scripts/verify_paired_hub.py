@@ -91,6 +91,7 @@ def main() -> None:
                 page = browser.new_page(viewport={"width": 1280, "height": 800})
                 page.on("pageerror", lambda err: errors.append(str(err)))
                 page.on("request", lambda req: requests.append(req.url))
+                page.on("dialog", lambda dlg: dlg.accept())
                 page.goto(url)
                 page.get_by_role("button", name="Prepare next reading").wait_for(timeout=10000)
                 page.screenshot(path=str(proof / "01-landing.png"))

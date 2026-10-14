@@ -26,6 +26,7 @@ def test_browser_saves_immediate_submit_and_resumes_without_reopening_artifact(
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
             errors: list[str] = []
             page.on("pageerror", lambda error: errors.append(str(error)))
+            page.on("dialog", lambda dialog: dialog.accept())
             page.goto(url)
             page.get_by_role("button", name="Prepare next reading").click()
             page.get_by_label("I have seen this PR before").set_checked(False)
