@@ -1,0 +1,1 @@
+Technical system and evaluation workflow. Audience: sole human reviewer. Objective: explain the matched-pair design, three-artifact product and review flow without exposing PR identities. Defaults: structural-breakdown, technical-schematic, 16:9, English, native imagegen. Opaque neutral canvas. No status or test success claim.

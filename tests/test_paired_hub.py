@@ -306,7 +306,8 @@ def test_browser_start_confirm_and_back_guard(make_paired: Any) -> None:
             page.get_by_role("button", name="Start timed reading").wait_for()
             preview_text = page.locator("#preview").inner_text()
             assert "20-minute" in preview_text
-            assert "six readings" in preview_text
+            assert "uses one reading" in preview_text
+            assert "six readings" not in preview_text
             page.get_by_role("button", name="Back without starting").click()
             page.get_by_role("button", name="Prepare next reading").wait_for()
             status, body = _get(url, "/api/state")

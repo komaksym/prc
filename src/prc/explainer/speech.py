@@ -41,6 +41,7 @@ EXTENSIONS = frozenset(
 )
 ABBREVIATIONS = {"err": "error", "ctx": "context", "cfg": "config", "msg": "message"}
 SOUNDS = {"read": "reed"}
+TOKEN_SOUNDS = {"LinkedIn": "linked inn"}
 
 WORD = re.compile(r"(?<![\w.])[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*")
 PART = re.compile(r"[A-Z]+(?=[A-Z][a-z]|\d|$)|[A-Z]?[a-z]+|[A-Z]+|\d+")
@@ -76,6 +77,8 @@ def _words(word: str) -> list[str]:
 
 def say_token(word: str, voice: bool = True) -> str:
     """A code token as words: with pauses and respellings for the voice, or as written."""
+    if voice and word in TOKEN_SOUNDS:
+        return TOKEN_SOUNDS[word]
     if _is_file(word):
         stem, _, ext = word.rpartition(".")
         name = " dot ".join(say_token(p, voice) if is_code(p) else p for p in stem.split("."))

@@ -6,10 +6,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_rebuild_records_current_outputs_with_relative_cli_and_wheel(tmp_path: Path) -> None:
+@pytest.mark.parametrize("missing", [None, "page.html", "video.mp4", "infographic.png"])
+def test_rebuild_records_current_outputs_with_relative_cli_and_wheel(
+    tmp_path: Path, missing: str | None
+) -> None:
     case = tmp_path / "acceptance" / "demo"
     case.mkdir(parents=True)
     work = tmp_path / "work"
@@ -34,8 +39,8 @@ def test_rebuild_records_current_outputs_with_relative_cli_and_wheel(tmp_path: P
         "if sys.argv[1] == 'explain':\n"
         "    out = Path(sys.argv[sys.argv.index('--out') + 1])\n"
         "    out.mkdir(parents=True)\n"
-        "    (out / 'map.html').write_text('current render')\n"
-        "    (out / 'card.png').write_bytes(b'new card')\n"
+        "    for name in ['map.json','board.json','page.html','video.mp4','infographic.png','comment.md','run.json']:\n"
+        f"        if name != {missing!r}: (out / name).write_text('current output')\n"
         "    print(json.dumps({'out': str(out)}))\n"
         "else:\n"
         "    (Path(sys.argv[2]) / 'listening.json').write_text('{\"passed\": true}')\n"
@@ -63,6 +68,10 @@ def test_rebuild_records_current_outputs_with_relative_cli_and_wheel(tmp_path: P
         capture_output=True,
         text=True,
     )
+    if missing:
+        assert done.returncode != 0
+        assert missing in done.stderr
+        return
     assert done.returncode == 0, done.stderr
     identity = json.loads((case / "render-identity.json").read_text())
     assert identity["command"][0] == str(prc)
@@ -70,8 +79,9 @@ def test_rebuild_records_current_outputs_with_relative_cli_and_wheel(tmp_path: P
     assert identity["proof"] == str(wheel.parent.parent)
     assert identity["completed_at"] > identity["started_at"]
     assert identity["prc_commit"] == "current-commit"
-    assert "infographic.png" not in identity["output_hashes"]
-    for name in ("map.html", "listening.json", "card.png"):
+    assert "map.html" not in identity["output_hashes"]
+    assert "card.png" not in identity["output_hashes"]
+    for name in ("page.html", "listening.json", "video.mp4", "infographic.png"):
         assert (
             identity["output_hashes"][name] == hashlib.sha256((out / name).read_bytes()).hexdigest()
         )

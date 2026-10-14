@@ -101,6 +101,19 @@ def _artifact_trees(root: Path, data: dict[str, Any]) -> None:
                 json.dumps({"base_sha": snap["base_sha"], "head_sha": snap["head_sha"]})
             )
             snap["prc"]["output_hash"] = hashlib.sha256(prc_index.encode()).hexdigest()
+            (prc_dir / "page.html").write_text(prc_index)
+            (prc_dir / "video.mp4").write_bytes(b"fixture-video")
+            (prc_dir / "infographic.png").write_bytes(b"fixture-image")
+            (prc_dir / "run.json").write_text(
+                json.dumps(
+                    {
+                        "infographic": {
+                            "status": "passed",
+                            "published_sha256": hashlib.sha256(b"fixture-image").hexdigest(),
+                        }
+                    }
+                )
+            )
 
 
 def build_manifest(root: Path, pairs: int = 1) -> PairedFixture:

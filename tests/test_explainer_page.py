@@ -84,3 +84,45 @@ def test_page_without_video_or_infographic_has_no_audio_source_or_dialog(tmp_pat
     page = render_page(board, m, tmp_path, 0.0, has_video=False, infographic=None)
     assert "<audio id='narr' preload='auto'></audio>" in page
     assert "id='info'" not in page and "id='info-open'" not in page
+
+
+def test_outro_hands_off_to_github_in_video_and_clickable_page(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, _ = _change()
+    board["scenes"].append(
+        {
+            "type": "outro",
+            "l1": "The diff adds one line.",
+            "l2": "Start with this change.",
+            "say": ["Start with this change."],
+            "cues": [
+                {"at": [0, 0.0], "do": "l1"},
+                {"at": [0, 0.5], "do": "l2"},
+                {"at": [0, 0.9], "do": "cmd"},
+            ],
+        }
+    )
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 800})
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        page.evaluate("window.seek(window.BOARD.scenes.at(-1).end - 0.5)")
+        assert page.locator(".outro .cmd").inner_text().startswith("Review on GitHub ")
+        assert "prc map" not in page.locator(".outro").inner_text()
+        page.screenshot(path=str(tmp_path / "video-outro.png"))
+        page.goto((tmp_path / "page.html").as_uri())
+        page.locator("#strip button").last.click()
+        assert page.locator(".outro .cmd").inner_text().startswith("Review on GitHub ")
+        assert board["scenes"][-1]["url"] in page.locator(".outro .cmd").inner_text()
+        page.screenshot(path=str(tmp_path / "page-outro.png"))
+        browser.close()

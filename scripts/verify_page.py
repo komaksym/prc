@@ -19,6 +19,7 @@ import contextlib
 import functools
 import glob
 import hashlib
+import io
 import json
 import os
 import re
@@ -45,6 +46,36 @@ class Fail(Exception):
 class Quiet(SimpleHTTPRequestHandler):
     def log_message(self, format: str, *args: Any) -> None:
         pass
+
+    def end_headers(self) -> None:
+        self.send_header("Accept-Ranges", "bytes")
+        super().end_headers()
+
+    def send_head(self) -> Any:
+        wanted = re.fullmatch(r"bytes=(\d*)-(\d*)", self.headers.get("Range") or "")
+        path = Path(self.translate_path(self.path))
+        if not wanted or not path.is_file() or not wanted.group(1) + wanted.group(2):
+            return super().send_head()
+        content = path.read_bytes()
+        size = len(content)
+        if wanted.group(1):
+            first = int(wanted.group(1))
+            last = min(int(wanted.group(2) or size - 1), size - 1)
+        else:
+            first, last = max(size - int(wanted.group(2)), 0), size - 1
+        if first >= size or first > last:
+            self.send_response(416)
+            self.send_header("Content-Range", f"bytes */{size}")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return None
+        chunk = content[first : last + 1]
+        self.send_response(206)
+        self.send_header("Content-Type", self.guess_type(str(path)))
+        self.send_header("Content-Range", f"bytes {first}-{last}/{size}")
+        self.send_header("Content-Length", str(len(chunk)))
+        self.end_headers()
+        return io.BytesIO(chunk)
 
 
 def browser_env() -> dict[str, str]:
@@ -116,7 +147,15 @@ def main() -> int:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f"http://127.0.0.1:{server.socket.getsockname()[1]}/{page.name}"
     raw = subprocess.run(
-        ["agent-browser", "session", "id", "--scope", "worktree", "--prefix", "verifypage"],
+        [
+            "agent-browser",
+            "session",
+            "id",
+            "--scope",
+            "worktree",
+            "--prefix",
+            f"verifypage-{os.getpid()}",
+        ],
         capture_output=True,
         text=True,
     ).stdout.strip()
@@ -157,7 +196,8 @@ def main() -> int:
         board = b.js("window.PRC.board")
         targets = b.js("window.PRC.targets")
         scenes = board["scenes"]
-        pr_url = b.js("document.querySelector('.pg-meta a').href")
+        owner, number = json.loads((page.parent / "map.json").read_text())["pr"].split("#")
+        pr_url = f"https://github.com/{owner}/pull/{number}"
         if len(scenes) < 2:
             raise Fail(f"only {len(scenes)} scene(s)")
         text = b.js("document.body.innerText")

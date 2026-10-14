@@ -1,0 +1,1 @@
+Technical system overview for the operator. Show the artifact boundary and paired evaluation. Avoid private PR identities and answer keys. Use structural-breakdown, technical-schematic, landscape 16:9, English, native imagegen. These fields resolve through the technical default profile and saved auto backend preference.

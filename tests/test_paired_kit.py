@@ -158,6 +158,44 @@ def test_missing_tool_artifact_fails_preparation(make_paired: Any) -> None:
         kit.prepare_study(fixture.manifest, fixture.study)
 
 
+@pytest.mark.parametrize("name", ["page.html", "video.mp4", "infographic.png"])
+def test_missing_prc_output_cannot_be_sealed(make_paired: Any, name: str) -> None:
+    fixture = make_paired()
+    directory = fixture.root / fixture.data["pairs"][0]["snapshots"][0]["artifacts"]["prc"]
+    (directory / name).unlink(missing_ok=True)
+    with pytest.raises(kit.KitError, match=name):
+        kit.prepare_study(fixture.manifest, fixture.study)
+
+
+def test_ungated_or_replaced_infographic_cannot_be_sealed(make_paired: Any) -> None:
+    fixture = make_paired()
+    directory = fixture.root / fixture.data["pairs"][0]["snapshots"][0]["artifacts"]["prc"]
+    run = (
+        json.loads((directory / "run.json").read_text())
+        if (directory / "run.json").exists()
+        else {}
+    )
+    run["infographic"] = {"status": "missing"}
+    (directory / "run.json").write_text(json.dumps(run))
+    with pytest.raises(kit.KitError, match="infographic"):
+        kit.prepare_study(fixture.manifest, fixture.study)
+
+    fixture = make_paired()
+    directory = fixture.root / fixture.data["pairs"][0]["snapshots"][0]["artifacts"]["prc"]
+    (directory / "infographic.png").write_bytes(b"different-image")
+    with pytest.raises(kit.KitError, match="bytes differ"):
+        kit.prepare_study(fixture.manifest, fixture.study)
+
+
+@pytest.mark.parametrize("name", ["map.html", "doc.html", "card.html", "card.png"])
+def test_legacy_prc_output_cannot_be_sealed(make_paired: Any, name: str) -> None:
+    fixture = make_paired()
+    directory = fixture.root / fixture.data["pairs"][0]["snapshots"][0]["artifacts"]["prc"]
+    (directory / name).write_text("legacy")
+    with pytest.raises(kit.KitError, match="legacy"):
+        kit.prepare_study(fixture.manifest, fixture.study)
+
+
 def test_stale_tool_source_fails_preparation(make_paired: Any) -> None:
     fixture = make_paired(pairs=1)
     fixture.data["pairs"][0]["snapshots"][1]["prc"]["head_sha"] = "f" * 40

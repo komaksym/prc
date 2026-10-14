@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import copy
 import json
 import re
 import shutil
@@ -58,10 +59,11 @@ LOOK_LABEL = "Look here first"
 RISKY_LABEL = "Risky surfaces"
 MAX_CALLS = 3
 Role = Literal["headline", "node", "legend", "label", "chip", "row", "verdict", "note"]
-RelationKind = Literal["call", "removed call", "maps", "becomes"]
+RelationKind = Literal["call", "removed call", "maps", "becomes", "flow"]
 LEGEND: dict[str, str] = {
     "call": "Arrows show new calls",
     "removed call": "Dashed arrows show removed calls",
+    "flow": "Arrows show the cited storyboard flow",
 }
 MIXED_CALL_LEGEND = "Arrows into code names show new calls"
 IconKind = Literal["lone", "tall"]
@@ -410,6 +412,48 @@ def _nodes(relations: tuple[Relation, ...]) -> list[str]:
     return list(dict.fromkeys(t for r in relations for t in (r.source, r.target)))
 
 
+def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...]:
+    from prc.explainer.check import verify_board
+
+    selection = board["infographic"]
+    if not isinstance(selection, dict) or selection.get("mode") != "storyboard-flow":
+        raise ValueError("infographic mode must be storyboard-flow")
+    index = selection.get("scene")
+    scenes = board.get("scenes", [])
+    if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < len(scenes):
+        raise ValueError("infographic scene must name an existing groups scene")
+    scene = scenes[index]
+    if scene.get("type") != "groups":
+        raise ValueError("infographic scene must be a groups scene")
+    verify_board(copy.deepcopy(board), m)
+    endpoints: dict[str, str] = {}
+    titles: set[tuple[str, ...]] = set()
+    for group in scene["groups"]:
+        title = group.get("title")
+        if not isinstance(title, str) or not title.strip() or len(title) > LINE_LIMIT:
+            raise ValueError("infographic group titles need nonempty text within the line limit")
+        identity = tuple(tokenize(title))
+        if not identity or identity in titles:
+            raise ValueError("infographic groups need unique group titles after text normalization")
+        titles.add(identity)
+        for item in group["items"]:
+            if item["id"] in endpoints:
+                raise ValueError("infographic groups need unique item IDs")
+            endpoints[item["id"]] = title
+    links: list[Relation] = []
+    for cue in scene.get("cues", []):
+        if cue.get("do") != "fly":
+            continue
+        source, target = endpoints.get(cue.get("from")), endpoints.get(cue.get("to"))
+        if source is None or target is None or source == target:
+            raise ValueError("infographic fly cues must connect items in distinct named groups")
+        links.append(Relation(source, target, "flow"))
+    unique = tuple(dict.fromkeys(links))
+    if not unique or len(unique) > MAX_CALLS:
+        raise ValueError(f"infographic scene needs 1 to {MAX_CALLS} distinct flow relationships")
+    return unique
+
+
 def infobrief(
     m: dict[str, Any],
     brief: Any,
@@ -418,9 +462,16 @@ def infobrief(
 ) -> InfographicBrief:
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
-    links = structure(m, brief, board, sources)
+    story = board is not None and "infographic" in board
+    links = (
+        _story_flow(m, board)
+        if board is not None and story
+        else structure(m, brief, board, sources)
+    )
     head: list[BriefLine] = [BriefLine("headline", title)]
     taken = {title}
+    if story and any(r.source in taken or r.target in taken for r in links):
+        raise ValueError("infographic headline must differ from its group titles")
     links = tuple(r for r in links if r.source not in taken and r.target not in taken)
     head += [BriefLine("node", text) for text in _nodes(links)]
     kinds = {r.kind for r in links}
@@ -428,7 +479,7 @@ def infobrief(
     if kinds - {"call", "removed call"}:
         legend["call"] = MIXED_CALL_LEGEND
     head += [BriefLine("legend", text) for kind, text in legend.items() if kind in kinds]
-    look = list(card.look_first(m, brief, 3, board))
+    look = [] if story else list(card.look_first(m, brief, 3, board))
     if look:
         head.append(BriefLine("label", LOOK_LABEL))
         head += [BriefLine("row", f"{e.name} in {e.path}") for e in look]
@@ -436,6 +487,10 @@ def infobrief(
     head.append(BriefLine("note", DISCLOSURE))
     trimmed = tuple(BriefLine(line.role, _trim_line(line.text)) for line in head)
     fitted = _fit_words(trimmed)
+    if story and any(
+        tokenize(line.text) == tokenize(fitted[0].text) for line in fitted if line.role == "node"
+    ):
+        raise ValueError("infographic headline must differ from its group titles after fitting")
     return InfographicBrief(fitted[0].text, fitted, links)
 
 

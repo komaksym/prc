@@ -166,3 +166,16 @@ All commands read the map you pass.
 - `prc explain --source <PR-URL> --board <board.json> --voice none --out <dir>` renders the full silent video.
 
 A good reference board uses phrase cues, automatic group layout, and one diff scene of the lines that carry the change. Never place groups in pixels: give columns, rows, and items, not `x`, `y` or `w`.
+
+## High-level infographic from a scene
+
+Set the board's `infographic` field to `{"mode":"storyboard-flow","scene":1}` to select an existing groups scene.
+The infographic uses that scene's group titles as nodes and its `fly` cues as directed relationships.
+Each fly must join cited, grounded items in distinct groups. Select one to three distinct relationships.
+Give each item a unique ID. Use a headline that differs from every group title.
+Give each group a unique title after case and punctuation normalization. Keep the fitted headline distinct from each title.
+The video, clickable page, and infographic then share these authored endpoints and directions.
+The legend says these are storyboard flows. They are not inferred call edges or proof of execution.
+Review the semantic titles and narrated flow against the original source before drawing.
+The receipt checker validates item ground and citations, but does not prove every title's meaning.
+Boards without this selector keep the source-derived call and documentation brief.

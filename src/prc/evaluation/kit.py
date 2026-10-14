@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from prc.evaluation import question_lint
+from prc.evaluation.assets import PRC_AID_ARTIFACTS
 from prc.evaluation.protocol import (
     Pair,
     Protocol,
@@ -246,6 +247,24 @@ def _validate_prc_record(snap: Mapping[str, Any], prc_dir: Path) -> None:
     )
     _require(bool(_SHA64.match(str(spec["output_hash"]))), "prc output_hash must be 64 hex")
     _require_str(spec["render_identity"], "prc render_identity must be recorded")
+    for name in PRC_AID_ARTIFACTS:
+        path = prc_dir / name
+        _require(path.is_file() and path.stat().st_size > 0, f"prc {name} is missing or empty")
+    legacy = [
+        name
+        for name in ("map.html", "doc.html", "card.html", "card.png")
+        if (prc_dir / name).exists()
+    ]
+    _require(not legacy, f"prc legacy outputs must be removed: {legacy}")
+    _require((prc_dir / "run.json").is_file(), "prc run.json is missing")
+    run = json.loads((prc_dir / "run.json").read_text())
+    infographic = run.get("infographic", {})
+    _require(infographic.get("status") == "passed", "prc infographic has not passed its gate")
+    _require(
+        infographic.get("published_sha256")
+        == hashlib.sha256((prc_dir / "infographic.png").read_bytes()).hexdigest(),
+        "prc infographic bytes differ from the gated image",
+    )
 
 
 def _validate_questions(questions: Sequence[Mapping[str, Any]], snapshot_id: str) -> None:

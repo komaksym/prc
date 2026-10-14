@@ -1,4 +1,7 @@
-"""Stage 8 gates: deterministic checks over one eval run output folder (EVAL.md A).
+"""Archived stage 8 gates for the pre-v3 viewing conditions (EVAL.md A).
+
+V3 paired studies use scripts/verify_page.py and the paired hub verification recipe.
+These gates retain the original card and walkthrough conditions for frozen historical runs.
 
 Run: uv run python scripts/eval/gates.py eval/runs/<label> [--write]
 Reads outputs/pr<N>/{map.json,board.json,doc.html,video.mp4,card.png,comment.md,card.html,run.json}

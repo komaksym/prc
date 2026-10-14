@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Drive PRC's CLI and generated map or walkthrough pages. Use after changes to map, explain, board tools, review state, or skill installation. Capture commands, browser screenshots, and file effects."
+description: "Drive PRC's CLI, clickable explanation page, infographic, video, and paired study hub. Use after changes to explain, board tools, review state, or skill installation. Capture commands, browser screenshots, and file effects."
 ---
 
 # Verify PRC
@@ -21,7 +21,7 @@ export PLAYWRIGHT_BROWSERS_PATH="$PWD/artifacts/release/browser-cache"
 .venv/bin/python -m prc.cli --help
 ```
 
-Otherwise use Playwright's installed default cache. Require help output listing `map`, `explain`, `board`, `review`, and `skill`.
+Otherwise use Playwright's installed default cache. Require help output listing `explain`, `board`, `review`, and `skill`. `map` is not a public command.
 PRC exits after each command. No server or port requires teardown.
 For manual recipes, create a disposable directory with `mktemp -d /tmp/prc-verify-XXXXXX`.
 Set `VERIFY_STORE` to its `store` child. Set `VERIFY_PROOF` to a new directory under `artifacts/verification`.
@@ -41,13 +41,9 @@ Require this checkout's package before attributing a result to this source.
 
 ## Drive
 
-```sh
-.venv/bin/python .agents/skills/verify/scripts/map.py
-```
-
-The driver runs the real `map --source fixture:shop` entry point with its own store.
-It opens generated HTML in headless Chromium, clicks checkout, and presses Escape.
-Require `PASS` and inspect the printed proof directory.
+Run `scripts/verify_page.py --page <exact page.html> --shots <new proof directory>` with the current generated output.
+The isolated Vercel agent-browser driver clicks every scene, code hunk, narration control, infographic, and coverage control.
+Require PASS and inspect each saved screenshot. Verify current output hashes against the report.
 For other paths, use [the feature map](features/README.md). Every browser check must save a screenshot.
 For paired session hub changes, run `.venv/bin/python scripts/verify_paired_hub.py` instead of API-only checks. Require PASS, every button screenshot, refusal recovery text, and cited proof from [paired hub](features/paired.md).
 Before any operator-facing handoff of the hub URL, run .venv/bin/python scripts/handoff_study_hub.py against the exact handed-off server and require its handoff record. Require the printed exact URL, the supervised pidfile, and the handoff record JSON under artifacts/handoff/ with url, port, pid, pidfile, screenshot, and checks. Do not hand off a hub URL without that record; the script refuses to print a URL when any check fails.
@@ -56,20 +52,17 @@ Record a driver limitation if unavailable. DOM-only checks do not establish GUI 
 
 ## Evidence
 
-The driver prints a unique `artifacts/verification/map-*` directory.
-It saves CLI stdout, stderr, exit codes, actions, page errors, requests, package identity, revision, and map hash.
-Its `output` folder preserves HTML and JSON. Screenshots show overview, open drawer, and closed drawer.
-Inspect the screenshots before declaring the feature verified.
-Manual recipes preserve commands, resulting files, exit codes, and screenshots in `VERIFY_PROOF`.
-Check mutations through a second CLI or artifact read.
-The fixture replaces the external provider at PRC's existing boundary; the pipeline and renderer run unchanged.
-The driver rejects browser HTTP requests. This proves the captured page loads offline.
-It does not establish network isolation for every CLI command. Live GitHub acquisition requires separate evidence.
-Keep fixture checks local. Avoid external link navigation, public writes, and global skill installs.
-Report tested and untested entry points. One mapped feature does not prove the whole product or release acceptance.
+The page driver writes report.json and screenshots in the supplied proof directory.
+Inspect the screenshots before declaring the feature verified. Manual recipes preserve commands, files, exit codes, and screenshots.
+The paired hub needs a full button pass on a disposable study, followed by verification of the exact live hub.
+Copies preserve the operator's readings. They do not establish that the handed-off server is alive.
+Keep fixture checks local. Avoid public writes and global skill installs.
+Report tested and untested entry points. One mapped feature does not prove the whole product.
 
 For infographics, compare `infographic/brief.json` with the captured code evidence.
-Calls must be exact added or removed production calls.
+Source-derived calls must be exact added or removed production calls.
+An explicit storyboard-flow selection uses cited group items and their directed fly cues.
+Check group titles against the pinned source; receipts alone do not prove semantic prose.
 The test-call node counts distinct test callers with added exact calls to a displayed symbol.
 Python `Before docs:` and `After docs:` lines are source docstring excerpts, not inferred board behavior.
 Go call-to-typed-error mappings require full pinned head source that matches the captured head diff rows.
@@ -82,16 +75,17 @@ Keep human pacing, tone, and acceptance pending until the user supplies evidence
 
 ## Cleanup
 
-The driver closes its browser and removes only its own scratch store, including on failure.
-Evidence survives failed attempts and cleanup. Require `cleanup.json` to report `scratch_removed: true`.
+The page driver closes its browser and local server, including on failure.
+The paired hub driver also removes its disposable study and records `scratch_removed: true` in `cleanup.json`.
+Evidence survives cleanup.
 Confirm screenshots still exist after exit.
 For manual runs, close the browser you started and remove only the saved scratch directory.
 Never kill by process name. Keep `VERIFY_PROOF` and earlier release artifacts.
 
 ## Helpers
 
-`scripts/map.py` is executable and requires the project's Python environment and Playwright.
-Invoke it as shown under Drive. It exits nonzero on failure and prints the proof path before work begins.
+`scripts/verify_page.py` requires the project environment, Vercel agent-browser, and cached Chromium.
+It exits nonzero when a visible control, code hunk, narration, or screenshot check fails.
 Full package checks remain `bash scripts/verify-release.sh`, with the selected browser cache environment.
 The verifier uses unique proof directories and rejects skipped tests.
 Use `/maintain-verification-skill` when commands, controls, or feature coverage change.

@@ -34,6 +34,14 @@ def test_first_word_of_a_code_name_keeps_its_last_sound() -> None:
     assert speakable("Now it calls find_next_episode.") == "Now it calls find, next episode."
 
 
+def test_brand_name_keeps_its_final_sound() -> None:
+    assert (
+        speakable("Bare LinkedIn addresses gain HTTPS.") == "Bare linked inn addresses gain HTTPS."
+    )
+    assert heard_as("LinkedIn") == "linked in"
+    assert code_tokens("Bare LinkedIn addresses gain HTTPS.") == ["LinkedIn"]
+
+
 def test_homograph_in_a_code_name_is_said_as_the_verb() -> None:
     """Defect: Kokoro said ReadComposeError with the past tense "red", heard as "red compose"."""
     assert speakable("ReadComposeError") == "reed, compose error"

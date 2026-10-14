@@ -6,8 +6,7 @@ Fixtures need no credentials. Live GitHub entry points require network access an
 Capture commands, actions, resulting screens, and stored effects. Keep proof after cleanup.
 Report untested entry points explicitly.
 
-- [Change map](map.md) covers generation, symbol inspection, tours, and optional video export.
-- [Explainer](explain.md) covers checked video, walkthrough, card, comment, and stored-map rendering.
+- [Explainer](explain.md) covers the required infographic, Kokoro video, clickable page, and stored-source rendering.
 - [Board tools](board.md) covers guide, code lookup, coverage, and receipt checks.
 - [Review state](review.md) covers local review, freshness, and decisions.
 - [Skill installation](install.md) covers disposable Claude and Codex destinations.

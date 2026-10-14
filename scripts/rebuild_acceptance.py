@@ -83,28 +83,25 @@ def main() -> int:
         names = {name for name in previous if (run / name).is_file()}
         required = {
             "map.json",
-            "map.html",
             "board.json",
             "video.mp4",
-            "doc.html",
+            "page.html",
+            "infographic.png",
             "comment.md",
             "run.json",
         }
-        missing = (previous - names) & required
+        missing = {name for name in required if not (run / name).is_file()}
         if missing:
             failed.append(f"{case}: required outputs missing: {sorted(missing)}")
         names.update(
             name
             for name in (
                 "map.json",
-                "map.html",
                 "board.json",
                 "video.mp4",
-                "doc.html",
+                "page.html",
                 "comment.md",
                 "run.json",
-                "card.html",
-                "card.png",
                 "infographic.png",
                 "infographic/brief.json",
                 "infographic/check.json",
