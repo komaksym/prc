@@ -25,7 +25,7 @@ Do not infer no tests from zero parsed test functions. Check the changed test fi
 
 ## 1. Render the deterministic outputs and read `map.json`
 
-Run `prc doctor` first. Video and card rendering require Chromium and ffmpeg.
+Run `prc doctor` first. Video and page rendering require Chromium and ffmpeg.
 Use `--voice none` for silent output when voice backends are unavailable.
 Follow the user's installation policy before installing missing tools or voice models.
 Then render the PR without a board:
@@ -68,7 +68,7 @@ with the evidence (the tests the PR adds, when it adds any), then the
 outro. The outro's two lines hand the reviewer off: what changed in one
 plain sentence, then where to start reviewing (a file and what it decides)
 or what the PR leaves untested. Never a slogan or a quotable line.
-The card and comment headline use the outro's `l1` change summary when supplied.
+The infographic and comment headline use the outro's `l1` change summary when supplied.
 Write `l1` about the resulting behavior. Keep the old behavior in the introduction or diff scene.
 
 ## 3. Pick lines with `board show` and `board find`

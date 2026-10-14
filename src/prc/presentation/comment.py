@@ -1,4 +1,4 @@
-"""The PR comment: headline, card placeholder, a Mermaid flowchart, and brief facts.
+"""The PR comment: headline, infographic placeholder, a Mermaid flowchart, and brief facts.
 
 Mermaid rules (docs/mvp/PLAN.md Stage 5): nodes are `n1`, `n2`, ... with the
 short qualname in double quotes. Labels strip backticks, newlines and control
@@ -175,8 +175,6 @@ def render_comment(
     brief: Any = None,
     board: dict[str, Any] | None = None,
     *,
-    card_available: bool = True,
-    card_warning: str | None = None,
     infographic: bool = False,
 ) -> str:
     """comment.md in PLAN order. PR strings via span(); Mermaid labels never."""
@@ -192,20 +190,8 @@ def render_comment(
             "Upload `infographic.png` with this comment: images do not embed from the repo.",
             "",
         ]
-    elif card_available:
-        lines += [
-            "![PR card](card.png)",
-            "",
-            "Upload `card.png` with this comment: images do not embed from the repo.",
-            "",
-        ]
     else:
-        lines += [
-            "PR card image was not produced. See card.html for the fallback card.",
-            "",
-        ]
-        if card_warning:
-            lines += [span(card_warning), ""]
+        lines += ["No infographic in this build.", ""]
     if changed:
         lines += [mermaid_block(m)]
     if len(changed) > MAX_NODES:
@@ -243,11 +229,7 @@ def render_comment(
     if missing:
         lines += [""] + [f"- {span(u.name)} in {span(u.path)}" for u in missing]
     lines += ["", TEST_NOTE]
-    stats = facts.stats
-    ci = "no CI" if facts.ci_state == "none" else f"CI {stats.ci_text} {facts.ci_state}"
     lines += [
-        "",
-        f"Files {stats.files}, symbols {stats.symbols_changed}, {ci}.",
         "",
         f"*Written by prc from the code at head `{m.get('head_sha', '')[:12]}`.*",
         "",

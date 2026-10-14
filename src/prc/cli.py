@@ -392,7 +392,6 @@ def _main(argv: list[str] | None = None) -> int:
                     "board": str(explained.board_json) if explained.board_json else None,
                     "video": str(explained.video) if explained.video else None,
                     "page": str(explained.page_html) if explained.page_html else None,
-                    "card": str(explained.card_png) if explained.card_png else None,
                     "comment": str(explained.comment_md),
                     "infographic": (str(explained.infographic) if explained.infographic else None),
                     "duration": explained.duration,

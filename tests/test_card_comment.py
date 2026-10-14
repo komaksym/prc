@@ -591,7 +591,7 @@ def test_comment_part_order_and_span() -> None:
     text = comment.render_comment(m)
     assert text.startswith("# ")
     order = [
-        "![PR card](card.png)",
+        "No infographic in this build.",
         "```mermaid",
         "Look here first",
         "Risky",

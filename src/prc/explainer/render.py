@@ -124,8 +124,7 @@ def fill(
         if s["type"] == "title":
             s["title"] = m["title"]
             s["meta"] = (
-                f'<span class="add">+{added}</span> <span class="del">−{removed}</span>'
-                f" · {len(m['brief']['files'])} files · {m['pr']}"
+                f'<span class="add">+{added}</span> <span class="del">−{removed}</span> · {m["pr"]}'
             )
             s["footer"] = f"base {m['base_sha'][:7]}  →  head {m['head_sha'][:7]}"
             segments, rest = [], m["title"]

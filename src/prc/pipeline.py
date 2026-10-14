@@ -29,9 +29,6 @@ from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_
 from prc.model import PrRef
 from prc.presentation import infographic
 from prc.presentation.build import build_document
-from prc.presentation.card import CardError
-from prc.presentation.card import build_card_html as build_pr_card_html
-from prc.presentation.card import render_card as render_pr_card
 from prc.presentation.check import (
     check_document,
     check_entry,
@@ -350,8 +347,6 @@ class ExplainResult:
     board_json: Path | None
     video: Path | None
     page_html: Path | None
-    card_html: Path
-    card_png: Path | None
     comment_md: Path
     run_json: Path
     duration: float
@@ -661,29 +656,12 @@ def run_explain(
             )
             page_out = out_dir / "page.html"
 
-        card_html = out_dir / "card.html"
-        card_png: Path | None = None
-        card_warning: str | None = None
-        try:
-            render_pr_card(
-                rebuilt, rebuilt.get("brief"), board, work / "card.html", work / "card.png"
-            )
-            card_png = out_dir / "card.png"
-        except CardError as error:
-            (work / "card.html").write_text(
-                build_pr_card_html(rebuilt, rebuilt.get("brief"), board)
-            )
-            (work / "card.png").unlink(missing_ok=True)
-            card_warning = str(error)
-            warnings = [*warnings, card_warning]
         comment_md = out_dir / "comment.md"
         (work / "comment.md").write_text(
             render_pr_comment(
                 rebuilt,
                 rebuilt.get("brief"),
                 board,
-                card_available=card_png is not None,
-                card_warning=card_warning,
                 infographic=published_path is not None,
             )
         )
@@ -702,7 +680,6 @@ def run_explain(
             "duration_seconds": round(duration, 2),
             "fps": explain_render.FPS,
             "page": str(page_out) if page_out else None,
-            "card": str(card_png) if card_png else None,
             "comment": str(comment_md),
             "infographic": {
                 "status": info_status,
@@ -726,7 +703,7 @@ def run_explain(
                 + str(out_dir / "infographic" / "brief.json")
                 + " and re-run with --infographic <png>; evidence in "
                 + str(out_dir / "infographic" / "check.json")
-                + ". The build fails instead of publishing the card fallback."
+                + ". The build fails instead of publishing without a gated infographic."
             )
 
         return ExplainResult(
@@ -735,8 +712,6 @@ def run_explain(
             board_out,
             video,
             page_out,
-            card_html,
-            card_png,
             comment_md,
             run_json,
             duration,

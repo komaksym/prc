@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+# The study aid ships exactly three PRC artifacts. No card and no CI summary.
+PRC_AID_ARTIFACTS = ("video.mp4", "page.html", "infographic.png")
+
 
 def study_page() -> str:
     return STUDY_HTML

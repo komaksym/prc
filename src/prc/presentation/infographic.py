@@ -418,30 +418,9 @@ def infobrief(
 ) -> InfographicBrief:
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
-    stats = found.stats
-    ci = "no CI" if found.ci_state == "none" else f"CI {stats.ci_text} {found.ci_state}"
-    files = f"{stats.files} {_label(stats.files, 'file', 'files')}"
-    changed = (
-        f"{stats.symbols_changed} "
-        f"{_label(stats.symbols_changed, 'parsed symbol changed', 'parsed symbols changed')}"
-    )
     links = structure(m, brief, board, sources)
-    chips = (
-        [files, changed, ci]
-        if links
-        else [
-            files,
-            changed,
-            f"{stats.call_sites} "
-            f"{_label(stats.call_sites, 'resolved call site', 'resolved call sites')}",
-            f"{stats.tests_touched} "
-            f"{_label(stats.tests_touched, 'test file touched', 'test files touched')}",
-            ci,
-            f"{stats.untested_total} parsed code without test evidence",
-        ]
-    )
     head: list[BriefLine] = [BriefLine("headline", title)]
-    taken = {title, *chips}
+    taken = {title}
     links = tuple(r for r in links if r.source not in taken and r.target not in taken)
     head += [BriefLine("node", text) for text in _nodes(links)]
     kinds = {r.kind for r in links}
@@ -449,15 +428,10 @@ def infobrief(
     if kinds - {"call", "removed call"}:
         legend["call"] = MIXED_CALL_LEGEND
     head += [BriefLine("legend", text) for kind, text in legend.items() if kind in kinds]
-    head += [BriefLine("chip", text) for text in chips]
     look = list(card.look_first(m, brief, 3, board))
     if look:
         head.append(BriefLine("label", LOOK_LABEL))
         head += [BriefLine("row", f"{e.name} in {e.path}") for e in look]
-    surfaces = list(card.risky(m, brief))
-    if surfaces:
-        head.append(BriefLine("label", RISKY_LABEL))
-        head += [BriefLine("row", f"{r.path}: {r.reason}") for r in surfaces]
     head.append(BriefLine("verdict", found.test_verdict))
     head.append(BriefLine("note", DISCLOSURE))
     trimmed = tuple(BriefLine(line.role, _trim_line(line.text)) for line in head)

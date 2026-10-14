@@ -157,31 +157,20 @@ def test_infobrief_words_are_checked() -> None:
     m = sample_map()
     brief = gate.infobrief(m, m["brief"], None)
     found = facts.compute_facts(m, m["brief"])
-    stats = found.stats
     look = card.look_first(m, m["brief"], 3, None)
-    surfaces = card.risky(m, m["brief"])
     assert brief.title == card.headline(m, None)
     assert brief.title == "Fix cart totals"
     expected: list[tuple[str, str]] = [("headline", "Fix cart totals")]
-    expected += [
-        ("chip", "2 files"),
-        ("chip", "2 parsed symbols changed"),
-        ("chip", "2 resolved call sites"),
-        ("chip", "1 test file touched"),
-        ("chip", "CI 1/1 passed"),
-        ("chip", "0 parsed code without test evidence"),
-    ]
-    assert stats.files == 2 and stats.tests_touched == 1
-    assert found.ci_state == "passed"
     expected.append(("label", gate.LOOK_LABEL))
     expected += [("row", f"{e.name} in {e.path}") for e in look]
     assert [e.name for e in look] == ["apply_discount"]
-    expected.append(("label", gate.RISKY_LABEL))
-    expected += [("row", f"{r.path}: {r.reason}") for r in surfaces]
-    assert [(r.path, r.reason) for r in surfaces] == [("cart.py", "external calls")]
     expected.append(("verdict", found.test_verdict))
     expected.append(("note", gate.DISCLOSURE))
     assert [(line.role, line.text) for line in brief.lines] == expected
+    assert all(role != "chip" for role, _text in [(line.role, line.text) for line in brief.lines])
+    assert all(
+        text != gate.RISKY_LABEL for _role, text in [(line.role, line.text) for line in brief.lines]
+    )
     assert gate.LOOK_LABEL in render_comment(m, m["brief"], None)
     assert gate.RISKY_LABEL in render_comment(m, m["brief"], None)
     assert "cart" in gate.allowed_words(brief)
@@ -657,7 +646,7 @@ def test_gate_requires_every_reading(tmp_path: Path, monkeypatch: pytest.MonkeyP
 
 def test_infobrief_long_mandatory_content_stays_in_budget() -> None:
     m = sample_map()
-    m["title"] = "a " * 48
+    m["title"] = "a " * 100
     m["brief"]["title"] = m["title"]
     brief = gate.infobrief(m, m["brief"], None)
     assert sum(len(gate.tokenize(line.text)) for line in brief.lines) <= gate.MAX_WORDS
@@ -963,11 +952,11 @@ def test_structure_caps_production_calls() -> None:
     assert len(brief.relations) == gate.MAX_CALLS
 
 
-def test_structure_absent_keeps_all_six_chips_and_no_relations() -> None:
+def test_structure_absent_brief_has_no_count_chips_and_no_relations() -> None:
     m = sample_map()
     brief = gate.infobrief(m, m["brief"], None)
     assert brief.relations == ()
-    assert [line.role for line in brief.lines].count("chip") == 6
+    assert [line.role for line in brief.lines] == ["headline", "label", "row", "verdict", "note"]
 
 
 def test_brief_json_records_relations(tmp_path: Path) -> None:
