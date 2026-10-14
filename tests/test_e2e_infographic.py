@@ -349,8 +349,6 @@ def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
         "explain",
         "--source",
         "fixture:shop",
-        "--board",
-        str(BOARD),
         "--voice",
         "none",
         "--store",
@@ -423,26 +421,43 @@ def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
     assert "<figcaption>Infographic drawn by AI. Words from prc.</figcaption>" in doc
 
 
-def test_explain_without_infographic_keeps_card(tmp_path: Path) -> None:
-    printed = run_cli(
-        tmp_path,
-        "explain",
-        "--source",
-        "fixture:shop",
-        "--store",
-        str(tmp_path / "store"),
-        "--out",
-        str(tmp_path / "out"),
+def test_explain_without_infographic_fails_loudly(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from prc import pipeline
+    from prc.explainer import render as explain_render
+    from prc.fixture_source import FixtureSource
+    from prc.model import PrRef
+    from prc.verification import EligibilityPolicy
+
+    data = ROOT / "tests/data/explainer/maps/pr12.json"
+    board = tmp_path / "board.json"
+    board.write_text(json.dumps({"scenes": [{"type": "title", "say": ["A change."], "cues": []}]}))
+    monkeypatch.setattr(
+        pipeline,
+        "verify_board",
+        lambda *a, **k: {"receipts": 1, "covered": 1, "changed": 1, "tests_added": 0},
     )
-    out = tmp_path / printed["out"]
-    run = json.loads((out / "run.json").read_text())
-    assert run["infographic"]["status"] == "missing"
-    assert run["infographic"]["published_sha256"] is None
-    assert run["infographic"]["attempts"] == []
-    assert (out / "infographic" / "brief.json").exists()
-    assert json.loads((out / "infographic" / "check.json").read_text()) == []
-    assert "![PR card](card.png)" in (out / "comment.md").read_text()
-    assert not (out / "infographic.png").exists()
+    monkeypatch.setattr(
+        explain_render,
+        "render",
+        lambda *a, **k: explain_render.Rendered(1.0, 1, [], []),
+    )
+    with pytest.raises(pipeline.InfographicMissingError, match="no gated infographic published"):
+        pipeline.run_explain(
+            FixtureSource(repo=tmp_path, resources={}),
+            PrRef("acme", "shop", 1),
+            lambda: 0.0,
+            EligibilityPolicy(),
+            tmp_path / "out",
+            board_path=board,
+            map_path=data,
+            voice="none",
+        )
+    outs = list((tmp_path / "out").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    assert (outs[0] / "infographic" / "brief.json").exists()
+    assert (outs[0] / "infographic" / "check.json").exists()
 
 
 def test_explain_rejects_bad_infographic_flag(tmp_path: Path) -> None:

@@ -337,6 +337,10 @@ def run_decide(
     return decision_id, report
 
 
+class InfographicMissingError(RuntimeError):
+    """No gated infographic was published for a board build."""
+
+
 class ExplainCheckError(RuntimeError):
     """A board that failed the checker, one line per error."""
 
@@ -718,6 +722,16 @@ def run_explain(
         (work / "run.json").write_text(json.dumps(run, indent=2, sort_keys=True))
 
         _publish_explain(work, out_dir)
+
+        if board is not None and published_path is None:
+            raise InfographicMissingError(
+                "prc explain: no gated infographic published (status: " + info_status + "). "
+                "Generate one candidate with the baoyu-infographic technical profile from "
+                + str(out_dir / "infographic" / "brief.json")
+                + " and re-run with --infographic <png>; evidence in "
+                + str(out_dir / "infographic" / "check.json")
+                + ". The build fails instead of publishing the card fallback."
+            )
 
         return ExplainResult(
             out_dir,

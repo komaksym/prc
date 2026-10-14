@@ -19,6 +19,7 @@ from prc.identity import to_jsonable
 from prc.model import PrRef
 from prc.pipeline import (
     ExplainCheckError,
+    InfographicMissingError,
     run_brief,
     run_decide,
     run_explain,
@@ -417,6 +418,10 @@ def _main(argv: list[str] | None = None) -> int:
                 infographics=cands,
             )
         except ExplainCheckError as error:
+            print(str(error), file=sys.stderr)
+
+            return 2
+        except InfographicMissingError as error:
             print(str(error), file=sys.stderr)
 
             return 2

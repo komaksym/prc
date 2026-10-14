@@ -77,32 +77,20 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
         check=False,
     )  # fmt: skip
 
-    assert completed.returncode == 0, completed.stderr
-
-    printed = json.loads(completed.stdout)
-    assert printed["check_passed"] is True
-
-    out = tmp_path / printed["out"]
-    for name in (
-        "map.json",
-        "map.html",
-        "board.json",
-        "video.mp4",
-        "doc.html",
-        "run.json",
-        "card.html",
-        "card.png",
-        "comment.md",
-    ):
-        assert (out / name).exists(), name
+    assert completed.returncode == 2, completed.stderr
+    assert "no gated infographic published" in completed.stderr
+    outs = list((tmp_path / "out").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    assert (outs[0] / "infographic" / "brief.json").exists()
+    out = outs[0]
 
     run = json.loads((out / "run.json").read_text())
     assert run["check"]["passed"] is True
     assert run["voice"] == "none"
     assert run["map_source"] == ("stored" if stored else "live")
     assert run["live_head_sha"] == (None if stored else run["stored_head_sha"])
-    assert (tmp_path / run["comment"]).exists()
-    assert (tmp_path / run["card"]).exists()
+    assert Path(run["comment"]).exists()
+    assert Path(run["card"]).exists()
 
     info = probe(out / "video.mp4")
     stream = info["streams"][0]
@@ -316,8 +304,11 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
          "--out", str(tmp_path / "out")],
         capture_output=True, text=True, cwd=ROOT, check=False,
     )  # fmt: skip
-    assert completed.returncode == 0, completed.stderr
-    out = Path(json.loads(completed.stdout)["out"])
+    assert completed.returncode == 2, completed.stderr
+    assert "no gated infographic published" in completed.stderr
+    outs = list((tmp_path / "out").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    out = outs[0]
     rebuilt = json.loads((out / "map.json").read_text())
     facts = verify_board(json.loads((out / "board.json").read_text()), rebuilt)
     run = json.loads((out / "run.json").read_text())
