@@ -1,4 +1,4 @@
-"""Light review page for one assigned reading at a time."""
+"""Dark review page for one assigned reading at a time."""
 
 from __future__ import annotations
 
@@ -11,17 +11,17 @@ STUDY_HTML = r"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Paired PR evaluation</title>
 <style>
-:root{color-scheme:light;font-family:system-ui,sans-serif;color:#182738;background:#f5f7fa}
+:root{color-scheme:dark;font-family:system-ui,sans-serif;color:#e6edf3;background:#0d1117}
 *{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:32px auto;padding:0 24px}
 header{display:flex;justify-content:space-between;gap:24px;align-items:center}h1{font-size:32px;margin:0 0 8px}h2{font-size:23px}
-p{line-height:1.55}.muted{color:#566779}.panel{background:white;border:1px solid #d5dfe8;border-radius:12px;padding:24px;margin:24px 0}
-.notice{background:#eef7ff;border-left:4px solid #246aac;padding:16px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
-button,.link{font:inherit;border:1px solid #b3c4d3;border-radius:8px;padding:11px 17px;background:white;color:#17496d;cursor:pointer}
-button.primary{background:#17689e;color:white;border-color:#17689e}button:disabled{opacity:.55;cursor:wait}
-label{display:block;margin:12px 0}input[type=checkbox]{margin-right:10px}textarea,select,input[type=number],input[type=text]{font:inherit;width:100%;padding:10px;border:1px solid #bacbd9;border-radius:6px}
-textarea{min-height:100px;resize:vertical}input[type=number]{max-width:150px}.question{border-top:1px solid #dde5ed;padding-top:18px;margin-top:24px}.frame{width:100%;height:680px;border:1px solid #d5dfe8;border-radius:8px;background:white}
-#timer{font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap}[hidden]{display:none!important}#error{color:#8e231b;background:#fff0ec;padding:14px}#save{color:#285b46}
-pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;background:#f5f7fa;padding:12px;border-radius:6px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid #dde5ed}code{overflow-wrap:anywhere}.grade-anchor{font-weight:600}
+p{line-height:1.55}.muted{color:#9aa7b4}.panel{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;margin:24px 0}
+.notice{background:#10243a;border-left:4px solid #3b82d0;padding:16px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+button,.link{font:inherit;border:1px solid #3d444d;border-radius:8px;padding:11px 17px;background:#21262d;color:#c9e3ff;cursor:pointer}
+button.primary{background:#1f6feb;color:white;border-color:#1f6feb}button:disabled{opacity:.55;cursor:wait}
+label{display:block;margin:12px 0}input[type=checkbox]{margin-right:10px}textarea,select,input[type=number],input[type=text]{font:inherit;width:100%;padding:10px;border:1px solid #3d444d;border-radius:6px;background:#0d1117;color:#e6edf3}
+textarea{min-height:100px;resize:vertical}input[type=number]{max-width:150px}.question{border-top:1px solid #21262d;padding-top:18px;margin-top:24px}.frame{width:100%;height:680px;border:1px solid #30363d;border-radius:8px;background:#0d1117}
+#timer{font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap}[hidden]{display:none!important}#error{color:#ff9c90;background:#2d1416;padding:14px}#save{color:#56d364}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;background:#0d1117;padding:12px;border-radius:6px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid #21262d}code{overflow-wrap:anywhere}.grade-anchor{font-weight:600}
 @media(max-width:600px){main{padding:0 14px}header{display:block}.panel{padding:17px}.frame{height:540px}}
 </style></head><body><main>
 <header><div><h1>Paired PR evaluation</h1><div class="muted">Two similar PRs. One reading per PR.</div></div><div id="timer" aria-live="off"></div></header>
