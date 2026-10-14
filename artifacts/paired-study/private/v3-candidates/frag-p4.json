@@ -4,16 +4,16 @@
    "pr": "komaksym/linkedin-mdp#26",
    "questions": [
     {
-     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"_reference_status_action\", \"side\": \"head\", \"supports\": \"404 maps to not_found, separate from retry and fail\"}, {\"path\": \"tests/e2e_live.py\", \"symbol\": \"_fetch_connections_reference\", \"side\": \"head\", \"supports\": \"not_found returns early with the flag set\"}, {\"path\": \"tests/test_e2e_oracle.py\", \"symbol\": \"test_reference_404_is_terminal_not_found\", \"side\": \"head\", \"supports\": \"test pins the 404 mapping\"}]",
-     "graderNotes": "Meaning-equivalent wording counts. A keeps the old raise; the branch returns instead. B and C invent page-skipping and truncation the code never does.",
-     "key": "It records a not_found flag and returns an empty reference set early, so the run ends without raising.",
-     "keyIndex": 3,
+     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"_reference_status_action\", \"side\": \"head\", \"supports\": \"404 maps to not_found; only 429 and 5xx retry\"}, {\"path\": \"tests/e2e_live.py\", \"symbol\": \"_fetch_connections_reference\", \"side\": \"head\", \"supports\": \"not_found returns early with the flag set\"}, {\"path\": \"tests/e2e_live.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"with the flag set, the comparison and legacy check are skipped and the summary records it\"}, {\"path\": \"tests/test_e2e_oracle.py\", \"symbol\": \"test_reference_404_is_terminal_not_found\", \"side\": \"head\", \"supports\": \"the 404 mapping is tested\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. A 404 returns early with the flag set; the run then uses an empty reference, skips both the comparison and the legacy-selector check, and exits normally, discarding any reference pages fetched before the 404. A keeps a failure the PR removes. B invents retries (only 429 and 5xx retry) and a partial comparison. D invents a comparison against the empty reference.",
+     "key": "On a 404 the live check records the not-found flag, skips the reference comparison, and it still finishes as a success.",
+     "keyIndex": 2,
      "kind": "multiple_choice",
      "options": [
-      "It retries the missing page twice with backoff and then raises the same error the base revision raised.",
-      "It skips only the failed fetch and resumes with the remaining reference rows to the end.",
-      "It marks the run truncated and compares the tool result against the partial reference it did fetch.",
-      "It records a not_found flag and returns an empty reference set early, so the run ends without raising."
+      "On a 404 the live check records the not-found flag in its summary, then fails, since no reference is left to compare.",
+      "On a 404 the live check retries twice, records the not-found flag, then compares against the pages it had fetched before.",
+      "On a 404 the live check records the not-found flag, skips the reference comparison, and it still finishes as a success.",
+      "On a 404 the live check records the not-found flag, treats the reference as empty, and fails if the tool returns rows."
      ],
      "prompt": "PR #26, fix(e2e): handle LinkedIn 404 as not_found in connections oracle. Compared with the base revision, what observable change does this PR introduce?",
      "qid": "v3-p4a-q1",
@@ -65,15 +65,19 @@
      "slot": "risk"
     },
     {
-     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"not_found skips the comparison that proves the MCP surface\"}, {\"path\": \"tests/test_e2e_oracle.py\", \"symbol\": \"test_reference_404_is_terminal_not_found\", \"side\": \"head\", \"supports\": \"tests pin the mapping, not the downstream handling\"}]",
-     "graderNotes": "A plain merge earns no credit. The probe must target downstream handling of the flag.",
-     "key": "Request changes. An oracle that passes on an empty reference weakens the very proof the run exists to give. The earliest probe is how an unchecked run stays visibly distinct downstream: the flag must gate or annotate the published result so it can never read as verified.",
+     "accepted_verdicts": [
+      "merge",
+      "request_changes"
+     ],
+     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"comparison skipped under not_found; summary gains connections_reference_not_found\"}, {\"path\": \"tests/e2e_live.py\", \"symbol\": \"_fetch_connections_reference\", \"side\": \"head\", \"supports\": \"not_found returns early\"}, {\"path\": \"tests/test_e2e_oracle.py\", \"symbol\": \"test_reference_404_is_terminal_not_found\", \"side\": \"head\", \"supports\": \"only the status mapping is tested\"}]",
+     "graderNotes": "Merge and request changes both earn full credit with both elements; the verdict is not scored on its own. An answer with no verdict earns 0. 'Add more tests' or 'review the code' is not a runnable probe. A plain merge that names no risk earns at most 0.5. A probe that only asks how the flag should be used, with nothing run, is not runnable.",
+     "key": "Either verdict earns credit when tied to the risk. Request changes: on a 404 the run skips its only independent cross-check yet exits successfully, and only its summary (the not-found flag and zero reference counts) marks the run as unchecked. Merge: the flag does record it, provided a reader or a gate keys on it. Probe: make the reference page return 404, for example with a mock transport, run the check, and read the summary's not-found flag, its zero reference-row count, and the exit status, then name what else marks the run as unchecked.",
      "kind": "short",
-     "prompt": "PR #26, fix(e2e): handle LinkedIn 404 as not_found in connections oracle. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "prompt": "PR #26, fix(e2e): handle LinkedIn 404 as not_found in connections oracle. Merge it or request changes? Give the verdict, the main risk behind it, and one concrete probe to run before deciding. Work from the diff, not the description.",
      "qid": "v3-p4a-q3",
      "required_elements": [
-      "Verdict is request changes until an unchecked run cannot read as verified.",
-      "Probe targets how the flag gates or annotates the published result."
+      "Names a key risk the diff supports: on a 404 the reference comparison is skipped while the run still passes, so an unchecked run can read as verified, with only the summary fields (the not-found flag, zero reference counts) as trace.",
+      "Gives a runnable probe: force a 404 on the reference page (mock or live) and read the run's summary and exit status, naming what in that summary separates verified from unchecked."
      ],
      "rubric": {
       "multiple_choice": [
@@ -87,9 +91,9 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
-      "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "0": "No accepted verdict is stated, neither element is present, or the stated reason contradicts the diff.",
+      "0.5": "An accepted verdict with exactly one of the two required elements.",
+      "1": "An accepted verdict with both required elements: a named risk the diff supports and a runnable probe."
      },
      "slot": "review_decision"
     }
@@ -99,16 +103,16 @@
    "pr": "komaksym/linkedin-mdp#29",
    "questions": [
     {
-     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"shared check raises when total exceeds start plus count with no next link\"}, {\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_get_paged\", \"side\": \"head\", \"supports\": \"the shared _get_paged no-next-link site covers both paths through page_context\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_snapshot_strict_missing_next_link_with_more_data_fails_closed\", \"side\": \"head\", \"supports\": \"test pins the new fail-closed raise\"}]",
-     "graderNotes": "Meaning-equivalent wording counts. B is the old silent behavior the PR removes. C invents retries the code never performs. D invents placeholder filling.",
-     "key": "It raises from both read paths through one shared check, so a page with excess total fails instead of passing silently.",
+     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_get_paged\", \"side\": \"head\", \"supports\": \"the check runs at the one no-next-link return for both page contexts\"}, {\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"raises when total exceeds start plus count; returns when counts are missing\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_snapshot_nonstrict_missing_next_link_with_more_data_fails_closed\", \"side\": \"head\", \"supports\": \"lenient snapshot reads raise\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_changelog_missing_next_link_with_more_data_fails_closed\", \"side\": \"head\", \"supports\": \"changelog reads raise\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_missing_paging_counts_without_next_link_is_ok\", \"side\": \"head\", \"supports\": \"a page without counts still returns\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. One shared check sits at the single no-next-link return, reached by snapshot reads in both modes and by changelog reads; the tests pin all three. A page with no paging block, or with non-integer counts, still returns. B narrows a scope the tests disprove. C is false: missing counts pass. D invents a retry.",
+     "key": "Snapshot and changelog reads both raise now, in strict and lenient mode alike, while a page with no counts still returns.",
      "keyIndex": 0,
      "kind": "multiple_choice",
      "options": [
-      "It raises from both read paths through one shared check, so a page with excess total fails instead of passing silently.",
-      "It returns the partial page as-is and marks the result truncated for the caller to notice on the next poll of the queue.",
-      "It re-requests the same page with backoff until the reported counts agree with the rows returned.",
-      "It fills the missing rows with empty placeholders so the total always matches the page contents."
+      "Snapshot and changelog reads both raise now, in strict and lenient mode alike, while a page with no counts still returns.",
+      "Only strict snapshot reads raise now; lenient snapshot reads and changelog reads still return the short page as before.",
+      "Snapshot and changelog reads both raise now, and so does every page whose paging block lacks the counts entirely.",
+      "Snapshot and changelog reads both raise now, but only after re-requesting the same page once to see if a next link appears."
      ],
      "prompt": "PR #29, fix(client): fail closed when paging reports more rows but no next link. Compared with the base revision, what observable change does this PR introduce?",
      "qid": "v3-p4b-q1",
@@ -160,15 +164,19 @@
      "slot": "risk"
     },
     {
-     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"context string names which fetch path failed\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_complete_page_without_next_link_is_ok\", \"side\": \"head\", \"supports\": \"agreeing counts still pass\"}]",
-     "graderNotes": "The probe must replay concrete payloads across the strict and lenient branches.",
-     "key": "Merge. The guard turns a silent data-loss shape into a loud error on both read paths, with tests for the fail-closed and the still-passing shapes. The earliest probe replays one incomplete page and one partially-instrumented page and confirms the first raises while the second returns.",
+     "accepted_verdicts": [
+      "merge",
+      "request_changes"
+     ],
+     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"returns early on any non-integer or missing count\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_complete_page_without_next_link_is_ok\", \"side\": \"head\", \"supports\": \"agreeing counts still return\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_non_integer_paging_counts_without_next_link_is_ok\", \"side\": \"head\", \"supports\": \"a non-integer total bypasses the check\"}]",
+     "graderNotes": "Merge and request changes both earn full credit with both elements; the verdict is not scored on its own. An answer with no verdict earns 0. 'Add more tests' or 'review the code' is not a runnable probe. 'Loud failure on both paths' is a reason, not a risk.",
+     "key": "Either verdict earns credit when tied to the risk. Merge: a silent short read now fails loudly on both read paths, with tests for the failing and the still-passing shapes. Request changes: one non-integer count switches the check off for that page, so a malformed provider bypasses it. Probe: replay one incomplete page and one page with a non-integer total through a mock transport, and confirm the first raises while the second returns.",
      "kind": "short",
-     "prompt": "PR #29, fix(client): fail closed when paging reports more rows but no next link. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "prompt": "PR #29, fix(client): fail closed when paging reports more rows but no next link. Merge it or request changes? Give the verdict, the main risk behind it, and one concrete probe to run before deciding. Work from the diff, not the description.",
      "qid": "v3-p4b-q3",
      "required_elements": [
-      "Verdict is merge: silent truncation becomes a loud error on both paths, tested.",
-      "Probe replays concrete incomplete and lenient payloads across the boundary."
+      "Names a key risk the diff supports: a single non-integer or missing count switches the check off for that page, so such pages still pass without notice.",
+      "Gives a runnable probe: replay concrete paging payloads through a mock transport, at least one that should raise and one that should return, and check each outcome."
      ],
      "rubric": {
       "multiple_choice": [
@@ -182,9 +190,9 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
-      "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "0": "No accepted verdict is stated, neither element is present, or the stated reason contradicts the diff.",
+      "0.5": "An accepted verdict with exactly one of the two required elements.",
+      "1": "An accepted verdict with both required elements: a named risk the diff supports and a runnable probe."
      },
      "slot": "review_decision"
     }

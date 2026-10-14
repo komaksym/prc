@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from prc.evaluation import kit
+from prc.evaluation.scoring import DECISION_ANCHORS
 
 
 def _submit_all(study: Path) -> None:
@@ -22,6 +23,59 @@ def _submit_all(study: Path) -> None:
         trial["confidence"] = {"q1": 80, "q2": 60, "q3": None}
     session_state["active_trial"] = None
     (study / "session.json").write_text(json.dumps(session_state))
+
+
+def _decision_item(fixture: Any, **fields: Any) -> None:
+    q3 = fixture.data["pairs"][0]["snapshots"][0]["questions"][2]
+    q3["slot"] = "review_decision"
+    q3["rubric_anchors"] = dict(DECISION_ANCHORS)
+    q3.update(fields)
+    fixture.save()
+
+
+def test_decision_item_needs_accepted_verdicts(make_paired: Any) -> None:
+    fixture = make_paired(pairs=1)
+    _decision_item(fixture)
+    with pytest.raises(kit.KitError, match="accepted_verdicts"):
+        kit.load_manifest(fixture.manifest)
+
+
+def test_decision_item_rejects_unknown_verdict(make_paired: Any) -> None:
+    fixture = make_paired(pairs=1)
+    _decision_item(fixture, accepted_verdicts=["merge", "approve"])
+    with pytest.raises(kit.KitError, match="accepted_verdicts"):
+        kit.load_manifest(fixture.manifest)
+
+
+def test_decision_item_rejects_its_own_anchors(make_paired: Any) -> None:
+    fixture = make_paired(pairs=1)
+    _decision_item(
+        fixture,
+        accepted_verdicts=["merge"],
+        rubric_anchors={"0": "Request changes earns no credit.", "0.5": "One.", "1": "Both."},
+    )
+    with pytest.raises(kit.KitError, match="decision anchors"):
+        kit.load_manifest(fixture.manifest)
+
+
+def test_grading_sheet_carries_both_accepted_verdicts(make_paired: Any) -> None:
+    fixture = make_paired(pairs=1)
+    _decision_item(fixture, accepted_verdicts=["merge", "request_changes"])
+    kit.prepare_study(fixture.manifest, fixture.study)
+    _submit_all(fixture.study)
+    kit.close_study(fixture.study)
+    grading = fixture.root / "grading.json"
+    kit.export_blinded(fixture.study, grading)
+    items = json.loads(grading.read_text())["items"]
+    decision = [item for item in items if item["qid"] == "q3" and item["accepted_verdicts"]]
+    assert [item["accepted_verdicts"] for item in decision] == [["merge", "request_changes"]]
+    assert decision[0]["rubric_anchors"] == {
+        "0": "No accepted verdict is stated, neither element is present, "
+        "or the stated reason contradicts the diff.",
+        "0.5": "An accepted verdict with exactly one of the two required elements.",
+        "1": "An accepted verdict with both required elements: "
+        "a named risk the diff supports and a runnable probe.",
+    }
 
 
 def test_paired_protocol_v2_is_bounded_and_uncapped(make_paired: Any) -> None:

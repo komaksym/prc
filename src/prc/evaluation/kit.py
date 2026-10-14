@@ -24,6 +24,7 @@ from prc.evaluation.protocol import (
     seal_experiment,
     verify_seal,
 )
+from prc.evaluation.scoring import DECISION_ANCHORS, Verdict
 
 
 class KitError(ValueError):
@@ -54,6 +55,8 @@ _CONTENT_ADDRESSED = re.compile(r"^[0-9a-f]{32}\.svg$")
 _QUESTION_ORDER = ("multiple_choice", "short", "short")
 _MC_ANCHORS = (0.0, 1.0)
 _SHORT_ANCHORS = (0.0, 0.5, 1.0)
+_DECISION_SLOT = "review_decision"
+_VERDICTS = frozenset(verdict.value for verdict in Verdict)
 _MAX_CHANGED_LINES = 500
 _MAX_CHANGED_FILES = 10
 
@@ -278,11 +281,26 @@ def _validate_questions(questions: Sequence[Mapping[str, Any]], snapshot_id: str
                 tuple(rubric.get("short", ())) == _SHORT_ANCHORS,
                 "short rubric anchors must be 0/0.5/1",
             )
+            if q.get("slot") == _DECISION_SLOT:
+                verdicts = q.get("accepted_verdicts")
+                _require(
+                    isinstance(verdicts, list)
+                    and len(verdicts) > 0
+                    and len(set(verdicts)) == len(verdicts)
+                    and set(verdicts) <= _VERDICTS,
+                    f"decision item {qid} needs accepted_verdicts from {sorted(_VERDICTS)}",
+                )
+                _require(
+                    q.get("rubric_anchors") == dict(DECISION_ANCHORS),
+                    f"decision item {qid} must use the shared decision anchors",
+                )
 
 
-def _validate_question_lint(snapshots: Mapping[str, Mapping[str, Any]]) -> None:
-    """Run the four parent review rules over every snapshot question set."""
+def validate_study_questions(snapshots: Mapping[str, Mapping[str, Any]]) -> None:
+    """Shape checks per snapshot, then the question lint over the whole set."""
 
+    for sid, snap in snapshots.items():
+        _validate_questions(snap["questions"], sid)
     questions = {sid: snap["questions"] for sid, snap in snapshots.items()}
     meta = {
         sid: {"title": str(snap["title"]), "pr_identity": str(snap["pr_identity"])}
@@ -402,7 +420,6 @@ def _validate_manifest(
                 ),
                 "all three artifact trees must be recorded",
             )
-            _validate_questions(snap["questions"], sid)
             _require(
                 bool(_SHA64.match(str(snap["prc"]["output_hash"]))),
                 "prc output_hash must be 64 hex",
@@ -413,7 +430,7 @@ def _validate_manifest(
 
         pairs.append(Pair(pair_id=pair_id, snapshot_ids=(pair_snaps[0], pair_snaps[1])))
 
-    _validate_question_lint(snapshots)
+    validate_study_questions(snapshots)
 
     return protocol, tuple(pairs), snapshots
 
@@ -789,6 +806,7 @@ def _blinded_items(study_dir: Path, session_state: Mapping[str, Any]) -> list[di
                     "confidence": entry["confidence"].get(qid),
                     "key": question["key"],
                     "required_elements": question.get("required_elements"),
+                    "accepted_verdicts": question.get("accepted_verdicts"),
                     "rubric": question["rubric"],
                     "rubric_anchors": question.get("rubric_anchors", {}),
                 }

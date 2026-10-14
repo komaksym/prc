@@ -4,16 +4,16 @@
    "pr": "komaksym/linkedin-automation#3",
    "questions": [
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_fetch_pages / map_rows / write_snapshot\", \"side\": \"head\", \"supports\": \"paged fetch, keep-plus-skip-count mapping, atomic sorted snapshot write\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_map_rows_keeps_good_and_counts_skipped\", \"side\": \"head\", \"supports\": \"tests pin keep-plus-count behavior\"}]",
-     "graderNotes": "Meaning-equivalent wording counts. A invents a migration; the schema is untouched. B invents keep-everything; invalid rows are skipped and counted. D invents retries; any failure aborts.",
-     "key": "It pages the live prospects table, keeps rows with valid addresses and names while counting skips, and writes one sorted file.",
-     "keyIndex": 2,
+     "evidence": "[{\"path\": \".github/workflows/render-daily-report.yml\", \"symbol\": \"Fetch snapshot\", \"side\": \"head\", \"supports\": \"the fetch step runs before the render step\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_fetch_pages\", \"side\": \"head\", \"supports\": \"any failed page raises FetchError at once, with no retry\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"returns 1 on FetchError and 2 on missing credentials, before writing\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_http_error_writes_nothing\", \"side\": \"head\", \"supports\": \"a failed read writes no snapshot\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. Every option starts the same, so the title alone cannot decide. A is false: the fetch exits with an error before any snapshot is written, so the run stops before the render step and its empty-state path. B is false: the snapshot is ignored by git and never kept between runs. C is false: any failed page aborts the fetch at once; nothing retries. Missing credentials also stop the run.",
+     "key": "Each daily run now reads the prospects live first; when that read fails, the run stops with an error, publishing nothing.",
+     "keyIndex": 3,
      "kind": "multiple_choice",
      "options": [
-      "It migrates the prospects table to a new schema, adding the address column that later mapping steps require before any release.",
-      "It keeps every fetched row including invalid ones, so no prospect is ever counted as skipped.",
-      "It pages the live prospects table, keeps rows with valid addresses and names while counting skips, and writes one sorted file.",
-      "It retries each failed page with backoff until the fetch succeeds, so transient errors never abort the run."
+      "Each daily run now reads the prospects live first; when that read fails, the run shows an empty-state report for that day.",
+      "Each daily run now reads the prospects live first; when that read fails, the run republishes the last stored snapshot.",
+      "Each daily run now reads the prospects live first; when that read fails, it retries each page with backoff until it works.",
+      "Each daily run now reads the prospects live first; when that read fails, the run stops with an error, publishing nothing."
      ],
      "prompt": "PR #3, feat(reports): fetch live Supabase snapshot for daily report. Compared with the base revision, what observable change does this PR introduce?",
      "qid": "v3-p3a-q1",
@@ -65,15 +65,19 @@
      "slot": "risk"
     },
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"prints kept and skipped counts and exits before writing on any fetch error\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_fetch_pages_through_all_offsets\", \"side\": \"head\", \"supports\": \"paging across offsets is tested\"}]",
-     "graderNotes": "The probe must inspect real kept and skipped counts.",
-     "key": "Merge. The fetch is foundational, failing closed is the safe default, and paging plus mapping are tested. The earliest probe is the kept and skipped counts on a real fetch: confirm the dropped rows are junk rather than valid prospects.",
+     "accepted_verdicts": [
+      "merge",
+      "request_changes"
+     ],
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"prints kept and skipped counts; fails closed before writing\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"map_rows\", \"side\": \"head\", \"supports\": \"exact-case name lookup and strict https test decide what is kept\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_fetch_pages_through_all_offsets\", \"side\": \"head\", \"supports\": \"paging is tested\"}]",
+     "graderNotes": "Merge and request changes both earn full credit with both elements; the verdict is not scored on its own. An answer with no verdict earns 0. 'Add more tests' or 'review the code' is not a runnable probe. 'Foundational and tested' is a reason, not a risk.",
+     "key": "Either verdict earns credit when tied to the risk. Merge: the read is foundational, failing closed is a safe default, and paging and mapping are tested. Request changes: exact-case name keys and the strict https test drop CRM-shaped and scheme-less rows, counted only as a total, and any read failure stops the day's report. Probe: run one real fetch and compare the kept and skipped counts, then inspect a few skipped rows to confirm they are junk rather than valid prospects.",
      "kind": "short",
-     "prompt": "PR #3, feat(reports): fetch live Supabase snapshot for daily report. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "prompt": "PR #3, feat(reports): fetch live Supabase snapshot for daily report. Merge it or request changes? Give the verdict, the main risk behind it, and one concrete probe to run before deciding. Work from the diff, not the description.",
      "qid": "v3-p3a-q3",
      "required_elements": [
-      "Verdict is merge: foundational, safe fail-closed default, tested.",
-      "Probe inspects real kept and skipped counts for wrongly dropped rows."
+      "Names a key risk the diff supports: CRM-cased name keys or scheme-less addresses dropped with only a skip total, or any read failure stopping the whole day's report.",
+      "Gives a runnable probe: run a real or fixture fetch, read the kept and skipped counts, and inspect skipped rows for valid prospects; or force one failed page and confirm nothing is written."
      ],
      "rubric": {
       "multiple_choice": [
@@ -87,9 +91,9 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
-      "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "0": "No accepted verdict is stated, neither element is present, or the stated reason contradicts the diff.",
+      "0.5": "An accepted verdict with exactly one of the two required elements.",
+      "1": "An accepted verdict with both required elements: a named risk the diff supports and a runnable probe."
      },
      "slot": "review_decision"
     }
@@ -99,16 +103,16 @@
    "pr": "komaksym/linkedin-automation#13",
    "questions": [
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"repairs protocol-relative, http-LinkedIn, whitespace and case variants\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"check_quality / _bad_url_patterns\", \"side\": \"head\", \"supports\": \"aggregate telemetry plus warn-only quality gate\"}]",
-     "graderNotes": "Meaning-equivalent wording counts. A inverts the repair. C invents blocking; the gate only warns. D invents deletion; skipped rows are only counted.",
-     "key": "It repairs more LinkedIn address shapes to https and adds per-run skip tallies with a warn-only quality line.",
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"check_quality\", \"side\": \"head\", \"supports\": \"the script compares counts with fixed limits\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"an exceeded limit prints a warning; the snapshot is still written\"}, {\"path\": \".github/workflows/render-daily-report.yml\", \"symbol\": \"Check data quality\", \"side\": \"head\", \"supports\": \"the run's check exits with an error above the same limits, before render\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"http, protocol-relative and case-variant LinkedIn shapes are repaired\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. All four options share the repair half, so the title alone cannot decide the gate half. The fetch script prints a warning and still writes its snapshot; the daily run's separate quality check then exits with an error above the limits, so render and commit never happen. A, C, and D invent a refusal with a republish, a banner, and row dropping.",
+     "key": "It repairs more LinkedIn address shapes; above the skip limits, the fetch only warns, and a later check then blocks that day's page.",
      "keyIndex": 1,
      "kind": "multiple_choice",
      "options": [
-      "It narrows address repair to strict https only, so more rows end up skipped than in the base revision overall.",
-      "It repairs more LinkedIn address shapes to https and adds per-run skip tallies with a warn-only quality line.",
-      "It refuses to publish the snapshot whenever skip tallies pass the thresholds, holding low-quality reports back.",
-      "It deletes every skipped row permanently, so a later run can never reconsider the same addresses."
+      "It repairs more LinkedIn address shapes; above the skip limits, the fetch refuses to write and the run republishes the last page.",
+      "It repairs more LinkedIn address shapes; above the skip limits, the fetch only warns, and a later check then blocks that day's page.",
+      "It repairs more LinkedIn address shapes; above the skip limits, the run still publishes the page and adds a warning banner to it.",
+      "It repairs more LinkedIn address shapes; above the skip limits, the fetch discards the worst rows until the tallies fall back under."
      ],
      "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. Compared with the base revision, what observable change does this PR introduce?",
      "qid": "v3-p3b-q1",
@@ -131,15 +135,15 @@
      "slot": "behavior_change"
     },
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"not-ok quality prints a warning and continues to publish\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"MAX_BAD_URL / MAX_SKIPPED / MAX_SKIP_RATE\", \"side\": \"head\", \"supports\": \"thresholds are module constants with no measured basis\"}]",
-     "graderNotes": "Constant values are not required. Warn-only-still-publishes plus uncalibrated thresholds are.",
-     "key": "The gate never blocks: over-threshold runs still write and publish after printing a warning, so a degraded source ships a thin report unnoticed. The threshold values themselves are hardcoded guesses with no calibration to real volumes.",
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"MAX_BAD_URL / MAX_SKIPPED / MAX_SKIP_RATE\", \"side\": \"head\", \"supports\": \"fixed limits in the script\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"the script only warns when a limit is exceeded\"}, {\"path\": \".github/workflows/render-daily-report.yml\", \"symbol\": \"Check data quality\", \"side\": \"head\", \"supports\": \"the run repeats the limits as literals and exits with an error above them\"}]",
+     "graderNotes": "Constant values are not required. An answer scoped to the fetch script alone ('the script only warns and still writes its file') is true. 'The report still publishes' is false for the pipeline, because the run's quality check stops before render and commit; that claim does not earn element 1.",
+     "key": "Above the limits the whole day's report is held back, so a noisy but usable day publishes nothing. The limits are fixed numbers with no calibration, written once in the fetch script and again in the run's check, and the absolute counts do not grow with the table.",
      "kind": "short",
      "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. What could break or mislead because of this change?",
      "qid": "v3-p3b-q2",
      "required_elements": [
-      "An exceeded gate only warns while the snapshot still publishes.",
-      "Threshold values are hardcoded without calibration."
+      "Hard block: an over-limit day publishes no report at all; nothing partial ships.",
+      "Uncalibrated limits, either reading: the limits are fixed numbers with no calibration (absolute counts that do not grow with the table), or they are written twice, in the fetch script and in the run's check, and can drift apart."
      ],
      "rubric": {
       "multiple_choice": [
@@ -153,22 +157,26 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0": "Neither element is present. The claim that over-limit runs still publish the report is false and earns nothing.",
       "0.5": "Exactly one of the two required elements is present.",
       "1": "Both required elements are present."
      },
      "slot": "risk"
     },
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"prints skip reasons, bad_url patterns and the data-quality line\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_http_linkedin_url_upgrades_to_https / test_protocol_relative_linkedin_url_is_repaired / test_quality_gate_flags_high_skips\", \"side\": \"head\", \"supports\": \"tests pin the widened repair and the warn-only gate\"}]",
-     "graderNotes": "The probe must read the new telemetry lines on real data.",
-     "key": "Merge. The change strictly keeps more valid rows and adds visibility the pipeline lacked, with tests. The earliest probe reads the new telemetry on a real run: the skip tallies plus the quality line, confirming the repair catches the expected shapes.",
+     "accepted_verdicts": [
+      "merge",
+      "request_changes"
+     ],
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"prints skip reasons, bad-address patterns, and the quality line\"}, {\"path\": \".github/workflows/render-daily-report.yml\", \"symbol\": \"Check data quality\", \"side\": \"head\", \"supports\": \"the run blocks above the limits\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_http_linkedin_url_upgrades_to_https / test_protocol_relative_linkedin_url_is_repaired / test_quality_gate_flags_high_skips\", \"side\": \"head\", \"supports\": \"repair and limits are tested\"}]",
+     "graderNotes": "Merge and request changes both earn full credit with both elements; the verdict is not scored on its own. An answer with no verdict earns 0. 'Add more tests' or 'review the code' is not a runnable probe. 'More rows kept plus visibility' is a reason, not a risk.",
+     "key": "Either verdict earns credit when tied to the risk. Merge: strictly more valid rows are kept, the new tallies add visibility, and the run fails closed above the limits. Request changes: the limits are uncalibrated, so an ordinary noisy day can block the whole report. Probe: run one real fetch and read the skip tallies, bad-address patterns, and quality line, and check those counts against the limits before relying on the block.",
      "kind": "short",
-     "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. Merge it or request changes? Give the verdict, the main risk behind it, and one concrete probe to run before deciding. Work from the diff, not the description.",
      "qid": "v3-p3b-q3",
      "required_elements": [
-      "Verdict is merge: strictly more rows kept plus new visibility, tested.",
-      "Probe reads the skip tallies and quality line on a real run."
+      "Names a key risk the diff supports: uncalibrated or duplicated limits, or an over-limit day blocking the whole report.",
+      "Gives a runnable probe: read the new tallies and quality line on a real or fixture run, or replay a snapshot with known skip counts through the quality check to see it pass and fail."
      ],
      "rubric": {
       "multiple_choice": [
@@ -182,9 +190,9 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
-      "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "0": "No accepted verdict is stated, neither element is present, or the stated reason contradicts the diff.",
+      "0.5": "An accepted verdict with exactly one of the two required elements.",
+      "1": "An accepted verdict with both required elements: a named risk the diff supports and a runnable probe."
      },
      "slot": "review_decision"
     }

@@ -4,16 +4,16 @@
    "pr": "komaksym/linkedin-automation#12",
    "questions": [
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_first_text\", \"side\": \"head\", \"supports\": \"builds a lowercase key map so CRM keys resolve case-insensitively\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"adds https to bare linkedin.com and www.linkedin.com URLs\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_crm_attribute_keys_map_to_prospect / test_scheme_less_linkedin_url_is_repaired\", \"side\": \"head\", \"supports\": \"new tests pin CRM keys and scheme-less repair\"}]",
-     "graderNotes": "Meaning-equivalent wording counts. A inverts the repair. C invents a second table; the PR reads the same prospects select. D invents a write-back; the script never writes.",
-     "key": "It now keeps rows it once skipped: mixed-case keys resolve to the base names, and bare LinkedIn addresses gain https first.",
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_first_text\", \"side\": \"head\", \"supports\": \"a lowercase key map lets CRM-cased name and role keys resolve\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"only https or bare linkedin.com and www.linkedin.com addresses pass\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"map_rows\", \"side\": \"head\", \"supports\": \"rows whose address does not normalize are skipped and counted\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_crm_attribute_keys_map_to_prospect\", \"side\": \"head\", \"supports\": \"the CRM-cased row lands with its name and role\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_non_linkedin_url_stays_skipped\", \"side\": \"head\", \"supports\": \"junk addresses still skip\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. Every option keeps more rows, so the title alone cannot decide. A invents a write-back; the script only reads. C is false: an http:// address is neither https nor a bare LinkedIn host, so it still skips. D is false: the same case-folded lookup serves the role keys, and the new test expects the CRM role to land.",
+     "key": "It keeps more rows in the snapshot: CRM-cased names and bare LinkedIn addresses now pass, while http:// addresses still skip.",
      "keyIndex": 1,
      "kind": "multiple_choice",
      "options": [
-      "It now drops every row whose address lacks a scheme, so the snapshot keeps fewer rows than the base revision kept in the end.",
-      "It now keeps rows it once skipped: mixed-case keys resolve to the base names, and bare LinkedIn addresses gain https first.",
-      "It now pulls prospects from a second table too, so the snapshot mixes rows from two sources the base never combined.",
-      "It now writes the repaired addresses and resolved keys back to the stored rows instead of only reading them."
+      "It keeps more rows in the snapshot, and it also writes the repaired keys and addresses back into the stored rows.",
+      "It keeps more rows in the snapshot: CRM-cased names and bare LinkedIn addresses now pass, while http:// addresses still skip.",
+      "It keeps more rows in the snapshot by upgrading any address that lacks https, http:// ones included, before its keep check runs.",
+      "It keeps more rows in the snapshot, but CRM-cased rows land with a blank role because only the name lookup is case-folded."
      ],
      "prompt": "PR #12, fix(reports): map CRM attribute keys and repair scheme-less profile URLs. Compared with the base revision, what observable change does this PR introduce?",
      "qid": "v3-p1a-q1",
@@ -36,15 +36,15 @@
      "slot": "behavior_change"
     },
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_first_text\", \"side\": \"head\", \"supports\": \"lowered.setdefault keeps the first of case-colliding keys\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"only bare LinkedIn hosts repaired, http and protocol-relative shapes return empty\"}]",
-     "graderNotes": "Function names are not required. The first-wins collision and the still-skipped shapes are. Later hardening of the same repair corroborates the second element.",
-     "key": "Two gaps stay in the wider net. Case-colliding keys keep only the first value seen, so a row carrying both variants silently loses one. The repair still covers only bare LinkedIn hosts, so other salvageable shapes keep being skipped.",
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_first_text\", \"side\": \"head\", \"supports\": \"lowered.setdefault keeps the first case variant; the exact key is read first\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"only https or bare LinkedIn hosts pass; http://, // and HTTPS:// return empty\"}]",
+     "graderNotes": "Function names are not required. Element 1 accepts 'one case variant is silently ignored' or 'the first variant wins'. Element 2 needs one named shape from its list; 'other shapes still skip' with no shape named does not earn it.",
+     "key": "Two gaps stay. Case variants of one key collide: when the row lacks the exact lowercase key, the first variant seen wins and the others vanish without notice. And repair covers only bare linkedin.com or www.linkedin.com addresses, so http://, //, or capital HTTPS:// LinkedIn addresses still skip.",
      "kind": "short",
      "prompt": "PR #12, fix(reports): map CRM attribute keys and repair scheme-less profile URLs. What could break or mislead because of this change?",
      "qid": "v3-p1a-q2",
      "required_elements": [
-      "Conflicting case variants of one key resolve to the first value seen, dropping the other silently.",
-      "Only bare LinkedIn hosts repair; other salvageable address shapes are still skipped."
+      "Case-variant collision: when a row carries several case variants of one key, one value is used and the rest are dropped without notice. A stated winner rule must match the diff: the exact lowercase key wins when present, otherwise the first variant seen wins.",
+      "Narrow repair: only bare linkedin.com/ or www.linkedin.com/ addresses are repaired, and the answer names at least one salvageable LinkedIn shape that still skips: http://linkedin.com/..., //linkedin.com/..., or an upper-case HTTPS:// scheme."
      ],
      "rubric": {
       "multiple_choice": [
@@ -58,22 +58,26 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0": "Neither element is present, or the answer contradicts the diff (for example: http:// addresses are repaired, case variants are merged, or the last variant wins).",
       "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "1": "Both elements are present: first-wins with exact-case precedence, and bare-hosts-only with both named shapes still skipped."
      },
      "slot": "risk"
     },
     {
-     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"map_rows\", \"side\": \"head\", \"supports\": \"repaired URL plus case-insensitive name lookup gate what is kept\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_non_linkedin_url_stays_skipped\", \"side\": \"head\", \"supports\": \"junk URLs still skipped, so the widening is bounded\"}]",
-     "graderNotes": "A merge-after-spot-check verdict counts. Request-changes earns no credit. The probe must name a concrete replayed row and its mapped output.",
-     "key": "Merge. The fetch path stays read-only, tests pin the new mapping, and strictly more valid rows are kept. The earliest probe is one concrete previously-skipped row: run it through the new mapping and confirm its name, role, and address land in the snapshot.",
+     "accepted_verdicts": [
+      "merge",
+      "request_changes"
+     ],
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"map_rows\", \"side\": \"head\", \"supports\": \"repaired address plus case-folded lookup decide which rows are kept\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_first_text\", \"side\": \"head\", \"supports\": \"case variants collapse to one value\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_non_linkedin_url_stays_skipped\", \"side\": \"head\", \"supports\": \"junk addresses still skip, so the widening is bounded\"}]",
+     "graderNotes": "Merge and request changes both earn full credit with both elements; the verdict is not scored on its own. An answer with no verdict earns 0. 'Add more tests' or 'review the code' is not a runnable probe. 'Strictly more rows kept' is a reason, not a risk.",
+     "key": "Either verdict earns credit when tied to the risk. Merge: the read stays read-only, tests pin the new mapping, and strictly more rows are kept. Request changes: case-variant keys still drop a value silently and http:// LinkedIn addresses still skip. Probe: replay one concrete row, such as a CRM-cased row or a bare LinkedIn address, through the mapping and check its name, role, and address in the output.",
      "kind": "short",
-     "prompt": "PR #12, fix(reports): map CRM attribute keys and repair scheme-less profile URLs. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "prompt": "PR #12, fix(reports): map CRM attribute keys and repair scheme-less profile URLs. Merge it or request changes? Give the verdict, the main risk behind it, and one concrete probe to run before deciding. Work from the diff, not the description.",
      "qid": "v3-p1a-q3",
      "required_elements": [
-      "Verdict is merge: read-only path, tested, strictly more valid rows kept.",
-      "Probe replays one previously-skipped row and confirms its mapped name, role, and address."
+      "Names a key risk the diff supports: a case-variant key value dropped without notice, or salvageable LinkedIn addresses (http://, //, upper-case HTTPS://) still skipped.",
+      "Gives a runnable probe: a concrete input row run through the mapping with its expected name, role, or address, for example a CRM-cased row, a bare LinkedIn address, a row with two case variants of one key, or an http:// LinkedIn address."
      ],
      "rubric": {
       "multiple_choice": [
@@ -87,9 +91,9 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
-      "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "0": "No accepted verdict is stated, neither element is present, or the stated reason contradicts the diff.",
+      "0.5": "An accepted verdict with exactly one of the two required elements.",
+      "1": "An accepted verdict with both required elements: a named risk the diff supports and a runnable probe."
      },
      "slot": "review_decision"
     }
@@ -99,16 +103,16 @@
    "pr": "komaksym/linkedin-automation#16",
    "questions": [
     {
-     "evidence": "[{\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"build\", \"side\": \"head\", \"supports\": \"returns the features dict plus live_fetch WITHHOLD without running anything\"}, {\"path\": \"tests/test_write_verification_ledger.py\", \"symbol\": \"test_build_contains_per_feature_evidence\", \"side\": \"head\", \"supports\": \"tests pin the ledger shape, not any executed check\"}]",
-     "graderNotes": "Meaning-equivalent wording counts. A invents test execution; nothing runs. B describes credential gating the PR never adds. D reverses the direction; the ledger only points at artifacts.",
-     "key": "It publishes a JSON verification record: one PASS entry per feature plus a WITHHOLD entry for the live fetch, running no checks.",
-     "keyIndex": 2,
+     "evidence": "[{\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"ref a35659c9f62336df6fa15d7f0eea3d2848386bb1\", \"side\": \"head\", \"supports\": \"the companion repo is checked out at one fixed revision\"}, {\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"Run invitation shortlist matrix\", \"side\": \"head\", \"supports\": \"feature suites run as job steps before the record is written\"}, {\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"Write verification ledger\", \"side\": \"head\", \"supports\": \"the record step comes after every suite step\"}, {\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"cron\", \"side\": \"head\", \"supports\": \"the job runs on a daily schedule\"}, {\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"build\", \"side\": \"head\", \"supports\": \"every feature status is the literal PASS; live_fetch is WITHHOLD\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. A is false: nothing reads live data; the live-fetch entry is a fixed WITHHOLD line. B is false twice: the checkout is pinned to one revision, and the statuses are constant strings. C is false: the job runs the ledger test and four feature suites before writing the record, and a failing suite stops the job before the record step.",
+     "key": "A daily job tests one pinned revision of the companion repo and, only if all suites pass, records fixed PASS lines.",
+     "keyIndex": 3,
      "kind": "multiple_choice",
      "options": [
-      "It executes the five feature suites on every push and fails the workflow run when any single suite reports a failure on that push.",
-      "It blocks publication whenever the fetch secrets are absent from the environment, refusing to run without credentials.",
-      "It publishes a JSON verification record: one PASS entry per feature plus a WITHHOLD entry for the live fetch, running no checks.",
-      "It rebuilds the per-feature evidence files inside the artifacts directory from the recorded ledger entries."
+      "A daily job reads live data and withholds that day's record when the read fails, otherwise recording each feature result.",
+      "A daily job tests the companion repo's latest code and records each feature status from that same run's results.",
+      "A daily job records PASS for every feature and WITHHOLD for the live fetch without running any of the feature suites.",
+      "A daily job tests one pinned revision of the companion repo and, only if all suites pass, records fixed PASS lines."
      ],
      "prompt": "PR #16, feat(ci): withhold-fetch pipeline plus evidence verification stack. Compared with the base revision, what observable change does this PR introduce?",
      "qid": "v3-p1b-q1",
@@ -131,15 +135,15 @@
      "slot": "behavior_change"
     },
     {
-     "evidence": "[{\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"build\", \"side\": \"head\", \"supports\": \"all five feature entries are literal PASS strings\"}, {\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"CODE_SHA_DEFAULT\", \"side\": \"head\", \"supports\": \"default revision constant used when --code-sha is omitted\"}]",
-     "graderNotes": "Constant names are not required. The self-graded PASS and the stale-default revision are.",
-     "key": "Every feature status is a hardcoded PASS string, so the ledger reports success without executing any check and a regressed feature still publishes PASS. Separately, the default revision constant is recorded whenever its flag is omitted, so the record can attribute results to the wrong revision.",
+     "evidence": "[{\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"build\", \"side\": \"head\", \"supports\": \"every feature status is the literal PASS\"}, {\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"CODE_SHA_DEFAULT\", \"side\": \"head\", \"supports\": \"the recorded revision defaults to a constant\"}, {\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"ref a35659c9f62336df6fa15d7f0eea3d2848386bb1\", \"side\": \"head\", \"supports\": \"the tested revision is pinned separately in the job\"}, {\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"write_verification_ledger stamp run url output\", \"side\": \"head\", \"supports\": \"the job passes no revision flag\"}]",
+     "graderNotes": "Constant names are not required. The claim that the scheduled job publishes PASS after a failing suite is wrong, because a failing step stops the job before the record is written; that claim alone does not earn element 1, but the element still counts when the answer states that the statuses are fixed and not computed.",
+     "key": "The five feature statuses are fixed PASS strings that nothing computes, so the record looks like evidence while only the separate test steps can mark a failure; run by hand, the writer says PASS regardless. The recorded revision is a fixed default kept apart from the revision the job checks out, so the two can drift, and every daily run retests the same frozen revision.",
      "kind": "short",
      "prompt": "PR #16, feat(ci): withhold-fetch pipeline plus evidence verification stack. What could break or mislead because of this change?",
      "qid": "v3-p1b-q2",
      "required_elements": [
-      "Statuses are hardcoded PASS with no executed check behind them, so regressions still report PASS.",
-      "The default revision constant can record the wrong revision when its flag is omitted."
+      "Constant statuses: the feature PASS values are fixed strings, not derived from any test result; only the separate test steps can show a failure.",
+      "Revision pinning, either reading: the recorded revision comes from a fixed default kept apart from the checked-out revision, so the two can drift; or the job retests one frozen revision every day, so a daily PASS says nothing about newer code."
      ],
      "rubric": {
       "multiple_choice": [
@@ -153,22 +157,26 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0": "Neither element is present, or the answer contradicts the diff (for example: the job runs no tests).",
       "0.5": "Exactly one of the two required elements is present.",
       "1": "Both required elements are present."
      },
      "slot": "risk"
     },
     {
-     "evidence": "[{\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"build\", \"side\": \"head\", \"supports\": \"no input from any check run feeds any status\"}, {\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"live_fetch\", \"side\": \"head\", \"supports\": \"the one honest entry records WITHHOLD with a reason\"}]",
-     "graderNotes": "Merge earns no credit. The probe must demand a real result source per status, not cosmetic fixes.",
-     "key": "Request changes. A verification record that always says PASS hides regressions and is worse than no record. The earliest probe is the result source behind each status: every PASS must come from an executed job output, starting with the honesty of the WITHHOLD entry.",
+     "accepted_verdicts": [
+      "merge",
+      "request_changes"
+     ],
+     "evidence": "[{\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"build\", \"side\": \"head\", \"supports\": \"statuses are constants; live_fetch WITHHOLD is the one honest entry\"}, {\"path\": \"scripts/write_verification_ledger.py\", \"symbol\": \"CODE_SHA_DEFAULT\", \"side\": \"head\", \"supports\": \"the recorded revision defaults to a constant\"}, {\"path\": \".github/workflows/verify-code-evidence.yml\", \"symbol\": \"Write verification ledger\", \"side\": \"head\", \"supports\": \"the record step runs only after every suite step passes\"}]",
+     "graderNotes": "Merge and request changes both earn full credit with both elements; the verdict is not scored on its own. An answer with no verdict earns 0. 'Add more tests' or 'review the code' is not a runnable probe. A merge answer must still name the fixed statuses or the revision issue to earn element 1.",
+     "key": "Either verdict earns credit when tied to the risk. Request changes: the PASS values are fixed strings, so the record vouches for results it never read, and the recorded revision can drift from the tested one. Merge: the job does run the suites and a failing suite stops it before the record is written, so the fixed values are a follow-up. Probe: make one feature suite fail on a branch, or run the writer by hand, and check whether a PASS record still appears; then compare the recorded revision with the checked-out one in a run log.",
      "kind": "short",
-     "prompt": "PR #16, feat(ci): withhold-fetch pipeline plus evidence verification stack. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "prompt": "PR #16, feat(ci): withhold-fetch pipeline plus evidence verification stack. Merge it or request changes? Give the verdict, the main risk behind it, and one concrete probe to run before deciding. Work from the diff, not the description.",
      "qid": "v3-p1b-q3",
      "required_elements": [
-      "Verdict is request changes until each status derives from an executed check.",
-      "Probe demands the concrete result source behind each PASS, modeled on the WITHHOLD entry."
+      "Names a key risk the diff supports: fixed PASS values not derived from results, or a recorded revision that can drift from, or stays frozen at, the tested one.",
+      "Gives a runnable probe: make one suite fail on a branch and see whether a PASS record still appears, run the writer alone and read its output, or compare the recorded revision with the checked-out revision in one run log."
      ],
      "rubric": {
       "multiple_choice": [
@@ -182,9 +190,9 @@
       ]
      },
      "rubric_anchors": {
-      "0": "Neither required element is present, or the answer contradicts the diff.",
-      "0.5": "Exactly one of the two required elements is present.",
-      "1": "Both required elements are present."
+      "0": "No accepted verdict is stated, neither element is present, or the stated reason contradicts the diff.",
+      "0.5": "An accepted verdict with exactly one of the two required elements.",
+      "1": "An accepted verdict with both required elements: a named risk the diff supports and a runnable probe."
      },
      "slot": "review_decision"
     }

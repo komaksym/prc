@@ -1,0 +1,17 @@
+Wed Oct 14 11:13:49 UTC 2026
+$ .venv/bin/python scripts/check_v3_questions.py --diffs /tmp/v3-diffs
+LINT: 0 error(s) over 8 snapshots
+KIT: 0 error(s)
+CITE: 0 error(s)
+PASS
+exit 0
+$ .venv/bin/python scripts/check_v3_questions.py --cite-only   # gh compare at the pinned SHAs, run after the second-read edits: CITE 0 error(s), PASS, exit 0
+$ .venv/bin/python scripts/check_v3_questions.py --questions /tmp/v3-old-questions.json --diffs /tmp/v3-diffs   # old set from 18421af
+title-cue v3-p1b-q1: only the key shares 3 title words (fetch, verification, withhold); the best other option shares 1
+title-cue v3-p4a-q1: only the key shares 1 title words (found); the best other option shares 0
+LINT: 2 error(s) over 8 snapshots
+kit: decision item v3-p1a-q3 needs accepted_verdicts from ['merge', 'request_changes']
+KIT: 1 error(s)
+CITE: 0 error(s)
+FAIL
+exit 1

@@ -1,4 +1,4 @@
-"""Question lint for study v3: the four parent review rules as runnable checks.
+"""Question lint for study v3: the parent review rules as runnable checks.
 
 Each check returns error strings that name its rule slug and question id, so a
 future set with these defects fails loudly instead of shipping to the operator.
@@ -15,8 +15,9 @@ OPTION_BALANCE = "option-balance"
 PROMPT_LEAK = "prompt-leak"
 CROSS_PAIR_LEAK = "cross-pair-leak"
 LATER_CHANGE = "later-change"
+TITLE_CUE = "title-cue"
 
-RULES = (OPTION_BALANCE, PROMPT_LEAK, CROSS_PAIR_LEAK, LATER_CHANGE)
+RULES = (OPTION_BALANCE, PROMPT_LEAK, CROSS_PAIR_LEAK, LATER_CHANGE, TITLE_CUE)
 
 _BALANCE_TOLERANCE = 0.25
 _SHARED_WORD_THRESHOLD = 3
@@ -235,6 +236,31 @@ def _bigrams(sequence: list[str]) -> set[tuple[str, str]]:
     return set(zip(sequence, sequence[1:], strict=False))
 
 
+def check_title_cue(question: Mapping[str, Any], title: str) -> list[str]:
+    """The key may not be the one option that echoes the most PR title words.
+
+    When it is, a reader picks the key from the title alone. This catches the
+    lexical cue only; a key that paraphrases the title still needs review.
+    """
+    qid = _qid(question)
+    if str(question.get("kind")) != "multiple_choice":
+        return []
+    options = [str(option) for option in (question.get("options") or [])]
+    key = str(question.get("key", ""))
+    if key not in options or len(options) < 2:
+        return []
+    title_words = set(_content_sequence(title))
+    key_shared = sorted(set(_content_sequence(key)) & title_words)
+    others = [option for option in options if option != key]
+    best_other = max(len(set(_content_sequence(option)) & title_words) for option in others)
+    if key_shared and len(key_shared) > best_other:
+        return [
+            f"{TITLE_CUE} {qid}: only the key shares {len(key_shared)} title words "
+            f"({', '.join(key_shared)}); the best other option shares {best_other}"
+        ]
+    return []
+
+
 def check_cross_pair_leak(
     qid: str,
     options: Sequence[str],
@@ -298,7 +324,7 @@ def lint_study(
     questions_by_snapshot: Mapping[str, Sequence[Mapping[str, Any]]],
     meta_by_snapshot: Mapping[str, Mapping[str, str]],
 ) -> list[str]:
-    """Run all four rules over a full question set. Errors name the rule and qid."""
+    """Run every rule over a full question set. Errors name the rule and qid."""
     own_text = {
         sid: str(meta_by_snapshot.get(sid, {}).get("title", ""))
         + " "
@@ -319,4 +345,5 @@ def lint_study(
             if str(question.get("kind")) == "multiple_choice":
                 options = [str(option) for option in (question.get("options") or [])]
                 errors.extend(check_cross_pair_leak(qid, options, own_text[sid], others))
+                errors.extend(check_title_cue(question, title))
     return errors

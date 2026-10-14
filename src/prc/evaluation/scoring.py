@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
+from types import MappingProxyType
 
 from prc.evaluation.protocol import PROTOCOL, Condition, Protocol
 
@@ -19,6 +20,24 @@ _ALLOWED_SCORES: dict[ItemKind, frozenset[float]] = {
     ItemKind.MULTIPLE_CHOICE: frozenset({0.0, 1.0}),
     ItemKind.SHORT: frozenset({0.0, 0.5, 1.0}),
 }
+
+
+class Verdict(StrEnum):
+    MERGE = "merge"
+    REQUEST_CHANGES = "request_changes"
+
+
+# A decision item scores the named risk and the probe; any verdict the diff
+# supports is listed in the item's accepted_verdicts and earns the same credit.
+DECISION_ANCHORS: Mapping[str, str] = MappingProxyType(
+    {
+        "0": "No accepted verdict is stated, neither element is present, "
+        "or the stated reason contradicts the diff.",
+        "0.5": "An accepted verdict with exactly one of the two required elements.",
+        "1": "An accepted verdict with both required elements: "
+        "a named risk the diff supports and a runnable probe.",
+    }
+)
 
 
 class OutcomeState(StrEnum):

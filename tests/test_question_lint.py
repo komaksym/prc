@@ -135,6 +135,35 @@ def test_later_change_allows_own_pr_number() -> None:
     assert question_lint.check_later_change(q, own_number="21") == []
 
 
+CUE_TITLE = "Treat a missing oracle reference as not_found"
+
+
+def test_title_cue_rejects_key_that_alone_echoes_the_title() -> None:
+    key = "It records a not_found flag and returns an empty reference set early."
+    options = [
+        "It retries the lookup twice with backoff and then raises the old error.",
+        "It skips only the failed lookup and resumes with the remaining rows.",
+        "It marks the run truncated and compares against the partial rows.",
+        key,
+    ]
+    errors = question_lint.check_title_cue(mc("s-q1", options, key), CUE_TITLE)
+    assert errors == [
+        "title-cue s-q1: only the key shares 2 title words (found, reference); "
+        "the best other option shares 0"
+    ]
+
+
+def test_title_cue_allows_options_that_share_the_title_framing() -> None:
+    key = "On not_found the run skips the reference comparison and still passes."
+    options = [
+        "On not_found the run retries the reference page twice and then fails.",
+        key,
+        "On not_found the run compares against an empty reference and fails.",
+        "On not_found the run keeps the partial reference rows it fetched.",
+    ]
+    assert question_lint.check_title_cue(mc("s-q1", options, key), CUE_TITLE) == []
+
+
 def test_lint_study_reports_every_rule_with_question_id() -> None:
     key = "k" * 200
     bad_mc = mc(
@@ -176,9 +205,9 @@ def test_lint_study_reports_every_rule_with_question_id() -> None:
     }
     errors = question_lint.lint_study(questions, meta)
     joined = "\n".join(errors)
-    for rule in ("option-balance", "prompt-leak", "cross-pair-leak", "later-change"):
+    for rule in ("option-balance", "prompt-leak", "cross-pair-leak", "later-change", "title-cue"):
         assert rule in joined
-    assert "bad-q1" in joined and "bad-q2" in joined
+    assert "bad-q1" in joined and "bad-q2" in joined and "title-cue other-q1" in joined
 
 
 def test_kit_load_manifest_rejects_uneven_options(make_paired: Any) -> None:
