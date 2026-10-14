@@ -36,3 +36,5 @@ Method: each key, option, element and grader note was read against the pinned di
 
 Final: 20 of 20 PASS. Lint, kit and cite pass after the last edit (see check-run.txt).
 
+
+Errata (parent, after independent GLM round 2, /tmp/v3-question-review/round2.md: 23 PASS, 1 FIX): p1a-q2 full-credit anchor now says "every named shape" to match element 2. Pair rationales now state Python-file matching and total file counts.

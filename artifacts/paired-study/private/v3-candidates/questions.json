@@ -57,7 +57,7 @@
    "rubric_anchors": {
     "0": "Neither element is present, or the answer contradicts the diff (for example: http:// addresses are repaired, case variants are merged, or the last variant wins).",
     "0.5": "Exactly one of the two required elements is present.",
-    "1": "Both elements are present: first-wins with exact-case precedence, and bare-hosts-only with both named shapes still skipped."
+    "1": "Both elements are present: first-wins with exact-case precedence, and bare-hosts-only with every named shape still skipped."
    },
    "slot": "risk"
   },
