@@ -1,0 +1,194 @@
+{
+ "entries": [
+  {
+   "pr": "komaksym/linkedin-mdp#26",
+   "questions": [
+    {
+     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"_reference_status_action\", \"side\": \"head\", \"supports\": \"404 maps to not_found, separate from retry and fail\"}, {\"path\": \"tests/e2e_live.py\", \"symbol\": \"_fetch_connections_reference\", \"side\": \"head\", \"supports\": \"not_found returns early with the flag set\"}, {\"path\": \"tests/test_e2e_oracle.py\", \"symbol\": \"test_reference_404_is_terminal_not_found\", \"side\": \"head\", \"supports\": \"test pins the 404 mapping\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. A keeps the old raise; the branch returns instead. B and C invent page-skipping and truncation the code never does.",
+     "key": "It records a not_found flag and returns an empty reference set early, so the run ends without raising.",
+     "keyIndex": 3,
+     "kind": "multiple_choice",
+     "options": [
+      "It retries the missing page twice with backoff and then raises the same error the base revision raised.",
+      "It skips only the failed fetch and resumes with the remaining reference rows to the end.",
+      "It marks the run truncated and compares the tool result against the partial reference it did fetch.",
+      "It records a not_found flag and returns an empty reference set early, so the run ends without raising."
+     ],
+     "prompt": "PR #26, fix(e2e): handle LinkedIn 404 as not_found in connections oracle. Compared with the base revision, what observable change does this PR introduce?",
+     "qid": "v3-p4a-q1",
+     "required_elements": [],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Any option other than the key is selected, or no single option is selected.",
+      "1": "The key option is selected."
+     },
+     "slot": "behavior_change"
+    },
+    {
+     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"not_found sets empty rows and skips the assert_connections_match_reference comparison\"}, {\"path\": \"tests/e2e_live.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"the summary records connections_reference_not_found as the only trace of the skipped oracle\"}]",
+     "graderNotes": "Function names are not required. The skipped comparison plus unchecked rows, with the flag as the only trace, are.",
+     "key": "An empty reference skips the comparison, so the run publishes tool rows with no independent cross-check behind them. A broken tool surface or an empty live result can then pass unnoticed, with only the summary flag marking the run as unchecked.",
+     "kind": "short",
+     "prompt": "PR #26, fix(e2e): handle LinkedIn 404 as not_found in connections oracle. What could break or mislead because of this change?",
+     "qid": "v3-p4a-q2",
+     "required_elements": [
+      "The independent reference comparison is skipped, leaving tool rows unchecked.",
+      "A broken or empty live surface can pass with only the summary flag as trace."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "risk"
+    },
+    {
+     "evidence": "[{\"path\": \"tests/e2e_live.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"not_found skips the comparison that proves the MCP surface\"}, {\"path\": \"tests/test_e2e_oracle.py\", \"symbol\": \"test_reference_404_is_terminal_not_found\", \"side\": \"head\", \"supports\": \"tests pin the mapping, not the downstream handling\"}]",
+     "graderNotes": "A plain merge earns no credit. The probe must target downstream handling of the flag.",
+     "key": "Request changes. An oracle that passes on an empty reference weakens the very proof the run exists to give. The earliest probe is how an unchecked run stays visibly distinct downstream: the flag must gate or annotate the published result so it can never read as verified.",
+     "kind": "short",
+     "prompt": "PR #26, fix(e2e): handle LinkedIn 404 as not_found in connections oracle. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "qid": "v3-p4a-q3",
+     "required_elements": [
+      "Verdict is request changes until an unchecked run cannot read as verified.",
+      "Probe targets how the flag gates or annotates the published result."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "review_decision"
+    }
+   ]
+  },
+  {
+   "pr": "komaksym/linkedin-mdp#29",
+   "questions": [
+    {
+     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"shared check raises when total exceeds start plus count with no next link\"}, {\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_get_paged\", \"side\": \"head\", \"supports\": \"the shared _get_paged no-next-link site covers both paths through page_context\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_snapshot_strict_missing_next_link_with_more_data_fails_closed\", \"side\": \"head\", \"supports\": \"test pins the new fail-closed raise\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. B is the old silent behavior the PR removes. C invents retries the code never performs. D invents placeholder filling.",
+     "key": "It raises from both read paths through one shared check, so a page with excess total fails instead of passing silently.",
+     "keyIndex": 0,
+     "kind": "multiple_choice",
+     "options": [
+      "It raises from both read paths through one shared check, so a page with excess total fails instead of passing silently.",
+      "It returns the partial page as-is and marks the result truncated for the caller to notice on the next poll of the queue.",
+      "It re-requests the same page with backoff until the reported counts agree with the rows returned.",
+      "It fills the missing rows with empty placeholders so the total always matches the page contents."
+     ],
+     "prompt": "PR #29, fix(client): fail closed when paging reports more rows but no next link. Compared with the base revision, what observable change does this PR introduce?",
+     "qid": "v3-p4b-q1",
+     "required_elements": [],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Any option other than the key is selected, or no single option is selected.",
+      "1": "The key option is selected."
+     },
+     "slot": "behavior_change"
+    },
+    {
+     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"early returns for missing block, non-integer values, and agreeing counts\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_missing_paging_counts_without_next_link_is_ok / test_non_integer_paging_counts_without_next_link_is_ok\", \"side\": \"head\", \"supports\": \"passing tests pin the lenient branches\"}]",
+     "graderNotes": "Method names are not required. The accepted shapes plus the non-integer bypass are.",
+     "key": "Pages with no paging block, non-integer counts, or agreeing counts still return normally, which keeps partially-instrumented providers working. But one non-integer value disables the check for the whole page, so garbage counts silently bypass the assertion the PR was built to enforce.",
+     "kind": "short",
+     "prompt": "PR #29, fix(client): fail closed when paging reports more rows but no next link. What could break or mislead because of this change?",
+     "qid": "v3-p4b-q2",
+     "required_elements": [
+      "Missing, non-integer, or agreeing paging still passes normally.",
+      "A single non-integer count bypasses the completeness check entirely."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "risk"
+    },
+    {
+     "evidence": "[{\"path\": \"src/linkedin_mdp_mcp/client.py\", \"symbol\": \"_assert_paging_complete\", \"side\": \"head\", \"supports\": \"context string names which fetch path failed\"}, {\"path\": \"tests/test_client_next_link.py\", \"symbol\": \"test_complete_page_without_next_link_is_ok\", \"side\": \"head\", \"supports\": \"agreeing counts still pass\"}]",
+     "graderNotes": "The probe must replay concrete payloads across the strict and lenient branches.",
+     "key": "Merge. The guard turns a silent data-loss shape into a loud error on both read paths, with tests for the fail-closed and the still-passing shapes. The earliest probe replays one incomplete page and one partially-instrumented page and confirms the first raises while the second returns.",
+     "kind": "short",
+     "prompt": "PR #29, fix(client): fail closed when paging reports more rows but no next link. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "qid": "v3-p4b-q3",
+     "required_elements": [
+      "Verdict is merge: silent truncation becomes a loud error on both paths, tested.",
+      "Probe replays concrete incomplete and lenient payloads across the boundary."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "review_decision"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,194 @@
+{
+ "entries": [
+  {
+   "pr": "komaksym/linkedin-automation#2",
+   "questions": [
+    {
+     "evidence": "[{\"path\": \"scripts/render_daily_report.py\", \"symbol\": \"render_page\", \"side\": \"head\", \"supports\": \"builds profile anchors, source meta, and the empty-state warning\"}, {\"path\": \"scripts/render_daily_report.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"missing input renders the empty state and returns 0\"}, {\"path\": \"tests/test_render_daily_report.py\", \"symbol\": \"test_missing_input_renders_empty_state\", \"side\": \"head\", \"supports\": \"test pins the missing-input empty page\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. A invents file watching; the script runs once. B invents sending; nothing leaves the machine. C invents merging; rows pass through untouched.",
+     "key": "It turns one snapshot file into a standalone page of profile links, or an empty-state page when input is absent.",
+     "keyIndex": 3,
+     "kind": "multiple_choice",
+     "options": [
+      "It watches the snapshot directory and re-renders the page whenever the input file changes on disk during each run.",
+      "It sends the operator a digest message every morning listing the new connections found overnight.",
+      "It merges repeated entries into single rows and writes back a de-duplicated snapshot file.",
+      "It turns one snapshot file into a standalone page of profile links, or an empty-state page when input is absent."
+     ],
+     "prompt": "PR #2, feat(reports): daily one-click HTML report renderer and workflow. Compared with the base revision, what observable change does this PR introduce?",
+     "qid": "v3-p2a-q1",
+     "required_elements": [],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Any option other than the key is selected, or no single option is selected.",
+      "1": "The key option is selected."
+     },
+     "slot": "behavior_change"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/render_daily_report.py\", \"symbol\": \"render_page\", \"side\": \"head\", \"supports\": \"meta row count uses len(prospects) but only valid rows get anchors\"}, {\"path\": \"scripts/render_daily_report.py\", \"symbol\": \"_load\", \"side\": \"head\", \"supports\": \"missing keys coerced to empty strings with no validation\"}]",
+     "graderNotes": "Function names are not required. The count-vs-links gap and the silent coercion are.",
+     "key": "The announced row count can exceed the rendered links: the header counts every row while only rows with a name and a valid address become links. Separately, missing fields are coerced to blanks, so malformed entries vanish silently instead of being flagged.",
+     "kind": "short",
+     "prompt": "PR #2, feat(reports): daily one-click HTML report renderer and workflow. What could break or mislead because of this change?",
+     "qid": "v3-p2a-q2",
+     "required_elements": [
+      "The announced count can exceed the rendered links because invalid rows drop after counting.",
+      "Malformed entries are coerced or dropped silently instead of flagged."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "risk"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/render_daily_report.py\", \"symbol\": \"main / _write\", \"side\": \"head\", \"supports\": \"file-to-file render with atomic write, no network or sends\"}, {\"path\": \"tests/test_render_daily_report.py\", \"symbol\": \"test_renders_one_click_links / test_output_is_repeatable\", \"side\": \"head\", \"supports\": \"tests pin links and byte-repeatability\"}]",
+     "graderNotes": "The probe must exercise the real renderer output, not ask for more tests.",
+     "key": "Merge. The change is purely additive and deterministic, and the happy path, the repeatable-bytes property, and the missing-input path are tested. The earliest probe renders the fixture snapshot and opens one profile link, confirming the links, the count line, and the empty-state page.",
+     "kind": "short",
+     "prompt": "PR #2, feat(reports): daily one-click HTML report renderer and workflow. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "qid": "v3-p2a-q3",
+     "required_elements": [
+      "Verdict is merge: additive, deterministic, tested on all three paths.",
+      "Probe renders the fixture output and opens a link plus the empty state."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "review_decision"
+    }
+   ]
+  },
+  {
+   "pr": "komaksym/linkedin-automation#21",
+   "questions": [
+    {
+     "evidence": "[{\"path\": \"scripts/trace_first_dm.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"parses labels, fetches prospects and events, prints the gate table as JSON\"}, {\"path\": \"scripts/trace_first_dm.py\", \"symbol\": \"trace_gates\", \"side\": \"head\", \"supports\": \"replays selector gates and reports blocking gates per label\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. B invents sending; the tool has no send path. C invents gate changes; it only replays them. D invents a backfill; it only reads.",
+     "key": "It matches each label to prospect rows, replays the selector gates on the match, and prints which gates block them as JSON.",
+     "keyIndex": 0,
+     "kind": "multiple_choice",
+     "options": [
+      "It matches each label to prospect rows, replays the selector gates on the match, and prints which gates block them as JSON.",
+      "It sends a first message to every prospect that passes all of the selector gates on the first attempt.",
+      "It rewrites the selector gates themselves so that more of the matched prospects qualify for contact under the new thresholds.",
+      "It backfills the missing connection events into the events table for labels that matched nothing."
+     ],
+     "prompt": "PR #21, feat(trace): first-DM gate tracer with dispatch workflow. Compared with the base revision, what observable change does this PR introduce?",
+     "qid": "v3-p2b-q1",
+     "required_elements": [],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Any option other than the key is selected, or no single option is selected.",
+      "1": "The key option is selected."
+     },
+     "slot": "behavior_change"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/trace_first_dm.py\", \"symbol\": \"match_names\", \"side\": \"head\", \"supports\": \"substring containment returns every row containing the name\"}, {\"path\": \"scripts/trace_first_dm.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"gates run on rows[0] of the match set\"}]",
+     "graderNotes": "Function names are not required. Over-matching plus first-row verdict are. Later matcher tightening corroborates the mechanism.",
+     "key": "Matching is substring containment, so short or common names match many unrelated prospects. The gate verdict is then read from the first row of that blended match set, so the report can blame the wrong gates for a label.",
+     "kind": "short",
+     "prompt": "PR #21, feat(trace): first-DM gate tracer with dispatch workflow. What could break or mislead because of this change?",
+     "qid": "v3-p2b-q2",
+     "required_elements": [
+      "Substring matching over-matches short or common names.",
+      "The verdict comes from the first row of a possibly blended match set."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "risk"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/trace_first_dm.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"only fetches and prints; no send or write path exists\"}, {\"path\": \"tests/test_trace_first_dm.py\", \"symbol\": \"test_eligible_when_all_gates_pass\", \"side\": \"head\", \"supports\": \"tests pin the gate replay, not the matching quality\"}]",
+     "graderNotes": "The probe must verify a traced label against its intended row.",
+     "key": "Merge. The tool is read-only diagnostics: it changes no product behavior, writes nothing, and prints labels rather than personal data. The earliest probe traces one known label and confirms the matched row is the intended prospect before trusting its gates.",
+     "kind": "short",
+     "prompt": "PR #21, feat(trace): first-DM gate tracer with dispatch workflow. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "qid": "v3-p2b-q3",
+     "required_elements": [
+      "Verdict is merge: read-only diagnostics with no product change.",
+      "Probe traces one known label against its intended prospect row."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "review_decision"
+    }
+   ]
+  }
+ ]
+}

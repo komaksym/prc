@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from prc.evaluation import question_lint
 from prc.evaluation.protocol import (
     Pair,
     Protocol,
@@ -279,6 +280,18 @@ def _validate_questions(questions: Sequence[Mapping[str, Any]], snapshot_id: str
             )
 
 
+def _validate_question_lint(snapshots: Mapping[str, Mapping[str, Any]]) -> None:
+    """Run the four parent review rules over every snapshot question set."""
+
+    questions = {sid: snap["questions"] for sid, snap in snapshots.items()}
+    meta = {
+        sid: {"title": str(snap["title"]), "pr_identity": str(snap["pr_identity"])}
+        for sid, snap in snapshots.items()
+    }
+    errors = question_lint.lint_study(questions, meta)
+    _require(not errors, "; ".join(errors))
+
+
 def _validate_manifest(
     raw: Mapping[str, Any],
 ) -> tuple[Protocol, tuple[Pair, ...], dict[str, dict[str, Any]]]:
@@ -399,6 +412,8 @@ def _validate_manifest(
             pair_snaps.append(sid)
 
         pairs.append(Pair(pair_id=pair_id, snapshot_ids=(pair_snaps[0], pair_snaps[1])))
+
+    _validate_question_lint(snapshots)
 
     return protocol, tuple(pairs), snapshots
 
@@ -706,6 +721,14 @@ def load_study(study_dir: Path) -> Study:
         for tool in ("github", "lens", "prc"):
             current = tree_hashes(study_dir / "snapshots" / sid / tool)
             _require(current == meta["trees"][tool], f"artifact drift in {sid}/{tool}")
+
+    study_questions = {sid: raw["questions"][sid] for sid in raw["questions"]}
+    study_meta = {
+        sid: {"title": str(entry["title"]), "pr_identity": str(entry["pr_identity"])}
+        for sid, entry in raw["snapshots"].items()
+    }
+    lint_errors = question_lint.lint_study(study_questions, study_meta)
+    _require(not lint_errors, "; ".join(lint_errors))
 
     trials = {
         trial_id: StudyTrial(

@@ -1,0 +1,194 @@
+{
+ "entries": [
+  {
+   "pr": "komaksym/linkedin-automation#3",
+   "questions": [
+    {
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_fetch_pages / map_rows / write_snapshot\", \"side\": \"head\", \"supports\": \"paged fetch, keep-plus-skip-count mapping, atomic sorted snapshot write\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_map_rows_keeps_good_and_counts_skipped\", \"side\": \"head\", \"supports\": \"tests pin keep-plus-count behavior\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. A invents a migration; the schema is untouched. B invents keep-everything; invalid rows are skipped and counted. D invents retries; any failure aborts.",
+     "key": "It pages the live prospects table, keeps rows with valid addresses and names while counting skips, and writes one sorted file.",
+     "keyIndex": 2,
+     "kind": "multiple_choice",
+     "options": [
+      "It migrates the prospects table to a new schema, adding the address column that later mapping steps require before any release.",
+      "It keeps every fetched row including invalid ones, so no prospect is ever counted as skipped.",
+      "It pages the live prospects table, keeps rows with valid addresses and names while counting skips, and writes one sorted file.",
+      "It retries each failed page with backoff until the fetch succeeds, so transient errors never abort the run."
+     ],
+     "prompt": "PR #3, feat(reports): fetch live Supabase snapshot for daily report. Compared with the base revision, what observable change does this PR introduce?",
+     "qid": "v3-p3a-q1",
+     "required_elements": [],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Any option other than the key is selected, or no single option is selected.",
+      "1": "The key option is selected."
+     },
+     "slot": "behavior_change"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"map_rows\", \"side\": \"head\", \"supports\": \"exact-case field lookup plus strict https gate decide every skip\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"any FetchError prints and exits without writing\"}]",
+     "graderNotes": "Field names are not required. The dropped CRM-shaped rows and the abort-on-any-error behavior are. Later salvage of the same rows corroborates the first element.",
+     "key": "Exact-case field lookup drops CRM-shaped rows, and the strict address gate drops scheme-less ones; both are silently counted as skipped. Separately, any fetch failure aborts the run with nothing written, so one transient error blocks the whole report.",
+     "kind": "short",
+     "prompt": "PR #3, feat(reports): fetch live Supabase snapshot for daily report. What could break or mislead because of this change?",
+     "qid": "v3-p3a-q2",
+     "required_elements": [
+      "Cased keys and scheme-less addresses are dropped and only counted.",
+      "Any fetch failure fails closed with no snapshot, blocking the report on transient errors."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "risk"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"prints kept and skipped counts and exits before writing on any fetch error\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_fetch_pages_through_all_offsets\", \"side\": \"head\", \"supports\": \"paging across offsets is tested\"}]",
+     "graderNotes": "The probe must inspect real kept and skipped counts.",
+     "key": "Merge. The fetch is foundational, failing closed is the safe default, and paging plus mapping are tested. The earliest probe is the kept and skipped counts on a real fetch: confirm the dropped rows are junk rather than valid prospects.",
+     "kind": "short",
+     "prompt": "PR #3, feat(reports): fetch live Supabase snapshot for daily report. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "qid": "v3-p3a-q3",
+     "required_elements": [
+      "Verdict is merge: foundational, safe fail-closed default, tested.",
+      "Probe inspects real kept and skipped counts for wrongly dropped rows."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "review_decision"
+    }
+   ]
+  },
+  {
+   "pr": "komaksym/linkedin-automation#13",
+   "questions": [
+    {
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"_normalize_profile_url\", \"side\": \"head\", \"supports\": \"repairs protocol-relative, http-LinkedIn, whitespace and case variants\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"check_quality / _bad_url_patterns\", \"side\": \"head\", \"supports\": \"aggregate telemetry plus warn-only quality gate\"}]",
+     "graderNotes": "Meaning-equivalent wording counts. A inverts the repair. C invents blocking; the gate only warns. D invents deletion; skipped rows are only counted.",
+     "key": "It repairs more LinkedIn address shapes to https and adds per-run skip tallies with a warn-only quality line.",
+     "keyIndex": 1,
+     "kind": "multiple_choice",
+     "options": [
+      "It narrows address repair to strict https only, so more rows end up skipped than in the base revision overall.",
+      "It repairs more LinkedIn address shapes to https and adds per-run skip tallies with a warn-only quality line.",
+      "It refuses to publish the snapshot whenever skip tallies pass the thresholds, holding low-quality reports back.",
+      "It deletes every skipped row permanently, so a later run can never reconsider the same addresses."
+     ],
+     "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. Compared with the base revision, what observable change does this PR introduce?",
+     "qid": "v3-p3b-q1",
+     "required_elements": [],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Any option other than the key is selected, or no single option is selected.",
+      "1": "The key option is selected."
+     },
+     "slot": "behavior_change"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"not-ok quality prints a warning and continues to publish\"}, {\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"MAX_BAD_URL / MAX_SKIPPED / MAX_SKIP_RATE\", \"side\": \"head\", \"supports\": \"thresholds are module constants with no measured basis\"}]",
+     "graderNotes": "Constant values are not required. Warn-only-still-publishes plus uncalibrated thresholds are.",
+     "key": "The gate never blocks: over-threshold runs still write and publish after printing a warning, so a degraded source ships a thin report unnoticed. The threshold values themselves are hardcoded guesses with no calibration to real volumes.",
+     "kind": "short",
+     "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. What could break or mislead because of this change?",
+     "qid": "v3-p3b-q2",
+     "required_elements": [
+      "An exceeded gate only warns while the snapshot still publishes.",
+      "Threshold values are hardcoded without calibration."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "risk"
+    },
+    {
+     "evidence": "[{\"path\": \"scripts/fetch_supabase_snapshot.py\", \"symbol\": \"main\", \"side\": \"head\", \"supports\": \"prints skip reasons, bad_url patterns and the data-quality line\"}, {\"path\": \"tests/test_fetch_supabase_snapshot.py\", \"symbol\": \"test_http_linkedin_url_upgrades_to_https / test_protocol_relative_linkedin_url_is_repaired / test_quality_gate_flags_high_skips\", \"side\": \"head\", \"supports\": \"tests pin the widened repair and the warn-only gate\"}]",
+     "graderNotes": "The probe must read the new telemetry lines on real data.",
+     "key": "Merge. The change strictly keeps more valid rows and adds visibility the pipeline lacked, with tests. The earliest probe reads the new telemetry on a real run: the skip tallies plus the quality line, confirming the repair catches the expected shapes.",
+     "kind": "short",
+     "prompt": "PR #13, fix(reports): salvage safe LinkedIn URL variants and gate skip volume. Merge it or request changes? Give the verdict and one concrete probe to run before deciding. Work from the diff, not the description.",
+     "qid": "v3-p3b-q3",
+     "required_elements": [
+      "Verdict is merge: strictly more rows kept plus new visibility, tested.",
+      "Probe reads the skip tallies and quality line on a real run."
+     ],
+     "rubric": {
+      "multiple_choice": [
+       0.0,
+       1.0
+      ],
+      "short": [
+       0.0,
+       0.5,
+       1.0
+      ]
+     },
+     "rubric_anchors": {
+      "0": "Neither required element is present, or the answer contradicts the diff.",
+      "0.5": "Exactly one of the two required elements is present.",
+      "1": "Both required elements are present."
+     },
+     "slot": "review_decision"
+    }
+   ]
+  }
+ ]
+}
