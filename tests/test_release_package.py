@@ -156,10 +156,9 @@ def test_source_archive_contains_only_release_files(tmp_path: Path) -> None:
     assert {
         "src/prc/explainer/assets/engine.js",
         "src/prc/explainer/assets/engine.css",
-        "src/prc/explainer/assets/doc.css",
+        "src/prc/explainer/assets/page.js",
+        "src/prc/explainer/assets/page.css",
         "src/prc/explainer/assets/BOARD.md",
         "src/prc/presentation/assets/card.html",
-        "src/prc/presentation/map_assets/map.js",
-        "src/prc/presentation/map_assets/map.css",
         "src/prc/skill/SKILL.md",
     } <= paths

@@ -104,12 +104,12 @@ def test_check_rejects_wrapped_diff_beyond_visible_stage() -> None:
 
 
 def test_coverage_does_not_claim_clipped_wrapped_diff_is_complete() -> None:
-    from prc.explainer.page import _not_covered
+    from prc.explainer.page import not_covered
     from prc.explainer.preflight import line_coverage
 
     m, b = wrapped_change()
     assert line_coverage(b, m)["shown"] < 12
-    assert "Everything changed is on screen" not in _not_covered(b, m)
+    assert "Everything changed is on screen" not in not_covered(b, m)
 
 
 def test_cli_rejects_wrapped_assignment_rows_beyond_stage() -> None:
@@ -264,8 +264,12 @@ def test_page_prose_matches_video_captions_in_real_browser() -> None:
             video.append(page.locator(".ecap").evaluate(read))
             page.screenshot(path=str(proof / f"video-caption-{n}.png"))
         page.goto((proof / "page.html").as_uri())
-        doc = page.locator("#scene-0 .prose").evaluate_all(f"els => els.map({read})")
-        page.locator("#scene-0").screenshot(path=str(proof / "page-scene.png"))
+        page.wait_for_function("window.prcPage !== undefined")
+        doc = []
+        for n, sentence in enumerate(page.evaluate("window.PRC.board.scenes[0].sentences")):
+            page.evaluate(f"window.prcPage.seek({sentence['start'] + sentence['dur'] / 2})")
+            doc.append(page.locator("#stage .ecap").evaluate(read))
+            page.locator("#stage").screenshot(path=str(proof / f"page-caption-{n}.png"))
         browser.close()
     assert video == doc
     assert doc == [
@@ -427,14 +431,13 @@ def test_line_coverage_counts_changed_lines_not_files() -> None:
 
 def test_board_coverage_and_doc_agree_on_missing_lines() -> None:
     from prc.explainer import boards
-    from prc.explainer.page import _uncovered as uncovered
+    from prc.explainer.page import not_covered
 
     m = tiny_map()
     b = tiny_board(["2"])
     text = boards.coverage(b, m)
     assert "1/3" in text, text
-    files, syms = uncovered(b, m)
-    assert files == [] and syms == [], (files, syms)
+    assert "Not covered: 2 of 3 changed lines" in not_covered(b, m)
     from prc.explainer.preflight import line_coverage
 
     cov = line_coverage(b, m)
@@ -445,7 +448,7 @@ def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
     import re
 
     from prc.explainer import boards
-    from prc.explainer.page import _not_covered
+    from prc.explainer.page import not_covered
     from prc.explainer.preflight import line_coverage
 
     m = tiny_map()
@@ -465,14 +468,16 @@ def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
     cov = line_coverage(b, m)
     assert cov["missing"] == ["a.py:-81", "a.py:-171", "a.py:-178", "a.py:3", "a.py:9"]
 
-    html = _not_covered(b, m)
-    labels = re.findall(r'<a class="leftout"[^>]*>([^<]+)</a>', html)
-    assert labels == [
-        "a.py#L81 (removed)",
-        "a.py#L171 (removed)",
-        "a.py#L178 (removed)",
-        "a.py#L3",
-        "a.py#L9",
+    html = not_covered(b, m)
+    assert "<summary>Not covered: 5 of 5 changed lines</summary>" in html
+    assert re.findall(r"<li>.*?</li>", html) == [
+        "<li><a href='https://github.com/"
+        + m["pr"].split("#")[0]
+        + "/pull/"
+        + m["pr"].split("#")[1]
+        + "/files#diff-"
+        + __import__("hashlib").sha256(b"a.py").hexdigest()
+        + "' target='_blank' rel='noopener'><code>a.py</code></a> 5 lines</li>"
     ]
 
     text = boards.coverage(b, m)

@@ -1,98 +1,37 @@
-"""page.html: the storyboard as a clickable page. Same story as the video.
+"""page.html: the clickable version of the video, built from the same filled board.
 
-One static file with no scripts. Each scene shows the same caption sentences
-the video narrates, the narration audio for that scene where the voice
-backend produced it, and links to the exact file and hunk: a GitHub PR
-files URL with a diff anchor plus a blob URL for the exact line, and a
-local diff view quoted from the stored map. The video and this page never
-disagree: both read the same filled board dict and the same map dict.
+The stage mounts one scene with the video engine (engine.js and engine.css), so
+each frame is a frame of the video. Narration is the video's own audio track,
+played over the current scene's time window; at the scene end the next scene
+takes over. Code regions on the stage open their hunk in a side panel with an
+Open on GitHub link to the line in the PR files view.
 """
 
 from __future__ import annotations
 
 import hashlib
 import html
+import json
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from prc.captions import shown, shown_html
-from prc.explainer.preflight import cited_refs
-from prc.presentation.infographic import DISCLOSURE
+from prc.explainer.preflight import line_coverage
 
-TEMPLATE_STRINGS = frozenset(
-    {
-        "Pull request review",
-        "Author",
-        "Head",
-        "commit",
-        "Scenes",
-        "Captions",
-        "Narration",
-        "No narration audio",
-        "Files and hunks",
-        "Open on GitHub",
-        "blob",
-        "Local diff",
-        "Not covered",
-        "Files and symbols this board leaves out.",
-        "Changed files not shown",
-        "Changed symbols not shown",
-        "Changed lines not shown",
-        "Some changed lines have no line refs and cannot be quoted.",
-        "Everything changed is on screen.",
-        "Built by prc explain from the checked board.",
-        "Watch the video",
-        "View the infographic",
-        DISCLOSURE,
-    }
-)
+ASSETS = Path(__file__).resolve().parent / "assets"
+FILES_LISTED = 6
 
 
-def captions(scene: dict[str, Any]) -> list[str]:
-    return [shown(s) for s in scene["say"]]
-
-
-def receipt_refs(scene: dict[str, Any]) -> list[tuple[str, int, bool]]:
-    refs: list[tuple[str, int, bool]] = []
-    for c in scene.get("cite", []):
-        path, n = c["line"].rsplit(":", 1)
-        refs.append((path, abs(int(n)), int(n) < 0))
-    for it in scene.get("items", []):
-        if "cite" in it:
-            path, n = it["cite"].rsplit(":", 1)
-            refs.append((path, abs(int(n)), int(n) < 0))
-    if scene["type"] == "diff":
-        for row in scene.get("rows", []):
-            if "text" not in row:
-                continue
-            refs.append((scene["file"], row["num"], row["op"] == "-"))
-    return refs
-
-
-def blob_url(
-    owner_repo: str, head_sha: str, base_sha: str, path: str, n: int, removed: bool
+def files_url(
+    owner_repo: str, number: str, path: str, line: int | None = None, removed: bool = False
 ) -> str:
-    sha = base_sha if removed else head_sha
-    return f"https://github.com/{owner_repo}/blob/{sha}/{path}#L{n}"
+    anchor = hashlib.sha256(path.encode()).hexdigest()
+    side = "" if line is None else ("L" if removed else "R") + str(line)
+    return f"https://github.com/{owner_repo}/pull/{number}/files#diff-{anchor}{side}"
 
 
-def files_url(owner_repo: str, number: str, path: str) -> str:
-    anchor = hashlib.md5(path.encode()).hexdigest()
-    return f"https://github.com/{owner_repo}/pull/{number}/files#diff-{anchor}"
-
-
-def _hunk_for(m: dict[str, Any], path: str, n: int, removed: bool) -> dict[str, Any] | None:
-    for f in m.get("files", []):
-        if f.get("path") != path:
-            continue
-        for h in f.get("hunks", []):
-            for ln in h.get("lines", []):
-                if removed and ln.get("op") == "-" and ln.get("old") == n:
-                    return h  # type: ignore[no-any-return]
-                if not removed and ln.get("op") != "-" and ln.get("new") == n:
-                    return h  # type: ignore[no-any-return]
-        return None
-    return None
+def _key(op: str, n: int) -> str:
+    return ("-" if op == "-" else "+") + str(n)
 
 
 def _hunk_html(h: dict[str, Any]) -> str:
@@ -100,204 +39,119 @@ def _hunk_html(h: dict[str, Any]) -> str:
     for ln in h.get("lines", []):
         op = ln.get("op") or " "
         num = ln.get("old") if op == "-" else ln.get("new")
-        cls = "add" if op == "+" else ("del" if op == "-" else "ctx")
+        cls = {"+": "hk-add", "-": "hk-del"}.get(op, "hk-ctx")
+        sign = {"+": "+", "-": "−"}.get(op, "")
         rows.append(
-            f"<tr class='{cls}'><td class='op'>{html.escape(str(op))}</td><td class='ln'>{html.escape(str(num))}</td><td class='tx'>{html.escape(str(ln.get('text', '')))}</td></tr>"
+            f"<tr class='{cls}' data-k='{_key(op, num)}'><td class='hk-n'>{num}</td>"
+            f"<td class='hk-s'>{sign}</td><td class='hk-t'>{html.escape(str(ln.get('text', '')))}</td></tr>"
         )
-    return "<table class='diff'><tbody>" + "".join(rows) + "</tbody></table>"
+    head = f"@@ −{h.get('old_start', '?')} +{h.get('new_start', '?')} @@"
+    return f"<p class='hk-head'>{head}</p><table class='hk'><tbody>{''.join(rows)}</tbody></table>"
 
 
-def _scene_audio(board_i: int, scene: dict[str, Any], out_dir: Path) -> list[str]:
-    files: list[str] = []
-    for j in range(len(scene.get("say", []))):
-        cand = out_dir / "audio" / f"{board_i:02d}_{j}.wav"
-        if cand.is_file():
-            files.append(f"audio/{board_i:02d}_{j}.wav")
-    return files
-
-
-def header_html(m: dict[str, Any], duration: float, has_video: bool, has_info: bool) -> str:
-    owner_repo, number = m["pr"].split("#")
-    pr_link = (
-        f"<a href='{html.escape(m['url'])}'>{html.escape(m['pr'])}</a>"
-        if m.get("url")
-        else "<span>pr</span>"
-    )
-    commit = f"https://github.com/{owner_repo}/commit/{m['head_sha']}"
-    media = ""
-    if has_video:
-        media += f"<p class='media'><a href='video.mp4'>Watch the {round(duration)} s video</a></p>"
-    if has_info:
-        media += "<p class='media'><a href='infographic.png'>View the infographic</a></p>"
-    return (
-        "<header class='doc-head'>"
-        + "<p class='kicker'>Pull request review</p>"
-        + f"<h1>{html.escape(m['title'])}</h1>"
-        + f"<p class='meta'>{pr_link}</p>"
-        + "<p class='meta'><span class='lbl'>Author</span> "
-        + f"<span>{html.escape(m['author'])}</span></p>"
-        + "<p class='meta'><span class='lbl'>Head</span> "
-        + f"<code>{m['head_sha']}</code> <a href='{commit}'>commit</a></p>"
-        + media
-        + "</header>"
-    )
-
-
-def _scene_section(
-    board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str, Any], out_dir: Path
-) -> str:
-    owner_repo, number = m["pr"].split("#")
-    prose = "".join(f"<p class='prose'>{shown_html(line)}</p>" for line in s["say"])
-    clips = _scene_audio(i, s, out_dir)
-    if clips:
-        audio = "<h3>Narration</h3>" + "".join(
-            f"<p><audio controls preload='none' src='{html.escape(c)}'></audio></p>" for c in clips
-        )
-    else:
-        audio = "<p class='muted'>No narration audio in this build.</p>"
-    seen: set[str] = set()
-    items: list[str] = []
+def _hunks(m: dict[str, Any]) -> tuple[list[str], dict[tuple[str, str], int]]:
     hunks: list[str] = []
-    for path, n, removed in receipt_refs(s):
-        b = blob_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed)
-        f = files_url(owner_repo, number, path)
-        label = f"{path}#L{n} (removed)" if removed else f"{path}#L{n}"
-        key = b
-        if key not in seen:
-            seen.add(key)
-            items.append(
-                f"<li><code>{html.escape(label)}</code> <a href='{html.escape(f)}'>Open on GitHub</a> <a href='{html.escape(b)}'>blob</a></li>"
+    where: dict[tuple[str, str], int] = {}
+    for f in m.get("files", []):
+        for h in f.get("hunks", []):
+            for ln in h.get("lines", []):
+                op = ln.get("op") or " "
+                where[(f["path"], _key(op, ln.get("old") if op == "-" else ln.get("new")))] = len(
+                    hunks
+                )
+            hunks.append(_hunk_html(h))
+    return hunks, where
+
+
+def _refs(scene: dict[str, Any]) -> list[tuple[str, int, bool]]:
+    """Code refs in the DOM order of the scene's clickable regions."""
+    if scene.get("type") == "diff":
+        return [
+            (scene["file"], int(row["num"]), row.get("op") == "-")
+            for row in scene.get("rows", [])
+            if not row.get("gap") and "text" in row
+        ]
+    refs = []
+    for item in scene.get("items", []):
+        path, n = str(item["cite"]).rsplit(":", 1)
+        refs.append((path, abs(int(n)), int(n) < 0))
+    return refs
+
+
+def _targets(
+    board: dict[str, Any], m: dict[str, Any], where: dict[tuple[str, str], int]
+) -> list[list[dict[str, Any]]]:
+    owner_repo, number = str(m["pr"]).split("#")
+    out = []
+    for scene in board["scenes"]:
+        entries = []
+        for path, n, removed in _refs(scene):
+            key = ("-" if removed else "+") + str(n)
+            entries.append(
+                {
+                    "label": f"{path} line {n}" + (" (removed)" if removed else ""),
+                    "url": files_url(owner_repo, number, path, n, removed),
+                    "hunk": where.get((path, key), -1),
+                    "key": key,
+                }
             )
-        h = _hunk_for(m, path, n, removed)
-        if h is not None:
-            hk = f"{path}:{h.get('old_start')}:{h.get('new_start')}"
-            if hk not in seen:
-                seen.add(hk)
-                hunks.append(f"<h4>{html.escape(path)}</h4>" + _hunk_html(h))
-    if s["type"] == "diff" and not hunks:
-        rows = []
-        for row in s.get("rows", []):
-            if "text" not in row:
-                rows.append("<tr class='gap'><td></td><td></td><td>...</td></tr>")
-                continue
-            op = row.get("op") or " "
-            cls = "add" if op == "+" else ("del" if op == "-" else "ctx")
-            rows.append(
-                f"<tr class='{cls}'><td class='op'>{html.escape(str(op))}</td><td class='ln'>{html.escape(str(row.get('num')))}</td><td class='tx'>{html.escape(str(row.get('text')))}</td></tr>"
-            )
-        hunks.append(
-            "<h4>Local diff</h4><table class='diff'><tbody>" + "".join(rows) + "</tbody></table>"
-        )
-    receipts = (
-        ("<h3>Files and hunks</h3><ul class='receipts'>" + "".join(items) + "</ul>")
-        if items
-        else ""
-    )
-    local = ("<h3>Local diff</h3>" + "".join(hunks)) if hunks else ""
-    nav = ""
-    if i > 0:
-        nav += f"<a href='#scene-{i - 1}'>Previous</a> "
-    if i + 1 < len(board["scenes"]):
-        nav += f"<a href='#scene-{i + 1}'>Next</a>"
-    return (
-        f"<section class='scene' id='scene-{i}'>"
-        + f"<h2>Scene {i + 1} of {len(board['scenes'])} - {html.escape(str(s['type']))}</h2>"
-        + f"<div class='nav'>{nav}</div>"
-        + "<h3>Captions</h3>"
-        + prose
-        + audio
-        + receipts
-        + local
-        + "</section>"
-    )
+        out.append(entries)
+    return out
 
 
-def _uncovered(
-    board: dict[str, Any], m: dict[str, Any]
-) -> tuple[list[tuple[str, str]], list[dict[str, Any]]]:
-    kinds = {f["path"]: f["kind"] for f in m["files"]}
-    shown = cited_refs(board)
-
-    def hit(sym: dict[str, Any]) -> bool:
-        for path, n in shown:
-            if path != sym["path"]:
-                continue
-            span = sym["span"] if n > 0 else sym.get("base_span")
-            if span and span[0] <= abs(n) <= span[1]:
-                return True
-        return False
-
-    on_screen = {q for q, _ in shown}
-    files = sorted((q, kinds[q]) for q in kinds if q not in on_screen)
-    syms = sorted(
-        (
-            s
-            for s in m["symbols"]
-            if s["status"] in ("added", "modified")
-            and kinds.get(s["path"]) == "code"
-            and not hit(s)
-        ),
-        key=lambda s: (s["path"], s["qualname"]),
-    )
-    return files, syms
-
-
-def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
-    files, syms = _uncovered(board, m)
-    from prc.explainer.preflight import line_coverage
-
+def not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
+    """One summary line; opening it lists a count per file, never raw line links."""
     cov = line_coverage(board, m)
-    missing = cov["missing"]
-    unavail = cov["unavailable"]
-    count = f"<p>{cov['shown']} of {cov['total']} changed lines are on screen.</p>"
-    if not missing and not files and not syms and not unavail:
-        body = f"{count}<p>Everything changed is on screen.</p>"
-    else:
-        parts = [count, "<p>Files and symbols this board leaves out.</p>"]
-        if unavail:
-            parts.append("<p>Some changed lines have no line refs and cannot be quoted.</p>")
-        if missing:
-            owner_repo = m["pr"].split("#")[0]
-            items = []
-            for ref in missing:
-                path, n = ref.rsplit(":", 1)
-                removed = n.startswith("-")
-                num = abs(int(n))
-                href = blob_url(owner_repo, m["head_sha"], m["base_sha"], path, num, removed)
-                label = f"{path}#L{num} (removed)" if removed else f"{path}#L{num}"
-                items.append(
-                    f'<li><a class="leftout" href="{html.escape(href)}">{html.escape(label)}</a></li>'
-                )
-            parts.append(
-                "<h3>Changed lines not shown</h3><ul class='receipts'>" + "".join(items) + "</ul>"
-            )
-        if files:
-            parts.append(
-                "<h3>Changed files not shown</h3><ul>"
-                + "".join(
-                    f"<li><code>{html.escape(p)}</code> <span>{html.escape(k)}</span></li>"
-                    for p, k in files
-                )
-                + "</ul>"
-            )
-        if syms:
-            parts.append(
-                "<h3>Changed symbols not shown</h3><ul>"
-                + "".join(
-                    f"<li><code>{html.escape(s['qualname'])}</code> <span>{html.escape(s['path'])}</span></li>"
-                    for s in syms
-                )
-                + "</ul>"
-            )
-        body = "".join(parts)
-    return f"<section class='not-covered' id='not-covered'><h2>Not covered</h2>{body}</section>"
+    total = int(cov["total"])
+    hidden = max(0, total - int(cov["shown"]))
+    if hidden == 0:
+        return "<p id='not-covered' class='pg-nc'>Everything changed is on screen.</p>"
+    owner_repo, number = str(m["pr"]).split("#")
+    per_file = Counter(ref.rsplit(":", 1)[0] for ref in cov["missing"])
+    rows = [
+        f"<li><a href='{html.escape(files_url(owner_repo, number, path))}' target='_blank' "
+        f"rel='noopener'><code>{html.escape(path)}</code></a> {count} "
+        + ("line" if count == 1 else "lines")
+        + "</li>"
+        for path, count in per_file.most_common(FILES_LISTED)
+    ]
+    more = len(per_file) - FILES_LISTED
+    if more > 0:
+        rows.append(
+            f"<li class='pg-more'>{more} more " + ("file" if more == 1 else "files") + "</li>"
+        )
+    if cov["unavailable"]:
+        rows.append(
+            f"<li class='pg-more'>{cov['unavailable']} lines have no line numbers in the diff</li>"
+        )
+    return (
+        "<details id='not-covered' class='pg-nc'>"
+        f"<summary>Not covered: {hidden} of {total} changed lines</summary>"
+        f"<ul>{''.join(rows)}</ul></details>"
+    )
 
 
-CSS = (
-    "body{font-family:system-ui,sans-serif;margin:0 auto;max-width:960px;padding:16px;line-height:1.55;color:#e6edf3;background:#0d1117}"
-    "a{color:#9ecbff}.muted{color:#9aa7b4}.scene{border:1px solid #30363d;border-radius:12px;padding:16px;margin:16px 0}.nav a{margin-right:12px}table.diff{border-collapse:collapse;width:100%;font-family:ui-monospace,monospace;font-size:13px}table.diff td{border-bottom:1px solid #21262d;padding:4px 8px;vertical-align:top}tr.add{background:#12261a}tr.del{background:#2d1416}td.op{width:24px}td.ln{width:64px;color:#9aa7b4}td.tx{white-space:pre-wrap;overflow-wrap:anywhere}audio{width:100%}.kicker{color:#9aa7b4;text-transform:uppercase;letter-spacing:.08em}.meta{color:#9aa7b4}"
-)
-CSP = "default-src 'none'; style-src 'unsafe-inline'; media-src 'self'; img-src data:; base-uri 'none'; form-action 'none'"
+def _header(m: dict[str, Any], has_video: bool, has_info: bool) -> str:
+    owner_repo = str(m["pr"]).split("#")[0]
+    pr = html.escape(str(m["pr"]))
+    pr_link = f"<a href='{html.escape(m['url'])}'>{pr}</a>" if m.get("url") else pr
+    commit = f"https://github.com/{owner_repo}/commit/{m['head_sha']}"
+    actions = ""
+    if has_info:
+        actions += "<button id='info-open' type='button'>Infographic</button>"
+    if has_video:
+        actions += "<a class='pg-btn' href='video.mp4'>Video file</a>"
+    return (
+        "<header class='pg-head'><div class='pg-id'>"
+        f"<h1>{html.escape(str(m['title']))}</h1>"
+        f"<p class='pg-meta'>{pr_link} · {html.escape(str(m['author']))} · head "
+        f"<a href='{commit}'><code>{str(m['head_sha'])[:7]}</code></a></p></div>"
+        f"<div class='pg-actions'>{actions}</div></header>"
+    )
+
+
+def _json(value: Any) -> str:
+    return json.dumps(value).replace("</", "<\\/")
 
 
 def render_page(
@@ -309,40 +163,50 @@ def render_page(
     infographic: bytes | None = None,
 ) -> str:
     out_dir.mkdir(parents=True, exist_ok=True)
-    nav = (
-        "<nav><h2>Scenes</h2><ol>"
-        + "".join(
-            f"<li><a href='#scene-{i}'>Scene {i + 1} - {html.escape(str(s['type']))}</a></li>"
-            for i, s in enumerate(board["scenes"])
-        )
-        + "</ol></nav>"
+    hunks, where = _hunks(m)
+    data = {"board": board, "hunks": hunks, "targets": _targets(board, m, where)}
+    has_info = infographic is not None
+    info = (
+        "<dialog id='info' class='pg-info'><form method='dialog'>"
+        "<button id='info-close'>Close</button></form>"
+        "<img src='infographic.png' alt='Infographic of this pull request'></dialog>"
+        if has_info
+        else ""
     )
-    sections = "".join(
-        _scene_section(board, i, s, m, out_dir) for i, s in enumerate(board["scenes"])
+    body = (
+        _header(m, has_video, has_info)
+        + "<main id='main' class='pg-main'><section class='pg-col'>"
+        + "<div id='stage' class='emount pg-stage'><div id='scale' class='escale'></div></div>"
+        + "<div class='pg-controls'><button id='prev' type='button'>Previous</button>"
+        + "<button id='play' type='button' class='pg-play'>Play</button>"
+        + "<button id='next' type='button'>Next</button>"
+        + "<span id='counter' class='pg-counter'></span><span id='hint' class='pg-hint'></span></div>"
+        + "<nav id='strip' class='pg-strip' aria-label='Scenes'></nav>"
+        + not_covered(board, m)
+        + "</section><aside id='panel' class='pg-panel' hidden>"
+        + "<div class='pg-panel-head'><h2 id='panel-title'></h2>"
+        + "<button id='panel-close' type='button' aria-label='Close hunk'>Close</button></div>"
+        + "<div id='panel-diff' class='pg-panel-diff'></div>"
+        + "<a id='panel-gh' class='pg-btn pg-gh' href='#' target='_blank' rel='noopener'>"
+        + "Open on GitHub</a></aside></main>"
+        + info
+        + f"<audio id='narr' preload='auto'{' src=video.mp4' if has_video else ''}></audio>"
     )
-    figure = ""
-    if infographic is not None:
-        import base64
-
-        src = base64.b64encode(infographic).decode()
-        from prc.presentation.infographic import DISCLOSURE as _D
-
-        figure = f"<figure class='infographic'><img src='data:image/png;base64,{src}' alt='{html.escape(_D)}'><figcaption>{html.escape(_D)}</figcaption></figure>"
     page = (
         "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
-        + f"<meta http-equiv='Content-Security-Policy' content='{CSP}'>"
-        + "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        + "<meta name='color-scheme' content='dark light'>"
-        + "<meta name='referrer' content='no-referrer'>"
-        + "<link rel='icon' href='data:,'>"
-        + f"<title>{html.escape(m['title'])}</title><style>{CSS}</style></head>"
-        + "<body class='doc'>"
-        + header_html(m, duration, has_video, infographic is not None)
-        + nav
-        + figure
-        + sections
-        + _not_covered(board, m)
-        + f"<footer><p>Built by prc explain from the checked board.</p><p><code>{m['head_sha']}</code></p></footer></body></html>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+        "<meta name='color-scheme' content='dark'><meta name='referrer' content='no-referrer'>"
+        "<link rel='icon' href='data:,'>"
+        f"<title>{html.escape(str(m['title']))}</title><style>"
+        + (ASSETS / "engine.css").read_text()
+        + (ASSETS / "page.css").read_text()
+        + "</style></head><body class='pg'>"
+        + body
+        + f"<script>window.PRC={_json(data)};</script><script>"
+        + (ASSETS / "engine.js").read_text()
+        + "</script><script>"
+        + (ASSETS / "page.js").read_text()
+        + "</script></body></html>"
     )
     (out_dir / "page.html").write_text(page)
     return page

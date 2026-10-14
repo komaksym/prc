@@ -55,7 +55,7 @@ With a valid board, a gated infographic, and the rendering dependencies availabl
 | Artifact | File | Purpose |
 |---|---|---|
 | Explainer video | `video.mp4` | Watch the board with narration or silent captions. |
-| Clickable page | `page.html` | Step through the same scenes with captions, per-scene narration audio, and file and hunk links. |
+| Clickable page | `page.html` | The video as clickable scenes: Play narrates the current scene, code lines open their hunk with an Open on GitHub link, and the infographic opens in one click. |
 | Gated infographic | `infographic.png` | High-level diagram of what changed and why. |
 
 The folder also contains `map.json`, the checked `board.json`, and `run.json`.
@@ -66,7 +66,7 @@ Each successful rerun replaces the complete generated folder. A boardless rerun 
 Handled rendering failures leave the prior successful folder intact. Treat that folder as generated output, not a place for manual files.
 Publication uses a short lock and staged directory replacement with rollback. A process kill during replacement can leave a recovery backup and lock.
 Inspect those paths before restoring a backup or removing a lock. Publication does not guarantee uninterrupted reads during replacement.
-A card-render failure can leave `card.png` absent. Inspect the printed `card` value and `run.json` warnings.
+`page.html` plays the narration from `video.mp4` and opens `infographic.png`. Keep the three files in one folder.
 
 prc writes local files. It does not post comments, upload videos, or publish a repository.
 
