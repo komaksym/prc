@@ -416,7 +416,7 @@ def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
     assert "![Infographic drawn by AI. Words from prc.](infographic.png)" in comment
     assert "![PR card](card.png)" not in comment
 
-    doc = (out / "doc.html").read_text()
+    doc = (out / "page.html").read_text()
     assert "data:image/png;base64," in doc
     assert "<figcaption>Infographic drawn by AI. Words from prc.</figcaption>" in doc
 

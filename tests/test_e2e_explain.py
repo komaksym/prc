@@ -137,7 +137,7 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
         )
         assert fallback.returncode == 0, fallback.stderr
         assert json.loads(fallback.stdout)["video"] is None
-        assert not any((out / name).exists() for name in ("board.json", "doc.html", "video.mp4"))
+        assert not any((out / name).exists() for name in ("board.json", "page.html", "video.mp4"))
         assert json.loads((out / "map.json").read_text())["title"] == replacement["title"]
         shutil.copytree(out, ARTIFACT / "fallback" / out.name, dirs_exist_ok=True)
 
@@ -316,7 +316,7 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
     assert (run["check"]["changed"], run["check"]["tests_added"]) == (0, 1)
     for name in ("card.html", "comment.md"):
         assert "No live production symbols changed" in (out / name).read_text()
-    assert "def test_probe" in (out / "doc.html").read_text()
+    assert "def test_probe" in (out / "page.html").read_text()
     artifact = ARTIFACT / "stored-reclassified"
     shutil.rmtree(artifact, ignore_errors=True)
     shutil.copytree(out, artifact)
@@ -327,10 +327,10 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
         browser = driver.chromium.launch()
         try:
             page = browser.new_page(viewport={"width": 1280, "height": 800})
-            for name in ("map", "card", "doc"):
+            for name in ("card", "page"):
                 page.goto((artifact / f"{name}.html").as_uri())
-                if name == "doc":
-                    page.wait_for_function("() => window.docReady === true")
+                if name == "page":
+                    pass  # page.html is static, no engine readiness gate
                     assert "def test_probe(): pass" in page.locator("body").inner_text()
                 page.screenshot(path=str(artifact / f"{name}.png"), full_page=True)
         finally:

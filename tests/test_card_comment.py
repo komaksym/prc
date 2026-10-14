@@ -215,7 +215,7 @@ def test_mermaid_node_cap_and_truncation_line() -> None:
     assert len(re.findall(r'n\d+\["', block)) <= 12
     assert comment.check_mermaid(block) == []
     text = comment.render_comment(m)
-    assert "Showing 12 of 20 changed symbols. Full map: map.html" in text
+    assert "Showing 12 of 20 changed symbols. Full details: page.html" in text
 
 
 def test_small_map_has_no_truncation_line() -> None:

@@ -104,7 +104,7 @@ def test_check_rejects_wrapped_diff_beyond_visible_stage() -> None:
 
 
 def test_coverage_does_not_claim_clipped_wrapped_diff_is_complete() -> None:
-    from prc.explainer.doc import _not_covered
+    from prc.explainer.page import _not_covered
     from prc.explainer.preflight import line_coverage
 
     m, b = wrapped_change()
@@ -230,11 +230,11 @@ def test_wrapped_diff_sign_sits_on_first_line() -> None:
         browser.close()
 
 
-def test_doc_prose_matches_video_captions_in_real_browser() -> None:
+def test_page_prose_matches_video_captions_in_real_browser() -> None:
     from playwright.sync_api import sync_playwright
 
     from prc.explainer.check import verify_board
-    from prc.explainer.doc import render_doc
+    from prc.explainer.page import render_page
     from prc.explainer.render import render
     from prc.explainer.voice import NoneBackend
 
@@ -248,7 +248,7 @@ def test_doc_prose_matches_video_captions_in_real_browser() -> None:
     proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/caption-parity"
     facts = verify_board(b, m)
     rendered = render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
-    render_doc(b, m, proof, rendered.duration, has_video=False)
+    render_page(b, m, proof, rendered.duration, has_video=False, infographic=None)
     read = """el => ({
         text: el.textContent,
         code: [...el.querySelectorAll('code')].map(c => c.textContent),
@@ -263,9 +263,9 @@ def test_doc_prose_matches_video_captions_in_real_browser() -> None:
             page.evaluate(f"window.seek({sentence['start'] + sentence['dur'] / 2})")
             video.append(page.locator(".ecap").evaluate(read))
             page.screenshot(path=str(proof / f"video-caption-{n}.png"))
-        page.goto((proof / "doc.html").as_uri())
+        page.goto((proof / "page.html").as_uri())
         doc = page.locator("#scene-0 .prose").evaluate_all(f"els => els.map({read})")
-        page.locator("#scene-0").screenshot(path=str(proof / "doc-scene.png"))
+        page.locator("#scene-0").screenshot(path=str(proof / "page-scene.png"))
         browser.close()
     assert video == doc
     assert doc == [
@@ -427,7 +427,7 @@ def test_line_coverage_counts_changed_lines_not_files() -> None:
 
 def test_board_coverage_and_doc_agree_on_missing_lines() -> None:
     from prc.explainer import boards
-    from prc.explainer.doc import uncovered
+    from prc.explainer.page import _uncovered as uncovered
 
     m = tiny_map()
     b = tiny_board(["2"])
@@ -445,7 +445,7 @@ def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
     import re
 
     from prc.explainer import boards
-    from prc.explainer.doc import _not_covered
+    from prc.explainer.page import _not_covered
     from prc.explainer.preflight import line_coverage
 
     m = tiny_map()

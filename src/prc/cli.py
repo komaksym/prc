@@ -23,11 +23,10 @@ from prc.pipeline import (
     run_brief,
     run_decide,
     run_explain,
-    run_map,
     run_review,
     run_status,
 )
-from prc.presentation import infographic, map_video
+from prc.presentation import infographic
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
 from prc.source import PullRequestSource, SourceError
 from prc.store import StaleExpectation, Store
@@ -85,7 +84,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="prc", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("review", "status", "decide", "brief", "map"):
+    for name in ("review", "status", "decide", "brief"):
         cmd = sub.add_parser(name)
         cmd.add_argument("--source", required=True)
         cmd.add_argument("--store", type=Path, default=Path("artifacts/store"))
@@ -101,9 +100,6 @@ def build_parser() -> argparse.ArgumentParser:
 
         if name == "brief":
             cmd.add_argument("--out", type=Path, default=Path("artifacts/briefs"))
-
-        if name == "map":
-            cmd.add_argument("--out", type=Path, default=Path("artifacts/maps"))
             cmd.add_argument(
                 "--video", action="store_true", help="also write tour.mp4 and card.png"
             )
@@ -323,7 +319,7 @@ def _main(argv: list[str] | None = None) -> int:
 
     resolved: tuple[PullRequestSource, PrRef] | None = (
         _resolve(has_source, args.store)
-        if args.command in ("review", "status", "decide", "brief", "map") and has_source
+        if args.command in ("review", "status", "decide", "brief") and has_source
         else None
     )
 
@@ -341,47 +337,6 @@ def _main(argv: list[str] | None = None) -> int:
                     "brief": str(brief.path),
                     "mismatches": len(brief.brief.mismatches),
                     "look_first": [pointer.path for pointer in brief.brief.look_first],
-                },
-                indent=2,
-            )
-        )
-
-        return 0
-
-    if args.command == "map":
-        video = None
-
-        try:
-            if args.video:
-                map_video.check_tools()
-
-            mapped = run_map(source, ref, _clock(args.source, args.clock_offset), policy, args.out)
-
-            if args.video:
-                video = map_video.make_video(mapped.html, mapped.html.parent)
-        except map_video.VideoError as error:
-            raise SystemExit(f"prc map --video: {error}") from error
-
-        print(
-            json.dumps(
-                {
-                    "source": source.label,
-                    "live_verified": source.live_verified,
-                    "snapshot_id": mapped.snapshot_id,
-                    "html": str(mapped.html),
-                    "json": str(mapped.json),
-                    "symbols": sum(s.status != "context" for s in mapped.map.symbols),
-                    "edges": len(mapped.map.edges),
-                    "steps": len(mapped.map.tour),
-                    **(
-                        {
-                            "mp4": str(video.mp4),
-                            "card": str(video.card),
-                            "video_seconds": video.seconds,
-                        }
-                        if video
-                        else {}
-                    ),
                 },
                 indent=2,
             )
@@ -436,7 +391,7 @@ def _main(argv: list[str] | None = None) -> int:
                     "map": str(explained.map_json),
                     "board": str(explained.board_json) if explained.board_json else None,
                     "video": str(explained.video) if explained.video else None,
-                    "doc": str(explained.doc_html) if explained.doc_html else None,
+                    "page": str(explained.page_html) if explained.page_html else None,
                     "card": str(explained.card_png) if explained.card_png else None,
                     "comment": str(explained.comment_md),
                     "infographic": (str(explained.infographic) if explained.infographic else None),

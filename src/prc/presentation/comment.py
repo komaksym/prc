@@ -209,7 +209,10 @@ def render_comment(
     if changed:
         lines += [mermaid_block(m)]
     if len(changed) > MAX_NODES:
-        lines += [f"Showing {MAX_NODES} of {len(changed)} changed symbols. Full map: map.html", ""]
+        lines += [
+            f"Showing {MAX_NODES} of {len(changed)} changed symbols. Full details: page.html",
+            "",
+        ]
     entries = look_first(m, brief if brief is not None else m.get("brief"), 3, board)
     lines += ["## Look here first", ""]
     if entries:
