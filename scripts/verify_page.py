@@ -32,6 +32,10 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 PROOF = ROOT / "artifacts/v3-proof/pr22"
 GITHUB = re.compile(r"^https://github\.com/[^/]+/[^/]+/pull/\d+/files#diff-[0-9a-f]{64}[LR]\d+$")
+VISIBLE_ROWS = (
+    "Array.prototype.filter.call(document.querySelectorAll('#scale .drow:not(.gap), #scale .item'),"
+    " function (e) { return parseFloat(getComputedStyle(e).opacity) > 0.5; }).length"
+)
 
 
 class Fail(Exception):
@@ -141,6 +145,11 @@ def main() -> int:
     def body_focus() -> None:
         b.js("(document.activeElement && document.activeElement.blur(), true)")
 
+    def row_count(s: dict[str, Any]) -> int:
+        if s["type"] == "diff":
+            return len([r for r in s["rows"] if not r.get("gap") and "text" in r])
+        return len(s["items"])
+
     try:
         b.run("set", "viewport", "1440", "900")
         b.run("open", url)
@@ -223,6 +232,30 @@ def main() -> int:
             b.run("click", "#panel-close")
             b.until("document.getElementById('panel').hidden", "panel close")
         checks.append(f"hunk panel and GitHub URL on {len(code)} code scene(s)")
+
+        first = code[0]
+        goto(first)
+        start = scenes[first]["start"]
+        b.run("click", "#play")
+        b.until(
+            f"document.getElementById('narr').currentTime > {start}", "narration on the code scene"
+        )
+        b.run("click", "#play")
+        b.until("document.getElementById('narr').paused", "pause on the code scene")
+        offset = b.js("document.getElementById('narr').currentTime") - start
+        if offset > 0.6:
+            raise Fail(
+                f"pause landed {offset:.2f} s into scene {first + 1}; too late to test the reveal"
+            )
+        visible, want_rows = b.js(VISIBLE_ROWS), row_count(scenes[first])
+        if visible != want_rows:
+            raise Fail(
+                f"paused {offset:.2f} s into scene {first + 1}: {visible} of {want_rows} code rows visible"
+            )
+        shot("paused-code")
+        checks.append(
+            f"pause {offset:.2f} s into scene {first + 1} shows all {want_rows} code rows"
+        )
 
         goto(0)
         b.run("click", "#play")

@@ -16,7 +16,8 @@
   function fit() { stage.style.setProperty('--k', stage.clientWidth / 1920); }
   new ResizeObserver(fit).observe(stage);
 
-  // The frame a viewer would pause on: the scene fully built, before its fade.
+  // Paused and idle views show this frame: the scene fully built, before its
+  // fade. Only playback shows the timed reveal.
   function rest(s) { return (s.fade ? s.fade[0] : s.end) - 0.05; }
   function playing() { return hasAudio && !audio.paused && !audio.ended; }
 
@@ -109,8 +110,7 @@
   }
 
   audio.addEventListener('play', function () { update(); if (!frame) frame = requestAnimationFrame(tick); });
-  audio.addEventListener('pause', function () { cancelAnimationFrame(frame); frame = 0; update(); });
-  audio.addEventListener('ended', function () { seek(rest(scenes[cur])); update(); });
+  audio.addEventListener('pause', function () { cancelAnimationFrame(frame); frame = 0; seek(rest(scenes[cur])); update(); });
 
   prevBtn.addEventListener('click', function () { show(cur - 1); });
   nextBtn.addEventListener('click', function () { show(cur + 1); });
