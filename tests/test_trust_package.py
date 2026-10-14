@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PRODUCT_OUTPUTS = ("map.html", "video.mp4", "doc.html", "card.png", "comment.md")
+PRODUCT_OUTPUTS = ("video.mp4", "page.html", "infographic.png")
 EVIDENCE_FILES = ("map.json", "board.json", "run.json")
 
 
@@ -46,7 +46,7 @@ def _claude_text() -> str:
     return (ROOT / "src/prc/skill/SKILL.md").read_text()
 
 
-def test_d14_canonical_lists_five_product_outputs() -> None:
+def test_d14_canonical_lists_three_product_outputs() -> None:
     for name in PRODUCT_OUTPUTS:
         assert name in _claude_text(), "canonical SKILL.md omits " + name
 

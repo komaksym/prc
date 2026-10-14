@@ -58,8 +58,9 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
     extra = []
     if stored:
         mapped = subprocess.run(
-            [sys.executable, "-m", "prc.cli", "map", "--source", "fixture:shop",
-             "--store", str(tmp_path / "store"), "--out", str(tmp_path / "maps")],
+            [sys.executable, "-m", "prc.cli", "explain", "--source", "fixture:shop",
+             "--voice", "none", "--store", str(tmp_path / "store"),
+             "--out", str(tmp_path / "maps")],
             capture_output=True,
             text=True,
             cwd=tmp_path,
@@ -77,24 +78,12 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
         check=False,
     )  # fmt: skip
 
-    assert completed.returncode == 0, completed.stderr
-
-    printed = json.loads(completed.stdout)
-    assert printed["check_passed"] is True
-
-    out = tmp_path / printed["out"]
-    for name in (
-        "map.json",
-        "map.html",
-        "board.json",
-        "video.mp4",
-        "doc.html",
-        "run.json",
-        "card.html",
-        "card.png",
-        "comment.md",
-    ):
-        assert (out / name).exists(), name
+    assert completed.returncode == 2, completed.stderr
+    assert "no gated infographic published" in completed.stderr
+    outs = list((tmp_path / "artifacts" / "explain").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    assert (outs[0] / "infographic" / "brief.json").exists()
+    out = outs[0]
 
     run = json.loads((out / "run.json").read_text())
     assert run["check"]["passed"] is True
@@ -102,7 +91,9 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
     assert run["map_source"] == ("stored" if stored else "live")
     assert run["live_head_sha"] == (None if stored else run["stored_head_sha"])
     assert (tmp_path / run["comment"]).exists()
-    assert (tmp_path / run["card"]).exists()
+    assert "card" not in run
+    assert not (out / "card.html").exists()
+    assert not (out / "card.png").exists()
 
     info = probe(out / "video.mp4")
     stream = info["streams"][0]
@@ -149,13 +140,13 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
         )
         assert fallback.returncode == 0, fallback.stderr
         assert json.loads(fallback.stdout)["video"] is None
-        assert not any((out / name).exists() for name in ("board.json", "doc.html", "video.mp4"))
+        assert not any((out / name).exists() for name in ("board.json", "page.html", "video.mp4"))
         assert json.loads((out / "map.json").read_text())["title"] == replacement["title"]
         shutil.copytree(out, ARTIFACT / "fallback" / out.name, dirs_exist_ok=True)
 
 
 @pytest.mark.parametrize("evidence", ["added-line", "captured-head"])
-def test_stored_map_card_and_comment_carry_the_rebuilt_brief(tmp_path: Path, evidence: str) -> None:
+def test_stored_map_comment_carries_the_rebuilt_brief(tmp_path: Path, evidence: str) -> None:
     stored = json.loads((ROOT / "tests" / "data" / "explainer" / "maps" / "pr12.json").read_text())
     for file in stored["brief"]["files"]:
         file["sensitive"] = None
@@ -183,8 +174,8 @@ def test_stored_map_card_and_comment_carry_the_rebuilt_brief(tmp_path: Path, evi
 
     assert completed.returncode == 0, completed.stderr
     out = Path(json.loads(completed.stdout)["out"])
-    assert "external calls" in (out / "card.html").read_text()
     assert "external calls" in (out / "comment.md").read_text()
+    assert not (out / "card.html").exists()
     rebuilt = json.loads((out / "map.json").read_text())
     assert any(f.get("sensitive") == "external calls" for f in rebuilt["brief"]["files"])
     assert json.loads((out / "run.json").read_text())["live_head_sha"] is None
@@ -302,6 +293,7 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
                 "type": "diff",
                 "file": path,
                 "lines": ["1"],
+                "rows": [{"ref": "1", "op": "+", "num": 1, "text": "def test_probe(): pass"}],
                 "say": ["The probe passes."],
                 "cues": [{"at": [0, 0], "do": "step", "n": 1}],
             },
@@ -316,16 +308,19 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
          "--out", str(tmp_path / "out")],
         capture_output=True, text=True, cwd=ROOT, check=False,
     )  # fmt: skip
-    assert completed.returncode == 0, completed.stderr
-    out = Path(json.loads(completed.stdout)["out"])
+    assert completed.returncode == 2, completed.stderr
+    assert "no gated infographic published" in completed.stderr
+    outs = list((tmp_path / "out").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    out = outs[0]
     rebuilt = json.loads((out / "map.json").read_text())
     facts = verify_board(json.loads((out / "board.json").read_text()), rebuilt)
     run = json.loads((out / "run.json").read_text())
     assert (facts["changed"], facts["tests_added"]) == (0, 1)
     assert (run["check"]["changed"], run["check"]["tests_added"]) == (0, 1)
-    for name in ("card.html", "comment.md"):
-        assert "No live production symbols changed" in (out / name).read_text()
-    assert "def test_probe" in (out / "doc.html").read_text()
+    assert "No live production symbols changed" in (out / "comment.md").read_text()
+    assert not (out / "card.html").exists()
+    assert "def test_probe" in (out / "page.html").read_text()
     artifact = ARTIFACT / "stored-reclassified"
     shutil.rmtree(artifact, ignore_errors=True)
     shutil.copytree(out, artifact)
@@ -336,33 +331,29 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
         browser = driver.chromium.launch()
         try:
             page = browser.new_page(viewport={"width": 1280, "height": 800})
-            for name in ("map", "card", "doc"):
-                page.goto((artifact / f"{name}.html").as_uri())
-                if name == "doc":
-                    page.wait_for_function("() => window.docReady === true")
-                    assert "def test_probe(): pass" in page.locator("body").inner_text()
-                page.screenshot(path=str(artifact / f"{name}.png"), full_page=True)
+            page.goto((artifact / "page.html").as_uri())
+            page.wait_for_function("window.prcPage !== undefined", timeout=15000)
+            page.click("#next")
+            page.wait_for_selector("#scale .drow", timeout=15000)
+            assert "def test_probe(): pass" in page.locator("#stage").inner_text()
+            page.click("#scale .pg-hit")
+            page.wait_for_selector("#panel:not([hidden])", timeout=15000)
+            href = page.get_attribute("#panel-gh", "href")
+            assert href is not None and "/pull/" in href and "#diff-" in href and "R1" in href
+            page.screenshot(path=str(artifact / "page.png"), full_page=True)
         finally:
             browser.close()
 
 
-def test_explain_card_failure_omits_png_reference(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_explain_writes_no_card_files(tmp_path: Path) -> None:
     from prc import pipeline
     from prc.fixture_source import FixtureSource
     from prc.model import PrRef
-    from prc.presentation.card import CardError
     from prc.verification import EligibilityPolicy
 
     stored = json.loads((ROOT / "tests" / "data" / "explainer" / "maps" / "pr12.json").read_text())
     stored_path = tmp_path / "stored.json"
     stored_path.write_text(json.dumps(stored))
-
-    def _fail(*args: Any, **kwargs: Any) -> None:
-        raise CardError("The PR card cannot fit its test-evidence lines in 1200x630.")
-
-    monkeypatch.setattr(pipeline, "render_pr_card", _fail)
 
     result = pipeline.run_explain(
         FixtureSource(repo=tmp_path, resources={}),
@@ -374,10 +365,10 @@ def test_explain_card_failure_omits_png_reference(
         map_path=stored_path,
         voice="auto",
     )
-    assert result.card_png is None
-    assert (result.out_dir / "card.html").exists()
+    assert not (result.out_dir / "card.html").exists()
     assert not (result.out_dir / "card.png").exists()
     run = json.loads((result.out_dir / "run.json").read_text())
-    assert run["card"] is None
+    assert "card" not in run
     text = (result.out_dir / "comment.md").read_text()
     assert "card.png" not in text
+    assert "card.html" not in text

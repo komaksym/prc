@@ -13,7 +13,7 @@ SKILL_NAME = "prc-explain"
 SECTION_START = "<!-- prc-explain:start -->"
 SECTION_END = "<!-- prc-explain:end -->"
 
-PRODUCT_OUTPUTS = ("map.html", "video.mp4", "doc.html", "card.png", "comment.md")
+PRODUCT_OUTPUTS = ("video.mp4", "page.html", "infographic.png")
 
 
 def skill_source() -> Path:

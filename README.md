@@ -2,7 +2,7 @@
 
 [Product and repository status](docs/mvp/STATUS.md) records verified behavior and unfinished release gates.
 
-`prc explain` turns a pull request and an agent-authored board into a local video, written walkthrough, map, card, and comment draft.
+`prc explain` turns a pull request and an agent-authored board into three local artifacts from one storyboard: a narrated video, a clickable page, and a gated infographic.
 
 Code rows come from the captured diff. Your coding agent writes the explanation.
 
@@ -48,31 +48,29 @@ The CLI prints the output folder and file paths as JSON.
 The silent video still needs Chromium and ffmpeg.
 Fixture output demonstrates the renderer. It is not evidence about a live PR.
 
-## Five outputs from one board
+## Three artifacts from one storyboard
 
-With a valid board and the rendering dependencies available, `explain` writes these outputs.
+With a valid board, a gated infographic, and the rendering dependencies available, `explain` writes three artifacts made from the same storyboard.
 
-| Output | File | Purpose |
+| Artifact | File | Purpose |
 |---|---|---|
-| Interactive map | `map.html` | Browse changed symbols, calls, tests, and diffs. |
 | Explainer video | `video.mp4` | Watch the board with narration or silent captions. |
-| Written walkthrough | `doc.html` | Read the same board and follow code receipts. |
-| PR card | `card.png` | View the headline and computed map statistics. |
-| PR comment draft | `comment.md` | Review text and a computed Mermaid diagram before posting. |
+| Clickable page | `page.html` | The video as clickable scenes: Play narrates the current scene, code lines open their hunk with an Open on GitHub link, and the infographic opens in one click. |
+| Gated infographic | `infographic.png` | High-level diagram of what changed and why. |
 
 The folder also contains `map.json`, the checked `board.json`, and `run.json`.
 `run.json` records the map source, board check, voice backend, media estimates, video duration, and layout warnings.
 These values do not measure each pipeline step's wall time.
 Output folders include the PR identity and the first 12 characters of the captured head SHA.
-Each successful rerun replaces the complete generated folder. A boardless rerun removes earlier video and walkthrough files.
+Each successful rerun replaces the complete generated folder. A boardless rerun removes earlier video and page files.
 Handled rendering failures leave the prior successful folder intact. Treat that folder as generated output, not a place for manual files.
 Publication uses a short lock and staged directory replacement with rollback. A process kill during replacement can leave a recovery backup and lock.
 Inspect those paths before restoring a backup or removing a lock. Publication does not guarantee uninterrupted reads during replacement.
-A card-render failure can leave `card.png` absent. Inspect the printed `card` value and `run.json` warnings.
+`page.html` plays the narration from `video.mp4` and opens `infographic.png`. Keep the three files in one folder.
 
 prc writes local files. It does not post comments, upload videos, or publish a repository.
 
-## A drawn infographic (optional)
+## A drawn infographic (required)
 
 Every `explain` run writes `infographic/brief.json`. It holds the only lines a drawing may show.
 These are the headline, node lines, a legend, computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
@@ -113,7 +111,7 @@ A candidate that passes the word checks but lacks a connection returns `flat`.
 A candidate with no relations also returns `flat`, even when its word checks pass.
 PRC decodes candidate pixels with ffmpeg for the geometric check.
 The first passing drawing becomes `infographic.png`.
-The comment and the walkthrough then show that image first.
+The comment and the page then link to that image first. Every board build fails without a gated infographic.
 `infographic/check.json` lists each candidate's verdict, missing lines, foreign words, successful or failed reading modes, and for each relation whether it is drawn.
 It records the hash of the exact checked PNG bytes. `run.json` records the attempts.
 Without a passing candidate, nothing is published and the card stays.
@@ -216,7 +214,7 @@ uv run prc map --source https://github.com/komaksym/linkedin-mdp/pull/12
 ```
 
 `map` writes `index.html` and `map.json` under `artifacts/maps/` and prints their paths.
-`map --video` adds the older, silent `tour.mp4` and a map screenshot `card.png`.
+`explain` no longer writes `map.html` or `doc.html`. The walkthrough and the interactive map were removed; the clickable `page.html` replaces the walkthrough.
 That tour needs the video dependencies. It is separate from the board-based explainer.
 
 ## Voice choices and downloads

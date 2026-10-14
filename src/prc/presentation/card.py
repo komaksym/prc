@@ -402,7 +402,8 @@ def render_card(
     html_path: Path,
     out_path: Path,
 ) -> Path:
-    from prc.presentation.map_video import CARD_SCALE, CARD_VIEWPORT
+    CARD_VIEWPORT = {"width": 1200, "height": 630}
+    CARD_SCALE = 2
 
     try:
         import playwright.sync_api  # noqa: F401

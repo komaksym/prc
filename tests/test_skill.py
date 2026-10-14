@@ -26,8 +26,10 @@ def test_installed_skill_reports_the_five_product_outputs(tmp_path: Path) -> Non
     assert installed.returncode == 0, installed.stderr
     text = (tmp_path / "prc-explain/SKILL.md").read_text()
     handoff = text.split("## 9.", 1)[1]
-    for name in ("map.html", "video.mp4", "doc.html", "card.png", "comment.md"):
+    for name in ("video.mp4", "page.html", "infographic.png"):
         assert name in handoff, name
+    for name in ("map.html", "doc.html"):
+        assert name not in handoff, name
 
 
 def _install(*argv: str) -> int:

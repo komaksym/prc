@@ -1,6 +1,6 @@
 # Start here
 
-prc helps people understand pull requests that AI agents wrote. It parses the code, so it knows exactly what changed. The user's own coding agent writes a short story about the change, and prc checks every name, value and line in that story against the code. Then prc renders five outputs: an interactive map, a narrated video, a written walkthrough, a PR card and a PR comment with a diagram. Everything runs locally and needs no API key.
+prc helps people understand pull requests that AI agents wrote. It parses the code, so it knows exactly what changed. The user's own coding agent writes a short story about the change, and prc checks every name, value and line in that story against the code. Then prc renders three artifacts from one storyboard: a narrated video, a clickable page, and a gated infographic. Everything runs locally and needs no API key.
 
 **Your job.** Build the MVP end to end, check your own work, and score it on the 12 open pull requests of `komaksym/linkedin-mdp`. The user's first requirement is that people find it useful and want to use it. After the MVP comes a public GitHub repo and a promo on Twitter. Those wait for the user (see "Ask the user first").
 
