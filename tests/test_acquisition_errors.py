@@ -103,7 +103,7 @@ def test_transient_source_error_can_recover(make_source: Make, clock: FakeClock)
     assert brief.files
 
 
-@pytest.mark.parametrize("command", ["brief", "map", "explain", "board"])
+@pytest.mark.parametrize("command", ["brief", "explain", "board"])
 @pytest.mark.parametrize("message", [RATE_LIMIT, NOT_FOUND, TIMEOUT])
 def test_cli_source_error_is_nonzero_without_traceback(
     command: str, message: str, tmp_path: Path
@@ -112,7 +112,7 @@ def test_cli_source_error_is_nonzero_without_traceback(
 
 
 def test_cli_checkout_source_error_is_nonzero_without_traceback(tmp_path: Path) -> None:
-    _check_cli_failure("map", "git fetch failed: remote unavailable", tmp_path, "checkout")
+    _check_cli_failure("explain", "git fetch failed: remote unavailable", tmp_path, "checkout")
 
 
 @pytest.mark.parametrize(

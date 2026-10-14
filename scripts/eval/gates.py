@@ -26,7 +26,6 @@ GATE_NAMES = (
     "layout",
     "diagram",
     "card_facts",
-    "doc_links",
     "video_file",
 )
 
@@ -202,29 +201,6 @@ def gate_card_facts(pr_dir: Path) -> tuple[bool, str]:
     return True, "card numbers match recomputation"
 
 
-def gate_doc_links(pr_dir: Path) -> tuple[bool, str]:
-    from prc.explainer.doc import receipt_refs, receipt_url
-
-    doc = (pr_dir / "doc.html").read_text()
-    m = _read(pr_dir / "map.json")
-    board = _read(pr_dir / "board.json")
-    expected = {
-        receipt_url(m["pr"].split("#")[0], m["head_sha"], m["base_sha"], path, n, removed)
-        for scene in board.get("scenes", [])
-        for path, n, removed in receipt_refs(scene)
-    }
-    actual = {
-        html.unescape(url)
-        for url in re.findall(r'href=["\'](https://github\.com/[^"\']+/blob/[^"\']+)["\']', doc)
-    }
-    if actual != expected:
-        return (
-            False,
-            f"receipt links differ: {len(expected - actual)} missing, {len(actual - expected)} unexpected",
-        )
-    return True, f"{len(actual)} receipt links match board, revisions and lines"
-
-
 def gate_video_file(pr_dir: Path) -> tuple[bool, str]:
     video = pr_dir / "video.mp4"
     if not video.exists():
@@ -293,7 +269,6 @@ GATES = {
     "layout": gate_layout,
     "diagram": gate_diagram,
     "card_facts": gate_card_facts,
-    "doc_links": gate_doc_links,
     "video_file": gate_video_file,
 }
 

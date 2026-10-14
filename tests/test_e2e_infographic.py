@@ -260,6 +260,26 @@ def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
     return payload
 
 
+def brief_without_infographic(cwd: Path, board: Path = BOARD) -> Path:
+    """A board build with no candidate fails by design and still writes the brief to draw."""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")
+    done = subprocess.run(
+        [sys.executable, "-m", "prc.cli", "explain", "--source", "fixture:shop",
+         "--board", str(board), "--voice", "none",
+         "--store", str(cwd / "store"), "--out", str(cwd / "out")],
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+        check=False,
+        env=env,
+    )  # fmt: skip
+    assert done.returncode == 2, done.stderr
+    assert "no gated infographic published" in done.stderr
+    (folder,) = [p for p in (cwd / "out").iterdir() if (p / "infographic" / "brief.json").is_file()]
+    return folder
+
+
 def test_gate_real_tesseract_images(tmp_path: Path) -> None:
     PROOF.mkdir(parents=True, exist_ok=True)
     brief = page_brief(LINES)
@@ -337,26 +357,14 @@ def test_explain_records_binary_tesseract_failure(
     assert run["infographic"]["status"] == "failed"
     assert run["infographic"]["published_sha256"] is None
     assert not (out / "infographic.png").exists()
-    assert "![PR card](card.png)" in (out / "comment.md").read_text()
+    assert "card.png" not in (out / "comment.md").read_text()
+    assert not (out / "card.png").exists()
     PROOF.mkdir(parents=True, exist_ok=True)
     PROOF.joinpath(f"binary-{stage}-check.json").write_text(json.dumps(checks, indent=2))
-    PROOF.joinpath(f"binary-{stage}-card.png").write_bytes((out / "card.png").read_bytes())
 
 
 def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
-    first = run_cli(
-        tmp_path,
-        "explain",
-        "--source",
-        "fixture:shop",
-        "--voice",
-        "none",
-        "--store",
-        str(tmp_path / "store"),
-        "--out",
-        str(tmp_path / "out"),
-    )
-    seed = tmp_path / first["out"]
+    seed = brief_without_infographic(tmp_path)
     lines = brief_texts(seed)
     payload = json.loads((seed / "infographic" / "brief.json").read_text())
     assert payload["relations"], "the shop brief should give the artist calls to draw"
@@ -417,8 +425,9 @@ def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
     assert "![PR card](card.png)" not in comment
 
     doc = (out / "page.html").read_text()
-    assert "data:image/png;base64," in doc
-    assert "<figcaption>Infographic drawn by AI. Words from prc.</figcaption>" in doc
+    assert "<img src='infographic.png'" in doc
+    assert "id='info-open'" in doc
+    assert "data:image/png;base64," not in doc
 
 
 def test_explain_without_infographic_fails_loudly(
