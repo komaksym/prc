@@ -1,3 +1,26 @@
+# Study v3: three PRC artifacts and a study on the operator's own PRs, 2026-10-14
+
+## Summary
+
+The first v2 reading showed four product defects and one study defect. The walkthrough repeats GitHub's header and once said 5/5 CI where GitHub showed 4/5. The interactive map copies PR Lens, which is the baseline aid. No study build attempted an infographic (run.json: status missing, attempts []), yet the aid still published. The HTML page only replays the video. The questions asked for line-level code detail in unfamiliar repos and languages.
+v3 ships PRC as three artifacts made from one storyboard: the infographic (high level: what changed in the system and why), the narrated video, and a clickable page that steps through the same scenes and opens each file and hunk. The walkthrough and map are removed. A build without a gated infographic fails.
+The study uses the operator's own repos (komaksym), Python only, agent PRs from the last month. The operator read none of them, so familiarity is equal. Pairs come from one repo with similar size; a coin picks the PRC side. Questions ask what the agent actually did, what could break, and whether to merge. Answer keys cite diff lines or later commits. The v2 study is archived with its data.
+No push, PR or publication without explicit approval (D21).
+
+- [ ] A1. Remove the walkthrough and the map from PRC output, the study aid and docs.
+- [ ] A2. One storyboard drives the video and the clickable page; each scene links to its file and hunk.
+- [ ] A3. Infographic required: the build fails without a gated, published infographic; proven on one real PR with a baoyu-infographic image.
+- [ ] B1. Candidate pool: komaksym Python agent PRs from the last month with genuine Lens comments at the pinned head; 3 pairs plus 1 practice pair, same repo, similar size.
+- [ ] B2. Frozen questions and answer keys, 3 per PR, review level, checked by a second model.
+- [ ] B3. Archive v2, prebuild Lens and PRC outputs at pinned revisions, seal, draw coins.
+- [ ] B4. Button-level end-to-end pass on a copy of the sealed study, supervised handoff of the live hub, browser screenshots.
+
+Throughput checkpoint:
+- Blocking first steps: A3 and B1 are independent; B3 waits for A1 to A3.
+- Independent workstreams: worker A owns src/prc/presentation, src/prc/explainer, pipeline.py, evaluation/assets.py and the PRC skill; worker B owns study selection, questions, kit and session code and artifacts/paired-study.
+- Shared mutable state: separate worktrees and branches; the parent merges A into B before B3.
+- Smallest safe decomposition: A1, A2, A3 as one branch; B1, B2 first, then B3, B4 after the merge.
+
 # Step 1b: Real infographics with a structure brief and a geometric gate, 2026-10-11
 
 ## Summary
