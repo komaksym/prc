@@ -115,6 +115,14 @@ def fill(
     removed = sum(f["removed"] for f in m["brief"]["files"])
     board["header"] = f"<b>{repo} #{number}</b> · {m['author']}"
     values = {k: v for k, v in facts.items() if isinstance(v, int)}
+    texts = {
+        (f["path"], ("-" + str(ln["old"])) if ln.get("op") == "-" else ("+" + str(ln["new"]))): str(
+            ln.get("text", "")
+        )
+        for f in m.get("files", [])
+        for h in f.get("hunks", [])
+        for ln in h.get("lines", [])
+    }
 
     for i, s in enumerate(board["scenes"]):
         s["i"] = i
@@ -149,6 +157,18 @@ def fill(
                 segments += [{"text": before}, {"text": claim["text"], "claim": claim["n"]}]
             if s.get("claims"):
                 s["segments"] = segments + [{"text": rest}]
+        if s["type"] == "groups":
+            # Each box opens the cited line its name comes from, as the check grounded it.
+            for g in s["groups"]:
+                for it in g["items"]:
+                    word = it.get("ground", it["text"])
+                    for c in s.get("cite", []):
+                        path, n = c["line"].rsplit(":", 1)
+                        key = ("-" + n[1:]) if n.startswith("-") else ("+" + n)
+                        if word in texts.get((path, key), ""):
+                            it["line"] = c["line"]
+                            it["url"] = _line_url(owner_repo, number, c["line"])
+                            break
         if s["type"] == "list":
             if "more" not in s:
                 rest = facts["tests_added"] - len(s["items"])

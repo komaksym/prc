@@ -352,3 +352,62 @@ def test_list_scene_cites_open_their_lines_on_github(tmp_path: Path) -> None:
         ]
         page.screenshot(path=str(tmp_path / "list-cites.png"))
         browser.close()
+
+
+def test_group_boxes_open_their_lines_and_the_reading_path_links_every_unit(
+    tmp_path: Path,
+) -> None:
+    """The v4-a review: boxes on the first scenes were dead, and the page skipped most units."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import files_url, render_page
+    from prc.explainer.render import render
+    from prc.explainer.units import units
+    from prc.explainer.voice import NoneBackend
+
+    m, board, picks = _groups_change()
+    all_units = units(m)
+    board["reading"] = [
+        {"units": [u["id"]], "say": "The change touches this part."} for u in all_units
+    ]
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+    owner_repo, number = str(m["pr"]).split("#")
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        context = browser.new_context(viewport={"width": 1280, "height": 900})
+        context.route("https://github.com/**", lambda route: route.fulfill(body="github"))
+        page = context.new_page()
+        page.goto((tmp_path / "page.html").as_uri())
+        page.locator("#strip button").nth(1).click()
+        page.wait_for_function("document.querySelectorAll('#scale .pill.pg-hit').length === 2")
+        for (path, n, _), box in zip(picks, ("a0", "a1"), strict=True):
+            page.locator(f"#scale .pill[data-id='{box}']").click()
+            assert page.locator("#panel").is_visible()
+            assert page.locator("#panel-title").inner_text() == f"{path} line {n}"
+            assert page.locator("#panel-gh").get_attribute("href") == files_url(
+                owner_repo, number, path, n
+            )
+            assert page.locator("#panel-diff .hk-hit").count() == 1
+        receipts = page.locator("#receipts a")
+        assert [receipts.nth(i).get_attribute("href") for i in range(receipts.count())] == [
+            files_url(owner_repo, number, p, n) for p, n, _ in picks
+        ]
+        assert page.locator(".pg-key-i").count() == 5
+        assert "reading path" in page.locator("#not-covered").inner_text()
+        names = page.locator("#reading .rd-name")
+        assert names.count() == len(all_units)
+        hrefs = {names.nth(i).get_attribute("href") for i in range(names.count())}
+        assert hrefs == {
+            files_url(owner_repo, number, u["path"], u["line"], u["removed"]) for u in all_units
+        }
+        fold = page.locator("#reading details.rd-code").first
+        fold.locator("summary").click()
+        assert fold.locator("table.hk tr").first.is_visible()
+        with context.expect_page() as opened:
+            names.first.click()
+        assert opened.value.url == names.first.get_attribute("href")
+        page.screenshot(path=str(tmp_path / "page-boxes.png"), full_page=True)
+        browser.close()

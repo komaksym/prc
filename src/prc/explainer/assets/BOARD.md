@@ -207,12 +207,45 @@ Set the board's `infographic` field to panels mode for a blueprint picture of th
   "footer": ["Start at the status check"] }
 ```
 
-Write 2 to 4 panels, each with a title and 1 to 4 lines. A title or line has at most 6 words. Give each panel a unique title. The footer holds 0 to 3 short items. The brief numbers the panel headers ("1. BEFORE", "2. SWITCH") and adds the disclosure line to the footer bar. All the text, disclosure included, has at most 90 words.
+Write 2 to 4 panels, each with a title and 1 to 4 lines. A title or line has at most 6 words. Give each panel a unique title. The footer holds 0 to 3 short items. The brief numbers the panel headers ("1. BEFORE", "2. SWITCH") and adds the disclosure line to the footer bar. All the text, disclosure and key included, has at most 90 words.
 
-The brief's permitted text is exactly these strings: the headline, the subtitle, the numbered panel headers, the panel lines, the footer items and the disclosure. Nothing comes from the pull request title, the checker verdict or a legend. The gate passes an image only when OCR reads every line and finds no other word.
+Each panel has one meaning color. The video and the page use the same five colors:
+
+| `tone` | Key word | Color | Use it for |
+|---|---|---|---|
+| `problem` | Problem | vermillion #D55E00 | the state before, a bug, a removed part |
+| `change` | Change | orange #E69F00 | what the pull request changes |
+| `part` | Part | sky blue #56B4E9 | the parts or components involved |
+| `proof` | Proof | bluish green #009E73 | tests, results, added evidence |
+| `context` | Context | grey #8A93A6 | background that did not change |
+
+Set `"tone"` on a panel to pick its color. Without it, the brief reads the title: BEFORE gives problem, CHANGE or SWITCH gives change, PROOF or TESTS gives proof, PARTS gives part, and anything else gives context. The brief adds one key word per tone it uses to the footer bar, and the gate requires those words too.
+
+The brief's permitted text is exactly these strings: the headline, the subtitle, the numbered panel headers, the panel lines, the footer items, the key words and the disclosure. Nothing comes from the pull request title or the checker verdict. The gate passes an image only when OCR reads every line and finds no other word.
 
 The brief's `prompt` (also written to `infographic/prompt.md`) asks for the baoyu-infographic technical profile: a technical-schematic blueprint style, a structural-breakdown layout, landscape 16:9, numbered panel headers, one simple icon per panel, one arrow from each panel to the next, and a footer bar. The brief records those arrows as relations from panel i to panel i + 1 and no other pair.
 
 The gate does not check the arrows between panels. A panel frame holds many text lines, so the ink test that joins two text boxes is not reliable there. Check by eye that each panel points to the next before you publish.
 
 Panel text is not checked against the diff. Keep every line literally true to the pull request, and use the same names the video uses.
+
+## reading, the page's full explanation
+
+The video picks the changes that carry the story. The page goes deeper: its reading path explains every changed unit. A unit is one changed function, method or class, the changed module lines outside them, one settings block, job or step of a CI workflow, or one other changed file. Run `prc board units --map <map.json>` to list every unit with its id.
+
+```json
+"reading": [
+  { "units": ["src/app/report.py::render_report"], "say": "The function builds the report text from the counts." },
+  { "units": [".github/workflows/report.yml::step Update the doc"], "say": ["The step runs the report script each morning.", "It reads the token from a secret."] },
+  { "units": ["tests/test_report.py::test_empty", "tests/test_report.py::test_full"], "say": "Two tests check an empty report and a full report." }
+]
+```
+
+`prc board check` checks the list when the board has one:
+
+- Every unit has exactly one entry. A missing, repeated or unknown id fails.
+- `say` is one or two sentences, and each follows the narration rules: one statement, active voice, ASD-STE100 length.
+- An entry holds units of one role. Code, CI and config entries stay in one file and hold at most 4 units, so each function gets its own words. Test, docs and data entries may join files.
+- Write the entries in reading order: the entry point first, then what it calls, then the tests.
+
+The page lists the entries by role (code, CI, configuration, tests, docs, other files). Each unit name opens its first changed line on GitHub, and a fold shows its changed lines.

@@ -148,7 +148,7 @@ def build_parser() -> argparse.ArgumentParser:
     board_sub = board.add_subparsers(dest="board_command", required=True)
     board_sub.add_parser("guide", help="print the board-writing guide")
     board_cmds = {}
-    for name in ("show", "find", "coverage", "check", "preview"):
+    for name in ("show", "find", "units", "coverage", "check", "preview"):
         cmd = board_sub.add_parser(name)
         cmd.add_argument("--source", default=None)
         cmd.add_argument("--map", type=Path, default=None)
@@ -383,6 +383,13 @@ def _main(argv: list[str] | None = None) -> int:
 
             return 0
 
+        if args.board_command == "units":
+            from prc.explainer.units import listing
+
+            print(listing(used), end="")
+
+            return 0
+
         board_doc = json.loads(args.board.read_text())
 
         if args.board_command == "coverage":
@@ -398,6 +405,15 @@ def _main(argv: list[str] | None = None) -> int:
             print(str(error), file=sys.stderr)
 
             return 2
+        if "infographic" in board_doc:
+            from prc.presentation.infographic import infobrief
+
+            try:
+                infobrief(used, used.get("brief"), board_doc)
+            except ValueError as error:
+                print(f"infographic: {error}", file=sys.stderr)
+
+                return 2
 
         print(f"{facts['receipts']} receipts verified")
 
@@ -405,6 +421,13 @@ def _main(argv: list[str] | None = None) -> int:
             f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s"
         )
         print(facts["coverage_summary"])
+        if "reading" in board_doc:
+            from prc.explainer.units import units
+
+            print(
+                f"reading: {len(board_doc['reading'])} entries explain all "
+                f"{len(units(used))} changed units"
+            )
         for risk in facts["note_risks"]:
             print(f"warning: {risk}")
 

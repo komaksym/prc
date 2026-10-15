@@ -8,7 +8,7 @@
   var el = function (id) { return document.getElementById(id); };
   var main = el('main'), stage = el('stage'), scale = el('scale'), audio = el('narr');
   var playBtn = el('play'), prevBtn = el('prev'), nextBtn = el('next');
-  var counter = el('counter'), hint = el('hint'), strip = el('strip');
+  var counter = el('counter'), hint = el('hint'), strip = el('strip'), receipts = el('receipts');
   var panel = el('panel'), panelTitle = el('panel-title'), panelDiff = el('panel-diff'), panelGh = el('panel-gh');
   var cur = 0, seek = function () {}, frame = 0, regions = [];
   var hasAudio = !!audio.getAttribute('src');
@@ -24,7 +24,7 @@
   function closePanel() {
     panel.hidden = true;
     main.classList.remove('has-panel');
-    regions.forEach(function (r) { r.classList.remove('pg-on'); });
+    regions.forEach(function (r) { if (r) r.classList.remove('pg-on'); });
   }
 
   function openHunk(k) {
@@ -32,7 +32,7 @@
     panelTitle.textContent = t.label;
     panelDiff.innerHTML = t.hunk >= 0 ? data.hunks[t.hunk] : '<p class="hk-head">No local diff for this line.</p>';
     panelGh.href = t.url;
-    regions.forEach(function (r, i) { r.classList.toggle('pg-on', i === k); });
+    regions.forEach(function (r, i) { if (r) r.classList.toggle('pg-on', i === k); });
     panel.hidden = false;
     main.classList.add('has-panel');
     var hit = panelDiff.querySelector('tr[data-k="' + t.key + '"]');
@@ -46,18 +46,35 @@
   function mount(i) {
     scale.innerHTML = '';
     seek = window.prcMount(scale, board, i);
-    var found = scale.querySelectorAll('.drow:not(.gap)');
-    regions = Array.prototype.slice.call(found.length ? found : scale.querySelectorAll('.item'));
-    regions = regions.slice(0, data.targets[i].length);
+    var targets = data.targets[i];
+    if (targets.length && targets[0].id) {
+      // Group boxes: each target names the box it opens.
+      regions = targets.map(function (t) { return scale.querySelector('.pill[data-id="' + CSS.escape(t.id) + '"]'); });
+    } else {
+      var found = scale.querySelectorAll('.drow:not(.gap)');
+      regions = Array.prototype.slice.call(found.length ? found : scale.querySelectorAll('.item'));
+      regions = regions.slice(0, targets.length);
+    }
     regions.forEach(function (r, k) {
+      if (!r) return;
       r.classList.add('pg-hit');
       r.setAttribute('role', 'button');
       r.setAttribute('tabindex', '0');
-      r.setAttribute('aria-label', 'Open hunk for ' + data.targets[i][k].label);
+      r.setAttribute('aria-label', 'Open hunk for ' + targets[k].label);
       r.addEventListener('click', function () { openHunk(k); });
       r.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); openHunk(k); } });
     });
-    hint.textContent = regions.length ? 'Click a code line to open its hunk.' : '';
+    hint.textContent = !regions.length ? '' : targets[0].id ? 'Click a box to open its hunk.' : 'Click a code line to open its hunk.';
+    var links = (data.receipts || [])[i] || [];
+    receipts.innerHTML = '';
+    receipts.hidden = !links.length;
+    if (links.length) receipts.appendChild(document.createTextNode('Receipts: '));
+    links.forEach(function (l, k) {
+      if (k) receipts.appendChild(document.createTextNode(' · '));
+      var a = document.createElement('a');
+      a.href = l.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = l.label;
+      receipts.appendChild(a);
+    });
   }
 
   function update() {

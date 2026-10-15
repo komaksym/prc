@@ -1,7 +1,10 @@
 (() => {
   const W = 1920, H = 1080;
-  const C = { blue: '#58C4DD', green: '#83C167', red: '#FC6255', gold: '#F0AC5F', grey: '#8A93A6', text: '#ECEFF4', dim: '#5B6475', bg: '#0E1320' };
-  const STATUS = { modified: C.blue, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
+  // Okabe-Ito shades, one meaning each: red problem or removed, gold change, blue part,
+  // green proof or added, grey context. The page key and the infographic use the same five.
+  const C = { blue: '#56B4E9', green: '#009E73', red: '#D55E00', gold: '#E69F00', grey: '#8A93A6', text: '#ECEFF4', dim: '#5B6475', bg: '#0E1320' };
+  const KEY = [['Problem', C.red], ['Change', C.gold], ['Part', C.blue], ['Proof', C.green], ['Context', C.grey]];
+  const STATUS = { modified: C.gold, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
   const TONE = { bad: C.red, good: C.green, info: C.gold };
   const clamp = x => Math.max(0, Math.min(1, x));
   const smooth = x => { x = clamp(x); return x * x * x * (x * (x * 6 - 15) + 10); };
@@ -40,11 +43,13 @@
       seg.span = span; tl.appendChild(span);
     });
     const meta = D('meta', s.meta, wrap);
+    const key = D('ckey', KEY.map(([l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join(''), wrap);
     const t0 = s.start + 0.5, typing = 1.5;
     return t => {
       kicker.style.opacity = prog(t, s.start + 0.15, 0.5);
       chars.forEach((c, i) => { c.style.opacity = prog(t, t0 + i * typing / chars.length, 0.2); });
       meta.style.opacity = prog(t, t0 + typing, 0.5);
+      key.style.opacity = prog(t, t0 + typing + 0.3, 0.5);
       segs.forEach(seg => {
         if (!seg.claim) return;
         const k = prog(t, seg.at, 0.6);
@@ -56,7 +61,7 @@
   };
 
   MAKERS.graph = (s, root) => {
-    D('legend', ['new', 'changed', 'existing'].map((l, i) => { const c = [C.green, C.blue, C.grey][i]; return `<span><i style="border-color:${c};background:${c}33"></i>${l}</span>`; }).join(''), root);
+    D('legend', ['new', 'changed', 'existing'].map((l, i) => { const c = [C.green, C.gold, C.grey][i]; return `<span><i style="border-color:${c};background:${c}33"></i>${l}</span>`; }).join(''), root);
     const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, style: 'position:absolute;inset:0' }, root);
     S('defs', {}, svg).innerHTML = `<filter id="glow${s.i}" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
     const cam = S('g', {}, svg);

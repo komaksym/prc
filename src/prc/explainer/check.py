@@ -398,15 +398,16 @@ def _passive(words: list[str]) -> str | None:
     return None
 
 
-def narration_problems(i: int, scene: dict[str, Any]) -> list[str]:
+def narration_problems(i: int | str, scene: dict[str, Any]) -> list[str]:
     """ASD-STE100 rules for each caption: one short sentence in the active voice."""
+    where = f"scene {i}" if isinstance(i, int) else i
     problems: list[str] = []
     for say in scene.get("say", []):
         caption = say if isinstance(say, str) else say["show"]
         parts = [p for p in _SENTENCE_END.split(_CODE_SPAN.sub("code", caption)) if p.strip()]
         if len(parts) > 1:
             problems.append(
-                f"scene {i}: {caption!r} holds {len(parts)} sentences; ASD-STE100 asks for "
+                f"{where}: {caption!r} holds {len(parts)} sentences; ASD-STE100 asks for "
                 "one statement per sentence, so give each its own say entry"
             )
         words = _words(caption)
@@ -415,20 +416,91 @@ def narration_problems(i: int, scene: dict[str, Any]) -> list[str]:
         first = re.sub(r"^\W+|\W+$", "", words[0]).lower()
         if first in IMPERATIVES and len(words) > MAX_INSTRUCTION:
             problems.append(
-                f"scene {i}: {caption!r} is an instruction of {len(words)} words; "
+                f"{where}: {caption!r} is an instruction of {len(words)} words; "
                 f"ASD-STE100 allows {MAX_INSTRUCTION} at most"
             )
         elif first not in IMPERATIVES and len(words) > MAX_DESCRIPTION:
             problems.append(
-                f"scene {i}: {caption!r} is a description of {len(words)} words; "
+                f"{where}: {caption!r} is a description of {len(words)} words; "
                 f"ASD-STE100 allows {MAX_DESCRIPTION} at most"
             )
         phrase = _passive(words)
         if phrase:
             problems.append(
-                f"scene {i}: {caption!r} uses the passive {phrase!r}; ASD-STE100 asks for the "
+                f"{where}: {caption!r} uses the passive {phrase!r}; ASD-STE100 asks for the "
                 "active voice, so name who does the action"
             )
+    return problems
+
+
+READING_GROUP = 4
+SHARED_ROLES = ("test", "docs", "data")
+
+
+def reading_problems(board: dict[str, Any], m: dict[str, Any]) -> list[str]:
+    """The reading path gives every changed unit one entry: one or two plain sentences.
+
+    Tests, docs and data may share an entry across files. Code, CI and config entries
+    stay in one file and hold at most READING_GROUP units, so each function gets words.
+    """
+    from prc.explainer.units import units
+
+    known = {u["id"]: u for u in units(m)}
+    reading = board.get("reading")
+    if not isinstance(reading, list):
+        return [
+            "board has no reading list; run `prc board units` and give every unit "
+            "one sentence in `reading`"
+        ]
+    problems: list[str] = []
+    seen: dict[str, int] = {}
+    for k, entry in enumerate(reading):
+        where = f"reading {k}"
+        ids = entry.get("units") if isinstance(entry, dict) else None
+        say = entry.get("say") if isinstance(entry, dict) else None
+        if not isinstance(ids, list) or not ids or not all(isinstance(x, str) for x in ids):
+            problems.append(f"{where}: needs a nonempty units list of unit ids")
+            continue
+        sentences = [say] if isinstance(say, str) else say
+        if (
+            not isinstance(sentences, list)
+            or not 1 <= len(sentences) <= 2
+            or not all(isinstance(s, str) and s.strip() for s in sentences)
+        ):
+            problems.append(f"{where}: say needs one or two sentences")
+        else:
+            problems += narration_problems(where, {"say": sentences})
+        found = []
+        for uid in ids:
+            if uid not in known:
+                problems.append(
+                    f"{where}: {uid!r} is not a unit of this pull request; run `prc board units`"
+                )
+            elif uid in seen:
+                problems.append(f"{where}: {uid!r} is already explained in reading {seen[uid]}")
+            else:
+                seen[uid] = k
+                found.append(known[uid])
+        roles = {u["role"] for u in found}
+        paths = {u["path"] for u in found}
+        if len(roles) > 1:
+            problems.append(
+                f"{where}: mixes {', '.join(sorted(roles))} units; give each role its own entry"
+            )
+        elif found and found[0]["role"] not in SHARED_ROLES:
+            if len(paths) > 1:
+                problems.append(
+                    f"{where}: joins units from {len(paths)} files; "
+                    "code, CI and config entries stay in one file"
+                )
+            if len(found) > READING_GROUP:
+                problems.append(
+                    f"{where}: joins {len(found)} units; code, CI and config entries hold "
+                    f"at most {READING_GROUP}"
+                )
+    missing = [uid for uid in known if uid not in seen]
+    if missing:
+        problems.append("units with no reading sentence: " + ", ".join(missing))
     return problems
 
 
@@ -943,6 +1015,9 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             + ", ".join(missing)
             + "; show each with a diff scene, a cite, a list item or a receipt line"
         )
+    if "reading" in board:
+        for problem in reading_problems(board, m):
+            ck.fail(problem)
     estimate = silent_estimate(board)
     if estimate > MAX_SECONDS:
         ck.fail(
