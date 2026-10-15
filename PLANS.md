@@ -647,3 +647,19 @@ Rebuild all 12 PR outputs with current source into a new run, re-read with fresh
 - [ ] H5. Independent review, launch docs, full verifier, commit. Operator gates (license, repo name, push, PyPI, human session) stay with the user.
 
 Q4/Q5 outcome, 2026-10-08: baseline committed on verification-skill; local main fast-forwarded (ancestor, no unique commits). No remote is configured, so no push or PR exists. Ticket 01 resolved. Ticket 02 stays blocked on the human repository-identity decision. Ticket 03 stays open for human review. Final independent recheck of the four source fixes is pending; narrow tests, lint, types, and the 572-test package check pass.
+
+---
+
+# PRC output v5, 2026-10-15
+
+## Summary
+
+Rebuild the PRC output after the operator's v4 review of linkedin-mdp #33. One five-color key for infographic, video and page. Every page reference links to its GitHub line. The page explains every changed unit, including CI steps and tests. Videos stay at 150 s or less. Opus 5.5 authors three PRs (linkedin-mdp #5, linkedin-automation #22, leads-discovery #43); a judge labels every claim; the notes hub serves the result with per-PR cost. Report: `artifacts/output-v5/REPORT.md` (local, gitignored).
+
+## Milestones
+
+- [x] V1. Units, reading path, box and receipt links, five-color key (b7557fa, 5892d7b).
+- [x] V2. OCR gate reads colored header bars through dark-ink reads (57c0e52).
+- [x] V3. Author, judge and fix three boards; render with Kokoro; Parakeet listen passes; videos 111 to 134 s.
+- [x] V4. Link every bare reference the click audit found (c580959).
+- [x] V5. Live notes hub: handoff check, browser pass and click audits pass; cost per PR $1.98 to $3.52.
