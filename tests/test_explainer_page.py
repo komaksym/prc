@@ -257,6 +257,28 @@ def test_url_in_a_code_row_opens_its_line_on_github(tmp_path: Path) -> None:
         browser.close()
 
 
+def test_commit_sha_and_file_line_in_a_code_row_open_the_line(tmp_path: Path) -> None:
+    # 2026-10-15 click audit on linkedin-mdp #5: action pins and a `client.py:124` note
+    # in changed lines showed as bare references.
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import files_url, render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    sha = "11d5960a326750d5838078e36cf38b85af677262"
+    m, board, line = _change()
+    line["text"] = f"pin = 'actions/checkout@{sha}'  # see client.py:124"
+    board["scenes"][1]["rows"][0]["text"] = line["text"]
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    data = _data(render_page(board, m, tmp_path, 4.0, has_video=False))
+    hunk = data["hunks"][data["targets"][1][0]["hunk"]]
+    owner_repo, number = str(m["pr"]).split("#")
+    line_url = files_url(owner_repo, number, board["scenes"][1]["file"], line["new"])
+    for ref in (sha, "client.py:124"):
+        assert f"<a href='{line_url}' target='_blank' rel='noopener'>{ref}</a>" in hunk
+
+
 def test_arrow_points_from_source_edge_to_target_edge_and_renames_nothing(
     tmp_path: Path,
 ) -> None:
@@ -403,6 +425,12 @@ def test_group_boxes_open_their_lines_and_the_reading_path_links_every_unit(
         assert hrefs == {
             files_url(owner_repo, number, u["path"], u["line"], u["removed"]) for u in all_units
         }
+        # 2026-10-15 click audit: the path:line label beside each name was plain text.
+        cites = page.locator("#reading .rd-p")
+        assert cites.count() == len(all_units)
+        for i in range(cites.count()):
+            assert cites.nth(i).evaluate("e => e.tagName") == "A"
+            assert cites.nth(i).get_attribute("href") == names.nth(i).get_attribute("href")
         fold = page.locator("#reading details.rd-code").first
         fold.locator("summary").click()
         assert fold.locator("table.hk tr").first.is_visible()

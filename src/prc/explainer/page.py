@@ -25,12 +25,21 @@ from prc.explainer.preflight import line_coverage
 from prc.explainer.units import Unit, units
 
 _URL = re.compile(r"https?://[^\s'\"<>`]+[^\s'\"<>`.,;:)\]}]")
+# Reference-shaped tokens in a code line: a URL, a file:line, a commit SHA, or owner/repo#N.
+# The page links each one to its line on GitHub, so no reference shows as bare text.
+_REF = re.compile(
+    _URL.pattern
+    + r"|\b[\w+./~-]+\.(?:py|js|jsx|ts|tsx|mts|cts|rb|go|rs|java|kt|swift|md|markdown|html|css"
+    r"|scss|json|yaml|yml|toml|ini|cfg|sh|bash|sql|r|php):\d+\b"
+    r"|\b[0-9a-f]{7,40}\b"
+    r"|\b[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+#\d+\b"
+)
 
 
 def _code_html(text: str, line_url: str) -> str:
-    """Escape one code line; a URL in it links to the line on GitHub, since it is a value, not a page."""
+    """Escape one code line; each reference in it links to the line on GitHub, since it is a value."""
     out, end = [], 0
-    for found in _URL.finditer(text):
+    for found in _REF.finditer(text):
         out += [
             html.escape(text[end : found.start()]),
             f"<a href='{html.escape(line_url)}' target='_blank' rel='noopener'>"
@@ -209,7 +218,8 @@ def _unit_html(u: Unit, owner_repo: str, number: str) -> str:
         f"<li class='rd-u tone-{tone}' data-unit='{html.escape(u['id'])}'>"
         f"<a class='rd-name' href='{html.escape(url)}' target='_blank' rel='noopener'>"
         f"<code>{html.escape(name)}</code></a> <span class='rd-st'>{html.escape(str(u['status']))}"
-        f"</span> <span class='rd-p'>{html.escape(where)}</span>{code}</li>"
+        f"</span> <a class='rd-p' href='{html.escape(url)}' target='_blank' rel='noopener'>"
+        f"{html.escape(where)}</a>{code}</li>"
     )
 
 

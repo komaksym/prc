@@ -458,7 +458,7 @@ def test_explain_records_binary_tesseract_failure(
     checks = json.loads((out / "infographic" / "check.json").read_text())
     assert len(checks) == 1
     assert checks[0]["verdict"] == "tool"
-    assert len(checks[0]["failed_modes"]) == (5 if stage == "ocr" else 0)
+    assert len(checks[0]["failed_modes"]) == (len(gate.READS) if stage == "ocr" else 0)
     run = json.loads((out / "run.json").read_text())
     assert run["infographic"]["status"] == "failed"
     assert run["infographic"]["published_sha256"] is None
