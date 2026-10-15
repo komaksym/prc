@@ -26,7 +26,7 @@ LINES = [
     "Risky surfaces",
     "cart.py: external calls",
     "Direct test evidence found",
-    "Infographic drawn by AI. Words from prc.",
+    "Infographic drawn by AI. Words from PRC.",
 ]
 
 ROLES: list[gate.Role] = [
@@ -444,7 +444,7 @@ def test_explain_records_binary_tesseract_failure(
     checks = json.loads((out / "infographic" / "check.json").read_text())
     assert len(checks) == 1
     assert checks[0]["verdict"] == "tool"
-    assert len(checks[0]["failed_modes"]) == (4 if stage == "ocr" else 0)
+    assert len(checks[0]["failed_modes"]) == (5 if stage == "ocr" else 0)
     run = json.loads((out / "run.json").read_text())
     assert run["infographic"]["status"] == "failed"
     assert run["infographic"]["published_sha256"] is None
@@ -513,7 +513,7 @@ def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
     assert checks[0]["sha256"] == hashlib.sha256(bad.read_bytes()).hexdigest()
 
     comment = (out / "comment.md").read_text()
-    assert "![Infographic drawn by AI. Words from prc.](infographic.png)" in comment
+    assert "![Infographic drawn by AI. Words from PRC.](infographic.png)" in comment
     assert "![PR card](card.png)" not in comment
 
     doc = (out / "page.html").read_text()

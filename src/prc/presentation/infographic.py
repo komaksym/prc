@@ -3,9 +3,11 @@ from __future__ import annotations
 import ast
 import copy
 import json
+import os
 import re
 import shutil
 import subprocess
+import tempfile
 import unicodedata
 from collections import Counter
 from collections.abc import Callable
@@ -39,7 +41,10 @@ MAX_PANELS = 4
 MAX_PANEL_LINES = 4
 MAX_FOOTER = 3
 LINE_LIMIT = 96
-DISCLOSURE = "Infographic drawn by AI. Words from prc."
+# Uppercase PRC: Tesseract reads lowercase "prc" in small footer text as "pre",
+# so the disclosure uses capitals the OCR reads reliably. The gate still accepts
+# "pre" for older drawings (see _match).
+DISCLOSURE = "Infographic drawn by AI. Words from PRC."
 PROFILE = {
     "aspect": "16:9",
     "backend": "auto",
@@ -64,9 +69,10 @@ PANEL_RULES = (
     "Show every line exactly once, spelled exactly.",
     "Add no other words, numbers, titles, legends or watermarks than the lines given.",
     "Put each panel header and its labels inside that panel.",
+    "Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.",
     "Join each panel to the next with one arrow, left to right, and put no words on it.",
     "Draw no other arrows or connector lines.",
-    "Icons are allowed inside panels but contain no letters or digits.",
+    "Icons are allowed inside panels but contain no letters, digits or digit-like shapes.",
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible in the footer bar.",
 )
@@ -146,7 +152,10 @@ class GateDecision:
 _SPLIT = re.compile(r"[^a-z0-9]+")
 _CODE_WORD = re.compile(r"[._/:][A-Za-z0-9]|[a-z][A-Z]")
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
-READS = (("3", ""), ("11", ""), ("3", "150"), ("11", "150"))
+# The "up2x" read runs Tesseract on a doubled image: small panel text that reads as
+# low-confidence garbage at native resolution ("mapped" as "auppeth") reads cleanly
+# with more pixels. _read_mode doubles the PNG with ffmpeg for this marker.
+READS = (("3", ""), ("11", ""), ("3", "150"), ("11", "150"), ("3", "up2x"))
 
 
 def tokenize(text: str) -> list[str]:
@@ -172,6 +181,9 @@ def _match(word: str, tok: str, code: frozenset[str] = frozenset()) -> bool:
         return "0" in word and word.replace("0", "o") == tok
     if word in code or _has_digit(word) or _has_digit(tok):
         return False
+    if {word, tok} == {"prc", "pre"}:
+        # Tesseract reads the footer "prc" as "pre" in most panels drawings.
+        return True
     return _fold(word) == _fold(tok)
 
 
@@ -685,8 +697,9 @@ def prompt(br: InfographicBrief) -> str:
         "",
         "Layout:",
         "- Top: the headline in large bold letters, with the subtitle in smaller letters under it.",
-        f"- Middle: {len(panels)} panels in one row, left to right. Each panel has a numbered header "
-        "bar with its panel header, one simple icon, and its labels as a short list.",
+        f"- Middle: {len(panels)} panels in one row, left to right. Each panel has a plain solid "
+        "numbered header bar with its panel header, one simple icon with no letters, digits or "
+        "digit-like shapes, and its labels as a short list.",
         f"- Between panels: one bold arrow from each panel to the next, left to right ({chain}). "
         "Put no words on the arrows.",
         "- Bottom: a footer bar across the full width that holds the footer items and the disclosure.",
@@ -908,6 +921,25 @@ def _allowed_neighbor(token: str, idx: int, ocr: list[str], allowed: set[str]) -
     return _fold(left) in allowed or _fold(right) in allowed
 
 
+def _rejoined(words: tuple[OcrWord, ...], prose: set[str]) -> set[int]:
+    """Ids of words split by a visual break that rejoin to a permitted word.
+
+    A hatched header bar can split CHANGE into "cha" and "nge" with a stray reading
+    between them in page order, so stream adjacency misses the split. Words sitting
+    side by side on one text line whose edge tokens rejoin to a prose word are the
+    two halves of one drawn word.
+    """
+    found: set[int] = set()
+    for line in _text_lines(words):
+        for first, second in pairwise(line):
+            left = tokenize(first.text)
+            right = tokenize(second.text)
+            if left and right and _fold(left[-1] + right[0]) in prose:
+                found.add(id(first))
+                found.add(id(second))
+    return found
+
+
 def _misread(
     token: str,
     box: Box | None,
@@ -918,11 +950,12 @@ def _misread(
 ) -> bool:
     """True when the other reads show this token is a misreading of an icon or an allowed word.
 
-    Most other reads see an allowed word at the same place. Or the token has no digit and is
-    short: one letter that looks like an icon (alone on its text line, or much taller than its
-    neighbors), up to GLYPH_TOKEN letters in a square box much taller than its neighbors (a gear
-    read as "god"), or a token that fewer than STABLE_READS confident reads (all reads, when
-    there are fewer) see there.
+    Most other reads see an allowed word at the same place. Or the token is short: one letter
+    that looks like an icon (alone on its text line, or much taller than its neighbors), up to
+    GLYPH_TOKEN letters in a square box much taller than its neighbors (a gear read as "god"),
+    a lone single digit from an icon region (a checkbox grid read as "4"), or a token that
+    fewer than STABLE_READS confident reads (all reads, when there are fewer) see there.
+    Longer digit codes and tall digit strokes stay invented, as does a digit every read sees.
     """
     if box is None:
         return False
@@ -941,7 +974,11 @@ def _misread(
     )
     if len(others) >= 2 and agree * 2 > len(others):
         return True
-    if _has_digit(token):
+    digit = _has_digit(token)
+    if digit and (len(token) > 1 or icon == "tall"):
+        # Longer codes stay exact, and a tall digit-like icon stroke beside text
+        # (the "9" in the square-glyph tests) stays invented: only a lone single
+        # digit can be an icon-region reading.
         return False
     seen = 1 + sum(1 for r in others if token in at_place(r, CONF_FLOOR))
     if seen == len(reads):
@@ -991,16 +1028,21 @@ def score_ocr(
 
     streams: list[list[str]] = []
     scored: list[list[tuple[str, float, Box | None, IconKind | None]]] = []
+    owners: list[list[int]] = []
     for read in reads:
         icons = _icon_like(read.words)
         toks: list[str] = []
         confs: list[tuple[str, float, Box | None, IconKind | None]] = []
+        held: list[int] = []
         for word in read.words:
             for tok in tokenize(word.text):
                 toks.append(tok)
                 confs.append((tok, word.conf, word.box, icons.get(id(word))))
+                held.append(id(word))
         streams.append(toks)
         scored.append(confs)
+        owners.append(held)
+    rejoined = [_rejoined(read.words, prose) for read in reads]
     detail: dict[str, Any] = {
         "allowed": len(allowed),
         "brief_lines": len(br.lines),
@@ -1023,6 +1065,8 @@ def score_ocr(
                 good = False
             else:
                 good = _allowed_neighbor(tok, pos, ocr, prose)
+            if not good:
+                good = owners[idx][pos] in rejoined[idx]
             if not good:
                 good = _misread(tok, box, idx, reads, known, icon)
             if not good:
@@ -1083,6 +1127,7 @@ def score_ocr(
             if any(
                 known(tok)
                 or _allowed_neighbor(tok, pos + offset, streams[idx], prose)
+                or id(word) in rejoined[idx]
                 or (
                     word.conf >= CONF_FLOOR and not _misread(tok, word.box, idx, reads, known, None)
                 )
@@ -1140,7 +1185,46 @@ def tool_decision(
     return GateDecision("tool", (), (), detail)
 
 
+def _doubled_png(png: Path) -> Path | None:
+    """A doubled copy of the image for the up2x read, or None without ffmpeg."""
+    if shutil.which("ffmpeg") is None:
+        return None
+    fd, tmp = tempfile.mkstemp(prefix="prc-up2x-", suffix=".png")
+    os.close(fd)
+    try:
+        done = subprocess.run(
+            ["ffmpeg", "-v", "error", "-y", "-i", str(png), "-vf", "scale=iw*2:ih*2", tmp],
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError, UnicodeDecodeError):
+        Path(tmp).unlink(missing_ok=True)
+        return None
+    if done.returncode != 0:
+        Path(tmp).unlink(missing_ok=True)
+        return None
+    return Path(tmp)
+
+
 def _read_mode(png: Path, psm: str, dpi: str) -> tuple[OcrWord, ...] | None:
+    if dpi == "up2x":
+        doubled = _doubled_png(png)
+        if doubled is None:
+            return None
+        try:
+            words = _read_mode(doubled, psm, "")
+        finally:
+            doubled.unlink(missing_ok=True)
+        if words is None:
+            return None
+        # All gate geometry (places, locate, the ink mask) runs in base-image
+        # pixels, so scale the doubled boxes back before returning the read.
+        return tuple(
+            word if word.box is None else OcrWord(word.text, word.conf, _halve(word.box))
+            for word in words
+            if word.box is None or _halve(word.box) is not None
+        )
     args = ["tesseract", str(png), "stdout", "--psm", psm]
     if dpi:
         args += ["--dpi", dpi]
@@ -1153,21 +1237,32 @@ def _read_mode(png: Path, psm: str, dpi: str) -> tuple[OcrWord, ...] | None:
     return parse_tsv(done.stdout)
 
 
-def gate(png: Path, br: InfographicBrief) -> GateDecision:
-    version = tesseract_version()
-    if not version:
-        return tool_decision()
+def read_modes(png: Path) -> tuple[tuple[OcrRead, ...], list[str]]:
+    """One OCR read per entry in READS, plus the modes that failed to read."""
     reads: list[OcrRead] = []
     failed: list[str] = []
     for psm, dpi in READS:
-        mode = f"psm-{psm}-dpi-{dpi}" if dpi else f"psm-{psm}"
+        if dpi == "up2x":
+            mode = f"psm-{psm}-up2x"
+        elif dpi:
+            mode = f"psm-{psm}-dpi-{dpi}"
+        else:
+            mode = f"psm-{psm}"
         words = _read_mode(png, psm, dpi)
         if words is None:
             failed.append(mode)
         else:
             reads.append(OcrRead(mode, words))
+    return tuple(reads), failed
+
+
+def gate(png: Path, br: InfographicBrief) -> GateDecision:
+    version = tesseract_version()
+    if not version:
+        return tool_decision()
+    reads, failed = read_modes(png)
     if failed:
-        return tool_decision(version, failed, tuple(reads))
+        return tool_decision(version, failed, reads)
     decision = score_ocr(tuple(reads), br, tesseract=version)
     if decision.verdict != "pass":
         return decision
@@ -1286,3 +1381,9 @@ def read_png(path: Path) -> bytes:
     if not raw.startswith(_PNG_MAGIC):
         raise ValueError(f"infographic must be a PNG: {path}")
     return raw
+def _halve(box: Box) -> Box | None:
+    """A doubled-read word box back in base-image pixels, or None when it vanishes."""
+    left, top, width, height = (part // 2 for part in box)
+    if width <= 0 or height <= 0:
+        return None
+    return (left, top, width, height)

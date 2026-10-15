@@ -1,0 +1,190 @@
+{
+  "allowed": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "6",
+    "a",
+    "ada",
+    "added",
+    "ai",
+    "and",
+    "as",
+    "at",
+    "back",
+    "before",
+    "below",
+    "best",
+    "by",
+    "came",
+    "change",
+    "comes",
+    "containing",
+    "difflib",
+    "dm",
+    "drawn",
+    "drop",
+    "each",
+    "every",
+    "exact",
+    "example",
+    "filters",
+    "first",
+    "four",
+    "from",
+    "infographic",
+    "latimer",
+    "match",
+    "matched",
+    "matches",
+    "name",
+    "names",
+    "new",
+    "no",
+    "now",
+    "out",
+    "prc",
+    "prints",
+    "proof",
+    "prospect",
+    "ranks",
+    "row",
+    "rows",
+    "score",
+    "scores",
+    "similarity",
+    "sorts",
+    "start",
+    "strong",
+    "substring",
+    "test",
+    "tests",
+    "tiers",
+    "trace",
+    "unranked",
+    "unscored",
+    "used",
+    "weak",
+    "wes",
+    "words"
+  ],
+  "disclosure": "Infographic drawn by AI. Words from prc.",
+  "gate": {
+    "CONF_FLOOR": 70,
+    "CROSSINGS": 2,
+    "GAP": 2,
+    "LINE_LIMIT": 96,
+    "LINE_RUN": 1.5,
+    "MAX_WORDS": 80,
+    "PANELS_MAX_WORDS": 90,
+    "REACH": 4,
+    "WINDOW": 6
+  },
+  "lines": [
+    {
+      "role": "headline",
+      "text": "trace_first_dm ranks name matches by score"
+    },
+    {
+      "role": "subtitle",
+      "text": "match_names now scores, filters and sorts"
+    },
+    {
+      "role": "panel",
+      "text": "1. BEFORE"
+    },
+    {
+      "role": "item",
+      "text": "match_names used a substring test"
+    },
+    {
+      "role": "item",
+      "text": "Every containing row matched"
+    },
+    {
+      "role": "item",
+      "text": "Rows came back unscored, unranked"
+    },
+    {
+      "role": "panel",
+      "text": "2. CHANGE"
+    },
+    {
+      "role": "item",
+      "text": "difflib similarity scores each name"
+    },
+    {
+      "role": "item",
+      "text": "Rows below 0.6 drop out"
+    },
+    {
+      "role": "item",
+      "text": "Tiers: exact, strong, weak"
+    },
+    {
+      "role": "item",
+      "text": "Best match comes first"
+    },
+    {
+      "role": "panel",
+      "text": "3. PROOF"
+    },
+    {
+      "role": "item",
+      "text": "Four new tests added"
+    },
+    {
+      "role": "item",
+      "text": "Ada Example ranks first, exact"
+    },
+    {
+      "role": "item",
+      "text": "Wes Latimer matches no row"
+    },
+    {
+      "role": "footer",
+      "text": "Start at match_names"
+    },
+    {
+      "role": "footer",
+      "text": "matched_as prints a prospect name"
+    },
+    {
+      "role": "note",
+      "text": "Infographic drawn by AI. Words from prc."
+    }
+  ],
+  "mode": "panels",
+  "profile": {
+    "aspect": "16:9",
+    "backend": "auto",
+    "language": "en",
+    "layout": "structural-breakdown",
+    "style": "technical-schematic"
+  },
+  "prompt": "Create one landscape 16:9 infographic with the baoyu-infographic profile: technical-schematic style, structural-breakdown layout.\n\nStyle: a technical-schematic blueprint on pale blue-white grid paper, drawn in dark navy ink with thin drafting lines, dimension ticks and corner marks. Keep every word dark on the light paper so it reads clearly.\n\nLayout:\n- Top: the headline in large bold letters, with the subtitle in smaller letters under it.\n- Middle: 3 panels in one row, left to right. Each panel has a numbered header bar with its panel header, one simple icon, and its labels as a short list.\n- Between panels: one bold arrow from each panel to the next, left to right (\"1. BEFORE\" to \"2. CHANGE\"; \"2. CHANGE\" to \"3. PROOF\"). Put no words on the arrows.\n- Bottom: a footer bar across the full width that holds the footer items and the disclosure.\n\nText: use only these lines, each exactly once and spelled exactly.\nHeadline: \"trace_first_dm ranks name matches by score\"\nSubtitle: \"match_names now scores, filters and sorts\"\nPanel header: \"1. BEFORE\"\n  - label: \"match_names used a substring test\"\n  - label: \"Every containing row matched\"\n  - label: \"Rows came back unscored, unranked\"\nPanel header: \"2. CHANGE\"\n  - label: \"difflib similarity scores each name\"\n  - label: \"Rows below 0.6 drop out\"\n  - label: \"Tiers: exact, strong, weak\"\n  - label: \"Best match comes first\"\nPanel header: \"3. PROOF\"\n  - label: \"Four new tests added\"\n  - label: \"Ada Example ranks first, exact\"\n  - label: \"Wes Latimer matches no row\"\nFooter: \"Start at match_names\"\nFooter: \"matched_as prints a prospect name\"\nDisclosure: \"Infographic drawn by AI. Words from prc.\"\n\nRules:\n- Show every line exactly once, spelled exactly.\n- Add no other words, numbers, titles, legends or watermarks than the lines given.\n- Put each panel header and its labels inside that panel.\n- Join each panel to the next with one arrow, left to right, and put no words on it.\n- Draw no other arrows or connector lines.\n- Icons are allowed inside panels but contain no letters or digits.\n- Draw every line as dark text on a light background.\n- Keep the disclosure line visible in the footer bar.\n",
+  "prompt_rules": [
+    "Show every line exactly once, spelled exactly.",
+    "Add no other words, numbers, titles, legends or watermarks than the lines given.",
+    "Put each panel header and its labels inside that panel.",
+    "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    "Draw no other arrows or connector lines.",
+    "Icons are allowed inside panels but contain no letters or digits.",
+    "Draw every line as dark text on a light background.",
+    "Keep the disclosure line visible in the footer bar."
+  ],
+  "relations": [
+    {
+      "from": "1. BEFORE",
+      "kind": "flow",
+      "to": "2. CHANGE"
+    },
+    {
+      "from": "2. CHANGE",
+      "kind": "flow",
+      "to": "3. PROOF"
+    }
+  ],
+  "title": "trace_first_dm ranks name matches by score"
+}

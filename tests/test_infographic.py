@@ -640,7 +640,7 @@ def test_gate_requires_every_reading(tmp_path: Path, monkeypatch: pytest.MonkeyP
     )
     decision = gate.gate(blank_png(tmp_path / "partial.png"), tiny_brief())
     assert decision.verdict == "tool"
-    assert len(decision.detail["failed_modes"]) == 3
+    assert len(decision.detail["failed_modes"]) == 4
     assert len(decision.detail["modes"]) == 1
 
 
