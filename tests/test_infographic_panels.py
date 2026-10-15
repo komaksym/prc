@@ -10,7 +10,16 @@ from prc.presentation import infographic as gate
 
 ROOT = Path(__file__).resolve().parents[1]
 PANELS = ROOT / "tests" / "data" / "infographic" / "panels"
-SLUGS = ("v4a", "opus-v4b", "opus-v4c", "deepseek-v4b", "deepseek-v4c", "glm-v4a", "glm-v4b")
+SLUGS = (
+    "v4a",
+    "opus-v4b",
+    "opus-v4c",
+    "deepseek-v4b",
+    "deepseek-v4c",
+    "glm-v4a",
+    "glm-v4b",
+    "opus-v5c",
+)
 
 
 def panels_brief(slug: str) -> gate.InfographicBrief:
@@ -35,6 +44,19 @@ def cast_kind(kind: str) -> gate.RelationKind:
 def test_panels_drawn_candidates_pass_the_gate(slug: str) -> None:
     decision = gate.gate(PANELS / f"{slug}.png", panels_brief(slug))
     assert decision.verdict == "pass", (decision.verdict, decision.invented)
+
+
+def test_colored_header_bars_need_the_ink_reads() -> None:
+    # 2026-10-15 v5-c: thick colored rules around each header bar hide "2. CHANGE"
+    # from every plain read. The ink reads drop the colored ink and see the header.
+    reads, failed = gate.read_modes(PANELS / "opus-v5c.png")
+    assert not failed
+    plain = tuple(read for read in reads if not read.mode.endswith("-ink"))
+    brief = panels_brief("opus-v5c")
+    without = gate.score_ocr(plain, brief)
+    assert without.verdict == "missing"
+    assert "2. CHANGE" in dict(without.missing)
+    assert gate.score_ocr(reads, brief).verdict == "pass"
 
 
 def test_panels_planted_word_is_invented() -> None:

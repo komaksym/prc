@@ -72,8 +72,10 @@ PANEL_RULES = (
     "Add no other words, numbers, titles or watermarks than the lines given.",
     "Put each panel header and its labels inside that panel.",
     "Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.",
-    "Color each panel with its named key color: a pale tint fill, a thick border and a header bar "
-    "in that color, and use no other accent colors.",
+    "Color each panel with its named key color: a pale tint fill and a thick border in that color, "
+    "and use no other accent colors.",
+    "Draw each header bar in the panel's pale tint with dark navy text, never white text on a "
+    "saturated bar.",
     "Join each panel to the next with one arrow, left to right, and put no words on it.",
     "Draw no other arrows or connector lines.",
     "Icons are allowed inside panels but contain no letters, digits or digit-like shapes.",
@@ -183,7 +185,26 @@ _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 # The "up2x" read runs Tesseract on a doubled image: small panel text that reads as
 # low-confidence garbage at native resolution ("mapped" as "auppeth") reads cleanly
 # with more pixels. _read_mode doubles the PNG with ffmpeg for this marker.
-READS = (("3", ""), ("11", ""), ("3", "150"), ("11", "150"), ("3", "up2x"))
+# The "ink" reads keep only dark pixels: colored panel frames, rules and icons drop out
+# and the dark navy words stay. Tesseract skips a header bar framed by thick colored
+# rules ("2. CHANGE" in the v5 colored panels), but reads it on the ink image.
+READS = (
+    ("3", ""),
+    ("11", ""),
+    ("3", "150"),
+    ("11", "150"),
+    ("3", "up2x"),
+    ("3", "ink"),
+    ("11", "ink"),
+    ("4", "ink"),
+)
+# Luma below this is text ink. Navy text sits near 30; the darkest key color, bluish
+# green #009E73, sits near 106.
+INK_LUMA = 90
+_FILTERS = {
+    "up2x": "scale=iw*2:ih*2",
+    "ink": f"format=gray,geq=lum='if(lt(lum(X\\,Y)\\,{INK_LUMA})\\,0\\,255)'",
+}
 
 
 def tokenize(text: str) -> list[str]:
@@ -737,10 +758,10 @@ def prompt(br: InfographicBrief) -> str:
         + ", ".join(
             f"{name} {color} means {word.lower()}" for word, name, color, _ in TONES.values()
         )
-        + ". Fill each panel with its pale tint, frame it with a thick border in its full color, "
-        "and draw its header bar in a slightly deeper tint of the same color. Draw icons and "
-        "arrows in the panel color. Keep every word dark navy on the light tints so it reads "
-        "clearly.",
+        + ". Fill each panel with its pale tint and frame it with a thick border in its full color. "
+        "Draw its header bar in the same pale tint, underlined by a thick rule in the full color, "
+        "with the header text in dark navy. Draw icons and arrows in the panel color. Keep every "
+        "word dark navy on the light tints so it reads clearly; never put white text on a color.",
         "",
         "Layout:",
         "- Top: the headline in large bold letters, with the subtitle in smaller letters under it.",
@@ -1270,15 +1291,15 @@ def tool_decision(
     return GateDecision("tool", (), (), detail)
 
 
-def _doubled_png(png: Path) -> Path | None:
-    """A doubled copy of the image for the up2x read, or None without ffmpeg."""
+def _filtered_png(png: Path, kind: str) -> Path | None:
+    """A filtered copy of the image for the up2x or ink read, or None without ffmpeg."""
     if shutil.which("ffmpeg") is None:
         return None
-    fd, tmp = tempfile.mkstemp(prefix="prc-up2x-", suffix=".png")
+    fd, tmp = tempfile.mkstemp(prefix=f"prc-{kind}-", suffix=".png")
     os.close(fd)
     try:
         done = subprocess.run(
-            ["ffmpeg", "-v", "error", "-y", "-i", str(png), "-vf", "scale=iw*2:ih*2", tmp],
+            ["ffmpeg", "-v", "error", "-y", "-i", str(png), "-vf", _FILTERS[kind], tmp],
             capture_output=True,
             text=True,
             timeout=180,
@@ -1293,8 +1314,16 @@ def _doubled_png(png: Path) -> Path | None:
 
 
 def _read_mode(png: Path, psm: str, dpi: str) -> tuple[OcrWord, ...] | None:
+    if dpi == "ink":
+        inked = _filtered_png(png, "ink")
+        if inked is None:
+            return None
+        try:
+            return _read_mode(inked, psm, "")
+        finally:
+            inked.unlink(missing_ok=True)
     if dpi == "up2x":
-        doubled = _doubled_png(png)
+        doubled = _filtered_png(png, "up2x")
         if doubled is None:
             return None
         try:
@@ -1327,8 +1356,8 @@ def read_modes(png: Path) -> tuple[tuple[OcrRead, ...], list[str]]:
     reads: list[OcrRead] = []
     failed: list[str] = []
     for psm, dpi in READS:
-        if dpi == "up2x":
-            mode = f"psm-{psm}-up2x"
+        if dpi in _FILTERS:
+            mode = f"psm-{psm}-{dpi}"
         elif dpi:
             mode = f"psm-{psm}-dpi-{dpi}"
         else:
