@@ -250,3 +250,45 @@ def test_fly_between_different_names_lands_as_the_target_name(tmp_path: Path) ->
         assert landed["spill"] <= 1
         page.screenshot(path=str(tmp_path / "fly-landed.png"))
         browser.close()
+
+
+def test_list_scene_cites_open_their_lines_on_github(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import files_url, render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, picks = _groups_change()
+    board["scenes"].append(
+        {
+            "type": "list",
+            "big": "Names",
+            "label": "Cited names",
+            "code": True,
+            "items": [{"text": w, "cite": f"{p}:{n}"} for p, n, w in picks],
+            "say": ["Both names come from added lines."],
+            "cues": [{"at": [0, 0.0], "do": "items", "step": 0.3}],
+        }
+    )
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+    owner_repo, number = str(m["pr"]).split("#")
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        context.route("https://github.com/**", lambda route: route.fulfill(body="github"))
+        page = context.new_page()
+        page.goto((tmp_path / "page.html").as_uri())
+        page.locator("#strip button").nth(2).click()
+        page.wait_for_function("document.querySelectorAll('.list .c a').length === 2")
+        links = page.locator(".list .c a")
+        hrefs = [links.nth(i).get_attribute("href") for i in range(links.count())]
+        assert hrefs == [files_url(owner_repo, number, p, n) for p, n, _ in picks]
+        assert [links.nth(i).inner_text() for i in range(2)] == [
+            f"{p.rsplit('/', 1)[-1]}:{n}" for p, n, _ in picks
+        ]
+        page.screenshot(path=str(tmp_path / "list-cites.png"))
+        browser.close()

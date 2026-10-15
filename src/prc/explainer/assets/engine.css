@@ -15,6 +15,7 @@ body.video .emount { width: 1920px; height: 1080px; }
 .emount .ecap code { font-size: 0.84em; color: #F0AC5F; }
 .emount .efoot { position: absolute; left: 64px; bottom: 34px; font: 20px ui-monospace, Menlo, monospace; color: #4F5868; z-index: 5; letter-spacing: 0.01em; }
 .emount .efoot a { color: inherit; text-decoration: none; }
+.emount .list .c a, .emount .rc .cite a { color: inherit; text-decoration: none; }
 .emount .ebar { position: absolute; left: 0; bottom: 0; height: 6px; background: #F0AC5F; z-index: 6; }
 
 .title-wrap { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 1560px; text-align: center; }

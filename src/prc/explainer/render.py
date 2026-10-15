@@ -156,10 +156,15 @@ def fill(
                     f"+ {rest} more" if s.get("big") == "{tests_added}" and rest > 0 else None
                 )
             s["big"] = s.get("big", "").format(**values)
+        for it in s.get("items", []) if s["type"] == "list" else []:
+            it["url"] = _line_url(owner_repo, number, it["cite"])
         if s["type"] == "receipt":
             s["verdict"] = facts["verdicts"][i]
             s["footer"] = ""
             s["footer_parts"] = []
+            for r in s["rows"]:
+                if "line" in r:
+                    r["url"] = _line_url(owner_repo, number, r["line"])
         if s["type"] == "stats":
             for c in s["cards"]:
                 c["value"] = c["value"].format(**values)
@@ -206,6 +211,12 @@ def fill(
                     "url": files_url(owner_repo, number, s["file"]),
                 },
             ]
+
+
+def _line_url(owner_repo: str, number: str, cite: str) -> str:
+    """GitHub Files-view link for a "path:n" cite; a negative n is a removed line."""
+    path, n = cite.rsplit(":", 1)
+    return files_url(owner_repo, number, path, abs(int(n)), int(n) < 0)
 
 
 def join_gate(board: dict[str, Any], m: dict[str, Any], out: Path) -> None:

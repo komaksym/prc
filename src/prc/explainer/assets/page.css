@@ -57,8 +57,8 @@ table.hk tr.hk-del .hk-s { color: #FC6255; }
 table.hk tr.hk-hit { box-shadow: inset 3px 0 #F0AC5F; background: #3A2E1A; }
 
 #scale .pg-hit { cursor: pointer; border-radius: 8px; }
-#scale .efoot a { color: #8A93A6; text-decoration: underline; text-decoration-color: #4F5868; }
-#scale .efoot a:hover { color: #F0AC5F; }
+#scale .efoot a, #scale .list .c a, #scale .rc .cite a { color: #8A93A6; text-decoration: underline; text-decoration-color: #4F5868; }
+#scale .efoot a:hover, #scale .list .c a:hover, #scale .rc .cite a:hover { color: #F0AC5F; }
 #scale .meta a { text-decoration: underline; text-decoration-color: #4F5868; }
 #scale .meta a:hover { color: #F0AC5F; }
 #scale .pg-hit:hover { outline: 4px solid #F0AC5F88; outline-offset: 4px; }

@@ -13,6 +13,7 @@
   const rgba = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a.toFixed(3)})`;
   const measure = (() => { const cx = document.createElement('canvas').getContext('2d'); return (text, font) => { cx.font = font; return cx.measureText(text || '').width; }; })();
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const link = (text, url) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
   const fmt = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
   const NS = 'http://www.w3.org/2000/svg';
   const S = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs || {}) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
@@ -452,7 +453,7 @@
     const wrap = D('list', null, root);
     const head = D('head', `<span class="big" style="color:${TONE[s.tone || 'good']}">${esc(s.big)}</span><span class="lbl">${esc(s.label)}</span>`, wrap);
     const c = (s.cues || []).find(q => q.do === 'items'), step = c.step || 0.3;
-    const items = s.items.map((it, i) => ({ el: D('item', `<span class="ok" style="color:${TONE[s.tone || 'good']}">${esc(s.mark || '✓')}</span><span>${s.code ? `<code>${esc(it.text)}</code>` : esc(it.text)}</span><span class="c">${esc(it.cite.split('/').pop())}</span>`, wrap), at: c.t + i * step }));
+    const items = s.items.map((it, i) => ({ el: D('item', `<span class="ok" style="color:${TONE[s.tone || 'good']}">${esc(s.mark || '✓')}</span><span>${s.code ? `<code>${esc(it.text)}</code>` : esc(it.text)}</span><span class="c">${link(it.cite.split('/').pop(), it.url)}</span>`, wrap), at: c.t + i * step }));
     if (s.more) items.push({ el: D('more', esc(s.more), wrap), at: c.t + items.length * step });
     return t => {
       head.style.opacity = prog(t, s.start + 0.15, 0.5);
@@ -466,7 +467,7 @@
     const box = D('rows', null, rc);
     const c = (s.cues || []).find(q => q.do === 'rows'), step = c.step || 0.8;
     const rows = s.rows.map((r, i) => ({
-      el: D('row', `<div class="kind">${esc(r.kind)}</div><div class="line"><div class="txt${r.prose ? ' prose' : ''}">${esc(r.text)}</div><div class="cite">${esc(r.line || '')}</div></div>`, box),
+      el: D('row', `<div class="kind">${esc(r.kind)}</div><div class="line"><div class="txt${r.prose ? ' prose' : ''}">${esc(r.text)}</div><div class="cite">${link(r.line || '', r.url)}</div></div>`, box),
       at: c.t + i * step,
     }));
     const ver = D('verdict', esc(s.verdict[0]), claim);
