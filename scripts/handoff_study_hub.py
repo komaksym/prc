@@ -6,7 +6,7 @@ the agent session so it survives after the turn ends (detached via
 start_new_session, which calls setsid; equivalent to a background nohup
 pidfile launch). Wait until the exact printed URL answers from the host.
 Load that exact URL in a real browser (agent-browser CLI, isolated session)
-and require the hub to render all eight PR sections. Drive read-only checks
+and require the hub to render one PR section per roster.json entry. Drive read-only checks
 (titles, GitHub hrefs, artifact answers) that must not mutate notes.json.
 Hold a silent preconnect socket open during the check and require the hub
 to keep answering afterwards. Write a handoff record under the record dir
@@ -55,6 +55,18 @@ def _pick_free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.bind(("127.0.0.1", 0))
         return int(sock.getsockname()[1])
+
+
+def _expected_pr_count(notes_dir: Path) -> int:
+    """Return how many PR sections the hub must render: one per roster entry."""
+    roster_path = notes_dir / "roster.json"
+    try:
+        roster = json.loads(roster_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as err:
+        _refuse(f"cannot read roster {roster_path}: {err}")
+    if not isinstance(roster, list) or not roster:
+        _refuse(f"roster {roster_path} lists no PRs")
+    return len(roster)
 
 
 def _is_alive(pid: int) -> bool:
@@ -259,6 +271,7 @@ def main() -> int:
     assert pid is not None and url is not None and log_path is not None
     checks: dict[str, dict[str, Any]] = {}
     page_errors: list[str] = []
+    expected = _expected_pr_count(notes_dir)
 
     def _check(name: str, passed: bool, detail: str) -> None:
         checks[name] = {"pass": bool(passed), "detail": detail[:500]}
@@ -272,8 +285,8 @@ def main() -> int:
         prs = state.get("prs", []) if isinstance(state, dict) else []
         _check(
             "server_answers",
-            status == 200 and len(prs) == 8,
-            f"GET /api/state -> {status} with {len(prs)} PRs",
+            status == 200 and len(prs) == expected,
+            f"GET /api/state -> {status} with {len(prs)} PRs (roster lists {expected})",
         )
     except Exception as err:
         prs = []
@@ -323,11 +336,17 @@ def main() -> int:
             screenshot_path = record_dir / f"handoff-{stamp}.png"
             b.run("set", "viewport", "1440", "900")
             b.run("open", url)
-            b.run("wait", "--fn", 'document.querySelectorAll("section[data-pr]").length >= 8')
+            b.run(
+                "wait",
+                "--fn",
+                f'document.querySelectorAll("section[data-pr]").length >= {expected}',
+            )
             section_count = b.js('document.querySelectorAll("section[data-pr]").length')
             first_title = b.js('document.querySelector("section[data-pr] h2").textContent')
             titles_ok = (
-                section_count == 8 and isinstance(first_title, str) and len(first_title.strip()) > 0
+                section_count == expected
+                and isinstance(first_title, str)
+                and len(first_title.strip()) > 0
             )
             _check(
                 "hub_renders",
@@ -340,7 +359,7 @@ def main() -> int:
             )
             hrefs_ok = (
                 isinstance(hrefs, list)
-                and len(hrefs) == 8
+                and len(hrefs) == expected
                 and all(
                     isinstance(h, str) and h.startswith("https://github.com/") and "/pull/" in h
                     for h in hrefs
@@ -354,8 +373,12 @@ def main() -> int:
                 code, _ = _http_get(url + pr["artifacts"]["infographic"], timeout=10.0)
                 if code != 200:
                     missing += 1
-            artifacts_ok = missing == 0 and len(prs) == 8
-            _check("artifacts_answer", artifacts_ok, f"{8 - missing}/8 infographics answer")
+            artifacts_ok = missing == 0 and len(prs) == expected
+            _check(
+                "artifacts_answer",
+                artifacts_ok,
+                f"{len(prs) - missing}/{expected} infographics answer",
+            )
             errs = b.errors()
             page_errors.extend(errs)
             b.run("screenshot", str(screenshot_path))
