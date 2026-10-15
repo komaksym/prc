@@ -157,6 +157,120 @@ def test_artifacts_serve_from_live_output_dir(tmp_path: Path) -> None:
         httpd.server_close()
 
 
+LIVE_PAGE_HTML = (
+    "<!doctype html><html><head><meta charset=utf-8><title>live page</title>"
+    "<style>body { color: rgb(1, 2, 3); }</style></head>"
+    "<body><img id=info src='infographic.png'>"
+    "<script>document.body.dataset.ran = 'yes';</script></body></html>"
+)
+
+
+def test_hub_served_page_runs_its_inline_script_style_and_image(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    notes_dir = make_notes_dir(tmp_path)
+    (tmp_path / "outputs" / "v3-p1a" / "page.html").write_text(LIVE_PAGE_HTML, encoding="utf-8")
+    httpd, url = serve_live(notes_dir)
+    try:
+        with sync_playwright() as driver:
+            browser = driver.chromium.launch()
+            page = browser.new_page()
+            page.goto(url + "/artifacts/v3-p1a/page.html")
+            page.wait_for_function("document.getElementById('info').complete")
+            assert page.evaluate("document.body.dataset.ran") == "yes"
+            assert page.evaluate("getComputedStyle(document.body).color") == "rgb(1, 2, 3)"
+            assert page.evaluate("document.getElementById('info').naturalWidth") == 1
+            browser.close()
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+SPOTCHECK = [
+    {
+        "id": "s1",
+        "text": "The workflow runs every night at 04:30.",
+        "label": "supported",
+        "reason": "The cron line is 30 2 * * *, which is 04:30 in Warsaw.",
+        "evidence": [{"text": "a.yml:5", "url": "https://github.com/o/r/pull/1/files#diff-aR5"}],
+    },
+    {
+        "id": "s2",
+        "text": "The script deletes old events.",
+        "label": "unsupported",
+        "reason": "No line deletes events.",
+        "evidence": [],
+    },
+]
+
+
+def test_spotcheck_verdicts_and_note_survive_restart(tmp_path: Path) -> None:
+    notes_dir = make_notes_dir(tmp_path)
+    (notes_dir / "spotcheck.json").write_text(json.dumps(SPOTCHECK), encoding="utf-8")
+    httpd, url = serve_live(notes_dir)
+    try:
+        status, body, _ = http_get(url, "/")
+        page = body.decode()
+        assert status == 200
+        assert "The script deletes old events." in page
+        assert 'href="https://github.com/o/r/pull/1/files#diff-aR5"' in page
+        assert http_post(url, "/api/verdict", {"id": "s2", "verdict": "wrong"})[0] == 200
+        assert http_post(url, "/api/notes", {"id": "spotcheck", "text": "s2 is fine"})[0] == 200
+        assert http_post(url, "/api/verdict", {"id": "s9", "verdict": "right"})[0] == 404
+        assert http_post(url, "/api/verdict", {"id": "s1", "verdict": "maybe"})[0] == 400
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+    httpd, url = serve_live(notes_dir)
+    try:
+        state = json.loads(http_get(url, "/api/state")[1])
+        assert state["verdicts"] == {"s2": "wrong"}
+        assert state["notes"]["spotcheck"]["text"] == "s2 is fine"
+        assert [pr["id"] for pr in state["prs"]] == ["v3-p1a", "v3-p1b"]
+        assert [item["id"] for item in state["spotcheck"]] == ["s1", "s2"]
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_hub_without_spotcheck_has_no_spotcheck_section(tmp_path: Path) -> None:
+    httpd, url = serve_live(make_notes_dir(tmp_path))
+    try:
+        page = http_get(url, "/")[1].decode()
+        state = json.loads(http_get(url, "/api/state")[1])
+        assert "Spot-check" not in page
+        assert state["spotcheck"] == []
+        assert "spotcheck" not in state["notes"]
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_spotcheck_button_click_persists_after_reload(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    notes_dir = make_notes_dir(tmp_path)
+    (notes_dir / "spotcheck.json").write_text(json.dumps(SPOTCHECK), encoding="utf-8")
+    httpd, url = serve_live(notes_dir)
+    try:
+        with sync_playwright() as driver:
+            browser = driver.chromium.launch()
+            page = browser.new_page()
+            page.goto(url)
+            page.locator("[data-verdict-for='s2'][data-verdict='wrong']").click()
+            page.wait_for_function(
+                "document.querySelector(\"[data-verdict-saved='s2']\").textContent === 'Saved'"
+            )
+            page.reload()
+            pressed = page.locator("[data-verdict-for='s2'][aria-pressed='true']")
+            assert pressed.get_attribute("data-verdict") == "wrong"
+            assert page.locator("[data-verdict-for='s1'][aria-pressed='true']").count() == 0
+            browser.close()
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
 def test_notes_reject_unknown_pr(tmp_path: Path) -> None:
     notes_dir = make_notes_dir(tmp_path)
     httpd, url = serve_live(notes_dir)

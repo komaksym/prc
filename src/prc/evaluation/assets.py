@@ -12,6 +12,9 @@ def notes_page(state: dict[str, Any]) -> str:
         pr_id = pr["id"]
         note = state["notes"].get(pr_id, {})
         sections.append(_pr_section(pr, str(note.get("text", ""))))
+    if state.get("spotcheck"):
+        spot_note = str(state["notes"].get("spotcheck", {}).get("text", ""))
+        sections.append(_spotcheck_section(state["spotcheck"], state["verdicts"], spot_note))
     body = chr(10).join(sections)
     return (
         "<!doctype html>"
@@ -38,6 +41,14 @@ def notes_page(state: dict[str, Any]) -> str:
         "background:#000}"
         "#error{color:#ff9c90;background:#2d1416;padding:14px}"
         ".saved{color:#56d364;min-height:1.4em}"
+        "ol.spot{padding-left:24px}ol.spot li{margin:0 0 22px}"
+        ".sent{font-size:18px;margin:0 0 6px}.judge{margin:0 0 6px;color:#c9d1d9}"
+        ".cites{display:flex;flex-wrap:wrap;gap:4px 12px}"
+        ".cites a{color:#c9e3ff;overflow-wrap:anywhere}"
+        ".verdict{display:flex;gap:10px;align-items:center;margin-top:8px}"
+        ".verdict button{font:inherit;border:1px solid #3d444d;border-radius:8px;"
+        "padding:7px 14px;background:#21262d;color:#e6edf3;cursor:pointer}"
+        ".verdict button[aria-pressed=true]{background:#1f6feb;border-color:#1f6feb}"
         "[hidden]{display:none!important}"
         "@media(max-width:600px){main{padding:0 14px}.panel{padding:17px}}"
         "</style></head><body><main>"
@@ -68,7 +79,75 @@ def notes_page(state: dict[str, Any]) -> str:
         'document.querySelectorAll("textarea[data-notes-id]").forEach('
         'function(box){box.addEventListener("input",function(){'
         'queue(box.getAttribute("data-notes-id"));});});'
+        'document.querySelectorAll("button[data-verdict-for]").forEach(function(btn){'
+        'btn.addEventListener("click",function(){'
+        'var id=btn.getAttribute("data-verdict-for");'
+        'var pick=btn.getAttribute("aria-pressed")==="true"?"":btn.getAttribute("data-verdict");'
+        'var mark=document.querySelector("[data-verdict-saved=\'"+id+"\']");'
+        'mark.textContent="Saving...";'
+        'fetch("/api/verdict",{method:"POST",headers:{"Content-Type":"application/json"},'
+        "body:JSON.stringify({id:id,verdict:pick})}).then(function(r){"
+        'if(!r.ok){throw new Error("verdict save failed");}'
+        'document.querySelectorAll("[data-verdict-for=\'"+id+"\']").forEach(function(b){'
+        'b.setAttribute("aria-pressed",String(b.getAttribute("data-verdict")===pick));});'
+        'mark.textContent="Saved";}).catch(function(e){showError(e.message);});});});'
         "</script></body></html>"
+    )
+
+
+_JUDGE_LABELS = {
+    "supported": "supported",
+    "partly": "partly supported",
+    "unsupported": "not supported",
+    "not_a_claim": "not a claim",
+}
+
+
+def _spotcheck_section(items: list[dict[str, Any]], verdicts: dict[str, str], note: str) -> str:
+    rows = []
+    for item in items:
+        sid = html.escape(str(item["id"]), quote=True)
+        label = _JUDGE_LABELS.get(str(item["label"]), str(item["label"]))
+        cites = "".join(
+            '<a href="' + html.escape(str(ev["url"]), quote=True) + '" target="_blank" '
+            'rel="noopener noreferrer">' + html.escape(str(ev["text"])) + "</a>"
+            for ev in item.get("evidence", [])
+        )
+        buttons = "".join(
+            '<button type="button" data-verdict-for="' + sid + '" data-verdict="' + pick + '" '
+            'aria-pressed="'
+            + str(verdicts.get(str(item["id"])) == pick).lower()
+            + '">'
+            + text
+            + "</button>"
+            for pick, text in (("right", "Judge right"), ("wrong", "Judge wrong"))
+        )
+        rows.append(
+            '<li data-spot="' + sid + '"><p class="sent">' + html.escape(str(item["text"])) + "</p>"
+            '<p class="judge"><b>Judge: '
+            + html.escape(label)
+            + ".</b> "
+            + html.escape(str(item["reason"]))
+            + "</p>"
+            + ('<p class="cites">' + cites + "</p>" if cites else "")
+            + '<div class="verdict">'
+            + buttons
+            + '<span class="saved" data-verdict-saved="'
+            + sid
+            + '"></span></div></li>'
+        )
+    return (
+        '<section class="panel" id="spotcheck"><h2>Spot-check the judge</h2>'
+        '<p class="muted">A judge model labeled each sentence in the PRC outputs. '
+        "These are " + str(len(items)) + " of them: the flagged ones plus random ones. "
+        "The model that wrote each sentence is hidden. Read the sentence and the reason. "
+        "Open a cited line when you need it. Then mark the judge right or wrong.</p>"
+        '<ol class="spot">' + "".join(rows) + "</ol>"
+        '<label>Notes on the judge<textarea id="notes-spotcheck" data-notes-id="spotcheck">'
+        + html.escape(note)
+        + "</textarea></label>"
+        '<p class="saved" id="saved-spotcheck" data-saved-for="spotcheck">Saved</p>'
+        "</section>"
     )
 
 

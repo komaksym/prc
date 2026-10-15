@@ -7,8 +7,9 @@ Live mode (--url) drives a supervised hub instead, and --cleanup-notes
 clears every test note afterwards so the operator starts from empty boxes.
 
 For every PR the driver asserts the GitHub href, opens the infographic
-(naturalWidth>0), plays the video (currentTime>1), opens page.html with no
-console errors, types a note, reloads, and requires the note to persist.
+(naturalWidth>0), plays the video (currentTime>1), opens page.html and
+requires its engine to run (scene strip built, stage styled) with no console
+errors, types a note, reloads, and requires the note to persist.
 Writes checks.json plus one screenshot per PR. Exit 0 PASS, 1 FAIL.
 """
 
@@ -79,6 +80,9 @@ def api_post(url: str, path: str, payload: dict[str, Any], origin: str) -> Any:
 def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
     state = api_get(url, "/api/state")
     prs = state["prs"]
+    spot = state.get("spotcheck", [])
+    prior_verdicts = dict(state.get("verdicts", {}))
+    prior_spot_note = state["notes"].get("spotcheck", {}).get("text", "")
     if len(prs) < 1:
         raise Fail("hub lists no PRs")
     raw = subprocess.run(
@@ -159,12 +163,17 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
             b.run(
                 "wait",
                 "--fn",
-                "document.title.length>0",
+                'document.querySelectorAll("#strip button").length>0',
             )
+            scenes = b.js('document.querySelectorAll("#strip button").length')
+            styled = b.js('getComputedStyle(document.getElementById("stage")).position')
+            if styled == "static":
+                raise Fail(f"{pr_id}: page.html stage is unstyled; its inline CSS did not apply")
             page_errors = b.errors()
             if page_errors:
                 raise Fail(f"{pr_id}: page.html errors: " + page_errors[0][:200])
-            record(pr_id + "-page", "loads with no console errors")
+            shot(pr_id + "-page")
+            record(pr_id + "-page", f"engine built {scenes} scenes, stage {styled}, no errors")
             b.run("open", url)
             b.run("scrollintoview", "#sec-" + pr_id)
             shot(pr_id + "-artifacts")
@@ -186,6 +195,48 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
                 raise Fail(f"{pr_id}: note lost on reload ({value!r})")
             record(pr_id + "-note-persist", "note survives reload")
         shot("99-notes")
+        if spot:
+            first = spot[0]["id"]
+            b.run("scrollintoview", "#spotcheck")
+            shown = b.js('document.querySelectorAll("#spotcheck li[data-spot]").length')
+            if shown != len(spot):
+                raise Fail(f"spot-check shows {shown} of {len(spot)} sentences")
+            cites = b.js(
+                'Array.from(document.querySelectorAll("#spotcheck .cites a"))'
+                ".map(function(a){return a.href;})"
+            )
+            if not all(str(h).startswith("https://github.com/") for h in cites):
+                raise Fail("a spot-check cite is not a github.com link")
+            spill = b.js(
+                '(function(){var edge=document.getElementById("spotcheck")'
+                ".getBoundingClientRect().right;"
+                'return Array.from(document.querySelectorAll("#spotcheck .cites a"))'
+                ".filter(function(a){return a.getBoundingClientRect().right>edge;}).length;})()"
+            )
+            if spill:
+                raise Fail(f"{spill} spot-check cites run past the section edge")
+            record("spotcheck-render", f"{shown} sentences, {len(cites)} GitHub cites")
+            b.run("click", f'[data-verdict-for="{first}"][data-verdict="wrong"]')
+            b.run(
+                "wait",
+                "--fn",
+                f'document.querySelector(\'[data-verdict-saved="{first}"]\').textContent==="Saved"',
+            )
+            b.run("fill", "#notes-spotcheck", "spot-check note")
+            b.run(
+                "wait", "--fn", 'document.getElementById("saved-spotcheck").textContent==="Saved"'
+            )
+            b.run("open", url)
+            b.run("scrollintoview", "#spotcheck")
+            pressed = b.js(
+                f'document.querySelector(\'[data-verdict-for="{first}"][aria-pressed="true"]\')'
+                ".getAttribute('data-verdict')"
+            )
+            note = b.js('document.getElementById("notes-spotcheck").value')
+            if pressed != "wrong" or note != "spot-check note":
+                raise Fail(f"spot-check lost on reload (verdict {pressed!r}, note {note!r})")
+            record("spotcheck-persist", "verdict and note survive reload")
+            shot("98-spotcheck")
         state = api_get(url, "/api/state")
         for pr in prs:
             if state["notes"][pr["id"]]["text"] != "note for " + pr["id"]:
@@ -209,6 +260,14 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
         for pr in prs:
             if state["notes"][pr["id"]]["text"] != "":
                 raise Fail(pr["id"] + ": cleanup left a note behind")
+        if spot:
+            first = spot[0]["id"]
+            api_post(
+                url, "/api/verdict", {"id": first, "verdict": prior_verdicts.get(first, "")}, url
+            )
+            api_post(url, "/api/notes", {"id": "spotcheck", "text": prior_spot_note}, url)
+            if api_get(url, "/api/state")["verdicts"] != prior_verdicts:
+                raise Fail("cleanup did not restore the spot-check verdicts")
     return {"prs": len(prs), "checks": checks}
 
 
@@ -235,6 +294,8 @@ def main() -> int:
             scratch = Path(tempfile.mkdtemp(prefix="notes-verify-"))
             shutil.copy(notes_source / "roster.json", scratch / "roster.json")
             shutil.copy(notes_source / "prepared_root", scratch / "prepared_root")
+            if (notes_source / "spotcheck.json").is_file():
+                shutil.copy(notes_source / "spotcheck.json", scratch / "spotcheck.json")
             httpd, url = notes_mod.serve(scratch)
             thread = threading.Thread(target=httpd.serve_forever, daemon=True)
             thread.start()

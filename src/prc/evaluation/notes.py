@@ -35,6 +35,8 @@ _ALLOWED_SUFFIXES = frozenset(
 )
 
 _ARTIFACT_FILES = ("infographic.png", "video.mp4", "page.html")
+SPOTCHECK_ID = "spotcheck"
+VERDICTS = frozenset({"right", "wrong", ""})
 
 
 def _utcnow() -> str:
@@ -76,25 +78,37 @@ class NotesStore:
             pr_id = str(entry["id"])
             identity = str(entry["pr_identity"])
             self.prs.append({"id": pr_id, "pr_identity": identity, "title": str(entry["title"])})
+        spot_path = self.notes_dir / "spotcheck.json"
+        self.spotcheck: list[dict[str, Any]] = (
+            list(_load_json(spot_path)) if spot_path.is_file() else []
+        )
+        self.box_ids = [pr["id"] for pr in self.prs] + ([SPOTCHECK_ID] if self.spotcheck else [])
         self.notes_path = self.notes_dir / "notes.json"
         self._lock = threading.Lock()
         self.notes: dict[str, dict[str, str]] = {}
+        self.verdicts: dict[str, str] = {}
         self._read_notes()
         self.validate_outputs()
 
     def _read_notes(self) -> None:
         if not self.notes_path.is_file():
-            self.notes = {pr["id"]: {"text": "", "updated_at": ""} for pr in self.prs}
+            self.notes = {box: {"text": "", "updated_at": ""} for box in self.box_ids}
             return
         raw = _load_json(self.notes_path)
         if not isinstance(raw, dict):
             raise NotesError("notes.json must be an object")
         self.notes = {}
-        for pr in self.prs:
-            item = raw.get(pr["id"], {})
+        for box in self.box_ids:
+            item = raw.get(box, {})
             text = item.get("text", "") if isinstance(item, dict) else ""
             stamp = item.get("updated_at", "") if isinstance(item, dict) else ""
-            self.notes[pr["id"]] = {"text": str(text), "updated_at": str(stamp)}
+            self.notes[box] = {"text": str(text), "updated_at": str(stamp)}
+        known = {str(item["id"]) for item in self.spotcheck}
+        verdicts = raw.get("verdicts", {})
+        if isinstance(verdicts, dict):
+            self.verdicts = {
+                str(k): str(v) for k, v in verdicts.items() if k in known and v in VERDICTS and v
+            }
 
     def output_dir(self, pr_id: str) -> Path:
         identity_path = self.prepared_root / pr_id / "render-identity.json"
@@ -129,7 +143,15 @@ class NotesStore:
                     },
                 }
             )
-        return {"prs": prs, "notes": {k: dict(v) for k, v in self.notes.items()}}
+        return {
+            "prs": prs,
+            "notes": {k: dict(v) for k, v in self.notes.items()},
+            "spotcheck": self.spotcheck,
+            "verdicts": dict(self.verdicts),
+        }
+
+    def _write(self) -> None:
+        _atomic_write_json(self.notes_path, {**self.notes, "verdicts": self.verdicts})
 
     def save_note(self, pr_id: str, text: str) -> dict[str, str]:
         if not isinstance(text, str):
@@ -138,8 +160,21 @@ class NotesStore:
             raise NotesError("unknown PR id: " + pr_id)
         with self._lock:
             self.notes[pr_id] = {"text": text, "updated_at": _utcnow()}
-            _atomic_write_json(self.notes_path, self.notes)
+            self._write()
             return dict(self.notes[pr_id])
+
+    def save_verdict(self, sentence_id: str, verdict: str) -> None:
+        """Record whether the judge labeled one spot-check sentence right; "" clears it."""
+        if sentence_id not in {str(item["id"]) for item in self.spotcheck}:
+            raise KeyError(sentence_id)
+        if verdict not in VERDICTS:
+            raise NotesError("verdict must be right, wrong, or empty")
+        with self._lock:
+            if verdict:
+                self.verdicts[sentence_id] = verdict
+            else:
+                self.verdicts.pop(sentence_id, None)
+            self._write()
 
 
 def _resolve_allowed(root: Path, relative: str) -> Path | None:
@@ -226,6 +261,19 @@ def serve(notes_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
                     return
                 self._json(200, {"id": pr_id, **saved})
                 return
+            if path == "/api/verdict":
+                payload = self._read_body()
+                sentence_id = str(payload.get("id", ""))
+                try:
+                    store.save_verdict(sentence_id, str(payload.get("verdict", "")))
+                except KeyError:
+                    self._json(404, {"error": "unknown spot-check sentence: " + sentence_id})
+                    return
+                except NotesError as error:
+                    self._json(400, {"error": str(error)})
+                    return
+                self._json(200, {"id": sentence_id, "verdict": store.verdicts.get(sentence_id, "")})
+                return
             self._json(404, {"error": "not found"})
 
         def _get(self) -> None:
@@ -244,7 +292,7 @@ def serve(notes_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
             if path.startswith("/artifacts/"):
                 rest = path[len("/artifacts/") :]
                 pr_id, _, relative = rest.partition("/")
-                if not pr_id or not relative or pr_id not in store.notes:
+                if not pr_id or not relative or pr_id not in {pr["id"] for pr in store.prs}:
                     self._json(404, {"error": "not found"})
                     return
                 try:
@@ -302,9 +350,9 @@ def serve(notes_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
                 if candidate.suffix in (".html", ".htm"):
                     self.send_header(
                         "Content-Security-Policy",
-                        "default-src none; script-src self unsafe-inline; "
-                        "style-src self unsafe-inline; img-src self data:; "
-                        "media-src self; font-src self data:; "
+                        "default-src 'none'; script-src 'self' 'unsafe-inline'; "
+                        "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+                        "media-src 'self'; font-src 'self' data:; "
                         "sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox",
                     )
                     self.send_header("X-Frame-Options", "SAMEORIGIN")
