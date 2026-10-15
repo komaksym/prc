@@ -32,6 +32,8 @@ SHORT_TOKEN = 2
 ICON_HEIGHT = 1.6
 GLYPH_WIDTH = 1.2
 GLYPH_TOKEN = 3
+BULLET_HEIGHT = 0.75
+CLIPPED_PREFIX = 3
 CONF_FLOOR = 70
 WINDOW = 6
 MAX_WORDS = 80
@@ -975,6 +977,11 @@ def _misread(
     if len(others) >= 2 and agree * 2 > len(others):
         return True
     digit = _has_digit(token)
+    if not digit and len(token) >= CLIPPED_PREFIX:
+        # One read clips a drawn word ("PROOF" read as "PROO") that another read sees whole.
+        whole = (t for r in others for t in at_place(r, CONF_FLOOR))
+        if any(t != token and t.startswith(token) and known(t) for t in whole):
+            return True
     if digit and (len(token) > 1 or icon == "tall"):
         # Longer codes stay exact, and a tall digit-like icon stroke beside text
         # (the "9" in the square-glyph tests) stays invented: only a lone single
@@ -995,6 +1002,34 @@ def _misread(
 def _glyph(box: Box) -> bool:
     """A box about as wide as it is tall. Printed words of two or more letters are wider."""
     return box[2] <= GLYPH_WIDTH * box[3]
+
+
+def _bullets(words: tuple[OcrWord, ...], known: Callable[[str], bool]) -> set[int]:
+    """Ids of list bullet dots read as one letter (a "●" read as "e" in every mode).
+
+    The dot is the first confident word on its text line, a square box at most
+    BULLET_HEIGHT of the height of the word after it, and that word is a brief word.
+    """
+    found: set[int] = set()
+    for line in _text_lines(words):
+        sure = [w for w in line if w.conf >= CONF_FLOOR and tokenize(w.text)]
+        if len(sure) < 2:
+            continue
+        dot, item = sure[0], sure[1]
+        toks = tokenize(dot.text)
+        after = tokenize(item.text)
+        if (
+            dot.box
+            and item.box
+            and len(toks) == 1
+            and len(toks[0]) == 1
+            and not _has_digit(toks[0])
+            and _glyph(dot.box)
+            and dot.box[3] <= BULLET_HEIGHT * item.box[3]
+            and known(after[0])
+        ):
+            found.add(id(dot))
+    return found
 
 
 def score_ocr(
@@ -1043,6 +1078,7 @@ def score_ocr(
         scored.append(confs)
         owners.append(held)
     rejoined = [_rejoined(read.words, prose) for read in reads]
+    bullets = [_bullets(read.words, known) for read in reads]
     detail: dict[str, Any] = {
         "allowed": len(allowed),
         "brief_lines": len(br.lines),
@@ -1067,6 +1103,8 @@ def score_ocr(
                 good = _allowed_neighbor(tok, pos, ocr, prose)
             if not good:
                 good = owners[idx][pos] in rejoined[idx]
+            if not good:
+                good = owners[idx][pos] in bullets[idx]
             if not good:
                 good = _misread(tok, box, idx, reads, known, icon)
             if not good:
@@ -1381,6 +1419,8 @@ def read_png(path: Path) -> bytes:
     if not raw.startswith(_PNG_MAGIC):
         raise ValueError(f"infographic must be a PNG: {path}")
     return raw
+
+
 def _halve(box: Box) -> Box | None:
     """A doubled-read word box back in base-image pixels, or None when it vanishes."""
     left, top, width, height = (part // 2 for part in box)
