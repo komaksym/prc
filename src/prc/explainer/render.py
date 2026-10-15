@@ -192,6 +192,9 @@ def fill(
                     continue
                 hang, breaks = wrap_row(r["tokens"], 72 - s["gutter"])
                 r["hang"], r["breaks"] = hang, breaks
+                r["url"] = files_url(
+                    owner_repo, number, s["file"], int(r["num"]), r.get("op") == "-"
+                )
             s["layout"] = diff_layout(s)
             s["lang"] = {
                 ".py": "py",

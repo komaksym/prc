@@ -12,11 +12,28 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any
 
 from prc.explainer.preflight import line_coverage
+
+_URL = re.compile(r"https?://[^\s'\"<>`]+[^\s'\"<>`.,;:)\]}]")
+
+
+def _code_html(text: str, line_url: str) -> str:
+    """Escape one code line; a URL in it links to the line on GitHub, since it is a value, not a page."""
+    out, end = [], 0
+    for found in _URL.finditer(text):
+        out += [
+            html.escape(text[end : found.start()]),
+            f"<a href='{html.escape(line_url)}' target='_blank' rel='noopener'>"
+            f"{html.escape(found.group())}</a>",
+        ]
+        end = found.end()
+    return "".join(out) + html.escape(text[end:])
+
 
 ASSETS = Path(__file__).resolve().parent / "assets"
 FILES_LISTED = 6
@@ -34,22 +51,26 @@ def _key(op: str, n: int) -> str:
     return ("-" if op == "-" else "+") + str(n)
 
 
-def _hunk_html(h: dict[str, Any]) -> str:
+def _hunk_html(h: dict[str, Any], owner_repo: str, number: str, path: str) -> str:
     rows = []
     for ln in h.get("lines", []):
         op = ln.get("op") or " "
         num = ln.get("old") if op == "-" else ln.get("new")
         cls = {"+": "hk-add", "-": "hk-del"}.get(op, "hk-ctx")
         sign = {"+": "+", "-": "−"}.get(op, "")
+        text = _code_html(
+            str(ln.get("text", "")), files_url(owner_repo, number, path, num, op == "-")
+        )
         rows.append(
             f"<tr class='{cls}' data-k='{_key(op, num)}'><td class='hk-n'>{num}</td>"
-            f"<td class='hk-s'>{sign}</td><td class='hk-t'>{html.escape(str(ln.get('text', '')))}</td></tr>"
+            f"<td class='hk-s'>{sign}</td><td class='hk-t'>{text}</td></tr>"
         )
     head = f"@@ −{h.get('old_start', '?')} +{h.get('new_start', '?')} @@"
     return f"<p class='hk-head'>{head}</p><table class='hk'><tbody>{''.join(rows)}</tbody></table>"
 
 
 def _hunks(m: dict[str, Any]) -> tuple[list[str], dict[tuple[str, str], int]]:
+    owner_repo, number = str(m["pr"]).split("#")
     hunks: list[str] = []
     where: dict[tuple[str, str], int] = {}
     for f in m.get("files", []):
@@ -59,7 +80,7 @@ def _hunks(m: dict[str, Any]) -> tuple[list[str], dict[tuple[str, str], int]]:
                 where[(f["path"], _key(op, ln.get("old") if op == "-" else ln.get("new")))] = len(
                     hunks
                 )
-            hunks.append(_hunk_html(h))
+            hunks.append(_hunk_html(h, owner_repo, number, f["path"]))
     return hunks, where
 
 

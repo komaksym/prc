@@ -128,6 +128,7 @@ body.video .emount { width: 1920px; height: 1080px; }
 .diff .code { position: relative; border: 2px solid #1F2738; border-radius: 16px; background: #0A0F1A; overflow: hidden; }
 .drow { position: absolute; left: 0; right: 0; display: flex; align-items: center; overflow: hidden; font: 25px/44px ui-monospace, "SF Mono", Menlo, monospace; color: #D5DBE5; white-space: pre; font-variant-ligatures: none; }
 .drow .mt { display: inline-block; }
+.drow a { color: inherit; text-decoration: none; }
 .drow .sg { flex: none; align-self: flex-start; width: 56px; text-align: center; font-weight: 700; }
 .drow .ln { flex: none; align-self: flex-start; color: #5B6475; font-size: 0.72em; text-align: right; padding-right: 12px; }
 .drow .tx { position: relative; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-right: 24px; }

@@ -15,6 +15,7 @@
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const link = (text, url) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
   const fmt = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+  const URL_RE = /https?:\/\/[^\s'"<>`]+[^\s'"<>`.,;:)\]}]/g;
   const NS = 'http://www.w3.org/2000/svg';
   const S = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs || {}) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
   const D = (cls, html, parent) => { const d = document.createElement('div'); if (cls) d.className = cls; if (html != null) d.innerHTML = html; if (parent) parent.appendChild(d); return d; };
@@ -545,10 +546,19 @@
     const digits = Math.max(1, ...s.rows.filter(r => r.num != null).map(r => String(r.num).length));
     const rows = s.rows.map((r, k) => {
       if (r.gap) return { r, k, el: D('drow gap', '<span class="sg"></span><span class="tx">⋯</span>', box), h: GH, t0: -Infinity, tin: -Infinity };
-      const parts = [];
-      (r.tokens || []).forEach((tok, idx) => {
+      const parts = [], toks = r.tokens || [];
+      // A URL in code is a value, not a page to visit, so it opens the line that defines it on GitHub.
+      // The highlighter splits a URL into many tokens, so one link spans every token that overlaps it; each token keeps its own .mt span.
+      const urls = [...toks.map(t => t.text).join('').matchAll(URL_RE)].map(m => ({ a: m.index, b: m.index + m[0].length, url: m[0] }));
+      let pos = 0;
+      toks.forEach((tok, idx) => {
         if ((r.breaks || []).includes(idx)) parts.push(`<br><span class="hang" style="display:inline-block;width:${r.hang || 0}ch"></span>`);
+        const end = pos + tok.text.length;
+        const u = urls.find(u => u.a < Math.max(end, pos + 1) && pos < u.b);
+        if (u && !u.open) { parts.push(`<a href="${esc(r.url || u.url)}" target="_blank" rel="noopener">`); u.open = true; }
         parts.push(`<span class="mt ${tok.cls || ''}${tok.chg ? ' chg' : ''}">${esc(tok.text)}</span>`);
+        if (u && end >= u.b) parts.push('</a>');
+        pos = end;
       });
       const el = D('drow', `<span class="ln" style="width:${digits + 1}ch;line-height:${RH}px">${r.num}</span><span class="sg">${r.op === '+' ? '+' : r.op === '-' ? '−' : ''}</span><span class="tx"><span class="ct">${parts.join('') || esc(r.text)}</span></span>`, box);
       const t0 = r.step ? stepAt[r.step] : -Infinity;

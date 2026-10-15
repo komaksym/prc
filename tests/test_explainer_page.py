@@ -224,6 +224,39 @@ def test_page_footer_receipts_open_their_lines_on_github(tmp_path: Path) -> None
         browser.close()
 
 
+def test_url_in_a_code_row_opens_its_line_on_github(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import files_url, render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    url = "https://mvgzdcqhdruhjoexbdqp.supabase.co"
+    m, board, line = _change()
+    line["text"] = f"base = os.environ.get('SUPABASE_URL') or '{url}'"
+    board["scenes"][1]["rows"][0]["text"] = line["text"]
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    page_html = render_page(board, m, tmp_path, 4.0, has_video=False)
+    data = _data(page_html)
+    hunk = data["hunks"][data["targets"][1][0]["hunk"]]
+    owner_repo, number = str(m["pr"]).split("#")
+    line_url = files_url(owner_repo, number, board["scenes"][1]["file"], line["new"])
+    assert f"<a href='{line_url}' target='_blank' rel='noopener'>{url}</a>" in hunk
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        page = context.new_page()
+        page.goto((tmp_path / "page.html").as_uri())
+        page.locator("#strip button").nth(1).click()
+        page.wait_for_function("document.querySelectorAll('.drow a').length > 0")
+        links = page.locator(".drow a")
+        assert [links.nth(i).get_attribute("href") for i in range(links.count())] == [line_url]
+        assert links.first.text_content() == url
+        browser.close()
+
+
 def test_arrow_points_from_source_edge_to_target_edge_and_renames_nothing(
     tmp_path: Path,
 ) -> None:
