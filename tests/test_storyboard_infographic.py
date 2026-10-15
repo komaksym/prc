@@ -231,13 +231,35 @@ def test_panels_brief_permits_exactly_the_authored_lines() -> None:
         ("item", "One test covers 404"),
         ("footer", "tests/oracle.py"),
         ("footer", "Start at the status check"),
+        ("legend", "Problem"),
+        ("legend", "Change"),
+        ("legend", "Proof"),
         ("note", DISCLOSURE),
     ]
+    assert brief.tones == ("problem", "change", "proof")
     assert [(r.source, r.target) for r in brief.relations] == [
         ("1. BEFORE", "2. SWITCH"),
         ("2. SWITCH", "3. PROOF"),
     ]
     assert "explicit" in allowed_words(brief) and "handle" not in allowed_words(brief)
+
+
+def test_panels_carry_one_meaning_color_each_and_a_key() -> None:
+    """The v4-a review: two colors made a dull picture. Each panel takes its meaning color."""
+    mapping, board = panels_board()
+    board["infographic"]["panels"][1]["tone"] = "part"
+    payload = brief_dict(infobrief(mapping, mapping["brief"], board))
+    prompt = payload["prompt"]
+
+    assert payload["tones"] == ["problem", "part", "proof"]
+    assert '"1. BEFORE" (color: vermillion #D55E00' in prompt
+    assert '"2. SWITCH" (color: sky blue #56B4E9' in prompt
+    assert '"3. PROOF" (color: bluish green #009E73' in prompt
+    assert 'Key: "Part" beside the sky blue #56B4E9 swatch' in prompt
+    assert "Change" not in [ln["text"] for ln in payload["lines"]]
+    board["infographic"]["panels"][1]["tone"] = "purple"
+    with pytest.raises(ValueError, match="tone 'purple' is not one of"):
+        infobrief(mapping, mapping["brief"], board)
 
 
 def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:

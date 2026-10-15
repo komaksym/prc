@@ -258,12 +258,14 @@ PANELS: dict[str, Any] = {
 
 
 def render_panels_png(payload: dict[str, Any], path: Path, extra: str = "") -> Path:
-    """Draw a panels brief as the prompt asks: titled panels, arrows between them, a footer bar."""
+    """Draw a panels brief as the prompt asks: titled panels in their key colors, arrows between
+    them, and a footer bar with the key swatches."""
     lines = payload["lines"]
     text = {
         role: [ln["text"] for ln in lines if ln["role"] == role]
-        for role in ("headline", "subtitle", "footer", "note")
+        for role in ("headline", "subtitle", "footer", "legend", "note")
     }
+    tones = payload.get("tones") or ["context"] * sum(ln["role"] == "panel" for ln in lines)
     panels: list[tuple[str, list[str]]] = []
     for ln in lines:
         if ln["role"] == "panel":
@@ -282,14 +284,18 @@ def render_panels_png(payload: dict[str, Any], path: Path, extra: str = "") -> P
     )
     for k, (title, items) in enumerate(panels):
         x = 60 + k * (width + gap)
+        _, _, color, tint = gate.TONES[tones[k]]
         body += (
             f"<div style='position:absolute;left:{x}px;top:{top}px;width:{width}px;height:400px;"
-            "border:4px solid #1d4ed8;border-radius:12px;background:#eef4ff'>"
-            "<div style='background:#dbeafe;padding:14px 22px;font-weight:700;font-size:34px'>"
+            f"border:6px solid {color};border-radius:12px;background:{tint}'>"
+            f"<div style='background:{tint};border-bottom:6px solid {color};padding:14px 22px;"
+            "font-weight:700;font-size:34px;color:#10213f'>"
             + html.escape(title)
             + "</div>"
             + "".join(
-                "<div style='padding:18px 22px 0;font-size:28px'>" + html.escape(item) + "</div>"
+                "<div style='padding:18px 22px 0;font-size:28px;color:#10213f'>"
+                + html.escape(item)
+                + "</div>"
                 for item in items
             )
             + "</div>"
@@ -310,6 +316,14 @@ def render_panels_png(payload: dict[str, Any], path: Path, extra: str = "") -> P
             + html.escape(t)
             + "</div>"
             for i, t in enumerate(text["footer"] + text["note"])
+        )
+        + "".join(
+            f"<div style='position:absolute;left:{900 + 160 * (i % 4)}px;top:{24 + 56 * (i // 4)}px;"
+            "display:flex;align-items:center;gap:10px'>"
+            f"<span style='width:24px;height:24px;background:{gate.TONES[tone][2]}'></span>"
+            + html.escape(gate.TONES[tone][0])
+            + "</div>"
+            for i, tone in enumerate(dict.fromkeys(tones))
         )
         + "</div>"
     )

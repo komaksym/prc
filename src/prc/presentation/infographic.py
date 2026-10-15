@@ -69,15 +69,40 @@ PROMPT_RULES = (
 )
 PANEL_RULES = (
     "Show every line exactly once, spelled exactly.",
-    "Add no other words, numbers, titles, legends or watermarks than the lines given.",
+    "Add no other words, numbers, titles or watermarks than the lines given.",
     "Put each panel header and its labels inside that panel.",
     "Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.",
+    "Color each panel with its named key color: a pale tint fill, a thick border and a header bar "
+    "in that color, and use no other accent colors.",
     "Join each panel to the next with one arrow, left to right, and put no words on it.",
     "Draw no other arrows or connector lines.",
     "Icons are allowed inside panels but contain no letters, digits or digit-like shapes.",
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible in the footer bar.",
 )
+# One meaning per color in Okabe-Ito shades; the video and the page use the same five.
+# Each tone: key word, color name, full color, pale tint for fills behind dark text.
+TONES: dict[str, tuple[str, str, str, str]] = {
+    "problem": ("Problem", "vermillion", "#D55E00", "#FBE3D3"),
+    "change": ("Change", "orange", "#E69F00", "#FDF0D2"),
+    "part": ("Part", "sky blue", "#56B4E9", "#DDF0FB"),
+    "proof": ("Proof", "bluish green", "#009E73", "#D5F1E8"),
+    "context": ("Context", "grey", "#8A93A6", "#ECEEF2"),
+}
+_TONE_WORDS = (
+    ("problem", ("before", "problem", "bug", "old", "risk", "gap", "broken", "fail")),
+    ("proof", ("proof", "test", "tests", "result", "verified", "evidence")),
+    ("change", ("change", "switch", "fix", "new", "after", "now", "how")),
+    ("part", ("parts", "pieces", "components", "files", "flow", "map", "where")),
+)
+
+
+def guess_tone(title: str) -> str:
+    """The tone a panel title names; a panel can set its own with "tone"."""
+    words = set(tokenize(title))
+    return next((tone for tone, cues in _TONE_WORDS if words & set(cues)), "context")
+
+
 LOOK_LABEL = "Look here first"
 RISKY_LABEL = "Risky surfaces"
 MAX_CALLS = 3
@@ -128,6 +153,7 @@ class InfographicBrief:
     lines: tuple[BriefLine, ...]
     relations: tuple[Relation, ...] = ()
     mode: Mode = "source"
+    tones: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -483,12 +509,17 @@ def _panels(selection: dict[str, Any]) -> InfographicBrief:
     if sub.strip():
         lines.append(BriefLine("subtitle", sub.strip()))
     headers: list[str] = []
+    tones: list[str] = []
     seen: set[tuple[str, ...]] = set()
     for n, panel in enumerate(panels, 1):
         title = panel.get("title") if isinstance(panel, dict) else None
         items = panel.get("lines") if isinstance(panel, dict) else None
         if not _short(title):
             raise ValueError(f"panel {n} needs a title")
+        tone = panel.get("tone") or guess_tone(title)
+        if tone not in TONES:
+            raise ValueError(f"panel {n}: tone {tone!r} is not one of {', '.join(TONES)}")
+        tones.append(tone)
         if not isinstance(items, list) or not 1 <= len(items) <= MAX_PANEL_LINES:
             raise ValueError(f"panel {n} needs 1 to {MAX_PANEL_LINES} lines")
         for text in (title, *items):
@@ -505,6 +536,7 @@ def _panels(selection: dict[str, Any]) -> InfographicBrief:
         lines.append(BriefLine("panel", header))
         lines += [BriefLine("item", text.strip()) for text in items]
     lines += [BriefLine("footer", text.strip()) for text in footer]
+    lines += [BriefLine("legend", TONES[tone][0]) for tone in dict.fromkeys(tones)]
     lines.append(BriefLine("note", DISCLOSURE))
     words = _word_count(tuple(lines))
     if words > PANELS_MAX_WORDS:
@@ -513,7 +545,7 @@ def _panels(selection: dict[str, Any]) -> InfographicBrief:
             f"use at most {PANELS_MAX_WORDS} words"
         )
     relations = tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
-    return InfographicBrief(head.strip(), tuple(lines), relations, "panels")
+    return InfographicBrief(head.strip(), tuple(lines), relations, "panels", tuple(tones))
 
 
 def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...]:
@@ -676,7 +708,7 @@ def prompt(br: InfographicBrief) -> str:
         )
     by_role = {
         role: [ln.text for ln in br.lines if ln.role == role]
-        for role in ("subtitle", "footer", "note")
+        for role in ("subtitle", "footer", "legend", "note")
     }
     panels: list[tuple[str, list[str]]] = []
     for line in br.lines:
@@ -687,15 +719,28 @@ def prompt(br: InfographicBrief) -> str:
     chain = "; ".join(f'"{r.source}" to "{r.target}"' for r in br.relations)
     text = [f'Headline: "{br.title}"']
     text += [f'Subtitle: "{sub}"' for sub in by_role["subtitle"]]
-    for header, items in panels:
-        text.append(f'Panel header: "{header}"')
+    tones = list(br.tones) or ["context"] * len(panels)
+    for (header, items), tone in zip(panels, tones, strict=True):
+        word, name, color, tint = TONES[tone]
+        text.append(f'Panel header: "{header}" (color: {name} {color}, tint {tint})')
         text += [f'  - label: "{item}"' for item in items]
     text += [f'Footer: "{item}"' for item in by_role["footer"]]
+    key = {TONES[t][0]: TONES[t] for t in tones}
+    text += [
+        f'Key: "{word}" beside the {key[word][1]} {key[word][2]} swatch'
+        for word in by_role["legend"]
+    ]
     text += [f'Disclosure: "{note}"' for note in by_role["note"]]
     layout = [
-        "Style: a technical-schematic blueprint on pale blue-white grid paper, drawn in dark navy "
-        "ink with thin drafting lines, dimension ticks and corner marks. Keep every word dark on "
-        "the light paper so it reads clearly.",
+        "Style: a technical-schematic blueprint on pale white grid paper, with thin drafting "
+        "lines, dimension ticks and corner marks. Color carries meaning: "
+        + ", ".join(
+            f"{name} {color} means {word.lower()}" for word, name, color, _ in TONES.values()
+        )
+        + ". Fill each panel with its pale tint, frame it with a thick border in its full color, "
+        "and draw its header bar in a slightly deeper tint of the same color. Draw icons and "
+        "arrows in the panel color. Keep every word dark navy on the light tints so it reads "
+        "clearly.",
         "",
         "Layout:",
         "- Top: the headline in large bold letters, with the subtitle in smaller letters under it.",
@@ -704,7 +749,8 @@ def prompt(br: InfographicBrief) -> str:
         "digit-like shapes, and its labels as a short list.",
         f"- Between panels: one bold arrow from each panel to the next, left to right ({chain}). "
         "Put no words on the arrows.",
-        "- Bottom: a footer bar across the full width that holds the footer items and the disclosure.",
+        "- Bottom: a footer bar across the full width that holds the footer items, the key (each "
+        "key word beside a small square swatch of its color) and the disclosure.",
     ]
     return (
         "\n".join(
@@ -734,6 +780,7 @@ def brief_dict(br: InfographicBrief) -> dict[str, Any]:
         "prompt_rules": list(PANEL_RULES if br.mode == "panels" else PROMPT_RULES),
         "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
         "title": br.title,
+        "tones": list(br.tones),
     }
 
 
