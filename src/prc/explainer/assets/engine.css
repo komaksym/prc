@@ -90,6 +90,9 @@ body.video .emount { width: 1920px; height: 1080px; }
 .gmark { position: absolute; width: 52px; height: 52px; border-radius: 50%; border: 3px solid; background: #0E1320; display: grid; place-items: center; font: 800 28px system-ui; opacity: 0; z-index: 4; }
 .gnote { position: absolute; padding: 12px 20px; border: 2.5px solid; border-radius: 12px; background: #0E1320; font: 600 27px system-ui; white-space: nowrap; opacity: 0; z-index: 4; }
 .gnote code { font-size: 0.9em; }
+.garrow { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; opacity: 0; z-index: 2; }
+.galabel { position: absolute; padding: 6px 14px; border: 2px solid; border-radius: 10px; background: #0E1320; font: 600 24px system-ui; white-space: nowrap; opacity: 0; z-index: 4; transform: translate(-50%, -100%); }
+.galabel code { font-size: 0.9em; }
 
 .rc .claim { position: absolute; left: 130px; top: 480px; transform: translateY(-50%); width: 600px; }
 .rc .num { width: 96px; height: 96px; border-radius: 50%; background: #F0AC5F; color: #0E1320; font: 800 54px system-ui; display: grid; place-items: center; margin-bottom: 34px; }

@@ -20,12 +20,286 @@ from prc.explainer.speech import speakable
 
 CHANGED = ("added", "modified")
 ROWS = 12
+LABEL = 30
+MAX_SECONDS = 150
+CODE_EXT = frozenset(
+    [
+        ".py",
+        ".pyi",
+        ".js",
+        ".mjs",
+        ".cjs",
+        ".jsx",
+        ".ts",
+        ".tsx",
+        ".go",
+        ".sh",
+        ".bash",
+        ".zsh",
+        ".sql",
+        ".rb",
+        ".rs",
+        ".java",
+        ".kt",
+        ".kts",
+        ".swift",
+        ".c",
+        ".h",
+        ".cc",
+        ".cpp",
+        ".hpp",
+        ".cs",
+        ".php",
+        ".scala",
+        ".lua",
+        ".pl",
+        ".ex",
+        ".exs",
+        ".dart",
+        ".vue",
+        ".svelte",
+        ".css",
+        ".scss",
+        ".html",
+    ]
+)
+CONFIG_EXT = frozenset([".toml", ".yml", ".yaml", ".ini", ".cfg", ".conf"])
+CONFIG_NAMES = frozenset(
+    [
+        "dockerfile",
+        "makefile",
+        "package.json",
+        "jenkinsfile",
+        "procfile",
+        "gemfile",
+        "go.mod",
+        ".env.example",
+    ]
+)
+LOCKS = frozenset(
+    [
+        "uv.lock",
+        "poetry.lock",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        "cargo.lock",
+        "gemfile.lock",
+        "go.sum",
+        "composer.lock",
+        "pipfile.lock",
+    ]
+)
+NOT_BEHAVIOR_DIRS = frozenset(
+    [
+        "tests",
+        "test",
+        "__tests__",
+        "docs",
+        "dist",
+        "build",
+        "artifacts",
+        "reports",
+        "node_modules",
+        "vendor",
+    ]
+)
+NOT_BEHAVIOR_EXT = frozenset(
+    [
+        ".md",
+        ".mdx",
+        ".rst",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".webp",
+        ".svg",
+        ".ico",
+        ".pdf",
+        ".mp4",
+        ".mp3",
+        ".wav",
+        ".zip",
+        ".gz",
+        ".woff",
+        ".woff2",
+        ".ttf",
+    ]
+)
+# ASD-STE100 sentence limits: an instruction tells the viewer to do something, a description states a fact.
+MAX_INSTRUCTION = 20
+MAX_DESCRIPTION = 25
+IMPERATIVES = frozenset(
+    [
+        "add",
+        "ask",
+        "begin",
+        "call",
+        "check",
+        "click",
+        "compare",
+        "consider",
+        "look",
+        "go",
+        "keep",
+        "make",
+        "mind",
+        "note",
+        "notice",
+        "open",
+        "pick",
+        "read",
+        "remember",
+        "review",
+        "run",
+        "see",
+        "skip",
+        "start",
+        "stop",
+        "test",
+        "trust",
+        "try",
+        "use",
+        "verify",
+        "watch",
+        "write",
+        "never",
+        "do",
+        "don't",
+        "focus",
+        "follow",
+        "find",
+        "expect",
+    ]
+)
+BE_FORMS = frozenset(
+    [
+        "be",
+        "is",
+        "are",
+        "was",
+        "were",
+        "been",
+        "being",
+        "am",
+        "get",
+        "gets",
+        "got",
+        "gotten",
+        "getting",
+    ]
+)
+ADVERBS = frozenset(
+    ["not", "now", "never", "also", "still", "always", "only", "then", "just", "already", "often"]
+)
+PARTICIPLES = frozenset(
+    [
+        "done",
+        "made",
+        "given",
+        "taken",
+        "shown",
+        "seen",
+        "known",
+        "written",
+        "built",
+        "sent",
+        "kept",
+        "held",
+        "run",
+        "set",
+        "found",
+        "left",
+        "lost",
+        "read",
+        "put",
+        "cut",
+        "hit",
+        "brought",
+        "bought",
+        "caught",
+        "taught",
+        "thought",
+        "told",
+        "sold",
+        "paid",
+        "said",
+        "spent",
+        "won",
+        "chosen",
+        "drawn",
+        "driven",
+        "broken",
+        "spoken",
+        "stolen",
+        "frozen",
+        "forgotten",
+        "hidden",
+        "thrown",
+        "grown",
+        "blown",
+        "flown",
+        "worn",
+        "torn",
+        "begun",
+        "struck",
+        "stuck",
+        "bound",
+        "fed",
+        "led",
+        "met",
+        "felt",
+        "dealt",
+        "meant",
+        "lent",
+        "bent",
+        "rebuilt",
+        "rewritten",
+        "overridden",
+        "undone",
+        "split",
+        "shut",
+        "spread",
+        "let",
+        "cast",
+        "forbidden",
+        "withheld",
+        "laid",
+        "shaken",
+        "eaten",
+        "understood",
+        "forgiven",
+    ]
+)
+NOT_PARTICIPLES = frozenset(
+    [
+        "need",
+        "indeed",
+        "speed",
+        "seed",
+        "feed",
+        "bed",
+        "red",
+        "shed",
+        "bleed",
+        "breed",
+        "proceed",
+        "succeed",
+        "exceed",
+        "embed",
+    ]
+)
+_SENTENCE_END = re.compile(
+    r"(?<!\be\.g)(?<!\bi\.e)(?<!\bvs)[.!?]+[\"')\]]*\s+(?=[\"'(\[]*[A-Z0-9])"
+)
+_CODE_SPAN = re.compile(r"\x60[^\x60]*\x60")
 VERBS: dict[str, set[str]] = {
     "title": {"claim"},
     "graph": {"show", "draw", "pulse", "focus", "walk", "flash", "note"},
     "calc": {"chip"},
     "timeline": {"bar", "ask", "overlap", "stamp", "message"},
-    "groups": {"show", "tone", "fill", "strike", "fly", "mark", "note"},
+    "groups": {"show", "tone", "fill", "strike", "fly", "arrow", "mark", "note"},
     "bars": {"bars", "dim", "note"},
     "list": {"items"},
     "receipt": {"rows", "verdict"},
@@ -34,6 +308,58 @@ VERBS: dict[str, set[str]] = {
     "diff": {"step", "note"},
 }
 NEEDS = {"list": "items", "receipt": "rows"}
+
+
+def behavior_file(path: str) -> bool:
+    """Code, CI workflows and config: the files whose change alters what the software does.
+
+    Tests, lock files, generated or binary files, evidence and reports, and docs are not.
+    """
+    parts = path.lower().split("/")
+    name = parts[-1]
+    ext = "." + name.rsplit(".", 1)[1] if "." in name.lstrip(".") else ""
+    if any(part in NOT_BEHAVIOR_DIRS for part in parts[:-1]):
+        return False
+    if name in LOCKS or ext == ".lock" or ext in NOT_BEHAVIOR_EXT or ".min." in name:
+        return False
+    if re.fullmatch(r"test_.*\.py|.*_test\.\w+|.*\.(test|spec)\.\w+", name):
+        return False
+    if (
+        name in CONFIG_NAMES
+        or name.startswith("dockerfile")
+        or re.fullmatch(r"tsconfig.*\.json|requirements.*\.txt|\.env\..*example", name)
+    ):
+        return True
+    return ext in CODE_EXT or ext in CONFIG_EXT
+
+
+def shown_files(board: dict[str, Any]) -> set[str]:
+    """Files a scene puts on screen: a diff scene's file, or the path of a cited line."""
+    shown: set[str] = set()
+    for s in board["scenes"]:
+        if s["type"] == "diff":
+            shown.add(s["file"])
+        refs = [c.get("line") for c in s.get("cite", [])]
+        refs += [it.get("cite") for it in s.get("items", []) if isinstance(it, dict)]
+        refs += [r.get("line") for r in s.get("rows", []) if isinstance(r, dict)]
+        refs += [e.get("line") for e in s.get("edges", []) if isinstance(e, dict)]
+        shown.update(ref.rsplit(":", 1)[0] for ref in refs if isinstance(ref, str) and ":" in ref)
+    return shown
+
+
+def missing_behavior_files(board: dict[str, Any], m: dict[str, Any]) -> list[str]:
+    """Changed behavior files no scene shows. A file with no diff line to quote is not required."""
+    tests = {f["path"] for f in m["brief"]["files"] if f.get("kind") == "test"}
+    shown = shown_files(board)
+    return sorted(
+        f["path"]
+        for f in m["files"]
+        if f.get("status") != "deleted"
+        and f["path"] not in tests
+        and behavior_file(f["path"])
+        and any(h.get("lines") for h in f.get("hunks", []))
+        and f["path"] not in shown
+    )
 
 
 def scripted(scene: dict[str, Any]) -> list[str]:
@@ -46,6 +372,64 @@ def scripted(scene: dict[str, Any]) -> list[str]:
 
 def spoken(scene: dict[str, Any]) -> list[str]:
     return [speakable(text) for text in scripted(scene)]
+
+
+def _words(sentence: str) -> list[str]:
+    """Words as a reader counts them: a code span is one word, bare punctuation is none."""
+    plain = _CODE_SPAN.sub("code", sentence)
+    return [w for w in plain.split() if re.search(r"\w", w)]
+
+
+def _passive(words: list[str]) -> str | None:
+    """The first be or get form followed, past at most one adverb, by a past participle."""
+    bare = [re.sub(r"^\W+|\W+$", "", w).lower() for w in words]
+    for k, word in enumerate(bare):
+        if word not in BE_FORMS:
+            continue
+        j = k + 1
+        if j < len(bare) and bare[j] in ADVERBS:
+            j += 1
+        if j >= len(bare):
+            continue
+        verb = bare[j]
+        regular = verb.endswith("ed") and len(verb) > 3 and verb not in NOT_PARTICIPLES
+        if regular or verb in PARTICIPLES:
+            return " ".join(re.sub(r"^\W+|\W+$", "", w) for w in words[k : j + 1])
+    return None
+
+
+def narration_problems(i: int, scene: dict[str, Any]) -> list[str]:
+    """ASD-STE100 rules for each caption: one short sentence in the active voice."""
+    problems: list[str] = []
+    for say in scene.get("say", []):
+        caption = say if isinstance(say, str) else say["show"]
+        parts = [p for p in _SENTENCE_END.split(_CODE_SPAN.sub("code", caption)) if p.strip()]
+        if len(parts) > 1:
+            problems.append(
+                f"scene {i}: {caption!r} holds {len(parts)} sentences; ASD-STE100 asks for "
+                "one statement per sentence, so give each its own say entry"
+            )
+        words = _words(caption)
+        if not words:
+            continue
+        first = re.sub(r"^\W+|\W+$", "", words[0]).lower()
+        if first in IMPERATIVES and len(words) > MAX_INSTRUCTION:
+            problems.append(
+                f"scene {i}: {caption!r} is an instruction of {len(words)} words; "
+                f"ASD-STE100 allows {MAX_INSTRUCTION} at most"
+            )
+        elif first not in IMPERATIVES and len(words) > MAX_DESCRIPTION:
+            problems.append(
+                f"scene {i}: {caption!r} is a description of {len(words)} words; "
+                f"ASD-STE100 allows {MAX_DESCRIPTION} at most"
+            )
+        phrase = _passive(words)
+        if phrase:
+            problems.append(
+                f"scene {i}: {caption!r} uses the passive {phrase!r}; ASD-STE100 asks for the "
+                "active voice, so name who does the action"
+            )
+    return problems
 
 
 def find_phrase(scene: dict[str, Any], phrase: str) -> list[tuple[int, int]]:
@@ -106,6 +490,27 @@ class Checker:
 
     def fail(self, message: str) -> None:
         self.failures.append(message)
+
+    def link(self, i: int, s: dict[str, Any], c: dict[str, Any]) -> None:
+        """A fly copies one value; an arrow relates two boxes and moves nothing."""
+        texts = {it["id"]: it["text"] for g in s["groups"] for it in g["items"]}
+        if c["do"] == "fly":
+            a, b = texts.get(c.get("from")), texts.get(c.get("to"))
+            if a is not None and b is not None and a != b:
+                self.fail(
+                    f"scene {i}: fly from {c['from']!r} to {c['to']!r} changes the text from "
+                    f"{a!r} to {b!r}, so the box renames mid-flight; "
+                    'use an "arrow" cue to relate two different items'
+                )
+            return
+        if "from" not in c or "to" not in c:
+            self.fail(f"scene {i}: arrow cue needs 'from' and 'to'")
+            return
+        if c["from"] == c["to"]:
+            self.fail(f"scene {i}: arrow cue joins {c['from']!r} to itself")
+        label = c.get("label", "")
+        if not isinstance(label, str) or len(label) >= LABEL:
+            self.fail(f"scene {i}: arrow label {label!r} needs text under {LABEL} characters")
 
     def touch(self, sid: str) -> None:
         if self.sym[sid]["status"] in CHANGED and self.kinds.get(self.sym[sid]["path"]) != "test":
@@ -369,6 +774,8 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             ck.fail(f"scene {i}: unknown scene type {s['type']!r}")
             continue
         ids = scene_ids(s)
+        for problem in narration_problems(i, s):
+            ck.fail(problem)
         pairs = (
             [e if isinstance(e, list) else [e["s"], e["t"]] for e in s.get("edges", [])]
             if s["type"] == "graph"
@@ -408,6 +815,8 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
                     )
             if "until" in c:
                 ck.when(i, s, c["until"])
+            if s["type"] == "groups" and verb in ("fly", "arrow"):
+                ck.link(i, s, c)
             named = [c[k] for k in ("id", "from", "to", "line") if k in c] + [
                 x for k in ("ids", "path", "keep") for x in c.get(k, [])
             ]
@@ -527,6 +936,19 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
 
     for problem in join_preflight(board, m):
         ck.fail(problem)
+    missing = missing_behavior_files(board, m)
+    if missing:
+        ck.fail(
+            "behavior files on no scene: "
+            + ", ".join(missing)
+            + "; show each with a diff scene, a cite, a list item or a receipt line"
+        )
+    estimate = silent_estimate(board)
+    if estimate > MAX_SECONDS:
+        ck.fail(
+            f"silent estimate ~{estimate:.0f} s is over the {MAX_SECONDS} s limit; "
+            "cut scenes or sentences, and spend the time on behavior files"
+        )
     if ck.failures:
         sys.exit("receipts failed:\n  " + "\n  ".join(ck.failures))
     if not ck.failures:
@@ -587,7 +1009,10 @@ def main(argv: list[str]) -> int:
     facts = verify_board(board, m)
     print(f"{facts['receipts']} receipts verified")
 
-    print(f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s")
+    print(
+        f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); "
+        f"guide target is 45-{MAX_SECONDS} s"
+    )
     print(facts["coverage_summary"])
     for risk in facts["note_risks"]:
         print(f"warning: {risk}")

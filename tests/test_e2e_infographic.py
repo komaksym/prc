@@ -244,6 +244,98 @@ def test_gate_rejects_arrowhead_that_merges_with_label(tmp_path: Path) -> None:
     assert decision.verdict != "pass", decision
 
 
+PANELS: dict[str, Any] = {
+    "mode": "panels",
+    "headline": "Missing references get an explicit result",
+    "subtitle": "One status check in the handler",
+    "panels": [
+        {"title": "BEFORE", "lines": ["Status 404 had no name", "Callers guessed the meaning"]},
+        {"title": "SWITCH", "lines": ["Handler checks the status", "Returns not found"]},
+        {"title": "PROOF", "lines": ["One test covers 404"]},
+    ],
+    "footer": ["Start at handler.py"],
+}
+
+
+def render_panels_png(payload: dict[str, Any], path: Path, extra: str = "") -> Path:
+    """Draw a panels brief as the prompt asks: titled panels, arrows between them, a footer bar."""
+    lines = payload["lines"]
+    text = {
+        role: [ln["text"] for ln in lines if ln["role"] == role]
+        for role in ("headline", "subtitle", "footer", "note")
+    }
+    panels: list[tuple[str, list[str]]] = []
+    for ln in lines:
+        if ln["role"] == "panel":
+            panels.append((ln["text"], []))
+        elif ln["role"] == "item":
+            panels[-1][1].append(ln["text"])
+    if extra:
+        panels[1][1].append(extra)
+    width, gap, top = 440, 90, 230
+    body = (
+        "<div style='position:absolute;left:60px;top:40px;font-weight:700;font-size:46px'>"
+        + html.escape(text["headline"][0])
+        + "</div><div style='position:absolute;left:60px;top:120px;font-size:32px'>"
+        + html.escape(text["subtitle"][0])
+        + "</div>"
+    )
+    for k, (title, items) in enumerate(panels):
+        x = 60 + k * (width + gap)
+        body += (
+            f"<div style='position:absolute;left:{x}px;top:{top}px;width:{width}px;height:400px;"
+            "border:4px solid #1d4ed8;border-radius:12px;background:#eef4ff'>"
+            "<div style='background:#dbeafe;padding:14px 22px;font-weight:700;font-size:34px'>"
+            + html.escape(title)
+            + "</div>"
+            + "".join(
+                "<div style='padding:18px 22px 0;font-size:28px'>" + html.escape(item) + "</div>"
+                for item in items
+            )
+            + "</div>"
+        )
+        if k:
+            ax = x - gap + 10
+            body += (
+                "<svg width='1600' height='900'>"
+                + ARROW
+                + f"<line x1='{ax}' y1='{top + 200}' x2='{ax + gap - 30}' y2='{top + 200}' "
+                "stroke='#1d4ed8' stroke-width='6' marker-end='url(#a)'/></svg>"
+            )
+    body += (
+        "<div style='position:absolute;left:0;top:720px;width:1600px;height:150px;"
+        "background:#dbeafe;font-size:28px'>"
+        + "".join(
+            f"<div style='position:absolute;left:60px;top:{24 + 56 * i}px'>"
+            + html.escape(t)
+            + "</div>"
+            for i, t in enumerate(text["footer"] + text["note"])
+        )
+        + "</div>"
+    )
+    return render_html_png(body, path, width=1600, height=900)
+
+
+def test_gate_passes_a_panels_image_with_its_lines_and_fails_an_invented_word(
+    tmp_path: Path,
+) -> None:
+    brief = gate.infobrief({"files": []}, None, {"infographic": PANELS, "scenes": []})
+    payload = gate.brief_dict(brief)
+    PROOF.mkdir(parents=True, exist_ok=True)
+
+    good = render_panels_png(payload, tmp_path / "panels.png")
+    PROOF.joinpath("panels-pass.png").write_bytes(good.read_bytes())
+    decision = gate.gate(good, brief)
+    assert decision.verdict == "pass", decision
+    assert "relations" not in decision.detail
+
+    bad = render_panels_png(payload, tmp_path / "panels-invented.png", extra="Faster checkout")
+    PROOF.joinpath("panels-invented.png").write_bytes(bad.read_bytes())
+    invented = gate.gate(bad, brief)
+    assert invented.verdict == "invented", invented
+    assert {"faster", "checkout"} <= {tok for tok, _ in invented.invented}
+
+
 def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
     env = dict(os.environ)
     env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")

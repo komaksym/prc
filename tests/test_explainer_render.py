@@ -72,6 +72,9 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
     if not (shutil.which("ffmpeg") and shutil.which("ffprobe")):
         pytest.skip("ffmpeg/ffprobe not on PATH")
 
+    m = json.loads((DATA / "maps" / "pr12.json").read_text())
+    code = next(f for f in m["files"] if f["path"].startswith("src/"))
+    line = next(ln for h in code["hunks"] for ln in h["lines"] if ln["op"] == "+" and ln["text"])
     board: dict[str, Any] = {
         "name": "hostile",
         "scenes": [
@@ -79,6 +82,7 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
                 "type": "title",
                 "kicker": "Open pull request",
                 "say": ['A title with a quote " and </script> inside.'],
+                "cite": [{"line": f"{code['path']}:{line['new']}", "match": line["text"].strip()}],
             },
             {
                 "type": "outro",

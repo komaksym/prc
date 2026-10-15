@@ -6,7 +6,7 @@
       "kicker": "Open pull request",
       "say": [
         "This pull request makes the private source collector gather LinkedIn's member changelog.",
-        "It also guards how that changelog is paged."
+        "It also guards how the client pages that changelog."
       ]
     },
     {
@@ -180,12 +180,12 @@
         "221"
       ],
       "say": [
-        "In the client, a changelog next link is compared with the request.",
+        "In the client, a check compares a changelog next link with the request.",
         "A startTime the caller never sent raises an error."
       ],
       "cues": [
         {
-          "at": "compared with",
+          "at": "compares a changelog",
           "do": "step",
           "n": 1
         },
@@ -238,7 +238,13 @@
           "step": 0.4
         }
       ],
-      "hold": 1.0
+      "hold": 1.0,
+      "cite": [
+        {
+          "line": "diagnostics/source-refresh-proposal-20261002/private-action-source.yml:1",
+          "match": "name: PROPOSAL ONLY - Refresh Encrypted Action Report Source"
+        }
+      ]
     },
     {
       "type": "outro",
@@ -247,7 +253,8 @@
       "fine": "Every name on screen was checked against the pull request's code before rendering.",
       "nocap": true,
       "say": [
-        "The bundle now carries the changelog. Paging cannot add a start time."
+        "The bundle now carries the changelog.",
+        "Paging cannot add a start time."
       ],
       "cues": [
         {
@@ -260,14 +267,14 @@
         {
           "at": [
             0,
-            0.5
+            0.93
           ],
           "do": "l2"
         },
         {
           "at": [
-            0,
-            0.9
+            1,
+            0.78
           ],
           "do": "cmd"
         }

@@ -5,7 +5,15 @@ from typing import Any
 
 import pytest
 
-from prc.presentation.infographic import infobrief
+from prc.presentation.infographic import (
+    DISCLOSURE,
+    MAX_WORDS,
+    PANELS_MAX_WORDS,
+    allowed_words,
+    brief_dict,
+    infobrief,
+    tokenize,
+)
 
 
 def case() -> tuple[dict[str, Any], dict[str, Any]]:
@@ -65,7 +73,7 @@ def case() -> tuple[dict[str, Any], dict[str, Any]]:
                     {"line": path + ":2", "match": "not_found"},
                 ],
                 "say": ["A missing reference returns an explicit result."],
-                "cues": [{"at": [0, 0], "do": "fly", "from": "input", "to": "output"}],
+                "cues": [{"at": [0, 0], "do": "arrow", "from": "input", "to": "output"}],
             }
         ],
     }
@@ -86,6 +94,28 @@ def test_test_only_pr_has_a_cited_high_level_story_flow() -> None:
     assert "Arrows show the cited storyboard flow" in [line.text for line in brief.lines]
     assert not any(line.role == "row" for line in brief.lines)
     assert board == original
+
+
+def test_arrow_to_a_group_and_a_same_text_fly_both_map_to_story_flows() -> None:
+    mapping, board = case()
+    scene = board["scenes"][0]
+    scene["groups"].append(
+        {
+            "id": "log",
+            "title": "Log entry",
+            "col": 2,
+            "items": [{"id": "logged", "text": "404", "ground": "404"}],
+        }
+    )
+    scene["cues"] = [
+        {"at": [0, 0], "do": "arrow", "from": "request", "to": "result", "label": "returns"},
+        {"at": [0, 0.5], "do": "fly", "from": "input", "to": "logged"},
+    ]
+    brief = infobrief(mapping, mapping["brief"], board)
+    assert [(r.source, r.target, r.kind) for r in brief.relations] == [
+        ("Missing reference", "Explicit not-found result", "flow"),
+        ("Missing reference", "Log entry", "flow"),
+    ]
 
 
 @pytest.mark.parametrize("fault", ["uncited", "endpoint", "same_group", "no_flow", "scene", "mode"])
@@ -141,7 +171,7 @@ def test_duplicate_group_titles_cannot_merge_distinct_endpoints(title: str) -> N
             "items": [{"id": "third_input", "text": "404", "ground": "404"}],
         }
     )
-    scene["cues"].append({"at": [0, 0.5], "do": "fly", "from": "third_input", "to": "output"})
+    scene["cues"].append({"at": [0, 0.5], "do": "arrow", "from": "third_input", "to": "output"})
     with pytest.raises(ValueError, match="unique group titles"):
         infobrief(mapping, mapping["brief"], board)
 
@@ -160,4 +190,126 @@ def test_truncated_headline_cannot_become_a_group_title() -> None:
     mapping["title"] = title + "tail words past the line limit"
     board["scenes"][0]["groups"][0]["title"] = title.strip()
     with pytest.raises(ValueError, match="headline"):
+        infobrief(mapping, mapping["brief"], board)
+
+
+PANELS: dict[str, Any] = {
+    "mode": "panels",
+    "headline": "Missing references get an explicit result",
+    "subtitle": "One status check in the handler",
+    "panels": [
+        {"title": "BEFORE", "lines": ["404 had no name", "Callers guessed the meaning"]},
+        {"title": "SWITCH", "lines": ["Handler checks the status", "Returns not_found"]},
+        {"title": "PROOF", "lines": ["One test covers 404"]},
+    ],
+    "footer": ["tests/oracle.py", "Start at the status check"],
+}
+
+
+def panels_board(**change: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    mapping, board = case()
+    board["infographic"] = deepcopy(PANELS) | change
+    return mapping, board
+
+
+def test_panels_brief_permits_exactly_the_authored_lines() -> None:
+    mapping, board = panels_board()
+    brief = infobrief(mapping, mapping["brief"], board)
+
+    assert brief.mode == "panels"
+    assert brief.title == PANELS["headline"]
+    assert [(line.role, line.text) for line in brief.lines] == [
+        ("headline", "Missing references get an explicit result"),
+        ("subtitle", "One status check in the handler"),
+        ("panel", "1. BEFORE"),
+        ("item", "404 had no name"),
+        ("item", "Callers guessed the meaning"),
+        ("panel", "2. SWITCH"),
+        ("item", "Handler checks the status"),
+        ("item", "Returns not_found"),
+        ("panel", "3. PROOF"),
+        ("item", "One test covers 404"),
+        ("footer", "tests/oracle.py"),
+        ("footer", "Start at the status check"),
+        ("note", DISCLOSURE),
+    ]
+    assert [(r.source, r.target) for r in brief.relations] == [
+        ("1. BEFORE", "2. SWITCH"),
+        ("2. SWITCH", "3. PROOF"),
+    ]
+    assert "explicit" in allowed_words(brief) and "handle" not in allowed_words(brief)
+
+
+def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:
+    mapping, board = panels_board()
+    payload = brief_dict(infobrief(mapping, mapping["brief"], board))
+    prompt = payload["prompt"]
+
+    for want in (
+        "baoyu-infographic",
+        "technical-schematic",
+        "blueprint",
+        "structural-breakdown",
+        "landscape 16:9",
+        "numbered header",
+        "icon",
+        "footer bar",
+        "arrow from each panel to the next",
+    ):
+        assert want in prompt, want
+    for line in payload["lines"]:
+        assert f'"{line["text"]}"' in prompt
+    assert '"1. BEFORE" to "2. SWITCH"' in prompt and '"2. SWITCH" to "3. PROOF"' in prompt
+    assert mapping["title"] not in prompt
+    assert payload["mode"] == "panels"
+
+
+def test_storyboard_flow_brief_keeps_its_mode_and_gets_a_prompt() -> None:
+    mapping, board = case()
+    payload = brief_dict(infobrief(mapping, mapping["brief"], board))
+
+    assert payload["mode"] == "storyboard-flow"
+    assert '"Missing reference"' in payload["prompt"]
+
+
+def test_panels_words_fit_the_raised_cap() -> None:
+    lines = ["one two three four five six"] * 3
+    panels = [{"title": f"Step {k}", "lines": lines} for k in range(3)]
+    mapping, board = panels_board(panels=panels, footer=["one two three"])
+    brief = infobrief(mapping, mapping["brief"], board)
+
+    words = sum(len(tokenize(line.text)) for line in brief.lines)
+    assert MAX_WORDS < words <= PANELS_MAX_WORDS
+    assert [line.text for line in brief.lines].count("one two three four five six") == 9
+
+
+@pytest.mark.parametrize(
+    ("change", "want"),
+    [
+        ({"panels": PANELS["panels"][:1]}, "2 to 4 panels"),
+        ({"panels": PANELS["panels"] * 2}, "2 to 4 panels"),
+        ({"panels": [{"title": "A", "lines": []}, PANELS["panels"][1]]}, "1 to 4 lines"),
+        ({"panels": [{"title": "A", "lines": ["x"] * 5}, PANELS["panels"][1]]}, "1 to 4 lines"),
+        (
+            {"panels": [{"title": "A", "lines": ["one two three four five six seven"]}] * 2},
+            "at most 6 words",
+        ),
+        ({"footer": ["a", "b", "c", "d"]}, "0 to 3 footer"),
+        ({"headline": ""}, "headline"),
+        ({"panels": [PANELS["panels"][0], PANELS["panels"][0]]}, "unique panel titles"),
+        (
+            {
+                "panels": [
+                    {"title": f"Step {k}", "lines": ["one two three four five six"] * 4}
+                    for k in range(4)
+                ]
+            },
+            f"at most {PANELS_MAX_WORDS} words",
+        ),
+    ],
+)
+def test_bad_panels_fail_before_drawing(change: dict[str, Any], want: str) -> None:
+    mapping, board = panels_board(**change)
+
+    with pytest.raises(ValueError, match=want):
         infobrief(mapping, mapping["brief"], board)

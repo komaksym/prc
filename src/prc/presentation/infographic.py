@@ -12,7 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from itertools import pairwise
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, TypeGuard
 
 import numpy as np
 import numpy.typing as npt
@@ -33,6 +33,11 @@ GLYPH_TOKEN = 3
 CONF_FLOOR = 70
 WINDOW = 6
 MAX_WORDS = 80
+PANELS_MAX_WORDS = 90
+PANEL_WORDS = 6
+MAX_PANELS = 4
+MAX_PANEL_LINES = 4
+MAX_FOOTER = 3
 LINE_LIMIT = 96
 DISCLOSURE = "Infographic drawn by AI. Words from prc."
 PROFILE = {
@@ -55,10 +60,34 @@ PROMPT_RULES = (
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible.",
 )
+PANEL_RULES = (
+    "Show every line exactly once, spelled exactly.",
+    "Add no other words, numbers, titles, legends or watermarks than the lines given.",
+    "Put each panel header and its labels inside that panel.",
+    "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    "Draw no other arrows or connector lines.",
+    "Icons are allowed inside panels but contain no letters or digits.",
+    "Draw every line as dark text on a light background.",
+    "Keep the disclosure line visible in the footer bar.",
+)
 LOOK_LABEL = "Look here first"
 RISKY_LABEL = "Risky surfaces"
 MAX_CALLS = 3
-Role = Literal["headline", "node", "legend", "label", "chip", "row", "verdict", "note"]
+Role = Literal[
+    "headline",
+    "subtitle",
+    "node",
+    "legend",
+    "label",
+    "chip",
+    "row",
+    "verdict",
+    "panel",
+    "item",
+    "footer",
+    "note",
+]
+Mode = Literal["source", "storyboard-flow", "panels"]
 RelationKind = Literal["call", "removed call", "maps", "becomes", "flow"]
 LEGEND: dict[str, str] = {
     "call": "Arrows show new calls",
@@ -90,6 +119,7 @@ class InfographicBrief:
     title: str
     lines: tuple[BriefLine, ...]
     relations: tuple[Relation, ...] = ()
+    mode: Mode = "source"
 
 
 @dataclass(frozen=True, slots=True)
@@ -412,6 +442,66 @@ def _nodes(relations: tuple[Relation, ...]) -> list[str]:
     return list(dict.fromkeys(t for r in relations for t in (r.source, r.target)))
 
 
+def _short(text: Any, limit: int = LINE_LIMIT) -> TypeGuard[str]:
+    return isinstance(text, str) and bool(text.strip()) and len(text) <= limit
+
+
+def _panels(selection: dict[str, Any]) -> InfographicBrief:
+    """A titled-panel brief: exactly the authored headline, subtitle, panel lines and footer.
+
+    The panels read left to right, so the arrows join panel i to panel i + 1 and no other pair.
+    """
+    head, sub = selection.get("headline"), selection.get("subtitle", "")
+    panels, footer = selection.get("panels"), selection.get("footer", [])
+    if not _short(head):
+        raise ValueError("panels infographic needs a headline within the line limit")
+    if not isinstance(sub, str) or len(sub) > LINE_LIMIT:
+        raise ValueError("panels infographic subtitle needs text within the line limit")
+    if not isinstance(panels, list) or not 2 <= len(panels) <= MAX_PANELS:
+        raise ValueError(f"panels infographic needs 2 to {MAX_PANELS} panels")
+    if (
+        not isinstance(footer, list)
+        or len(footer) > MAX_FOOTER
+        or not all(_short(text) for text in footer)
+    ):
+        raise ValueError(f"panels infographic takes 0 to {MAX_FOOTER} footer items of short text")
+    lines = [BriefLine("headline", head.strip())]
+    if sub.strip():
+        lines.append(BriefLine("subtitle", sub.strip()))
+    headers: list[str] = []
+    seen: set[tuple[str, ...]] = set()
+    for n, panel in enumerate(panels, 1):
+        title = panel.get("title") if isinstance(panel, dict) else None
+        items = panel.get("lines") if isinstance(panel, dict) else None
+        if not _short(title):
+            raise ValueError(f"panel {n} needs a title")
+        if not isinstance(items, list) or not 1 <= len(items) <= MAX_PANEL_LINES:
+            raise ValueError(f"panel {n} needs 1 to {MAX_PANEL_LINES} lines")
+        for text in (title, *items):
+            if not _short(text) or len(text.split()) > PANEL_WORDS:
+                raise ValueError(f"panel {n}: {text!r} needs text of at most {PANEL_WORDS} words")
+        title = title.strip()
+        number = f"{n}."
+        header = title if title.startswith(number + " ") else f"{number} {title}"
+        identity = tuple(tokenize(header.removeprefix(number)))
+        if identity in seen:
+            raise ValueError("panels infographic needs unique panel titles")
+        seen.add(identity)
+        headers.append(header)
+        lines.append(BriefLine("panel", header))
+        lines += [BriefLine("item", text.strip()) for text in items]
+    lines += [BriefLine("footer", text.strip()) for text in footer]
+    lines.append(BriefLine("note", DISCLOSURE))
+    words = _word_count(tuple(lines))
+    if words > PANELS_MAX_WORDS:
+        raise ValueError(
+            f"panels infographic has {words} words with the disclosure; "
+            f"use at most {PANELS_MAX_WORDS} words"
+        )
+    relations = tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
+    return InfographicBrief(head.strip(), tuple(lines), relations, "panels")
+
+
 def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...]:
     from prc.explainer.check import verify_board
 
@@ -427,6 +517,7 @@ def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...
         raise ValueError("infographic scene must be a groups scene")
     verify_board(copy.deepcopy(board), m)
     endpoints: dict[str, str] = {}
+    owners: dict[str, str] = {}
     titles: set[tuple[str, ...]] = set()
     for group in scene["groups"]:
         title = group.get("title")
@@ -436,17 +527,21 @@ def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...
         if not identity or identity in titles:
             raise ValueError("infographic groups need unique group titles after text normalization")
         titles.add(identity)
+        owners[group["id"]] = title
         for item in group["items"]:
             if item["id"] in endpoints:
                 raise ValueError("infographic groups need unique item IDs")
             endpoints[item["id"]] = title
     links: list[Relation] = []
     for cue in scene.get("cues", []):
-        if cue.get("do") != "fly":
+        if cue.get("do") not in ("fly", "arrow"):
             continue
-        source, target = endpoints.get(cue.get("from")), endpoints.get(cue.get("to"))
+        ends = endpoints | owners if cue["do"] == "arrow" else endpoints
+        source, target = ends.get(cue.get("from")), ends.get(cue.get("to"))
         if source is None or target is None or source == target:
-            raise ValueError("infographic fly cues must connect items in distinct named groups")
+            raise ValueError(
+                "infographic fly and arrow cues must connect boxes in distinct named groups"
+            )
         links.append(Relation(source, target, "flow"))
     unique = tuple(dict.fromkeys(links))
     if not unique or len(unique) > MAX_CALLS:
@@ -460,6 +555,9 @@ def infobrief(
     board: dict[str, Any] | None,
     sources: dict[str, str] | None = None,
 ) -> InfographicBrief:
+    selection = board.get("infographic") if board is not None else None
+    if isinstance(selection, dict) and selection.get("mode") == "panels":
+        return _panels(selection)
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
     story = board is not None and "infographic" in board
@@ -491,7 +589,7 @@ def infobrief(
         tokenize(line.text) == tokenize(fitted[0].text) for line in fitted if line.role == "node"
     ):
         raise ValueError("infographic headline must differ from its group titles after fitting")
-    return InfographicBrief(fitted[0].text, fitted, links)
+    return InfographicBrief(fitted[0].text, fitted, links, "storyboard-flow" if story else "source")
 
 
 def allowed_words(br: InfographicBrief) -> set[str]:
@@ -530,9 +628,83 @@ def gate_constants() -> dict[str, Any]:
         "LINE_RUN": diagram.LINE_RUN,
         "LINE_LIMIT": LINE_LIMIT,
         "MAX_WORDS": MAX_WORDS,
+        "PANELS_MAX_WORDS": PANELS_MAX_WORDS,
         "REACH": diagram.REACH,
         "WINDOW": WINDOW,
     }
+
+
+def _quoted(texts: list[str]) -> str:
+    return ", ".join(f'"{text}"' for text in texts)
+
+
+def prompt(br: InfographicBrief) -> str:
+    """The image prompt for the baoyu-infographic technical profile, built from the brief only."""
+    open_line = (
+        "Create one landscape 16:9 infographic with the baoyu-infographic profile: "
+        "technical-schematic style, structural-breakdown layout."
+    )
+    if br.mode != "panels":
+        rows = [f'- {line.role}: "{line.text}"' for line in br.lines]
+        arrows = [f'- "{r.source}" to "{r.target}" ({r.kind})' for r in br.relations]
+        return (
+            "\n".join(
+                [
+                    open_line,
+                    "",
+                    "Text: use only these lines, each exactly once and spelled exactly.",
+                    *rows,
+                ]
+                + (["", "Arrows, source to target:", *arrows] if arrows else [])
+                + ["", "Rules:", *(f"- {rule}" for rule in PROMPT_RULES)]
+            )
+            + "\n"
+        )
+    by_role = {
+        role: [ln.text for ln in br.lines if ln.role == role]
+        for role in ("subtitle", "footer", "note")
+    }
+    panels: list[tuple[str, list[str]]] = []
+    for line in br.lines:
+        if line.role == "panel":
+            panels.append((line.text, []))
+        elif line.role == "item":
+            panels[-1][1].append(line.text)
+    chain = "; ".join(f'"{r.source}" to "{r.target}"' for r in br.relations)
+    text = [f'Headline: "{br.title}"']
+    text += [f'Subtitle: "{sub}"' for sub in by_role["subtitle"]]
+    for header, items in panels:
+        text.append(f'Panel header: "{header}"')
+        text += [f'  - label: "{item}"' for item in items]
+    text += [f'Footer: "{item}"' for item in by_role["footer"]]
+    text += [f'Disclosure: "{note}"' for note in by_role["note"]]
+    layout = [
+        "Style: a technical-schematic blueprint on pale blue-white grid paper, drawn in dark navy "
+        "ink with thin drafting lines, dimension ticks and corner marks. Keep every word dark on "
+        "the light paper so it reads clearly.",
+        "",
+        "Layout:",
+        "- Top: the headline in large bold letters, with the subtitle in smaller letters under it.",
+        f"- Middle: {len(panels)} panels in one row, left to right. Each panel has a numbered header "
+        "bar with its panel header, one simple icon, and its labels as a short list.",
+        f"- Between panels: one bold arrow from each panel to the next, left to right ({chain}). "
+        "Put no words on the arrows.",
+        "- Bottom: a footer bar across the full width that holds the footer items and the disclosure.",
+    ]
+    return (
+        "\n".join(
+            [
+                open_line,
+                "",
+                *layout,
+                "",
+                "Text: use only these lines, each exactly once and spelled exactly.",
+                *text,
+            ]
+            + ["", "Rules:", *(f"- {rule}" for rule in PANEL_RULES)]
+        )
+        + "\n"
+    )
 
 
 def brief_dict(br: InfographicBrief) -> dict[str, Any]:
@@ -541,8 +713,10 @@ def brief_dict(br: InfographicBrief) -> dict[str, Any]:
         "disclosure": DISCLOSURE,
         "gate": gate_constants(),
         "lines": [{"role": line.role, "text": line.text} for line in br.lines],
+        "mode": br.mode,
         "profile": dict(PROFILE),
-        "prompt_rules": list(PROMPT_RULES),
+        "prompt": prompt(br),
+        "prompt_rules": list(PANEL_RULES if br.mode == "panels" else PROMPT_RULES),
         "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
         "title": br.title,
     }
@@ -552,6 +726,7 @@ def write_brief_json(br: InfographicBrief, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(brief_dict(br), indent=2, sort_keys=True)
     path.write_text(payload + "\n")
+    path.with_name("prompt.md").write_text(prompt(br))
     return path
 
 
@@ -995,6 +1170,10 @@ def gate(png: Path, br: InfographicBrief) -> GateDecision:
         return tool_decision(version, failed, tuple(reads))
     decision = score_ocr(tuple(reads), br, tesseract=version)
     if decision.verdict != "pass":
+        return decision
+    if br.mode == "panels":
+        # Panel frames hold many lines each, so the ink test between two text lines is not
+        # reliable there; the gate checks the words and a reviewer checks the arrows by eye.
         return decision
     if not br.relations:
         return GateDecision(

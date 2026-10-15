@@ -297,7 +297,7 @@
   };
 
   MAKERS.groups = (s, root) => {
-    const groups = {}, items = {}, flies = [], marks = [], notes = [];
+    const groups = {}, items = {}, flies = [], arrows = [], marks = [], notes = [];
     const tones = t => ({ bad: C.red, good: C.green, info: C.gold, blue: C.blue }[t] || C.blue);
     if (s.groups.some(g => g.x == null)) autoLayout(s);
 
@@ -307,6 +307,7 @@
       const iw = g.row ? (g.w - 2 * PAD - (inside - 1) * GAP) / inside : g.w - 2 * PAD;
       const h = groupH(s, g);
       const el = D('grp', `<div class="gt">${esc(g.title)}</div>${g.sub ? `<div class="gs">${fmt(g.sub)}</div>` : ''}`, root);
+      el.dataset.id = g.id;
       Object.assign(el.style, { left: g.x + 'px', top: g.y + 'px', width: g.w + 'px', height: h + 'px' });
       const G = groups[g.id] = { el, x: g.x, y: g.y, w: g.w, h, show: Infinity, tone: [], flash: [] };
       let k = 0, o = 0;
@@ -316,6 +317,7 @@
         const y = g.row ? g.y + HEAD : it.outside ? g.y + h + 18 + n * (IH + GAP) : g.y + HEAD + n * (IH + GAP);
         const pel = D('pill' + (it.kind === 'slot' ? ' slot' : '') + (g.row ? ' seat' : ''), `<span class="pt">${esc(it.text)}</span>${it.label ? `<span class="plabel">${esc(it.label)}</span>` : ''}`, root);
         Object.assign(pel.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: IH + 'px' });
+        pel.dataset.id = it.id;
         const label = pel.querySelector('.plabel');
         if (label) label.style.color = tones(it.labelTone || it.tone || 'bad');
         items[it.id] = { it, el: pel, label, x, y, w, h: IH, G, k: k + o, show: Infinity, fill: it.kind === 'slot' ? Infinity : -Infinity, tone: it.tone ? [{ t: -Infinity, v: it.tone }] : [], strike: Infinity, flash: [] };
@@ -330,15 +332,37 @@
       else if (c.do === 'strike') items[c.id].strike = c.t;
       else if (c.do === 'fly') {
         const a = items[c.from], b = items[c.to], dur = c.dur || 0.9;
+        // A fly copies one value: the checker refuses a fly between two different texts, so the clone never renames.
         // The clone slides its text from where the source shows it to where the target will, so the landing never doubles letters.
-        // A fly between two different names carries the source name until mid-flight and the target name after,
-        // so it lands as the target and never spills past its box.
         const font = '500 40px ui-monospace, Menlo, monospace';
         const inset = (I, text) => I.el.classList.contains('seat') ? Math.max(0, (I.w - measure(text, font)) / 2 - 3) : 24;
         const el = D('pill fly', `<span class="pt">${esc(a.it.text)}</span>`, root);
         Object.assign(el.style, { height: a.h + 'px', paddingRight: '0px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
-        flies.push({ a, b, el, pt: el.querySelector('.pt'), shown: a.it.text, t: c.t, dur, fade: !!c.fade, arc: c.arc || 60, pa: inset(a, a.it.text), pb: inset(b, b.it.text) });
+        flies.push({ a, b, el, t: c.t, dur, fade: !!c.fade, arc: c.arc || 60, pa: inset(a, a.it.text), pb: inset(b, b.it.text) });
         if (!c.fade) { b.fill = Math.min(b.fill, c.t + dur); b.flash.push({ t: c.t + dur }); if (b.it.kind !== 'slot') b.show = Math.min(b.show, c.t + dur); }
+      } else if (c.do === 'arrow') {
+        // An arrow relates two boxes: it draws from the source edge to the target edge, and nothing moves or changes text.
+        const A = box(c.from), B = box(c.to), color = tones(c.tone || 'info');
+        const mid = R => [R.x + R.w / 2, R.y + R.h / 2];
+        const edge = (R, from, to) => {
+          const dx = to[0] - from[0], dy = to[1] - from[1], len = Math.hypot(dx, dy) || 1;
+          const k = Math.min(dx ? R.w / 2 / Math.abs(dx) : Infinity, dy ? R.h / 2 / Math.abs(dy) : Infinity);
+          return [from[0] + dx * k + dx / len * 6, from[1] + dy * k + dy / len * 6];
+        };
+        const [x1, y1] = edge(A, mid(A), mid(B)), [x2, y2] = edge(B, mid(B), mid(A));
+        const len = Math.hypot(x2 - x1, y2 - y1) || 1, ux = (x2 - x1) / len, uy = (y2 - y1) / len, HL = 28, HW = 15;
+        const bx = x2 - ux * HL, by = y2 - uy * HL;
+        const svg = S('svg', { class: 'garrow', viewBox: `0 0 ${W} ${H}`, width: W, height: H }, root);
+        Object.assign(svg.dataset, { from: c.from, to: c.to, x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x2.toFixed(1), y2: y2.toFixed(1) });
+        const shaft = S('line', { class: 'shaft', x1, y1, x2: x1, y2: y1, stroke: color, 'stroke-width': 6, 'stroke-linecap': 'round' }, svg);
+        const head = S('polygon', { class: 'head', fill: color,
+          points: [[x2, y2], [bx - uy * HW, by + ux * HW], [bx + uy * HW, by - ux * HW]].map(p => p.map(v => v.toFixed(1)).join(',')).join(' ') }, svg);
+        let label = null;
+        if (c.label) {
+          label = D('galabel', fmt(c.label), root);
+          Object.assign(label.style, { left: (x1 + bx) / 2 + 'px', top: (y1 + by) / 2 - 14 + 'px', color, borderColor: color });
+        }
+        arrows.push({ svg, shaft, head, label, x1, y1, bx, by, t: c.t, until: c.until != null ? c.until : Infinity });
       } else if (c.do === 'mark') {
         const B = box(c.id), tone = tones(c.tone || 'bad');
         const el = D('gmark', `${esc(c.text || '✗')}<i class="ring"></i>`, root);
@@ -401,13 +425,16 @@
         F.el.style.top = lerp(F.a.y, F.b.y, e) - Math.sin(Math.PI * Math.min(q, 1)) * F.arc + 'px';
         F.el.style.width = lerp(F.a.w, F.b.w, e) + 'px';
         F.el.style.paddingLeft = lerp(F.pa, F.pb, e) + 'px';
-        if (F.a.it.text !== F.b.it.text) {
-          const name = e < 0.5 ? F.a.it.text : F.b.it.text;
-          if (name !== F.shown) { F.pt.textContent = name; F.shown = name; }
-          F.pt.style.opacity = String(Math.max(0.15, Math.abs(e - 0.5) * 2));
-        }
         F.el.style.opacity = q <= 1 || !F.fade ? 1 : 1 - (q - 1) / 0.6;
         F.el.style.transform = q > 1 && F.fade ? `scale(${lerp(1, 0.7, (q - 1) / 0.6)})` : '';
+      });
+      arrows.forEach(R => {
+        const o = Math.min(prog(t, R.t, 0.3), 1 - prog(t, R.until, 0.35)), k = prog(t, R.t, 0.5);
+        R.svg.style.opacity = o;
+        R.shaft.setAttribute('x2', lerp(R.x1, R.bx, k).toFixed(1));
+        R.shaft.setAttribute('y2', lerp(R.y1, R.by, k).toFixed(1));
+        R.head.style.opacity = prog(t, R.t + 0.35, 0.15);
+        if (R.label) R.label.style.opacity = Math.min(prog(t, R.t + 0.3, 0.3), 1 - prog(t, R.until, 0.35));
       });
       marks.forEach(M => {
         M.el.style.opacity = t >= M.t ? 1 : 0;

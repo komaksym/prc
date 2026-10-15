@@ -209,11 +209,9 @@
     },
     {
      "at": "loads it",
-     "do": "fly",
+     "do": "arrow",
      "from": "m",
-     "to": "rb",
-     "arc": 60,
-     "fade": true
+     "to": "rb"
     },
     {
      "at": "models like",
@@ -225,11 +223,9 @@
     },
     {
      "at": "check it",
-     "do": "fly",
+     "do": "arrow",
      "from": "rb",
-     "to": "bt",
-     "arc": 60,
-     "fade": true
+     "to": "bt"
     },
     {
      "at": "picks current",
@@ -240,19 +236,15 @@
     },
     {
      "at": "picks current",
-     "do": "fly",
+     "do": "arrow",
      "from": "bt",
-     "to": "res",
-     "arc": 60,
-     "fade": true
+     "to": "res"
     },
     {
      "at": "saves them",
-     "do": "fly",
+     "do": "arrow",
      "from": "res",
-     "to": "wr",
-     "arc": 60,
-     "fade": true
+     "to": "wr"
     },
     {
      "at": "safe error",
@@ -382,7 +374,7 @@
    ],
    "say": [
     "One person has three current job claims: Acme, Beta Labs, Open Lab.",
-    "The only validation expired, so no role is chosen and research is requested."
+    "The only validation expired, so the report picks no role and asks for research."
    ],
    "cues": [
     {
@@ -406,7 +398,7 @@
      "at": "expired",
      "do": "mark",
      "id": "va",
-     "text": "\u2717",
+     "text": "✗",
      "tone": "bad"
     },
     {
@@ -416,7 +408,7 @@
      "tone": "bad"
     },
     {
-     "at": "research is requested",
+     "at": "asks for research",
      "do": "show",
      "ids": [
       "rq"
@@ -542,7 +534,7 @@
    ],
    "say": [
     "Now v-active backs Beta Labs and Open Lab.",
-    "They become current roles, Acme stays an alternative, and no research is requested."
+    "They become current roles, Acme stays an alternative, and the report asks for no research."
    ],
    "cues": [
     {
@@ -574,7 +566,7 @@
      "at": "current roles",
      "do": "mark",
      "id": "cr",
-     "text": "\u2713",
+     "text": "✓",
      "tone": "good"
     },
     {
@@ -659,7 +651,7 @@
    "big": "{tests_added}",
    "label": "new tests, all through the real command",
    "tone": "good",
-   "mark": "\u2713",
+   "mark": "✓",
    "code": true,
    "more": null,
    "items": [
@@ -752,7 +744,7 @@
    ],
    "say": [
     "Only named, not explained: models, file handling, and the docs.",
-    "Message history in engine.py is not explained either."
+    "The video does not explain message history in engine.py either."
    ],
    "cues": [
     {
@@ -785,7 +777,13 @@
      ]
     }
    ],
-   "hold": 0.3
+   "hold": 0.3,
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/__init__.py:1",
+     "match": "\"\"\"Offline prospect evidence reconciliation.\"\"\""
+    }
+   ]
   },
   {
    "type": "outro",
@@ -794,7 +792,8 @@
    "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
    "nocap": true,
    "say": [
-    "Conflicting evidence stays visible. Only a cited validation picks the current roles."
+    "Conflicting evidence stays visible.",
+    "Only a cited validation picks the current roles."
    ],
    "cues": [
     {
@@ -806,15 +805,15 @@
     },
     {
      "at": [
-      0,
-      0.5
+      1,
+      0.14
      ],
      "do": "l2"
     },
     {
      "at": [
-      0,
-      0.9
+      1,
+      0.83
      ],
      "do": "cmd"
     }

@@ -277,7 +277,7 @@
       ],
       "say": [
         "Note's multicursor settings gain an onComplete callback.",
-        "It runs after multicursors are restored, so they cannot reopen the sheet."
+        "It runs after the code restores multicursors, so they cannot reopen the sheet."
       ],
       "cues": [
         {

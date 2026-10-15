@@ -14,7 +14,7 @@ MAP = ROOT / "tests/data/explainer/maps/pr12.json"
 
 def _change() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     m = json.loads(MAP.read_text())
-    f = next(f for f in m["files"] if f["hunks"])
+    f = next(f for f in m["files"] if f["hunks"] and f["path"].startswith("src/"))
     line = next(ln for ln in f["hunks"][0]["lines"] if ln["op"] == "+")
     board = {
         "scenes": [
@@ -129,10 +129,13 @@ def test_outro_hands_off_to_github_in_video_and_clickable_page(tmp_path: Path) -
 
 
 def _groups_change() -> tuple[dict[str, Any], dict[str, Any], list[tuple[str, int, str]]]:
-    """A groups scene whose two items are different names, each cited from its own added line."""
+    """A groups scene whose two items are different names, each cited from its own added line.
+
+    The names come from the pull request's code file, so the board shows its behavior file.
+    """
     m = json.loads(MAP.read_text())
     picks: list[tuple[str, int, str]] = []
-    for f in m["files"]:
+    for f in (f for f in m["files"] if f["path"].startswith("src/")):
         for h in f["hunks"]:
             for ln in h["lines"]:
                 words = re.findall(r"[A-Za-z_][A-Za-z_0-9]{5,}", ln["text"])
@@ -167,10 +170,10 @@ def _groups_change() -> tuple[dict[str, Any], dict[str, Any], list[tuple[str, in
                     },
                 ],
                 "cite": [{"line": f"{pa}:{na}", "match": wa}, {"line": f"{pb}:{nb}", "match": wb}],
-                "say": ["The first name now feeds the second one in this change."],
+                "say": ["The first name now feeds the second name in this change."],
                 "cues": [
                     {"at": [0, 0.0], "do": "show", "ids": ["g0", "g1"], "step": 0.3},
-                    {"at": [0, 0.2], "do": "fly", "from": "a0", "to": "a1", "arc": 0},
+                    {"at": [0, 0.2], "do": "arrow", "from": "a0", "to": "a1", "label": "feeds"},
                 ],
                 "hold": 1,
             },
@@ -221,7 +224,9 @@ def test_page_footer_receipts_open_their_lines_on_github(tmp_path: Path) -> None
         browser.close()
 
 
-def test_fly_between_different_names_lands_as_the_target_name(tmp_path: Path) -> None:
+def test_arrow_points_from_source_edge_to_target_edge_and_renames_nothing(
+    tmp_path: Path,
+) -> None:
     from playwright.sync_api import sync_playwright
 
     from prc.explainer.check import verify_board
@@ -231,24 +236,46 @@ def test_fly_between_different_names_lands_as_the_target_name(tmp_path: Path) ->
     m, board, picks = _groups_change()
     facts = verify_board(board, m)
     render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
-    fly = next(c for c in board["scenes"][1]["cues"] if c["do"] == "fly")
-    clone = (
-        "(() => { const el = document.querySelector('.pill.fly'); const pt = el.querySelector('.pt');"
-        " return { text: pt.textContent, op: +getComputedStyle(el).opacity,"
-        " spill: el.scrollWidth - el.clientWidth }; })()"
+    arrow = next(c for c in board["scenes"][1]["cues"] if c["do"] == "arrow")
+    probe = (
+        "(() => { const box = id => document.querySelector('.pill[data-id=' + JSON.stringify(id) + ']');"
+        " const rect = el => { const r = el.getBoundingClientRect();"
+        " return { l: r.left, t: r.top, r: r.right, b: r.bottom }; };"
+        " const a = document.querySelector('.garrow');"
+        " const head = a && a.querySelector('.head');"
+        " return { texts: [box('a0'), box('a1')].map(el => el.querySelector('.pt').textContent),"
+        " clones: document.querySelectorAll('.pill.fly').length,"
+        " op: a ? +getComputedStyle(a).opacity : -1,"
+        " points: head ? head.getAttribute('points') : '',"
+        " tip: a ? [+a.dataset.x2, +a.dataset.y2] : [], tail: a ? [+a.dataset.x1, +a.dataset.y1] : [],"
+        " src: rect(box('a0')), dst: rect(box('a1')),"
+        " label: a ? document.querySelector('.galabel').textContent : '' }; })()"
     )
+
+    def near_edge(point: list[float], r: dict[str, float]) -> bool:
+        x, y = point
+        inside = r["l"] - 14 <= x <= r["r"] + 14 and r["t"] - 14 <= y <= r["b"] + 14
+        deep = r["l"] + 14 < x < r["r"] - 14 and r["t"] + 14 < y < r["b"] - 14
+        return inside and not deep
+
     with sync_playwright() as driver:
         browser = driver.chromium.launch()
         page = browser.new_page(viewport={"width": 1920, "height": 1080})
         page.goto((tmp_path / "player.html").as_uri())
         page.wait_for_function("window.ready === true")
-        page.evaluate(f"window.seek({fly['t'] + 0.05})")
-        assert page.evaluate(clone)["text"] == picks[0][2]
-        page.evaluate(f"window.seek({fly['t'] + 0.9})")
-        landed = page.evaluate(clone)
-        assert landed["text"] == picks[1][2]
-        assert landed["spill"] <= 1
-        page.screenshot(path=str(tmp_path / "fly-landed.png"))
+        names = [picks[0][2], picks[1][2]]
+        page.evaluate(f"window.seek({arrow['t'] - 0.1})")
+        before = page.evaluate(probe)
+        assert before["op"] == 0 and before["texts"] == names
+        for later in (0.25, 0.6, 1.2):
+            page.evaluate(f"window.seek({arrow['t'] + later})")
+            seen = page.evaluate(probe)
+            assert seen["texts"] == names and seen["clones"] == 0
+        assert seen["op"] == 1 and seen["label"] == "feeds"
+        assert len(seen["points"].split()) == 3
+        assert near_edge(seen["tail"], seen["src"]) and near_edge(seen["tip"], seen["dst"])
+        assert seen["tip"][0] > seen["tail"][0]
+        page.screenshot(path=str(tmp_path / "arrow.png"))
         browser.close()
 
 

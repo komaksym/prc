@@ -220,7 +220,7 @@
    "say": [
     "Now a validation cites the Beta Labs and Open Lab evidence.",
     "Both are current at once, so the report resolves to both.",
-    "Acme is left out of the current roles."
+    "The current roles leave Acme out."
    ],
    "cues": [
     {
@@ -233,17 +233,15 @@
     },
     {
      "at": "cites the Beta",
-     "do": "fly",
+     "do": "arrow",
      "from": "v",
-     "to": "c2",
-     "fade": true
+     "to": "c2"
     },
     {
      "at": "Open Lab evidence",
-     "do": "fly",
+     "do": "arrow",
      "from": "v",
-     "to": "c3",
-     "fade": true
+     "to": "c3"
     },
     {
      "at": "resolves to both",
@@ -254,7 +252,7 @@
      ]
     },
     {
-     "at": "Acme is left",
+     "at": "leave Acme out",
      "do": "strike",
      "id": "c1"
     }
@@ -289,7 +287,7 @@
    ],
    "say": [
     "If the applicable validations agree on one set of roles, those roles are current.",
-    "If there are only unvalidated candidates, the status is needs review."
+    "If only unvalidated candidates exist, the status is needs review."
    ],
    "cues": [
     {
@@ -341,7 +339,25 @@
      "step": 0.3
     }
    ],
-   "hold": 1.0
+   "hold": 1.0,
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/__init__.py:1",
+     "match": "\"\"\"Offline prospect evidence reconciliation.\"\"\""
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/__main__.py:1",
+     "match": "\"\"\"Command-line entry point for the offline prospect report."
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/files.py:1",
+     "match": "\"\"\"JSON boundary and atomic artifact I/O for prospect reconc"
+    },
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/model.py:1",
+     "match": "\"\"\"Strict domain models for the offline prospect report.\"\"\""
+    }
+   ]
   },
   {
    "type": "outro",
@@ -350,7 +366,8 @@
    "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
    "nocap": true,
    "say": [
-    "Conflicting jobs need a cited answer. Otherwise the report says review."
+    "Conflicting jobs need a cited answer.",
+    "Otherwise the report says review."
    ],
    "cues": [
     {
@@ -363,14 +380,14 @@
     {
      "at": [
       0,
-      0.5
+      0.96
      ],
      "do": "l2"
     },
     {
      "at": [
-      0,
-      0.9
+      1,
+      0.79
      ],
      "do": "cmd"
     }

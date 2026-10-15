@@ -286,7 +286,7 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
             {
                 "type": "title",
                 "kicker": "Added test",
-                "say": ["A test was added."],
+                "say": ["The pull request adds a test."],
                 "assert": [{"fact": "changed", "equals": 0}, {"fact": "tests_added", "equals": 1}],
             },
             {

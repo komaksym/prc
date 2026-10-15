@@ -123,7 +123,7 @@
     "No company gets more than three invitations.",
     "Here, co-b has already used all three, on B, C and D.",
     "Person A works at both co-a and co-b.",
-    "Before this change, A had one employer on record, say co-a, so only co-a's limit was checked.",
+    "Before this change, A had one employer on record, say co-a, so the code checked only co-a's limit.",
     "Nothing stopped A, and co-b's people got a fourth invitation."
    ],
    "cues": [
@@ -286,7 +286,7 @@
    ],
    "say": [
     "Now A needs a free slot at every company A works at.",
-    "co-b is full, so A is not invited."
+    "co-b is full, so A gets no invitation."
    ],
    "cues": [
     {
@@ -327,12 +327,12 @@
      "tone": "bad"
     },
     {
-     "at": "not invited",
+     "at": "no invitation",
      "do": "strike",
      "id": "a"
     },
     {
-     "at": "not invited",
+     "at": "no invitation",
      "do": "note",
      "id": "pa",
      "text": "not invited",
@@ -431,7 +431,7 @@
     }
    ],
    "say": [
-    "When both companies have room, A is invited once and uses a slot at each.",
+    "When both companies have room, A gets one invitation and uses a slot at each.",
     "That leaves two at co-a and two at co-b."
    ],
    "cues": [
@@ -446,13 +446,13 @@
      "step": 0.15
     },
     {
-     "at": "invited once",
+     "at": "one invitation",
      "do": "fly",
      "from": "a",
      "to": "a1"
     },
     {
-     "at": "invited once",
+     "at": "one invitation",
      "do": "fly",
      "from": "a",
      "to": "b1"
@@ -502,7 +502,7 @@
    "say": [
     "In the code, the old check looked at one company per person.",
     "Now it checks every company the person works at.",
-    "And a person who gets picked uses up a slot at each of them."
+    "And a person the code picks uses up a slot at each of them."
    ],
    "cues": [
     {
@@ -572,7 +572,7 @@
     }
    ],
    "say": [
-    "If anyone's employer data is empty, unknown, partial or conflicting, no one is invited.",
+    "If anyone's employer data is empty, unknown, partial or conflicting, nobody gets an invitation.",
     "Each reason goes to a research queue instead."
    ],
    "cues": [
@@ -635,9 +635,10 @@
    "nocap": true,
    "say": [
     {
-     "show": "The AI wrote the words. The tests drew the picture.",
-     "speak": "The A.I. wrote the words. The tests drew the picture."
-    }
+     "show": "The AI wrote the words.",
+     "speak": "The A.I. wrote the words."
+    },
+    "The tests drew the picture."
    ],
    "cues": [
     {
@@ -649,15 +650,15 @@
     },
     {
      "at": [
-      0,
-      0.5
+      1,
+      0.09
      ],
      "do": "l2"
     },
     {
      "at": [
-      0,
-      0.9
+      1,
+      0.82
      ],
      "do": "cmd"
     }
