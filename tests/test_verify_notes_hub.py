@@ -1,4 +1,4 @@
-"""Guard keeps the paired hub button pass required for hub handoffs."""
+"""Guard keeps the notes-hub browser pass required for hub handoffs."""
 
 from __future__ import annotations
 
@@ -6,54 +6,53 @@ import os
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-RECIPE = REPO / ".agents" / "skills" / "verify" / "features" / "paired.md"
-DRIVER = REPO / "scripts" / "verify_paired_hub.py"
+RECIPE = REPO / ".agents" / "skills" / "verify" / "features" / "notes.md"
+DRIVER = REPO / "scripts" / "verify_notes_hub.py"
 INDEX = REPO / ".agents" / "skills" / "verify" / "features" / "README.md"
 SKILL = REPO / ".agents" / "skills" / "verify" / "SKILL.md"
-BUTTONS = (
-    "Prepare next reading",
-    "Start timed reading",
-    "Submit reading",
-    "Abort reading",
-    "Close study",
-    "Save grades and analyze",
+CONTROLS = (
+    "GitHub",
+    "infographic",
+    "video",
+    "page.html",
+    "notes box",
 )
 
 
 def test_recipe_requires_driver_pass() -> None:
     text = RECIPE.read_text(encoding="utf-8")
-    assert "scripts/verify_paired_hub.py" in text
+    assert "scripts/verify_notes_hub.py" in text
     assert "PASS" in text
     assert "checks.json" in text
-    assert "artifacts/paired-study/private" in text
+    assert "paired-study/private" not in text
 
 
-def test_recipe_lists_every_button_path() -> None:
+def test_recipe_lists_every_pr_control() -> None:
     text = RECIPE.read_text(encoding="utf-8")
-    for button in BUTTONS:
-        assert button in text, f"paired.md must list {button}"
+    for control in CONTROLS:
+        assert control in text, f"notes.md must list {control}"
 
 
-def test_recipe_requires_refusal_recovery() -> None:
+def test_recipe_forbids_old_study_content() -> None:
     text = RECIPE.read_text(encoding="utf-8").lower()
-    assert "recovery" in text
-    assert "prepare next reading" in text
+    assert "no questions" in text or "questions" in text
+    assert "notes.json" in text
+    assert "updated_at" in text
 
 
-def test_driver_covers_every_button_and_evidence() -> None:
+def test_driver_covers_every_control_and_evidence() -> None:
     text = DRIVER.read_text(encoding="utf-8")
-    for button in BUTTONS:
-        assert button in text, f"driver must click {button}"
+    for control in ("github", "infographic", "currentTime", "page", "notes"):
+        assert control.lower() in text.lower(), f"driver must cover {control}"
     assert "checks.json" in text
-    assert "paired-study/private" in text
-    assert "familiar" in text.lower()
-    assert "prepare next reading" in text.lower()
+    assert "cleanup" in text.lower()
+    assert "agent-browser" in text
     assert os.access(DRIVER, os.X_OK), "driver must stay executable"
 
 
 def test_skill_index_points_to_recipe() -> None:
-    assert "paired.md" in INDEX.read_text(encoding="utf-8")
-    assert "verify_paired_hub" in SKILL.read_text(encoding="utf-8")
+    assert "notes.md" in INDEX.read_text(encoding="utf-8")
+    assert "verify_notes_hub" in SKILL.read_text(encoding="utf-8")
 
 
 HANDOFF = REPO / "scripts" / "handoff_study_hub.py"
@@ -62,7 +61,7 @@ HANDOFF = REPO / "scripts" / "handoff_study_hub.py"
 def test_handoff_recipe_requires_supervised_handoff() -> None:
     text = RECIPE.read_text(encoding="utf-8")
     assert "scripts/handoff_study_hub.py" in text
-    assert "artifacts/handoff" in text
+    assert "artifacts/study-v3/handoff/notes" in text
     lowered = text.lower()
     assert "pidfile" in lowered
     assert "exact url" in lowered
@@ -72,7 +71,7 @@ def test_handoff_recipe_requires_supervised_handoff() -> None:
 def test_skill_drive_requires_handoff_record() -> None:
     text = SKILL.read_text(encoding="utf-8")
     assert "handoff_study_hub" in text
-    assert "artifacts/handoff" in text
+    assert "artifacts/study-v3/handoff/notes" in text
     lowered = text.lower()
     assert "exact url" in lowered
     assert "pidfile" in lowered or "supervised" in lowered
@@ -86,13 +85,11 @@ def test_handoff_script_meets_contract() -> None:
     assert "pidfile" in text.lower()
     assert "silent" in text.lower()
     assert "preconnect" in text.lower()
-    assert "Prepare next reading" in text
-    assert "preview" in text.lower()
-    assert "session.json" in text
+    assert "notes.json" in text
+    assert "notes-review" in text
     assert "--stop" in text
-    assert "artifacts/handoff" in text
-    assert "pageerror" in text.lower()
-    assert "PLAYWRIGHT_BROWSERS_PATH" in text
+    assert "artifacts/study-v3/handoff/notes" in text
+    assert "agent-browser" in text
     assert "HANDOFF REFUSED" in text
     for field in ('"url"', '"port"', '"pid"', '"pidfile"', '"screenshot"', '"checks"'):
         assert field in text

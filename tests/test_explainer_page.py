@@ -126,3 +126,127 @@ def test_outro_hands_off_to_github_in_video_and_clickable_page(tmp_path: Path) -
         assert board["scenes"][-1]["url"] in page.locator(".outro .cmd").inner_text()
         page.screenshot(path=str(tmp_path / "page-outro.png"))
         browser.close()
+
+
+def _groups_change() -> tuple[dict[str, Any], dict[str, Any], list[tuple[str, int, str]]]:
+    """A groups scene whose two items are different names, each cited from its own added line."""
+    m = json.loads(MAP.read_text())
+    picks: list[tuple[str, int, str]] = []
+    for f in m["files"]:
+        for h in f["hunks"]:
+            for ln in h["lines"]:
+                words = re.findall(r"[A-Za-z_][A-Za-z_0-9]{5,}", ln["text"])
+                if ln["op"] == "+" and words and all(words[0] != p[2] for p in picks):
+                    picks.append((f["path"], ln["new"], words[0]))
+                if len(picks) == 2:
+                    break
+            if len(picks) == 2:
+                break
+        if len(picks) == 2:
+            break
+    (pa, na, wa), (pb, nb, wb) = picks
+    board = {
+        "scenes": [
+            {"type": "title", "say": ["A small change lands."], "cues": []},
+            {
+                "type": "groups",
+                "groups": [
+                    {
+                        "id": "g0",
+                        "title": "Source",
+                        "col": 0,
+                        "row": True,
+                        "items": [{"id": "a0", "text": wa}],
+                    },
+                    {
+                        "id": "g1",
+                        "title": "Target",
+                        "col": 1,
+                        "row": True,
+                        "items": [{"id": "a1", "text": wb}],
+                    },
+                ],
+                "cite": [{"line": f"{pa}:{na}", "match": wa}, {"line": f"{pb}:{nb}", "match": wb}],
+                "say": ["The first name now feeds the second one in this change."],
+                "cues": [
+                    {"at": [0, 0.0], "do": "show", "ids": ["g0", "g1"], "step": 0.3},
+                    {"at": [0, 0.2], "do": "fly", "from": "a0", "to": "a1", "arc": 0},
+                ],
+                "hold": 1,
+            },
+        ]
+    }
+    return m, board, picks
+
+
+def test_page_footer_receipts_open_their_lines_on_github(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import files_url, render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, picks = _groups_change()
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+    owner_repo, number = str(m["pr"]).split("#")
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        context = browser.new_context(viewport={"width": 1280, "height": 800})
+        context.route("https://github.com/**", lambda route: route.fulfill(body="github"))
+        page = context.new_page()
+        page.goto((tmp_path / "page.html").as_uri())
+        page.locator("#strip button").nth(1).click()
+        links = page.locator(".efoot a")
+        page.wait_for_function("document.querySelectorAll('.efoot a').length > 0")
+        hrefs = [links.nth(i).get_attribute("href") for i in range(links.count())]
+        assert hrefs == [files_url(owner_repo, number, p, n) for p, n, _ in picks]
+        with context.expect_page() as opened:
+            links.first.click()
+        assert opened.value.url == hrefs[0]
+        page.locator("#strip button").first.click()
+        heads = page.locator(".efoot a")
+        page.wait_for_function("document.querySelectorAll('.efoot a').length === 2")
+        assert (
+            heads.nth(1).get_attribute("href")
+            == f"https://github.com/{owner_repo}/commit/{m['head_sha']}"
+        )
+        assert (
+            page.locator(".meta a").get_attribute("href")
+            == f"https://github.com/{owner_repo}/pull/{number}"
+        )
+        page.screenshot(path=str(tmp_path / "page-receipts.png"))
+        browser.close()
+
+
+def test_fly_between_different_names_lands_as_the_target_name(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, picks = _groups_change()
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    fly = next(c for c in board["scenes"][1]["cues"] if c["do"] == "fly")
+    clone = (
+        "(() => { const el = document.querySelector('.pill.fly'); const pt = el.querySelector('.pt');"
+        " return { text: pt.textContent, op: +getComputedStyle(el).opacity,"
+        " spill: el.scrollWidth - el.clientWidth }; })()"
+    )
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        page.evaluate(f"window.seek({fly['t'] + 0.05})")
+        assert page.evaluate(clone)["text"] == picks[0][2]
+        page.evaluate(f"window.seek({fly['t'] + 0.9})")
+        landed = page.evaluate(clone)
+        assert landed["text"] == picks[1][2]
+        assert landed["spill"] <= 1
+        page.screenshot(path=str(tmp_path / "fly-landed.png"))
+        browser.close()

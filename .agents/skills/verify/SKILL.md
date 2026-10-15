@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Drive PRC's CLI, clickable explanation page, infographic, video, and paired study hub. Use after changes to explain, board tools, review state, or skill installation. Capture commands, browser screenshots, and file effects."
+description: "Drive PRC's CLI, clickable explanation page, infographic, video, and notes review hub. Use after changes to explain, board tools, review state, or skill installation. Capture commands, browser screenshots, and file effects."
 ---
 
 # Verify PRC
@@ -45,8 +45,8 @@ Run `scripts/verify_page.py --page <exact page.html> --shots <new proof director
 The isolated Vercel agent-browser driver clicks every scene, code hunk, narration control, infographic, and coverage control.
 Require PASS and inspect each saved screenshot. Verify current output hashes against the report.
 For other paths, use [the feature map](features/README.md). Every browser check must save a screenshot.
-For paired session hub changes, run `.venv/bin/python scripts/verify_paired_hub.py` instead of API-only checks. Require PASS, every button screenshot, refusal recovery text, and cited proof from [paired hub](features/paired.md).
-Before any operator-facing handoff of the hub URL, run .venv/bin/python scripts/handoff_study_hub.py against the exact handed-off server and require its handoff record. Require the printed exact URL, the supervised pidfile, and the handoff record JSON under artifacts/handoff/ with url, port, pid, pidfile, screenshot, and checks. Do not hand off a hub URL without that record; the script refuses to print a URL when any check fails.
+For notes review hub changes, run `.venv/bin/python scripts/verify_notes_hub.py` instead of API-only checks. Require PASS, every PR screenshot, persisted notes, and cited proof from [notes hub](features/notes.md).
+Before any operator-facing handoff of the hub URL, run .venv/bin/python scripts/handoff_study_hub.py against the exact handed-off server and require its handoff record. Require the printed exact URL, the supervised pidfile, and the handoff record JSON under artifacts/study-v3/handoff/notes/ with url, port, pid, pidfile, screenshot, and checks. Do not hand off a hub URL without that record; the script refuses to print a URL when any check fails.
 The scripted driver uses the repo's Playwright harness. If Vercel agent-browser is required and available, use the same visible controls.
 Record a driver limitation if unavailable. DOM-only checks do not establish GUI behavior.
 
@@ -54,8 +54,8 @@ Record a driver limitation if unavailable. DOM-only checks do not establish GUI 
 
 The page driver writes report.json and screenshots in the supplied proof directory.
 Inspect the screenshots before declaring the feature verified. Manual recipes preserve commands, files, exit codes, and screenshots.
-The paired hub needs a full button pass on a disposable study, followed by verification of the exact live hub.
-Copies preserve the operator's readings. They do not establish that the handed-off server is alive.
+The notes hub needs a full link and notes-box pass on a scratch notes dir, followed by verification of the exact live hub.
+Copies preserve the operator's notes. They do not establish that the handed-off server is alive.
 Keep fixture checks local. Avoid public writes and global skill installs.
 Report tested and untested entry points. One mapped feature does not prove the whole product.
 
@@ -76,7 +76,7 @@ Keep human pacing, tone, and acceptance pending until the user supplies evidence
 ## Cleanup
 
 The page driver closes its browser and local server, including on failure.
-The paired hub driver also removes its disposable study and records `scratch_removed: true` in `cleanup.json`.
+The notes hub driver serves a scratch notes dir and leaves the live notes file untouched unless --cleanup-notes is passed.
 Evidence survives cleanup.
 Confirm screenshots still exist after exit.
 For manual runs, close the browser you started and remove only the saved scratch directory.

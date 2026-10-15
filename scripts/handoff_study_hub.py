@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Supervised handoff for the paired session hub.
+"""Supervised handoff for the notes review hub.
 
-Start or reuse one supervised hub process for a given study directory,
-detached from the agent session so it survives after the turn ends
-(detached via start_new_session, which calls setsid; equivalent to a
-background nohup pidfile launch). Wait until the exact printed URL answers
-from the host. Load that exact URL in real Chromium and require the hub to
-render. Drive one read-only interaction (Prepare next reading -> preview)
-that must not mutate the study. Hold a silent preconnect socket open during
-the check and require the hub to keep answering afterwards. Write a handoff
-record under artifacts/handoff/ with url, port, pid, pidfile, screenshot,
-and each check result. Refuse to print a URL when any check fails:
-on failure this script exits nonzero with HANDOFF REFUSED on stderr and
-prints no URL to stdout.
+Start or reuse one supervised hub process for the notes dir, detached from
+the agent session so it survives after the turn ends (detached via
+start_new_session, which calls setsid; equivalent to a background nohup
+pidfile launch). Wait until the exact printed URL answers from the host.
+Load that exact URL in a real browser (agent-browser CLI, isolated session)
+and require the hub to render all eight PR sections. Drive read-only checks
+(titles, GitHub hrefs, artifact answers) that must not mutate notes.json.
+Hold a silent preconnect socket open during the check and require the hub
+to keep answering afterwards. Write a handoff record under the record dir
+with url, port, pid, pidfile, screenshot, and each check result. Refuse to
+print a URL when any check fails: on failure this script exits nonzero with
+HANDOFF REFUSED on stderr and prints no URL to stdout.
 """
 
 from __future__ import annotations
@@ -34,11 +34,11 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_RECORD_DIR = ROOT / "artifacts" / "handoff"
-DEFAULT_PIDFILE = DEFAULT_RECORD_DIR / "study-hub.pid"
-DEFAULT_BROWSER_CACHE = Path("/Users/koval/dev/prc/artifacts/release/browser-cache")
-FORBIDDEN_SUBSTR = "paired-study/private"
-PREPARE_LABEL = "Prepare next reading"
+sys.path.insert(0, str(ROOT / "scripts"))
+from verify_notes_hub import Browser  # noqa: E402
+
+DEFAULT_RECORD_DIR = ROOT / "artifacts/study-v3/handoff/notes"
+DEFAULT_PIDFILE = ROOT / "artifacts/study-v3/notes-hub.pid"
 
 
 def _die(message: str, code: int = 1) -> None:
@@ -47,8 +47,6 @@ def _die(message: str, code: int = 1) -> None:
 
 
 def _refuse(message: str) -> None:
-    # Never print a URL on this path. Stdout stays empty so a caller
-    # cannot copy a dead hub address. Details go to stderr only.
     print(f"HANDOFF REFUSED: {message}", file=sys.stderr, flush=True)
     raise SystemExit(1)
 
@@ -91,7 +89,7 @@ def _read_pidfile(path: Path) -> dict[str, Any] | None:
 def _write_pidfile(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    tmp.write_text(json.dumps(payload, indent=2) + chr(10), encoding="utf-8")
     tmp.replace(path)
 
 
@@ -121,9 +119,11 @@ def _wait_for_url(url: str, timeout: float) -> bool:
     return False
 
 
-def _session_hash(study: Path) -> str:
-    data = (study / "session.json").read_bytes()
-    return hashlib.sha256(data).hexdigest()
+def _notes_hash(notes_dir: Path) -> str:
+    target = notes_dir / "notes.json"
+    if not target.is_file():
+        return "absent"
+    return hashlib.sha256(target.read_bytes()).hexdigest()
 
 
 def _stop_pidfile(pidfile: Path) -> int:
@@ -155,20 +155,14 @@ def _stop_pidfile(pidfile: Path) -> int:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Supervise one study hub, prove the exact URL in Chromium, record the handoff."
+        description="Supervise one notes hub, prove the exact URL, record the handoff."
     )
-    parser.add_argument(
-        "study", type=Path, help="study directory to serve (a copy, never the sealed original)"
-    )
-    parser.add_argument("--port", type=int, default=0, help="loopback port; 0 picks a free port")
+    parser.add_argument("notes_dir", type=Path, help="notes dir with roster.json")
+    parser.add_argument("--port", type=int, default=0)
     parser.add_argument("--pidfile", type=Path, default=DEFAULT_PIDFILE)
     parser.add_argument("--record-dir", type=Path, default=DEFAULT_RECORD_DIR)
-    parser.add_argument(
-        "--timeout", type=float, default=20.0, help="seconds to wait for the URL to answer"
-    )
-    parser.add_argument(
-        "--stop", action="store_true", help="stop the supervised hub named by --pidfile"
-    )
+    parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument("--stop", action="store_true")
     return parser
 
 
@@ -181,24 +175,11 @@ def main() -> int:
     if not record_dir.is_absolute():
         record_dir = (ROOT / record_dir).resolve()
     record_dir.mkdir(parents=True, exist_ok=True)
-
     if args.stop:
         return _stop_pidfile(pidfile)
-
-    study = Path(args.study).resolve()
-    if FORBIDDEN_SUBSTR in str(study):
-        _die(
-            f"refusing sealed original under {FORBIDDEN_SUBSTR}; "
-            "copy the study outside artifacts/paired-study/private first "
-            "(the live operator server must stay untouched)"
-        )
-    if not study.is_dir():
-        _die(f"study directory is missing: {study}")
-    for name in ("study.json", "session.json"):
-        if not (study / name).is_file():
-            _die(f"study directory lacks {name}: {study}")
-
-    # Reuse one supervised hub process for this study directory.
+    notes_dir = Path(args.notes_dir).resolve()
+    if not (notes_dir / "roster.json").is_file():
+        _die(f"notes dir lacks roster.json: {notes_dir}")
     pid: int | None = None
     port: int = int(args.port)
     url: str | None = None
@@ -209,10 +190,10 @@ def main() -> int:
             old_pid = int(stored["pid"])
         except (KeyError, ValueError, TypeError):
             old_pid = -1
-        old_study = stored.get("study")
+        old_notes = stored.get("notes_dir")
         old_url = stored.get("url")
         old_port = stored.get("port")
-        if old_pid > 0 and _is_alive(old_pid) and old_study == str(study) and old_url:
+        if old_pid > 0 and _is_alive(old_pid) and old_notes == str(notes_dir) and old_url:
             if _wait_for_url(str(old_url), timeout=5.0):
                 pid, url = old_pid, str(old_url)
                 port = int(old_port or 0)
@@ -220,40 +201,27 @@ def main() -> int:
                 log_path = Path(log_text) if log_text else record_dir / f"server-{port}.log"
                 print(f"reusing supervised hub pid {pid} at {url}", file=sys.stderr, flush=True)
             else:
-                print(
-                    "stale pidfile (process alive but URL silent); restarting",
-                    file=sys.stderr,
-                    flush=True,
-                )
+                print("stale pidfile; restarting", file=sys.stderr, flush=True)
                 pidfile.unlink(missing_ok=True)
-        elif old_pid > 0 and _is_alive(old_pid) and old_study != str(study):
-            _die(
-                f"pidfile {pidfile} already supervises pid {old_pid} for {old_study}; "
-                f"refusing to replace it for {study} (use --stop or another --pidfile)"
-            )
+        elif old_pid > 0 and _is_alive(old_pid) and old_notes != str(notes_dir):
+            _die(f"pidfile {pidfile} supervises pid {old_pid} for {old_notes}")
         else:
             pidfile.unlink(missing_ok=True)
-
     if url is None:
         if port == 0:
             port = _pick_free_port()
         else:
-            # Refuse to shadow a live listener on the requested port.
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
                 probe.settimeout(1.0)
                 if probe.connect_ex(("127.0.0.1", port)) == 0:
-                    _die(f"port {port} already answers; pass --port 0 or stop its owner first")
+                    _die(f"port {port} already answers; pass --port 0 first")
         url = f"http://127.0.0.1:{port}"
         log_path = record_dir / f"server-{port}.log"
         env = dict(os.environ)
         src = str(ROOT / "src")
         existing = env.get("PYTHONPATH")
         env["PYTHONPATH"] = src if not existing else src + os.pathsep + existing
-        if not env.get("PLAYWRIGHT_BROWSERS_PATH") and DEFAULT_BROWSER_CACHE.is_dir():
-            env["PLAYWRIGHT_BROWSERS_PATH"] = str(DEFAULT_BROWSER_CACHE)
-        cmd = [sys.executable, "-m", "prc.cli", "eval-session", str(study), "--port", str(port)]
-        # start_new_session detaches (setsid) so the hub survives the agent turn;
-        # this is the background nohup equivalent with a pidfile for later --stop.
+        cmd = [sys.executable, "-m", "prc.cli", "notes-review", str(notes_dir), "--port", str(port)]
         with open(log_path, "ab", buffering=0) as log_handle:
             proc = subprocess.Popen(
                 cmd,
@@ -267,7 +235,13 @@ def main() -> int:
         pid = int(proc.pid)
         _write_pidfile(
             pidfile,
-            {"pid": pid, "port": port, "url": url, "study": str(study), "log": str(log_path)},
+            {
+                "pid": pid,
+                "port": port,
+                "url": url,
+                "notes_dir": str(notes_dir),
+                "log": str(log_path),
+            },
         )
         print(
             f"started supervised hub pid {pid} at {url} (log {log_path})",
@@ -281,8 +255,7 @@ def main() -> int:
             tail = ""
             with contextlib.suppress(OSError):
                 tail = log_path.read_bytes()[-2000:].decode(errors="replace")
-            _refuse(f"supervised hub pid {pid} never answered at {url}. Log tail: {tail[-500:]}")
-
+            _refuse(f"hub pid {pid} never answered at {url}. Log tail: {tail[-500:]}")
     assert pid is not None and url is not None and log_path is not None
     checks: dict[str, dict[str, Any]] = {}
     page_errors: list[str] = []
@@ -290,27 +263,27 @@ def main() -> int:
     def _check(name: str, passed: bool, detail: str) -> None:
         checks[name] = {"pass": bool(passed), "detail": detail[:500]}
 
-    # Baseline: the exact printed URL answers from the host.
     try:
         status, body = _http_get(url + "/api/state", timeout=5.0)
+        state: dict[str, Any] = {}
+        if status == 200:
+            with contextlib.suppress(ValueError):
+                state = json.loads(body.decode())
+        prs = state.get("prs", []) if isinstance(state, dict) else []
         _check(
             "server_answers",
-            status == 200,
-            f"GET /api/state -> {status} {body[:120].decode(errors='replace')}",
+            status == 200 and len(prs) == 8,
+            f"GET /api/state -> {status} with {len(prs)} PRs",
         )
     except Exception as err:
+        prs = []
         _check("server_answers", False, f"{type(err).__name__}: {err}")
-
     try:
-        before_hash = _session_hash(study)
-        _check("study_snapshot", True, f"session.json sha256 {before_hash[:16]}")
+        before_hash = _notes_hash(notes_dir)
+        _check("notes_snapshot", True, f"notes.json sha256 {before_hash[:16]}")
     except OSError as err:
         before_hash = ""
-        _check("study_snapshot", False, f"cannot read session.json: {err}")
-
-    # Hold a silent preconnect socket open during the check. This is the exact
-    # past failure: a browser-style connection that sends nothing once blocked
-    # the single-threaded hub forever. The hub must keep answering afterwards.
+        _check("notes_snapshot", False, f"cannot read notes.json: {err}")
     host, _, port_text = url.removeprefix("http://").partition(":")
     silent = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     silent_open = False
@@ -319,111 +292,119 @@ def main() -> int:
         silent.connect((host, int(port_text)))
         silent.settimeout(None)
         silent_open = True
-        _check(
-            "silent_preconnect_held",
-            True,
-            "silent socket connected and held open with no bytes sent",
-        )
+        _check("silent_preconnect_held", True, "silent socket held open, no bytes sent")
     except OSError as err:
         _check("silent_preconnect_held", False, f"cannot open silent socket: {err}")
-
     screenshot_path: Path | None = None
-    preview_ok = False
+    titles_ok = False
+    hrefs_ok = False
+    artifacts_ok = False
     try:
         if not silent_open:
-            raise RuntimeError(
-                "silent preconnect failed; refusing to hand off without the block check"
+            raise RuntimeError("silent preconnect failed; refusing handoff")
+        raw = subprocess.run(
+            [
+                "agent-browser",
+                "session",
+                "id",
+                "--scope",
+                "worktree",
+                "--prefix",
+                "handoffnotes-" + str(int(time.time())),
+            ],
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        if not raw:
+            raise RuntimeError("no isolated browser session")
+        b = Browser(raw.split()[-1])
+        try:
+            stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+            screenshot_path = record_dir / f"handoff-{stamp}.png"
+            b.run("set", "viewport", "1440", "900")
+            b.run("open", url)
+            b.run("wait", "--fn", 'document.querySelectorAll("section[data-pr]").length >= 8')
+            section_count = b.js('document.querySelectorAll("section[data-pr]").length')
+            first_title = b.js('document.querySelector("section[data-pr] h2").textContent')
+            titles_ok = (
+                section_count == 8 and isinstance(first_title, str) and len(first_title.strip()) > 0
             )
-        from playwright.sync_api import sync_playwright
-
-        if not os.environ.get("PLAYWRIGHT_BROWSERS_PATH") and DEFAULT_BROWSER_CACHE.is_dir():
-            os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(DEFAULT_BROWSER_CACHE)
-        stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
-        screenshot_path = record_dir / f"handoff-{stamp}.png"
-        with sync_playwright() as driver:
-            try:
-                browser = driver.chromium.launch()
-            except Exception:
-                browser = driver.chromium.launch(args=["--no-sandbox"])
-            try:
-                page = browser.new_page(viewport={"width": 1280, "height": 800})
-                page.on("pageerror", lambda err: page_errors.append(str(err)))
-                # Load the exact URL that will be handed off, not a fixture copy.
-                page.goto(url, timeout=15000)
-                page.get_by_role("button", name=PREPARE_LABEL).wait_for(timeout=10000)
-                _check("hub_renders", True, "exact URL renders with Prepare next reading visible")
-                # Safe read-only interaction: Prepare shows the preview panel.
-                # It must not start a trial or mutate the study (no Start click).
-                page.get_by_role("button", name=PREPARE_LABEL).click()
-                page.locator("#preview").wait_for(state="visible", timeout=10000)
-                title_text = page.locator("#previewtitle").inner_text().strip()
-                if title_text:
-                    preview_ok = True
-                    _check("preview_appears", True, "preview visible")
-                else:
-                    _check("preview_appears", False, "preview panel visible but title is empty")
-                page.screenshot(path=str(screenshot_path))
-                _check("screenshot_saved", screenshot_path.is_file(), str(screenshot_path))
-            finally:
-                browser.close()
+            _check(
+                "hub_renders",
+                titles_ok,
+                f"exact URL renders {section_count} PR sections",
+            )
+            hrefs = b.js(
+                'Array.from(document.querySelectorAll("[data-github-link]"))'
+                ".map(function(a){return a.href;})"
+            )
+            hrefs_ok = (
+                isinstance(hrefs, list)
+                and len(hrefs) == 8
+                and all(
+                    isinstance(h, str) and h.startswith("https://github.com/") and "/pull/" in h
+                    for h in hrefs
+                )
+            )
+            _check(
+                "github_hrefs", hrefs_ok, f"{len(hrefs) if isinstance(hrefs, list) else 0} links"
+            )
+            missing = 0
+            for pr in prs:
+                code, _ = _http_get(url + pr["artifacts"]["infographic"], timeout=10.0)
+                if code != 200:
+                    missing += 1
+            artifacts_ok = missing == 0 and len(prs) == 8
+            _check("artifacts_answer", artifacts_ok, f"{8 - missing}/8 infographics answer")
+            errs = b.errors()
+            page_errors.extend(errs)
+            b.run("screenshot", str(screenshot_path))
+            _check("screenshot_saved", screenshot_path.is_file(), str(screenshot_path))
+        finally:
+            with contextlib.suppress(Exception):
+                subprocess.run(
+                    ["agent-browser", "--session", b.session, "close"], capture_output=True
+                )
     except Exception as err:
         if screenshot_path is None:
             stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
             screenshot_path = record_dir / f"handoff-{stamp}.png"
-        _check(
-            "hub_renders",
-            checks.get("hub_renders", {}).get("pass", False),
-            checks.get("hub_renders", {}).get("detail", f"{type(err).__name__}: {err}"),
-        )
-        if "preview_appears" not in checks:
-            _check("preview_appears", False, f"{type(err).__name__}: {err}")
+        if "hub_renders" not in checks:
+            _check("hub_renders", False, f"{type(err).__name__}: {err}")
         if "screenshot_saved" not in checks:
             _check("screenshot_saved", False, f"{type(err).__name__}: {err}")
     finally:
-        # Require the hub to keep answering while the silent socket stays open.
         try:
             started = time.monotonic()
-            status, body = _http_get(url + "/api/state", timeout=5.0)
+            status, _ = _http_get(url + "/api/state", timeout=5.0)
             elapsed = time.monotonic() - started
-            if status == 200 and elapsed < 5.0:
-                _check(
-                    "silent_preconnect_survives",
-                    True,
-                    f"hub answered in {elapsed:.2f}s while silent socket held",
-                )
-            else:
-                _check(
-                    "silent_preconnect_survives",
-                    False,
-                    f"hub slow or bad while silent held: {status} in {elapsed:.2f}s",
-                )
-        except Exception as err:
             _check(
                 "silent_preconnect_survives",
-                False,
-                f"{type(err).__name__}: {err} (silent connection blocked the hub)",
+                status == 200 and elapsed < 5.0,
+                f"hub answered in {elapsed:.2f}s while silent socket held",
             )
+        except Exception as err:
+            _check("silent_preconnect_survives", False, f"{type(err).__name__}: {err}")
         with contextlib.suppress(OSError):
             silent.close()
-
     _check(
         "no_page_errors",
         len(page_errors) == 0,
         "no page errors" if not page_errors else "; ".join(page_errors)[:400],
     )
     try:
-        after_hash = _session_hash(study)
+        after_hash = _notes_hash(notes_dir)
         _check(
             "read_only",
             after_hash == before_hash,
-            f"session.json unchanged {after_hash[:16]}"
+            "notes.json unchanged"
             if after_hash == before_hash
-            else "session.json MUTATED by the handoff check",
+            else "notes.json MUTATED by the handoff check",
         )
     except OSError as err:
-        _check("read_only", False, f"cannot re-read session.json: {err}")
-
-    passed = all(item["pass"] for item in checks.values()) and preview_ok
+        _check("read_only", False, f"cannot re-read notes.json: {err}")
+    passed = all(item["pass"] for item in checks.values()) and titles_ok and hrefs_ok
+    passed = passed and artifacts_ok
     stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     if screenshot_path is None:
         screenshot_path = record_dir / f"handoff-{stamp}.png"
@@ -433,24 +414,18 @@ def main() -> int:
         "port": port,
         "pid": pid,
         "pidfile": str(pidfile),
-        "study": str(study),
+        "notes_dir": str(notes_dir),
         "screenshot": str(screenshot_path),
         "log": str(log_path),
-        "preview": {"visible": preview_ok},
         "page_errors": page_errors,
         "checks": checks,
         "passed": passed,
         "created_at": datetime.now(UTC).isoformat(),
     }
-    record_path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
-
+    record_path.write_text(json.dumps(record, indent=2) + chr(10), encoding="utf-8")
     if not passed:
         failed = sorted(name for name, item in checks.items() if not item["pass"])
-        _refuse(
-            f"checks failed ({', '.join(failed)}); record kept at {record_path}, no URL printed"
-        )
-
-    # Success path only: print the exact handed-off URL to stdout.
+        _refuse(f"checks failed ({', '.join(failed)}); record at {record_path}")
     print(url, flush=True)
     print(f"handoff record: {record_path}", file=sys.stderr, flush=True)
     return 0

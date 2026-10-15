@@ -124,13 +124,6 @@ def test_unknown_consistency_and_hostile_fixtures_publish_with_visible_gaps(tmp_
     assert int(str(hostile["coverage_gaps"])) >= 1
 
 
-def test_eval_analyze_runs_on_synthetic_input() -> None:
-    report = prc("eval-analyze", str(ROOT / "tests" / "data" / "synthetic_pairs.json"))
-
-    assert report["decision"] in ("success", "inconclusive", "no promising signal")
-    assert len(report["pair_rows"]) == 12
-
-
 def test_default_relative_store_path_works(tmp_path: Path) -> None:
     completed = subprocess.run(
         [sys.executable, "-m", "prc.cli", "review", "--source", "fixture:basic"],

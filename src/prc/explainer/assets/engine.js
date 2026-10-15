@@ -330,11 +330,13 @@
       else if (c.do === 'fly') {
         const a = items[c.from], b = items[c.to], dur = c.dur || 0.9;
         // The clone slides its text from where the source shows it to where the target will, so the landing never doubles letters.
-        const tw = measure(a.it.text, '500 40px ui-monospace, Menlo, monospace');
-        const inset = I => I.el.classList.contains('seat') ? Math.max(0, (I.w - tw) / 2 - 3) : 24;
+        // A fly between two different names carries the source name until mid-flight and the target name after,
+        // so it lands as the target and never spills past its box.
+        const font = '500 40px ui-monospace, Menlo, monospace';
+        const inset = (I, text) => I.el.classList.contains('seat') ? Math.max(0, (I.w - measure(text, font)) / 2 - 3) : 24;
         const el = D('pill fly', `<span class="pt">${esc(a.it.text)}</span>`, root);
-        Object.assign(el.style, { height: a.h + 'px', paddingRight: '0px', whiteSpace: 'nowrap' });
-        flies.push({ a, b, el, t: c.t, dur, fade: !!c.fade, arc: c.arc || 60, pa: inset(a), pb: inset(b) });
+        Object.assign(el.style, { height: a.h + 'px', paddingRight: '0px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
+        flies.push({ a, b, el, pt: el.querySelector('.pt'), shown: a.it.text, t: c.t, dur, fade: !!c.fade, arc: c.arc || 60, pa: inset(a, a.it.text), pb: inset(b, b.it.text) });
         if (!c.fade) { b.fill = Math.min(b.fill, c.t + dur); b.flash.push({ t: c.t + dur }); if (b.it.kind !== 'slot') b.show = Math.min(b.show, c.t + dur); }
       } else if (c.do === 'mark') {
         const B = box(c.id), tone = tones(c.tone || 'bad');
@@ -398,6 +400,11 @@
         F.el.style.top = lerp(F.a.y, F.b.y, e) - Math.sin(Math.PI * Math.min(q, 1)) * F.arc + 'px';
         F.el.style.width = lerp(F.a.w, F.b.w, e) + 'px';
         F.el.style.paddingLeft = lerp(F.pa, F.pb, e) + 'px';
+        if (F.a.it.text !== F.b.it.text) {
+          const name = e < 0.5 ? F.a.it.text : F.b.it.text;
+          if (name !== F.shown) { F.pt.textContent = name; F.shown = name; }
+          F.pt.style.opacity = String(Math.max(0.15, Math.abs(e - 0.5) * 2));
+        }
         F.el.style.opacity = q <= 1 || !F.fade ? 1 : 1 - (q - 1) / 0.6;
         F.el.style.transform = q > 1 && F.fade ? `scale(${lerp(1, 0.7, (q - 1) / 0.6)})` : '';
       });
@@ -618,6 +625,8 @@
       .map(x => { const r = D('scene', null, stage); return { s: x.s, root: r, update: MAKERS[x.s.type](x.s, r) }; });
     const sentences = scenes.flatMap(sc => (sc.s.nocap ? [] : sc.s.sentences));
     let lastCap, lastFoot;
+    // The footer names receipts; on the clickable page each receipt opens its line on GitHub.
+    const footHTML = s => s.footer_parts ? s.footer_parts.map(p => p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.text)}</a>` : esc(p.text)).join('') : esc(s.footer || '');
 
     const seek = t => {
       scenes.forEach(sc => {
@@ -631,7 +640,7 @@
       cap.style.opacity = cur ? Math.min(prog(t, cur.start - 0.15, 0.15), 1 - prog(t, cur.start + cur.dur + 0.1, 0.15)) : 0;
       const sc = scenes.find(x => t >= x.s.start && t < x.s.end);
       const f = sc ? sc.s.footer || '' : '';
-      if (f !== lastFoot) { foot.textContent = f; lastFoot = f; }
+      if (f !== lastFoot) { foot.innerHTML = sc ? footHTML(sc.s) : ''; lastFoot = f; }
       foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, ...sc.s.fade)) : 0;
       bar.style.width = `${(t / B.duration) * 100}%`;
     };

@@ -6,7 +6,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 MAIN_AGENTS = Path("/Users/koval/dev/prc/AGENTS.md")
-HUB_MARKERS = ("button-level end-to-end", "verify_paired_hub")
+HUB_MARKERS = ("notes-hub browser pass", "verify_notes_hub")
 
 
 def _agents_text() -> str:
@@ -28,10 +28,10 @@ def test_hub_button_pass_row_is_present() -> None:
 
 def test_hub_row_names_its_enforcement() -> None:
     text = _agents_text()
-    assert "test_verify_paired_hub" in text
+    assert "test_verify_notes_hub" in text
 
 
-HANDOFF_MARKERS = ("handoff_study_hub", "artifacts/handoff")
+HANDOFF_MARKERS = ("handoff_study_hub", "artifacts/study-v3/handoff/notes")
 
 
 def test_handoff_row_is_present() -> None:
@@ -42,5 +42,5 @@ def test_handoff_row_is_present() -> None:
 
 def test_handoff_row_names_its_enforcement() -> None:
     text = _agents_text()
-    assert "test_verify_paired_hub" in text
+    assert "test_verify_notes_hub" in text
     assert "test_dispatch_collection" in text

@@ -1,32 +1,5 @@
-"""Deterministic logic for the solo pilot evaluation protocol."""
+"""Per-PR notes review hub."""
 
-from prc.evaluation.analysis import AnalysisReport, Decision, PairOutcome, Scenario, analyze
-from prc.evaluation.kit import PAIRED_PROTOCOL_V2, KitError
-from prc.evaluation.protocol import (
-    PROTOCOL,
-    Condition,
-    Pair,
-    Protocol,
-    SealedExperiment,
-    assign,
-    seal_experiment,
-    verify_seal,
-)
+from prc.evaluation.notes import NotesError, NotesStore, github_url, serve
 
-__all__ = [
-    "PROTOCOL",
-    "AnalysisReport",
-    "KitError",
-    "PAIRED_PROTOCOL_V2",
-    "Condition",
-    "Decision",
-    "Pair",
-    "PairOutcome",
-    "Protocol",
-    "Scenario",
-    "SealedExperiment",
-    "analyze",
-    "assign",
-    "seal_experiment",
-    "verify_seal",
-]
+__all__ = ["NotesError", "NotesStore", "github_url", "serve"]

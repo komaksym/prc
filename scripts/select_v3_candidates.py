@@ -8,11 +8,10 @@ import re
 import subprocess
 from pathlib import Path
 
-from prc.evaluation.kit import (
-    LENS_COMMENT_AUTHORS,
-    LENS_STATE_MARKER_PREFIX,
-    LENS_STICKY_MARKER,
-)
+# Lens CI markers, formerly shared with the retired paired-eval kit.
+LENS_COMMENT_AUTHORS = ("coldtea-pr-lens[bot]", "github-actions[bot]")
+LENS_STATE_MARKER_PREFIX = "<!-- pr-lens:state "
+LENS_STICKY_MARKER = "<!-- pr-lens:sticky -->"
 
 SINCE_DEFAULT = "2026-09-14"
 MAX_CHANGED_LINES = 500
@@ -205,9 +204,12 @@ def collect_excluded(roots: list) -> set:
     # so reading them back would exclude the whole pool on a rerun. Skip
     # them: only earlier studies and acceptance packets count.
     current_outputs = ("v3-candidates",)
-    from prc.evaluation.kit import EXPOSED_PR_IDS
+    # Ids exposed by earlier demo studies, formerly shared with the retired kit.
+    exposed_pr_ids = frozenset(
+        {"willtho89/librarySync#98", "cybersemics/em#5756", "swarm-deploy/swarm-deploy#116"}
+    )
 
-    found: set = set(EXPOSED_PR_IDS)
+    found: set = set(exposed_pr_ids)
     id_re = re.compile(r'"pr_identity"\s*:\s*"([^"]+)"')
     fam_re = re.compile(r'"familiar_pr_ids"\s*:\s*\[(.*?)\]', re.DOTALL)
     study_dirs = (

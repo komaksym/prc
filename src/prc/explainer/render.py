@@ -16,6 +16,7 @@ from prc.explainer.check import verify_board
 from prc.explainer.diffrows import diff_layout, pair_rows, prepare, wrap_row
 from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
+from prc.explainer.page import files_url
 from prc.explainer.timing import check_stamped_cues, fit_sentences
 from prc.explainer.voice import Backend
 
@@ -108,6 +109,8 @@ def fill(
     git_dir: str | None = None,
 ) -> None:
     repo, number = m["pr"].split("/")[1].split("#")
+    owner_repo = m["pr"].split("#")[0]
+    commit = "https://github.com/" + owner_repo + "/commit/"
     added = sum(f["added"] for f in m["brief"]["files"])
     removed = sum(f["removed"] for f in m["brief"]["files"])
     board["header"] = f"<b>{repo} #{number}</b> · {m['author']}"
@@ -115,18 +118,31 @@ def fill(
 
     for i, s in enumerate(board["scenes"]):
         s["i"] = i
-        cites = [
-            re.sub(r":-(\d+)$", r":\1 (old)", c["line"].rsplit("/", 1)[-1])
-            for c in s.get("cite", [])
-        ]
-        s["footer"] = ("receipts   " + "  ·  ".join(cites[:4])) if cites else ""
+        receipts = s.get("cite", [])[:4]
+        cites = [re.sub(r":-(\d+)$", r":\1 (old)", c["line"].rsplit("/", 1)[-1]) for c in receipts]
+        s["footer"] = ("receipts   " + "  ·  ".join(cites)) if cites else ""
+        s["footer_parts"] = []
+        for k, (c, label) in enumerate(zip(receipts, cites, strict=True)):
+            path, n = c["line"].rsplit(":", 1)
+            url = files_url(owner_repo, number, path, abs(int(n)), int(n) < 0)
+            s["footer_parts"] += [
+                {"text": "  ·  " if k else "receipts   "},
+                {"text": label, "url": url},
+            ]
 
         if s["type"] == "title":
             s["title"] = m["title"]
             s["meta"] = (
-                f'<span class="add">+{added}</span> <span class="del">−{removed}</span> · {m["pr"]}'
+                f'<span class="add">+{added}</span> <span class="del">−{removed}</span> · '
+                f'<a href="https://github.com/{owner_repo}/pull/{number}" target="_blank" rel="noopener">{m["pr"]}</a>'
             )
             s["footer"] = f"base {m['base_sha'][:7]}  →  head {m['head_sha'][:7]}"
+            s["footer_parts"] = [
+                {"text": "base "},
+                {"text": m["base_sha"][:7], "url": commit + m["base_sha"]},
+                {"text": "  →  head "},
+                {"text": m["head_sha"][:7], "url": commit + m["head_sha"]},
+            ]
             segments, rest = [], m["title"]
             for claim in s.get("claims", []):
                 before, _, rest = rest.partition(claim["text"])
@@ -143,6 +159,7 @@ def fill(
         if s["type"] == "receipt":
             s["verdict"] = facts["verdicts"][i]
             s["footer"] = ""
+            s["footer_parts"] = []
         if s["type"] == "stats":
             for c in s["cards"]:
                 c["value"] = c["value"].format(**values)
@@ -182,6 +199,13 @@ def fill(
             s["footer"] = (
                 f"receipts   {len(code)} lines quoted verbatim from the diff of {s['file'].rsplit('/', 1)[-1]}"
             )
+            s["footer_parts"] = [
+                {"text": f"receipts   {len(code)} lines quoted verbatim from the diff of "},
+                {
+                    "text": s["file"].rsplit("/", 1)[-1],
+                    "url": files_url(owner_repo, number, s["file"]),
+                },
+            ]
 
 
 def join_gate(board: dict[str, Any], m: dict[str, Any], out: Path) -> None:

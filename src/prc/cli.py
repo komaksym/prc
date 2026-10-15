@@ -11,8 +11,6 @@ import time
 from pathlib import Path
 
 from prc.controller import fixture_suite
-from prc.evaluation.kit import KitError as PairedKitError
-from prc.evaluation.protocol import PROTOCOL
 from prc.fixture_source import FIXTURE_EPOCH
 from prc.github_source import GitHubSource
 from prc.identity import to_jsonable
@@ -196,27 +194,9 @@ def build_parser() -> argparse.ArgumentParser:
     hear.add_argument("folder", type=Path, help="an explain output folder")
     hear.add_argument("--engine", default="auto", choices=["auto", "parakeet", "whisper"])
 
-    analyze = sub.add_parser("eval-analyze", help="analyze recorded pilot pair outcomes")
-    analyze.add_argument("results", type=Path)
-
-    paired = sub.add_parser("eval-prepare", help="validate, seal, and assign a paired study")
-    paired.add_argument("manifest", type=Path)
-    paired.add_argument("--out", type=Path, required=True)
-
-    session = sub.add_parser("eval-session", help="serve a paired study reading session")
-    session.add_argument("study", type=Path)
-    session.add_argument("--port", type=int, default=0)
-
-    export = sub.add_parser(
-        "eval-export", help="export the blinded grading sheet from a closed study"
-    )
-    export.add_argument("study", type=Path)
-    export.add_argument("--out", type=Path, required=True)
-
-    grade = sub.add_parser("eval-grade", help="apply blinded scores and build results.json")
-    grade.add_argument("study", type=Path)
-    grade.add_argument("scores", type=Path)
-    grade.add_argument("--out", type=Path, required=True)
+    notes = sub.add_parser("notes-review", help="serve the per-PR notes review hub")
+    notes.add_argument("notes_dir", type=Path, help="dir with roster.json and notes.json")
+    notes.add_argument("--port", type=int, default=0)
 
     return parser
 
@@ -224,7 +204,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     try:
         return _main(argv)
-    except (SourceError, PairedKitError) as error:
+    except SourceError as error:
         print(f"prc: {error}", file=sys.stderr)
 
         return 1
@@ -239,47 +219,16 @@ def _main(argv: list[str] | None = None) -> int:
 
         return 0
 
-    if args.command == "eval-analyze":
-        from prc.evaluation.analysis import analyze
-        from prc.evaluation.io import load_pairs_with_protocol
+    if args.command == "notes-review":
+        from prc.evaluation.notes import NotesError, serve
 
-        pairs, protocol = load_pairs_with_protocol(args.results)
+        try:
+            httpd, url = serve(args.notes_dir, args.port)
+        except NotesError as error:
+            print(f"prc: {error}", file=sys.stderr)
 
-        analyzed = dict(dataclasses.asdict(analyze(pairs, protocol or PROTOCOL)))
-        recorded = json.loads(args.results.read_text())
-        for field in ("study_digest", "interpretation", "deviations"):
-            if field in recorded:
-                analyzed[field] = recorded[field]
-        print(json.dumps(analyzed, indent=2, default=str))
-
-        return 0
-
-    if args.command == "eval-prepare":
-        from prc.evaluation.kit import prepare_study
-
-        print(json.dumps(prepare_study(args.manifest, args.out)))
-
-        return 0
-
-    if args.command == "eval-export":
-        from prc.evaluation.kit import export_blinded
-
-        print(json.dumps(export_blinded(args.study, args.out)))
-
-        return 0
-
-    if args.command == "eval-grade":
-        from prc.evaluation.kit import apply_scores
-
-        print(json.dumps(apply_scores(args.study, args.scores, args.out)))
-
-        return 0
-
-    if args.command == "eval-session":
-        from prc.evaluation.session import serve
-
-        httpd, url = serve(args.study, args.port)
-        print(f"paired-eval session: {url}", flush=True)
+            return 1
+        print(f"notes-review session: {url}", flush=True)
 
         try:
             httpd.serve_forever()
