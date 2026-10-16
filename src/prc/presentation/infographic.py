@@ -158,10 +158,10 @@ LAYOUT_REGISTRY: dict[str, dict[str, Any]] = {
         "close": "- Each area has a plain solid numbered header bar with its panel header, "
         "one simple icon with no letters, digits or digit-like shapes, "
         "and its labels as a short list.",
-        "arrows": '- Across the divider: one bold arrow from {left} to {right_first} ({chain}). '
-        "Put no words on the arrows.{strip_clause}",
-        "rule": "Join the left panel to the right panels with one arrow across the center "
-        "divider, and put no words on it.{strip_rule}",
+        "arrows": "- Across the divider: one bold arrow from {left} to {right_first}. "
+        "Put no words on the arrow.{strip_clause}",
+        "rule": "Join the left panel to the first right-hand panel with one arrow across "
+        "the center divider, and put no words on it.{strip_rule}",
     },
     "pipeline": {
         "layout": "linear-progression",
@@ -276,6 +276,11 @@ def _panel_relations(
         before = [Relation(one, center, "flow") for one in headers[:at]]
         after = [Relation(center, one, "flow") for one in headers[at + 1 :]]
         return tuple(before + after)
+    if _layout_entry(layout).get("layout") == "binary-comparison" and len(headers) >= 2:
+        # Two columns split by a divider: one arrow crosses the divider to the
+        # first right-hand panel. Stacked right-hand panels need no arrow
+        # between them, and a trailing proof strip takes arrows from nothing.
+        return (Relation(headers[0], headers[1], "flow"),)
     return tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
 
 

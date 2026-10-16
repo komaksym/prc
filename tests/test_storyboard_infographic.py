@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import json
+import re
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -19,7 +21,6 @@ from prc.presentation.infographic import (
     prompt as infographic_prompt,
     tokenize,
 )
-from dataclasses import replace
 
 
 def case() -> tuple[dict[str, Any], dict[str, Any]]:
@@ -245,7 +246,6 @@ def test_panels_brief_permits_exactly_the_authored_lines() -> None:
     assert brief.tones == ("problem", "change", "proof")
     assert [(r.source, r.target) for r in brief.relations] == [
         ("1. BEFORE", "2. SWITCH"),
-        ("2. SWITCH", "3. PROOF"),
     ]
     assert "explicit" in allowed_words(brief) and "handle" not in allowed_words(brief)
 
@@ -295,7 +295,12 @@ def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:
     assert arrow_cues[layout] in prompt, layout
     for line in payload["lines"]:
         assert f'"{line["text"]}"' in prompt
-    assert '"1. BEFORE" to "2. SWITCH"' in prompt and '"2. SWITCH" to "3. PROOF"' in prompt
+    if layout == "binary-comparison":
+        # One arrow crosses the divider; the proof strip takes none.
+        assert '"1. BEFORE" to "2. SWITCH"' in prompt
+        assert '"2. SWITCH" to "3. PROOF"' not in prompt
+    else:
+        assert '"1. BEFORE" to "2. SWITCH"' in prompt and '"2. SWITCH" to "3. PROOF"' in prompt
     assert mapping["title"] not in prompt
     assert payload["mode"] == "panels"
 
@@ -440,3 +445,99 @@ def test_v5_prompts_have_different_layout_sections() -> None:
         text = infographic_prompt(infobrief(mapping, mapping["brief"], board))
         sections.add(_layout_section(text))
     assert len(sections) == len(V5_LAYOUTS)
+
+
+FOUR_PANELS: dict[str, Any] = {
+    "mode": "panels",
+    "headline": "Name lookup ranks prospects by similarity",
+    "subtitle": "In trace_first_dm.py",
+    "panels": [
+        {"title": "BEFORE", "lines": ["Substring match on names"]},
+        {"title": "CHANGE", "lines": ["Keep rows scoring high"]},
+        {"title": "PARTS", "lines": ["Tiers name each band"]},
+        {"title": "PROOF", "lines": ["Four new unit tests"]},
+    ],
+    "footer": ["Start at match_names"],
+}
+
+
+def four_panel_board() -> tuple[dict[str, Any], dict[str, Any]]:
+    mapping, board = case()
+    board["infographic"] = deepcopy(FOUR_PANELS)
+    return mapping, board
+
+
+def _arrows_line(prompt_text: str) -> str:
+    for line in prompt_text.splitlines():
+        if line.startswith(
+            (
+                "- Across the divider:",
+                "- Along the path:",
+                "- Spokes:",
+                "- Between panels:",
+            )
+        ):
+            return line
+    raise AssertionError("prompt names no arrows line")
+
+
+def sized_mapping(n_files: int, n_edges: int) -> dict[str, Any]:
+    mapping, _ = case()
+    mapping = deepcopy(mapping)
+    mapping["brief"] = {
+        "files": [
+            {"path": f"src/part{k}.py", "kind": "src", "added": 1, "removed": 0}
+            for k in range(n_files)
+        ],
+        "checks": [],
+        "look_first": [],
+        "mismatches": [],
+    }
+    mapping["edges"] = [
+        {"source": f"src/part{k}.py:run", "target": f"src/part{k + 1}.py:run"}
+        for k in range(n_edges)
+    ]
+    return mapping
+
+
+@pytest.mark.parametrize(
+    ("n_files", "n_edges", "layout"),
+    [
+        (1, 0, "binary-comparison"),
+        (2, 15, "hub-spoke"),
+        (5, 0, "linear-progression"),
+        (4, 0, "structural-breakdown"),
+    ],
+)
+def test_prompt_arrows_are_allowed_by_their_own_layout_geometry(
+    n_files: int, n_edges: int, layout: str
+) -> None:
+    """Every arrow the prompt names must be drawn by that layout's geometry.
+
+    Regression for the v5-b binary-comparison line: it named one bold arrow
+    from BEFORE to CHANGE and then listed three pairs in parentheses, including
+    PARTS to PROOF, on the same line that bans arrows into the proof strip.
+    Each layout is reached through the real content-shape path, so the brief
+    relations are the ones the fixed source builds for that geometry.
+    """
+    mapping = sized_mapping(n_files, n_edges)
+    _, board = four_panel_board()
+    brief = infobrief(mapping, mapping["brief"], board)
+    assert brief.layout == layout
+    assert brief.tones == ("problem", "change", "part", "proof")
+    named = re.findall(r'"([^"]+)" to "([^"]+)"', _arrows_line(infographic_prompt(brief)))
+    headers = [line.text for line in brief.lines if line.role == "panel"]
+    assert named, layout
+    if layout == "binary-comparison":
+        # One arrow crosses the divider to the first right-hand panel. The
+        # stacked right-hand panels and the proof strip take none.
+        assert named == [(headers[0], headers[1])]
+        assert all("PROOF" not in endpoint for pair in named for endpoint in pair)
+    elif layout == "hub-spoke":
+        hub = headers[brief.tones.index("part")]
+        assert len(named) == len(headers) - 1
+        assert all(hub in pair for pair in named)
+    else:
+        assert named == list(zip(headers, headers[1:], strict=False))
+    # The prompt agrees with the brief relations the gate counts.
+    assert named == [(relation.source, relation.target) for relation in brief.relations]
