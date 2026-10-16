@@ -5,6 +5,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import pytest
+
 REPO = Path(__file__).resolve().parent.parent
 RECIPE = REPO / ".agents" / "skills" / "verify" / "features" / "notes.md"
 DRIVER = REPO / "scripts" / "verify_notes_hub.py"
@@ -94,3 +96,68 @@ def test_handoff_script_meets_contract() -> None:
     for field in ('"url"', '"port"', '"pid"', '"pidfile"', '"screenshot"', '"checks"'):
         assert field in text
     assert os.access(HANDOFF, os.X_OK), "handoff script must stay executable"
+
+
+@pytest.mark.parametrize("suffix", ["", "/"])
+def test_live_pass_puts_operator_notes_back_when_a_check_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, suffix: str
+) -> None:
+    """2026-10-16: a live pass left \"note for v5-a\" in the real hub and skipped cleanup.
+
+    The second run uses the hub URL as the handoff record prints it, with a
+    trailing slash: the restore then sent Origin "http://host:port/", the hub
+    refused it with 403, and the test notes stayed in the operator's hub.
+    """
+    import importlib.util
+    import shutil
+    import sys
+    import threading
+
+    sys.path.insert(0, str(REPO / "src"))
+    from prc.evaluation import notes as notes_mod
+
+    spec = importlib.util.spec_from_file_location("verify_notes_hub", DRIVER)
+    assert spec and spec.loader
+    drv = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(drv)
+    source = REPO / "artifacts" / "output-v5" / "notes"
+    for name in ("roster.json", "prepared_root", "spotcheck.json"):
+        shutil.copy(source / name, tmp_path / name)
+    httpd, url = notes_mod.serve(tmp_path)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        state = drv.api_get(url, "/api/state")
+        first_pr = state["prs"][0]["id"]
+        first_spot = state["spotcheck"][0]["id"]
+        drv.api_post(url, "/api/notes", {"id": first_pr, "text": "operator note"})
+        drv.api_post(url, "/api/verdict", {"id": first_spot, "verdict": "wrong"})
+        before = drv.api_get(url, "/api/state")
+
+        class TypesThenFails:
+            def __init__(self, session: str) -> None:
+                self.session = session
+
+            def run(self, *args: str) -> str:
+                drv.api_post(url, "/api/notes", {"id": first_pr, "text": "note for x"})
+                drv.api_post(url, "/api/verdict", {"id": first_spot, "verdict": ""})
+                raise drv.Fail("browser died mid-pass")
+
+        class Done:
+            stdout = "verifynotes-test"
+
+        monkeypatch.setattr(drv, "Browser", TypesThenFails)
+        monkeypatch.setattr(drv.subprocess, "run", lambda *a, **k: Done())
+        with pytest.raises(drv.Fail, match="browser died"):
+            drv.check_hub(url + suffix, tmp_path, True)
+        after = drv.api_get(url, "/api/state")
+        assert after["notes"][first_pr]["text"] == "operator note"
+        assert after["verdicts"] == before["verdicts"] == {first_spot: "wrong"}
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_live_mode_always_restores_notes() -> None:
+    text = DRIVER.read_text(encoding="utf-8")
+    assert "opts.cleanup_notes or bool(opts.url)" in text
+    assert '"right" if spot and prior_verdicts.get(spot[0]["id"]) == "wrong" else "wrong"' in text

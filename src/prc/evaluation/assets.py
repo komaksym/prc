@@ -3,7 +3,14 @@
 from __future__ import annotations
 
 import html
+import re
 from typing import Any
+
+
+def _pr_name(pr: str) -> str:
+    """owner/repo#N as the reader knows it: repo #N."""
+    repo, _, number = pr.partition("#")
+    return f"{repo.rsplit('/', 1)[-1]} #{number}"
 
 
 def notes_page(state: dict[str, Any]) -> str:
@@ -42,6 +49,8 @@ def notes_page(state: dict[str, Any]) -> str:
         "#error{color:#ff9c90;background:#2d1416;padding:14px}"
         ".saved{color:#56d364;min-height:1.4em}"
         "ol.spot{padding-left:24px}ol.spot li{margin:0 0 22px}"
+        ".where{margin:0 0 4px;color:#8b949e;font-size:13px}"
+        ".cap{margin:12px 0 4px;color:#8b949e;font-size:13px}"
         ".sent{font-size:18px;margin:0 0 6px}.judge{margin:0 0 6px;color:#c9d1d9}"
         ".cites{display:flex;flex-wrap:wrap;gap:4px 12px}"
         ".cites a{color:#c9e3ff;overflow-wrap:anywhere}"
@@ -123,7 +132,15 @@ def _spotcheck_section(items: list[dict[str, Any]], verdicts: dict[str, str], no
             for pick, text in (("right", "Judge right"), ("wrong", "Judge wrong"))
         )
         rows.append(
-            '<li data-spot="' + sid + '"><p class="sent">' + html.escape(str(item["text"])) + "</p>"
+            '<li data-spot="'
+            + sid
+            + '"><p class="where">'
+            + html.escape(_pr_name(str(item["pr"])))
+            + " · "
+            + html.escape(str(item["where"]))
+            + '</p><p class="sent">'
+            + html.escape(str(item["text"]))
+            + "</p>"
             '<p class="judge"><b>Judge: '
             + html.escape(label)
             + ".</b> "
@@ -151,6 +168,12 @@ def _spotcheck_section(items: list[dict[str, Any]], verdicts: dict[str, str], no
     )
 
 
+def pr_label(url: str) -> str:
+    """repo #N from a GitHub pull URL: the same name the spot-check items use."""
+    found = re.search(r"github\.com/[^/]+/([^/]+)/pull/(\d+)", url)
+    return f"{found.group(1)} #{found.group(2)}" if found else url
+
+
 def _pr_section(pr: dict[str, Any], note_text: str) -> str:
     pr_id = html.escape(str(pr["id"]), quote=True)
     title = html.escape(str(pr["title"]))
@@ -161,6 +184,7 @@ def _pr_section(pr: dict[str, Any], note_text: str) -> str:
     note = html.escape(note_text)
     return (
         '<section class="panel" id="sec-' + pr_id + '" data-pr="' + pr_id + '">'
+        '<p class="where">' + html.escape(pr_label(str(pr["github_url"]))) + "</p>"
         '<h2 id="title-' + pr_id + '">' + title + "</h2>"
         '<div class="actions">'
         '<a class="link" id="github-'
@@ -196,6 +220,7 @@ def _pr_section(pr: dict[str, Any], note_text: str) -> str:
         + info
         + '" '
         'alt="PRC infographic"></a></p>'
+        '<p class="cap">Video walkthrough. It opens on a title card; press play.</p>'
         '<p><video class="clip" id="video-' + pr_id + '" data-video="' + pr_id + '" controls '
         'preload="metadata" src="' + video + '"></video></p>'
         '<label>Notes<textarea id="notes-'

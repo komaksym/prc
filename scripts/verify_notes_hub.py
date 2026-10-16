@@ -3,8 +3,9 @@
 
 Default mode serves a temp notes dir (real roster, scratch notes.json) in
 process and drives it with the agent-browser CLI in an isolated session.
-Live mode (--url) drives a supervised hub instead, and --cleanup-notes
-clears every test note afterwards so the operator starts from empty boxes.
+Live mode (--url) drives a supervised hub instead. It always puts every note
+and spot-check verdict back to its value before the pass, also when a check
+fails, so the operator never finds test notes in the real hub.
 
 For every PR the driver asserts the GitHub href, opens the infographic
 (naturalWidth>0), plays the video (currentTime>1), opens page.html and
@@ -23,6 +24,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -61,16 +63,18 @@ class Browser:
 
 
 def api_get(url: str, path: str) -> Any:
-    req = urllib.request.Request(url + path)
+    req = urllib.request.Request(url.rstrip("/") + path)
     with urllib.request.urlopen(req, timeout=15) as resp:
         return json.loads(resp.read().decode())
 
 
-def api_post(url: str, path: str, payload: dict[str, Any], origin: str) -> Any:
+def api_post(url: str, path: str, payload: dict[str, Any]) -> Any:
+    """POST as the hub page would: Origin is scheme://host:port, never a path."""
+    parts = urllib.parse.urlsplit(url)
     req = urllib.request.Request(
-        url + path,
+        url.rstrip("/") + path,
         data=json.dumps(payload).encode(),
-        headers={"Content-Type": "application/json", "Origin": origin},
+        headers={"Content-Type": "application/json", "Origin": f"{parts.scheme}://{parts.netloc}"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=15) as resp:
@@ -78,11 +82,15 @@ def api_post(url: str, path: str, payload: dict[str, Any], origin: str) -> Any:
 
 
 def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
+    url = url.rstrip("/")
     state = api_get(url, "/api/state")
     prs = state["prs"]
     spot = state.get("spotcheck", [])
     prior_verdicts = dict(state.get("verdicts", {}))
     prior_spot_note = state["notes"].get("spotcheck", {}).get("text", "")
+    prior_notes = {pr["id"]: state["notes"].get(pr["id"], {}).get("text", "") for pr in prs}
+    # Clicking the verdict that is already set clears it, so click the other one.
+    pick = "right" if spot and prior_verdicts.get(spot[0]["id"]) == "wrong" else "wrong"
     if len(prs) < 1:
         raise Fail("hub lists no PRs")
     raw = subprocess.run(
@@ -216,7 +224,7 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
             if spill:
                 raise Fail(f"{spill} spot-check cites run past the section edge")
             record("spotcheck-render", f"{shown} sentences, {len(cites)} GitHub cites")
-            b.run("click", f'[data-verdict-for="{first}"][data-verdict="wrong"]')
+            b.run("click", f'[data-verdict-for="{first}"][data-verdict="{pick}"]')
             b.run(
                 "wait",
                 "--fn",
@@ -233,7 +241,7 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
                 ".getAttribute('data-verdict')"
             )
             note = b.js('document.getElementById("notes-spotcheck").value')
-            if pressed != "wrong" or note != "spot-check note":
+            if pressed != pick or note != "spot-check note":
                 raise Fail(f"spot-check lost on reload (verdict {pressed!r}, note {note!r})")
             record("spotcheck-persist", "verdict and note survive reload")
             shot("98-spotcheck")
@@ -253,22 +261,31 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
                     ["agent-browser", "--session", b.session, "close"],
                     capture_output=True,
                 )
-    if cleanup_notes:
-        for pr in prs:
-            api_post(url, "/api/notes", {"id": pr["id"], "text": ""}, url)
-        state = api_get(url, "/api/state")
-        for pr in prs:
-            if state["notes"][pr["id"]]["text"] != "":
-                raise Fail(pr["id"] + ": cleanup left a note behind")
-        if spot:
-            first = spot[0]["id"]
-            api_post(
-                url, "/api/verdict", {"id": first, "verdict": prior_verdicts.get(first, "")}, url
-            )
-            api_post(url, "/api/notes", {"id": "spotcheck", "text": prior_spot_note}, url)
-            if api_get(url, "/api/state")["verdicts"] != prior_verdicts:
-                raise Fail("cleanup did not restore the spot-check verdicts")
+        if cleanup_notes:
+            restore(url, prior_notes, prior_spot_note, prior_verdicts, spot)
     return {"prs": len(prs), "checks": checks}
+
+
+def restore(
+    url: str,
+    notes: dict[str, str],
+    spot_note: str,
+    verdicts: dict[str, str],
+    spot: list[dict[str, Any]],
+) -> None:
+    """Put every PR note, the spot-check note and the first verdict back as they were."""
+    for pr_id, text in notes.items():
+        api_post(url, "/api/notes", {"id": pr_id, "text": text})
+    if spot:
+        first = spot[0]["id"]
+        api_post(url, "/api/verdict", {"id": first, "verdict": verdicts.get(first, "")})
+        api_post(url, "/api/notes", {"id": "spotcheck", "text": spot_note})
+    state = api_get(url, "/api/state")
+    for pr_id, text in notes.items():
+        if state["notes"][pr_id]["text"] != text:
+            raise Fail(pr_id + ": cleanup did not restore the note")
+    if spot and state["verdicts"] != verdicts:
+        raise Fail("cleanup did not restore the spot-check verdicts")
 
 
 def main() -> int:
@@ -300,7 +317,8 @@ def main() -> int:
             thread = threading.Thread(target=httpd.serve_forever, daemon=True)
             thread.start()
         print(url, flush=True)
-        result = check_hub(url, proof, opts.cleanup_notes)
+        # A live hub holds the operator's real notes: always put them back.
+        result = check_hub(url, proof, opts.cleanup_notes or bool(opts.url))
         (proof / "checks.json").write_text(json.dumps(result, indent=2) + chr(10))
         print("PASS", flush=True)
         print(str(proof), flush=True)

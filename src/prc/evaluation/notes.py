@@ -10,6 +10,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, cast
 
+from prc.evaluation import spotcheck
+
 
 class NotesError(RuntimeError):
     """Notes roster or request failure."""
@@ -79,9 +81,12 @@ class NotesStore:
             identity = str(entry["pr_identity"])
             self.prs.append({"id": pr_id, "pr_identity": identity, "title": str(entry["title"])})
         spot_path = self.notes_dir / "spotcheck.json"
-        self.spotcheck: list[dict[str, Any]] = (
-            list(_load_json(spot_path)) if spot_path.is_file() else []
-        )
+        try:
+            self.spotcheck: list[dict[str, Any]] = (
+                spotcheck.validate(list(_load_json(spot_path))) if spot_path.is_file() else []
+            )
+        except spotcheck.SpotcheckError as error:
+            raise NotesError(f"{spot_path}: {error}") from error
         self.box_ids = [pr["id"] for pr in self.prs] + ([SPOTCHECK_ID] if self.spotcheck else [])
         self.notes_path = self.notes_dir / "notes.json"
         self._lock = threading.Lock()
