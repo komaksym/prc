@@ -524,7 +524,8 @@
 
   MAKERS.outro = (s, root) => {
     const wrap = D('outro', null, root);
-    const l1 = D('l1', fmt(s.l1), wrap), l2 = D('l2', fmt(s.l2), wrap);
+    const l1 = D('l1', fmt(s.l1), wrap);
+    const l2 = D('l2 tip', '<span class=\'tlabel\'>Review tip</span><span class=\'tbody\'>' + fmt(s.l2) + '</span>', wrap);
     const cmd = D('cmd', `<b>Review on GitHub</b> ${esc(s.url)}`, wrap);
     const fine = D('fine', esc(s.fine == null ? '' : s.fine), wrap);
     const at = name => cueT(s, q => q.do === name);
@@ -584,21 +585,38 @@
       if (hangs.length) w += hangs[hangs.length - 1].getBoundingClientRect().width;
       return w;
     };
+    const fontOf = FS + 'px ui-monospace, Menlo, monospace';
+    const rowMaxW = R => {
+      const toks = R.r.tokens || [];
+      const brs = new Set(R.r.breaks || []);
+      let best = 0, cur = 0;
+      toks.forEach((tk, idx) => {
+        if (brs.has(idx)) best = Math.max(best, cur), cur = (R.r.hang || 0) * FS * 0.6;
+        cur += measure(tk.text, fontOf);
+      });
+      return Math.max(best, cur);
+    };
     const notes = (s.cues || []).filter(c => c.do === 'note').map(c => {
       const R = byRef[c.line], tone = TONE[c.tone || 'info'];
       const el = D('dnote', fmt(c.text), box);
       el.style.color = tone; el.style.borderColor = tone;
-      const lnW = R.el.querySelector('.ln') ? R.el.querySelector('.ln').getBoundingClientRect().width : 0;
-      const want = lnW + 56 + lastLineW(R) + 32;
-      const limit = 1700 - el.offsetWidth - 20;
-      const clamped = want > limit + 1;
+      const estNote = measure(c.text, '600 26px system-ui') + 44;
+      const lnEl = R.el.querySelector('.ln');
+      const lnW = lnEl ? (lnEl.getBoundingClientRect().width || ((String(R.r.num).length + 1) * FS * 0.6)) : 60;
+      const codeEnd = lnW + 56 + rowMaxW(R);
+      const marginX = 1700 - estNote - 20;
+      const beside = codeEnd + 24 <= marginX - 8;
       const stack = R.drop ? R.drop / 56 : 0;
-      const N = { R, el, x: clamped ? 120 : want, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: clamped, stack };
-      if (clamped) {
+      let leader = null;
+      if (beside) {
+        leader = D('dleader', null, box);
+        leader.style.background = tone;
+      } else {
         R.drop = (R.drop || 0) + 56;
         R.h += 56;
         el.dataset.moved = '1';
       }
+      const N = { R, el, leader, codeEnd, x: beside ? marginX : 120, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: !beside, stack };
       R.notes.push(N);
       return N;
     });
@@ -646,8 +664,16 @@
         if (N.below) {
           N.el.style.transform = 'none';
           N.el.style.top = (N.R.y + (N.R.h - (N.R.drop || 0)) * N.R.hk + 8 + N.stack * 56) + 'px';
+          if (N.leader) N.leader.style.opacity = 0;
         } else {
-          N.el.style.top = N.R.y + N.R.h * N.R.hk - RH / 2 + 'px';
+          const cy = N.R.y + N.R.h * N.R.hk - RH / 2;
+          N.el.style.top = cy + 'px';
+          if (N.leader) {
+            N.leader.style.opacity = o * 0.9;
+            N.leader.style.left = N.codeEnd + 8 + 'px';
+            N.leader.style.width = Math.max(8, N.x - N.codeEnd - 12) + 'px';
+            N.leader.style.top = cy + 'px';
+          }
         }
       });
     };
@@ -710,7 +736,7 @@
         });
         times.forEach(t => {
           update(t);
-          root.querySelectorAll('.dnote').forEach(el => {
+          root.querySelectorAll('.dnote,.dleader').forEach(el => {
             if (parseFloat(getComputedStyle(el).opacity) < 0.05) return;
             const r = el.getBoundingClientRect();
             const covers = [...root.querySelectorAll('.drow')].some(row => {

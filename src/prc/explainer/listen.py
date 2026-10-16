@@ -57,6 +57,68 @@ NUMBERS = {
 }
 
 GOOD = "The user gets s2e3, and ErrNotExist stays in next_episode.py."
+
+# An identifier must sound like one unit: the pause between its words stays
+# small. Measured on Kokoro control clips (voice.pauses on control-good.wav):
+# normal word gaps top out at 0.08 s while comma pauses start at 0.205 s, so
+# 0.15 s separates a smooth read from a pause inside one name.
+IDENT_GAP_MAX = 0.15
+
+
+def check_identifier_gaps(board, words) -> list:
+    """Gaps inside one identifier from Parakeet word timestamps.
+
+    board holds narration text; words is a list of {word, start, end} in
+    seconds in transcript order. Every code token is heard as several words
+    (heard_as); the gap between two words of one token must stay at or
+    below IDENT_GAP_MAX. Returns one entry per token whose internal gap is
+    too wide: {token, gap, at}. An empty list passes.
+    """
+    seq = [(str(w.get("word", "")).lower(), float(w.get("start", 0.0)), float(w.get("end", 0.0))) for w in words]
+    said = [t for sc in board.get("scenes", []) for line in scripted(sc) for t in code_tokens(line)]
+    bad = []
+    for token in dict.fromkeys(said):
+        expect = heard_as(token).lower().split()
+        if len(expect) < 2:
+            continue
+        for k in range(len(seq) - len(expect) + 1):
+            if [w for w, _, _ in seq[k:k + len(expect)]] != expect:
+                continue
+            gap = max(seq[k + j + 1][1] - seq[k + j][2] for j in range(len(expect) - 1))
+            if gap > IDENT_GAP_MAX:
+                bad.append({"token": token, "gap": round(gap, 3), "at": k})
+            break
+    return bad
+
+
+def parakeet_words(cli, wav: Path) -> list:
+    """Word timestamps from muesli-cli JSON when it carries them, else []."""
+    import json as _json
+    import subprocess as _sp
+    import tempfile as _tf
+    from pathlib import Path as _P
+    with _tf.TemporaryDirectory() as work:
+        mono = _P(work) / "speech.wav"
+        _sp.run(["ffmpeg", "-v", "error", "-y", "-i", str(wav), "-ar", "16000", "-ac", "1", str(mono)], check=True)
+        out = _sp.run([str(cli), "transcribe", str(mono), "--format", "json", "--model", "parakeet-unified"], capture_output=True, text=True)
+    try:
+        result = _json.loads(out.stdout)
+    except Exception:
+        return []
+    data = result.get("data", {}) if isinstance(result, dict) else {}
+    for key in ("words", "tokens"):
+        items = data.get(key)
+        if isinstance(items, list) and items and isinstance(items[0], dict):
+            return [{"word": x.get("word", x.get("text", "")), "start": x.get("start", x.get("start_time", 0.0)), "end": x.get("end", x.get("end_time", 0.0))} for x in items]
+    segs = data.get("segments")
+    if isinstance(segs, list):
+        out_words = []
+        for seg in segs:
+            for x in seg.get("words", []) or []:
+                out_words.append({"word": x.get("word", x.get("text", "")), "start": x.get("start", 0.0), "end": x.get("end", 0.0)})
+        if out_words:
+            return out_words
+    return []
 BAD = "The user gets sezz three, and er knot eggs isst stays in next epp so dee pie."
 
 
@@ -199,6 +261,13 @@ def listen(folder: Path, choice: str = "auto") -> dict[str, Any]:
     calibration = calibrate(engine, select(run["voice"]), controls)
     transcript = engine.transcribe(narration)
     checks = check_tokens(json.loads((folder / "board.json").read_text()), transcript)
+    board_doc = json.loads((folder / "board.json").read_text())
+    gaps: list = []
+    if engine.name == "parakeet":
+        try:
+            gaps = check_identifier_gaps(board_doc, parakeet_words(_muesli_cli(), narration))
+        except Exception:
+            gaps = []
     report = {
         "engine": {"name": engine.name, "model": engine.model, "version": engine.version},
         "voice": run["voice"],
@@ -206,7 +275,8 @@ def listen(folder: Path, choice: str = "auto") -> dict[str, Any]:
         "transcript": transcript,
         "tokens": [dataclasses.asdict(c) | {"ok": c.ok} for c in checks],
         "lost": [c.token for c in checks if not c.ok],
-        "passed": calibration["passed"] and all(c.ok for c in checks),
+        "identifier_gaps": gaps,
+        "passed": calibration["passed"] and all(c.ok for c in checks) and not gaps,
     }
     (folder / "listening.json").write_text(json.dumps(report, indent=2) + "\n")
     return report

@@ -115,8 +115,11 @@ body.video .emount { width: 1920px; height: 1080px; }
 .stat .l { font: 31px system-ui; color: #ECEFF4; margin-top: 22px; text-wrap: balance; }
 
 .outro { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); text-align: center; width: 1700px; }
-.outro .l1, .outro .l2 { font: 400 84px/1.2 Charter, "Iowan Old Style", Georgia, serif; opacity: 0; }
-.outro .l2 { color: #E69F00; }
+.outro .l1 { font: 400 64px/1.4 Charter, "Iowan Old Style", Georgia, serif; opacity: 0; max-width: 1350px; margin: 0 auto; text-wrap: balance; overflow-wrap: break-word; }
+.outro .l2 { opacity: 0; }
+.outro .tip { display: block; max-width: 1080px; margin: 48px auto 0; padding: 22px 30px; border: 2px solid #56B4E9; border-radius: 16px; background: #121828; font: 400 40px/1.45 Charter, "Iowan Old Style", Georgia, serif; color: #ECEFF4; text-wrap: balance; overflow-wrap: break-word; }
+.outro .tip .tlabel { display: block; margin-bottom: 10px; font: 700 20px system-ui; letter-spacing: 0.16em; text-transform: uppercase; color: #56B4E9; }
+.outro .tip .tbody code { font-size: 0.86em; color: #E69F00; }
 .outro .cmd { display: inline-block; margin-top: 70px; font: 32px ui-monospace, Menlo, monospace; padding: 20px 34px; border: 2px solid #2A3348; border-radius: 14px; color: #ECEFF4; opacity: 0; background: #121828; }
 .outro .cmd b { color: #56B4E9; font-weight: 600; }
 .outro .fine { margin-top: 30px; font: 26px system-ui; color: #6B7488; opacity: 0; }
@@ -139,4 +142,5 @@ body.video .emount { width: 1920px; height: 1080px; }
 .drow .strike { position: absolute; left: 0; top: 50%; height: 3px; margin-top: -1px; width: 0; background: #D55E00; }
 .drow .k { color: #56B4E9; } .drow .s { color: #E3B866; } .drow .n { color: #E69F00; }
 .drow .c { color: #5B6475; font-style: italic; } .drow .f { color: #B7C6FF; }
+.dleader { position: absolute; height: 3px; border-radius: 2px; opacity: 0; z-index: 3; }
 .dnote { position: absolute; transform: translateY(-50%); padding: 6px 16px; border: 2.5px solid; border-radius: 12px; background: #0E1320; font: 600 26px system-ui; white-space: nowrap; opacity: 0; z-index: 3; }

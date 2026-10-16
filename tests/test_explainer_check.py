@@ -176,12 +176,14 @@ def tiny() -> tuple[dict[str, Any], dict[str, Any]]:
                     {
                         "id": "req",
                         "title": "Request",
+                        "sub": "before the call",
                         "col": 0,
                         "items": [{"id": "code", "text": "404"}],
                     },
                     {
                         "id": "res",
                         "title": "Result",
+                        "sub": "after the call",
                         "col": 1,
                         "items": [
                             {"id": "name", "text": "not_found"},

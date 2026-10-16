@@ -374,6 +374,10 @@ def render(
             browser.close()
             raise RenderError("DOM text mismatch:\n  " + "\n  ".join(dom_errs))
         warnings = list(page.evaluate("window.lint || []"))
+        overlaps = [w for w in warnings if "overlaps code" in w]
+        if overlaps:
+            browser.close()
+            raise RenderError("callout covers code:\n  " + "\n  ".join(overlaps))
 
         keys = out / "keys"
         keys.mkdir(exist_ok=True)
