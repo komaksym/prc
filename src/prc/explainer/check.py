@@ -22,6 +22,71 @@ CHANGED = ("added", "modified")
 ROWS = 12
 LABEL = 30
 MAX_SECONDS = 150
+
+# v6 box roles: every container and box says what it is at that moment.
+# A group caption lives in sub, a slot names what fills it in label, and a
+# cue label that names a count must match the count-like boxes drawn.
+NUMBER_WORDS = {
+    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+    "eleven": 11, "twelve": 12,
+}
+COUNT_LIKE = ("row", "matched", "unmatched", "inserted", "event", "fetch", "count")
+
+
+def _parse_count(label: str):
+    low = label.lower()
+    if "count" not in low:
+        return None
+    m = __import__("re").search(r"(\d+)", low)
+    if m:
+        return int(m.group(1))
+    for w, n in NUMBER_WORDS.items():
+        if __import__("re").search(r"(?<!\w)" + w + r"(?!\w)", low):
+            return n
+    return None
+
+
+def _count_like(text: str) -> bool:
+    low = text.lower()
+    return any(k in low for k in COUNT_LIKE)
+
+
+def box_role_problems(i: int, s) -> list:
+    problems = []
+    groups = s.get("groups", [])
+    item_group = {}
+    for g in groups:
+        if not str(g.get("sub", "") or "").strip():
+            problems.append(
+                f"scene {i}: group {g.get('id')!r} needs a caption in sub "
+                "saying what it is at that moment "
+                "(for example 'Google Doc before the run')"
+            )
+        for it in g.get("items", []):
+            item_group[it.get("id")] = g
+            if it.get("kind") == "slot" and not str(it.get("label", "") or "").strip():
+                problems.append(
+                    f"scene {i}: slot {it.get('id')!r} needs a label "
+                    "for what fills it"
+                )
+    for c in s.get("cues", []):
+        if c.get("do") != "arrow":
+            continue
+        label = str(c.get("label", "") or "")
+        want = _parse_count(label)
+        if want is None:
+            continue
+        src = item_group.get(c.get("from"))
+        if src is None:
+            src = next((g for g in groups if g.get("id") == c.get("from")), None)
+        got = sum(1 for it in (src.get("items", []) if src else []) if _count_like(str(it.get("text", ""))))
+        if got != want:
+            problems.append(
+                f"scene {i}: arrow label {label!r} names {want} counts "
+                f"but the source draws {got}; draw all {want} or drop the number"
+            )
+    return problems
 CODE_EXT = frozenset(
     [
         ".py",
@@ -979,6 +1044,9 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
                         ck.fail(
                             f"scene {i}: {word!r} is on screen but on none of the scene's cited lines"
                         )
+
+            for problem in box_role_problems(i, s):
+                ck.fail(problem)
 
         if s["type"] == "receipt":
             kinds = set()

@@ -164,6 +164,7 @@ def _groups_change() -> tuple[dict[str, Any], dict[str, Any], list[tuple[str, in
                     {
                         "id": "g0",
                         "title": "Source",
+                        "sub": "before the run",
                         "col": 0,
                         "row": True,
                         "items": [{"id": "a0", "text": wa}],
@@ -171,6 +172,7 @@ def _groups_change() -> tuple[dict[str, Any], dict[str, Any], list[tuple[str, in
                     {
                         "id": "g1",
                         "title": "Target",
+                        "sub": "before the run",
                         "col": 1,
                         "row": True,
                         "items": [{"id": "a1", "text": wb}],
@@ -414,12 +416,15 @@ def test_group_boxes_open_their_lines_and_the_reading_path_links_every_unit(
         page.wait_for_function("document.querySelectorAll('#scale .pill.pg-hit').length === 2")
         for (path, n, _), box in zip(picks, ("a0", "a1"), strict=True):
             page.locator(f"#scale .pill[data-id='{box}']").click()
+            page.wait_for_selector("#panel:not([hidden])")
             assert page.locator("#panel").is_visible()
             assert page.locator("#panel-title").inner_text() == f"{path} line {n}"
             assert page.locator("#panel-gh").get_attribute("href") == files_url(
                 owner_repo, number, path, n
             )
             assert page.locator("#panel-diff .hk-hit").count() == 1
+            page.keyboard.press("Escape")
+            page.wait_for_selector("#panel", state="hidden")
         receipts = page.locator("#receipts a")
         assert [receipts.nth(i).get_attribute("href") for i in range(receipts.count())] == [
             files_url(owner_repo, number, p, n) for p, n, _ in picks

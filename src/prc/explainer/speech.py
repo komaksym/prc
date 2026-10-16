@@ -87,7 +87,7 @@ def say_token(word: str, voice: bool = True) -> str:
     if not voice:
         return " ".join(words)
     words = [SOUNDS.get(w, w) for w in words]
-    if len(words) > 1 and len(words[0]) > 1 and words[0].isalpha() and words[1].isalpha():
+    if ("_" not in word and len(words) > 1 and len(words[0]) > 1 and words[0].isalpha() and words[1].isalpha()):
         words[0] += ","
     return " ".join(words)
 

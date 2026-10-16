@@ -81,7 +81,7 @@ Boxes holding short items: people, companies, slots, queue entries, states. Use 
   "say": ["..."], "cues": [ { "at": "Nothing stopped A", "do": "fly", "from": "a", "to": "bx", "arc": 120 } ] }
 ```
 
-A group has `id`, `title`, an optional `sub`, `items`, `row` (true lays items side by side, false stacks them), `col` (0 is the left column, then 1 and 2; groups in one column stack top to bottom) and an optional `ground`.
+A group has `id`, `title`, `sub`, `items`, `row` (true lays items side by side, false stacks them), `col` (0 is the left column, then 1 and 2; groups in one column stack top to bottom) and an optional `ground`. Every container and box says what it is at that moment: `sub` is the caption (for example "Google Doc before the run"); an empty or dashed slot carries a `label` for what fills it; a cue label that names a count must match what is drawn (an arrow that says "six counts" needs six count boxes at its source). `prc board check` fails a group without a `sub`, a slot without a `label`, and a count label that does not match the drawn items.
 
 An item has `id` and `text` (a letter, a short name or a value). Optional fields are `kind: "slot"` (a dashed empty seat until filled), `outside: true` (drawn just outside its group), `tone` (bad, good, info or blue), `label` (a small tag inside the pill) and `ground`.
 
@@ -165,7 +165,7 @@ All provided text must finish its reveal before the settled frame. The outro has
   "cues": [ { "at": [0, 0.0], "do": "l1" }, { "at": [0, 0.5], "do": "l2" }, { "at": [0, 0.9], "do": "cmd" } ] }
 ```
 
-`l1` and `l2` hand the reviewer off to the diff. `l1` says what changed in one plain sentence. `l2` names where to start reviewing (a file and what it decides) or what the PR leaves untested, whichever matters more for review. Both must be true to the diff. Never a slogan or a quotable line: "Unknown stays unknown" and "Evidence goes in, one report comes out" are wrong; "Report rows now carry the prospect's creation time" and "Start at the date helper in report.py; future timestamps are untested" are right (examples of form, not facts). The command line under them is filled in.
+`l1` and `l2` hand the reviewer off to the diff. `l1` is the summary in one plain sentence. `l2` is reviewer advice: it names where to start reviewing (a file and what it decides) or what the PR leaves untested, whichever matters more for review. Both must be true to the diff. Never a slogan or a quotable line: "Unknown stays unknown" and "Evidence goes in, one report comes out" are wrong; "Report rows now carry the prospect's creation time" and "Start at the date helper in report.py; future timestamps are untested" are right (examples of form, not facts). The command line under them is filled in. The video and the page render `l2` as its own card labelled "Review tip", visually distinct from the summary, so advice never reads as another fact.
 
 ## Tools
 

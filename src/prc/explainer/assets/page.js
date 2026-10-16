@@ -21,10 +21,17 @@
   function rest(s) { return (s.fade ? s.fade[0] : s.end) - 0.05; }
   function playing() { return hasAudio && !audio.paused && !audio.ended; }
 
-  function closePanel() {
+  var opener = null, openerScene = 0;
+  function closePanel(refocus) {
+    var wasOpen = !panel.hidden;
     panel.hidden = true;
     main.classList.remove('has-panel');
     regions.forEach(function (r) { if (r) r.classList.remove('pg-on'); });
+    if (wasOpen && refocus !== false && opener && opener.isConnected) {
+      if (openerScene !== cur) { show(openerScene); }
+      opener.focus();
+    }
+    opener = null;
   }
 
   function openHunk(k) {
@@ -33,8 +40,11 @@
     panelDiff.innerHTML = t.hunk >= 0 ? data.hunks[t.hunk] : '<p class="hk-head">No local diff for this line.</p>';
     panelGh.href = t.url;
     regions.forEach(function (r, i) { if (r) r.classList.toggle('pg-on', i === k); });
+    opener = regions[k] || document.activeElement;
+    openerScene = cur;
     panel.hidden = false;
     main.classList.add('has-panel');
+    el('panel-close').focus();
     var hit = panelDiff.querySelector('tr[data-k="' + t.key + '"]');
     if (hit) {
       hit.classList.add('hk-hit');
@@ -92,7 +102,7 @@
     if (i < 0 || i >= scenes.length) return;
     var keep = playing();
     cur = i;
-    closePanel();
+    closePanel(false);
     mount(i);
     if (keep) audio.currentTime = scenes[i].start;
     seek(keep ? scenes[i].start : rest(scenes[i]));
@@ -106,7 +116,7 @@
     var t = audio.currentTime;
     if (t >= scenes[cur].end && cur < scenes.length - 1) {
       cur += 1;
-      closePanel();
+      closePanel(false);
       mount(cur);
       update();
     }

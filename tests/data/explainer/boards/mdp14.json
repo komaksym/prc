@@ -35,7 +35,8 @@
               "id": "cl",
               "text": "changelog",
               "kind": "slot",
-              "tone": "good"
+              "tone": "good",
+              "label": "fills here"
             }
           ]
         }
@@ -156,7 +157,7 @@
           "at": "stops with",
           "do": "mark",
           "id": "nxt",
-          "text": "✗",
+          "text": "\u2717",
           "tone": "bad"
         }
       ],
@@ -203,7 +204,7 @@
       "type": "list",
       "label": "changelog checks in the end-to-end script",
       "tone": "good",
-      "mark": "✓",
+      "mark": "\u2713",
       "code": true,
       "more": "plus more rejection cases for bad changelog pages",
       "items": [
