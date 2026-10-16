@@ -125,10 +125,14 @@ def test_callout_leaves_code_uncovered_v5a_v5b(tmp_path):
           const r = note.getBoundingClientRect();
           const codes = [...document.querySelectorAll('.diff .code .ct')].flatMap(ct => [...ct.getClientRects()]);
           const bad = codes.some(c => Math.min(r.right, c.right) - Math.max(r.left, c.left) > 12 && Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top) > 12);
-          return {ok: !bad, note: [r.left, r.top, r.width, r.height]};
+          const placed = !!document.querySelector('.dleader') || !!document.querySelector('.dnote[data-moved]');
+          return {ok: !bad, placed, note: [r.left, r.top, r.width, r.height]};
         }""")
         b.close()
     assert hit["ok"], "callout covers code glyphs; v5-a line 36 and v5-b line 84 regressed"
+    # New placement draws a leader from the code end to the margin note.
+    # The old inline placement has no leader, so this fails on the base commit.
+    assert hit["placed"], "callout needs a margin leader line (or a below-code move); v5-a line 36 regressed"
 
 def test_outro_review_tip_card(tmp_path):
     pw = pytest.importorskip("playwright.sync_api")
