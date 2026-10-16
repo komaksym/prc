@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import replace
+import json
+import re
 from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -11,7 +15,10 @@ from prc.presentation.infographic import (
     PANELS_MAX_WORDS,
     allowed_words,
     brief_dict,
+    LAYOUT_REGISTRY,
+    content_shape,
     infobrief,
+    prompt as infographic_prompt,
     tokenize,
 )
 
@@ -239,7 +246,6 @@ def test_panels_brief_permits_exactly_the_authored_lines() -> None:
     assert brief.tones == ("problem", "change", "proof")
     assert [(r.source, r.target) for r in brief.relations] == [
         ("1. BEFORE", "2. SWITCH"),
-        ("2. SWITCH", "3. PROOF"),
     ]
     assert "explicit" in allowed_words(brief) and "handle" not in allowed_words(brief)
 
@@ -267,21 +273,34 @@ def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:
     payload = brief_dict(infobrief(mapping, mapping["brief"], board))
     prompt = payload["prompt"]
 
+    layout = payload["profile"]["layout"]
+    assert layout in ("binary-comparison", "linear-progression", "hub-spoke", "structural-breakdown")
     for want in (
         "baoyu-infographic",
         "technical-schematic",
         "blueprint",
-        "structural-breakdown",
+        layout,
         "landscape 16:9",
         "numbered header",
         "icon",
         "footer bar",
-        "arrow from each panel to the next",
     ):
         assert want in prompt, want
+    arrow_cues = {
+        "binary-comparison": "Across the divider",
+        "linear-progression": "Along the path",
+        "hub-spoke": "Spokes:",
+        "structural-breakdown": "arrow from each panel to the next",
+    }
+    assert arrow_cues[layout] in prompt, layout
     for line in payload["lines"]:
         assert f'"{line["text"]}"' in prompt
-    assert '"1. BEFORE" to "2. SWITCH"' in prompt and '"2. SWITCH" to "3. PROOF"' in prompt
+    if layout == "binary-comparison":
+        # One arrow crosses the divider; the proof strip takes none.
+        assert '"1. BEFORE" to "2. SWITCH"' in prompt
+        assert '"2. SWITCH" to "3. PROOF"' not in prompt
+    else:
+        assert '"1. BEFORE" to "2. SWITCH"' in prompt and '"2. SWITCH" to "3. PROOF"' in prompt
     assert mapping["title"] not in prompt
     assert payload["mode"] == "panels"
 
@@ -335,3 +354,190 @@ def test_bad_panels_fail_before_drawing(change: dict[str, Any], want: str) -> No
 
     with pytest.raises(ValueError, match=want):
         infobrief(mapping, mapping["brief"], board)
+
+
+V5_ROOT = Path("/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/output-v5")
+V5_LAYOUTS = {
+    "v5-a": "linear-progression",
+    "v5-b": "binary-comparison",
+    "v5-c": "hub-spoke",
+}
+
+
+def _load_v5(sid: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    mapping = json.loads((V5_ROOT / "prepared" / sid / "map.json").read_text())
+    board = json.loads((V5_ROOT / "boards" / sid / "board.json").read_text())
+    return mapping, board
+
+
+@pytest.mark.parametrize("sid,layout", sorted(V5_LAYOUTS.items()))
+def test_v5_maps_select_layouts_matching_their_shape(sid: str, layout: str) -> None:
+    if not (V5_ROOT / "prepared" / sid / "map.json").is_file():
+        pytest.skip("v5 fixtures absent in this checkout")
+    mapping, board = _load_v5(sid)
+    brief = infobrief(mapping, mapping["brief"], board)
+    assert brief.mode == "panels"
+    assert brief.layout == layout, content_shape(mapping, board)
+    assert len(set(brief.tones)) >= 3
+    payload = brief_dict(brief)
+    assert payload["profile"]["layout"] == layout
+    assert layout in payload["prompt"]
+
+
+def test_v5_layouts_are_not_all_one() -> None:
+    present = [sid for sid in V5_LAYOUTS if (V5_ROOT / "prepared" / sid / "map.json").is_file()]
+    if len(present) < 2:
+        pytest.skip("v5 fixtures absent in this checkout")
+    seen = set()
+    for sid in present:
+        mapping, board = _load_v5(sid)
+        seen.add(infobrief(mapping, mapping["brief"], board).layout)
+    assert len(seen) > 1
+
+
+def _layout_section(prompt_text: str) -> str:
+    start = prompt_text.index("Layout:")
+    end = prompt_text.index("Text:", start)
+    return prompt_text[start:end]
+
+
+LAYOUT_GEOMETRY_CUES = {
+    "binary-comparison": ("divider", "strip"),
+    "hub-spoke": ("hub", "spoke"),
+    "linear-progression": ("path", "node"),
+    "structural-breakdown": ("one row",),
+}
+
+
+def test_panels_layout_section_describes_registry_geometry() -> None:
+    mapping, board = panels_board()
+    base = infobrief(mapping, mapping["brief"], board)
+    layouts = {entry["layout"] for entry in LAYOUT_REGISTRY.values()}
+    assert set(LAYOUT_GEOMETRY_CUES) == layouts
+    for layout, cues in LAYOUT_GEOMETRY_CUES.items():
+        forced = replace(base, layout=layout)
+        section = _layout_section(infographic_prompt(forced)).lower()
+        for cue in cues:
+            assert cue in section, layout
+
+
+def test_panels_arrow_rules_match_layout_geometry() -> None:
+    mapping, board = panels_board()
+    base = infobrief(mapping, mapping["brief"], board)
+    sections = {}
+    for layout in LAYOUT_GEOMETRY_CUES:
+        forced = replace(base, layout=layout)
+        text = infographic_prompt(forced)
+        rules = text[text.index("Rules:"):]
+        sections[layout] = rules.lower()
+    assert "spoke" in sections["hub-spoke"]
+    assert "divider" in sections["binary-comparison"] or "strip" in sections["binary-comparison"]
+    assert "path" in sections["linear-progression"]
+
+
+def test_v5_prompts_have_different_layout_sections() -> None:
+    missing = [sid for sid in V5_LAYOUTS if not (V5_ROOT / "prepared" / sid / "map.json").is_file()]
+    if missing:
+        pytest.skip("v5 fixtures absent in this checkout")
+    sections = set()
+    for sid in V5_LAYOUTS:
+        mapping, board = _load_v5(sid)
+        text = infographic_prompt(infobrief(mapping, mapping["brief"], board))
+        sections.add(_layout_section(text))
+    assert len(sections) == len(V5_LAYOUTS)
+
+
+FOUR_PANELS: dict[str, Any] = {
+    "mode": "panels",
+    "headline": "Name lookup ranks prospects by similarity",
+    "subtitle": "In trace_first_dm.py",
+    "panels": [
+        {"title": "BEFORE", "lines": ["Substring match on names"]},
+        {"title": "CHANGE", "lines": ["Keep rows scoring high"]},
+        {"title": "PARTS", "lines": ["Tiers name each band"]},
+        {"title": "PROOF", "lines": ["Four new unit tests"]},
+    ],
+    "footer": ["Start at match_names"],
+}
+
+
+def four_panel_board() -> tuple[dict[str, Any], dict[str, Any]]:
+    mapping, board = case()
+    board["infographic"] = deepcopy(FOUR_PANELS)
+    return mapping, board
+
+
+def _arrows_line(prompt_text: str) -> str:
+    for line in prompt_text.splitlines():
+        if line.startswith(
+            (
+                "- Across the divider:",
+                "- Along the path:",
+                "- Spokes:",
+                "- Between panels:",
+            )
+        ):
+            return line
+    raise AssertionError("prompt names no arrows line")
+
+
+def sized_mapping(n_files: int, n_edges: int) -> dict[str, Any]:
+    mapping, _ = case()
+    mapping = deepcopy(mapping)
+    mapping["brief"] = {
+        "files": [
+            {"path": f"src/part{k}.py", "kind": "src", "added": 1, "removed": 0}
+            for k in range(n_files)
+        ],
+        "checks": [],
+        "look_first": [],
+        "mismatches": [],
+    }
+    mapping["edges"] = [
+        {"source": f"src/part{k}.py:run", "target": f"src/part{k + 1}.py:run"}
+        for k in range(n_edges)
+    ]
+    return mapping
+
+
+@pytest.mark.parametrize(
+    ("n_files", "n_edges", "layout"),
+    [
+        (1, 0, "binary-comparison"),
+        (2, 15, "hub-spoke"),
+        (5, 0, "linear-progression"),
+        (4, 0, "structural-breakdown"),
+    ],
+)
+def test_prompt_arrows_are_allowed_by_their_own_layout_geometry(
+    n_files: int, n_edges: int, layout: str
+) -> None:
+    """Every arrow the prompt names must be drawn by that layout's geometry.
+
+    Regression for the v5-b binary-comparison line: it named one bold arrow
+    from BEFORE to CHANGE and then listed three pairs in parentheses, including
+    PARTS to PROOF, on the same line that bans arrows into the proof strip.
+    Each layout is reached through the real content-shape path, so the brief
+    relations are the ones the fixed source builds for that geometry.
+    """
+    mapping = sized_mapping(n_files, n_edges)
+    _, board = four_panel_board()
+    brief = infobrief(mapping, mapping["brief"], board)
+    assert brief.layout == layout
+    assert brief.tones == ("problem", "change", "part", "proof")
+    named = re.findall(r'"([^"]+)" to "([^"]+)"', _arrows_line(infographic_prompt(brief)))
+    headers = [line.text for line in brief.lines if line.role == "panel"]
+    assert named, layout
+    if layout == "binary-comparison":
+        # One arrow crosses the divider to the first right-hand panel. The
+        # stacked right-hand panels and the proof strip take none.
+        assert named == [(headers[0], headers[1])]
+        assert all("PROOF" not in endpoint for pair in named for endpoint in pair)
+    elif layout == "hub-spoke":
+        hub = headers[brief.tones.index("part")]
+        assert len(named) == len(headers) - 1
+        assert all(hub in pair for pair in named)
+    else:
+        assert named == list(zip(headers, headers[1:], strict=False))
+    # The prompt agrees with the brief relations the gate counts.
+    assert named == [(relation.source, relation.target) for relation in brief.relations]

@@ -5,12 +5,12 @@ Default mode serves a temp notes dir (real roster, scratch notes.json) in
 process and drives it with the agent-browser CLI in an isolated session.
 Live mode (--url) drives a supervised hub instead. It always puts every note
 and spot-check verdict back to its value before the pass, also when a check
-fails, so the operator never finds test notes in the real hub.
+fails, so the operator never finds test votes in the real hub.
 
 For every PR the driver asserts the GitHub href, opens the infographic
 (naturalWidth>0), plays the video (currentTime>1), opens page.html and
 requires its engine to run (scene strip built, stage styled) with no console
-errors, types a note, reloads, and requires the note to persist.
+errors, clicks a judge vote, reloads, and requires the vote to persist.
 Writes checks.json plus one screenshot per PR. Exit 0 PASS, 1 FAIL.
 """
 
@@ -87,8 +87,6 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
     prs = state["prs"]
     spot = state.get("spotcheck", [])
     prior_verdicts = dict(state.get("verdicts", {}))
-    prior_spot_note = state["notes"].get("spotcheck", {}).get("text", "")
-    prior_notes = {pr["id"]: state["notes"].get(pr["id"], {}).get("text", "") for pr in prs}
     # Clicking the verdict that is already set clears it, so click the other one.
     pick = "right" if spot and prior_verdicts.get(spot[0]["id"]) == "wrong" else "wrong"
     if len(prs) < 1:
@@ -185,24 +183,6 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
             b.run("open", url)
             b.run("scrollintoview", "#sec-" + pr_id)
             shot(pr_id + "-artifacts")
-        for pr in prs:
-            pr_id = pr["id"]
-            note = "note for " + pr_id
-            b.run("fill", "#notes-" + pr_id, note)
-            b.run(
-                "wait",
-                "--fn",
-                'document.getElementById("saved-' + pr_id + '").textContent==="Saved"',
-            )
-            record(pr_id + "-note-save", "autosave reports Saved")
-        b.run("open", url)
-        for pr in prs:
-            pr_id = pr["id"]
-            value = b.js('document.getElementById("notes-' + pr_id + '").value')
-            if value != "note for " + pr_id:
-                raise Fail(f"{pr_id}: note lost on reload ({value!r})")
-            record(pr_id + "-note-persist", "note survives reload")
-        shot("99-notes")
         if spot:
             first = spot[0]["id"]
             b.run("scrollintoview", "#spotcheck")
@@ -230,28 +210,22 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
                 "--fn",
                 f'document.querySelector(\'[data-verdict-saved="{first}"]\').textContent==="Saved"',
             )
-            b.run("fill", "#notes-spotcheck", "spot-check note")
-            b.run(
-                "wait", "--fn", 'document.getElementById("saved-spotcheck").textContent==="Saved"'
-            )
             b.run("open", url)
             b.run("scrollintoview", "#spotcheck")
             pressed = b.js(
                 f'document.querySelector(\'[data-verdict-for="{first}"][aria-pressed="true"]\')'
                 ".getAttribute('data-verdict')"
             )
-            note = b.js('document.getElementById("notes-spotcheck").value')
-            if pressed != pick or note != "spot-check note":
-                raise Fail(f"spot-check lost on reload (verdict {pressed!r}, note {note!r})")
-            record("spotcheck-persist", "verdict and note survive reload")
+            if pressed != pick:
+                raise Fail("spotcheck lost on reload")
+            record("spotcheck-persist", "verdict survives reload")
             shot("98-spotcheck")
         state = api_get(url, "/api/state")
-        for pr in prs:
-            if state["notes"][pr["id"]]["text"] != "note for " + pr["id"]:
-                raise Fail(pr["id"] + ": /api/state misses the typed note")
-            if not state["notes"][pr["id"]]["updated_at"]:
-                raise Fail(pr["id"] + ": note has no updated_at")
-        record("api-state", "every typed note present with updated_at")
+        if spot:
+            want = spot[0]["id"]
+            if state["verdicts"].get(want, "") != pick:
+                raise Fail("verdict missing in state")
+        record("api-state", "verdict present in state")
         if errors:
             raise Fail("hub page errors: " + errors[0][:200])
     finally:
@@ -262,28 +236,20 @@ def check_hub(url: str, proof: Path, cleanup_notes: bool) -> dict[str, Any]:
                     capture_output=True,
                 )
         if cleanup_notes:
-            restore(url, prior_notes, prior_spot_note, prior_verdicts, spot)
+            restore(url, prior_verdicts, spot)
     return {"prs": len(prs), "checks": checks}
 
 
 def restore(
     url: str,
-    notes: dict[str, str],
-    spot_note: str,
     verdicts: dict[str, str],
     spot: list[dict[str, Any]],
 ) -> None:
-    """Put every PR note, the spot-check note and the first verdict back as they were."""
-    for pr_id, text in notes.items():
-        api_post(url, "/api/notes", {"id": pr_id, "text": text})
+    """Put the first verdict back as it was."""
     if spot:
         first = spot[0]["id"]
         api_post(url, "/api/verdict", {"id": first, "verdict": verdicts.get(first, "")})
-        api_post(url, "/api/notes", {"id": "spotcheck", "text": spot_note})
     state = api_get(url, "/api/state")
-    for pr_id, text in notes.items():
-        if state["notes"][pr_id]["text"] != text:
-            raise Fail(pr_id + ": cleanup did not restore the note")
     if spot and state["verdicts"] != verdicts:
         raise Fail("cleanup did not restore the spot-check verdicts")
 

@@ -1,4 +1,4 @@
-"""Notes review hub: page lists every PR, notes autosave and survive restart."""
+"""Review hub: page lists every PR with artifacts and judge votes; notes live in chat."""
 
 from __future__ import annotations
 
@@ -84,7 +84,7 @@ def serve_live(notes_dir: Path) -> tuple[Any, str]:
     return httpd, url
 
 
-def test_page_lists_every_pr_with_links_and_notes_box(tmp_path: Path) -> None:
+def test_page_lists_every_pr_with_links_and_no_notes_boxes(tmp_path: Path) -> None:
     notes_dir = make_notes_dir(tmp_path)
     httpd, url = serve_live(notes_dir)
     try:
@@ -98,7 +98,8 @@ def test_page_lists_every_pr_with_links_and_notes_box(tmp_path: Path) -> None:
             assert ("/artifacts/" + slug + "/infographic.png") in text
             assert ("/artifacts/" + slug + "/video.mp4") in text
             assert ("/artifacts/" + slug + "/page.html") in text
-            assert ('data-notes-id="' + slug + '"') in text
+        assert "data-notes-id" not in text
+        assert "<textarea" not in text
         assert "confidence" not in text.lower()
         assert "question" not in text.lower()
     finally:
@@ -106,35 +107,17 @@ def test_page_lists_every_pr_with_links_and_notes_box(tmp_path: Path) -> None:
         httpd.server_close()
 
 
-def test_note_saves_and_survives_restart(tmp_path: Path) -> None:
+def test_notes_route_is_gone(tmp_path: Path) -> None:
     notes_dir = make_notes_dir(tmp_path)
     httpd, url = serve_live(notes_dir)
     try:
-        post_status, post_body = http_post(
-            url, "/api/notes", {"id": "v3-p1a", "text": "risk: cache"}
-        )
-        assert post_status == 200, post_body
-        saved = json.loads(post_body)
-        assert saved["id"] == "v3-p1a"
-        assert "updated_at" in saved
-        get_status, raw, _ = http_get(url, "/api/state")
-        assert get_status == 200
-        state = json.loads(raw.decode())
-        assert state["notes"]["v3-p1a"]["text"] == "risk: cache"
+        status, _ = http_post(url, "/api/notes", {"id": "v3-p1a", "text": "risk: cache"})
+        assert status == 404
+        state = json.loads(http_get(url, "/api/state")[1].decode())
+        assert "notes" not in state
     finally:
         httpd.shutdown()
         httpd.server_close()
-    httpd2, url2 = serve_live(notes_dir)
-    try:
-        status2, raw2, _ = http_get(url2, "/api/state")
-        assert status2 == 200
-        state = json.loads(raw2.decode())
-        assert state["notes"]["v3-p1a"]["text"] == "risk: cache"
-        assert state["notes"]["v3-p1a"]["updated_at"]
-        assert state["notes"]["v3-p1b"]["text"] == ""
-    finally:
-        httpd2.shutdown()
-        httpd2.server_close()
 
 
 def test_artifacts_serve_from_live_output_dir(tmp_path: Path) -> None:
@@ -239,7 +222,7 @@ def test_hub_refuses_a_spotcheck_item_a_reader_cannot_judge(tmp_path: Path) -> N
     assert "s16: needs at least one GitHub line link" in said
 
 
-def test_spotcheck_verdicts_and_note_survive_restart(tmp_path: Path) -> None:
+def test_spotcheck_verdicts_survive_restart(tmp_path: Path) -> None:
     notes_dir = make_notes_dir(tmp_path)
     (notes_dir / "spotcheck.json").write_text(json.dumps(SPOTCHECK), encoding="utf-8")
     httpd, url = serve_live(notes_dir)
@@ -251,7 +234,6 @@ def test_spotcheck_verdicts_and_note_survive_restart(tmp_path: Path) -> None:
         assert 'href="' + SPOTCHECK[0]["evidence"][0]["url"] + '"' in page
         assert "r #1 · Video and page, scene 2 “Nightly run”, narration" in page
         assert http_post(url, "/api/verdict", {"id": "s2", "verdict": "wrong"})[0] == 200
-        assert http_post(url, "/api/notes", {"id": "spotcheck", "text": "s2 is fine"})[0] == 200
         assert http_post(url, "/api/verdict", {"id": "s9", "verdict": "right"})[0] == 404
         assert http_post(url, "/api/verdict", {"id": "s1", "verdict": "maybe"})[0] == 400
     finally:
@@ -261,7 +243,6 @@ def test_spotcheck_verdicts_and_note_survive_restart(tmp_path: Path) -> None:
     try:
         state = json.loads(http_get(url, "/api/state")[1])
         assert state["verdicts"] == {"s2": "wrong"}
-        assert state["notes"]["spotcheck"]["text"] == "s2 is fine"
         assert [pr["id"] for pr in state["prs"]] == ["v3-p1a", "v3-p1b"]
         assert [item["id"] for item in state["spotcheck"]] == ["s1", "s2"]
     finally:
@@ -276,7 +257,7 @@ def test_hub_without_spotcheck_has_no_spotcheck_section(tmp_path: Path) -> None:
         state = json.loads(http_get(url, "/api/state")[1])
         assert "Spot-check" not in page
         assert state["spotcheck"] == []
-        assert "spotcheck" not in state["notes"]
+        assert "notes" not in state
     finally:
         httpd.shutdown()
         httpd.server_close()
@@ -307,11 +288,12 @@ def test_spotcheck_button_click_persists_after_reload(tmp_path: Path) -> None:
         httpd.server_close()
 
 
-def test_notes_reject_unknown_pr(tmp_path: Path) -> None:
+def test_verdict_rejects_unknown_sentence(tmp_path: Path) -> None:
     notes_dir = make_notes_dir(tmp_path)
+    (notes_dir / "spotcheck.json").write_text(json.dumps(SPOTCHECK), encoding="utf-8")
     httpd, url = serve_live(notes_dir)
     try:
-        status, _ = http_post(url, "/api/notes", {"id": "v3-zzz", "text": "x"})
+        status, _ = http_post(url, "/api/verdict", {"id": "v3-zzz", "verdict": "right"})
         assert status == 404
     finally:
         httpd.shutdown()
@@ -394,7 +376,7 @@ def test_pr_card_names_the_pr_as_the_spotcheck_items_do() -> None:
 
     pr = {"id": "v5-c", "title": "feat(report): publish reports", "github_url": "https://github.com/komaksym/linkedin-mdp/pull/5",
           "artifacts": {"infographic": "i.png", "video": "v.mp4", "page": "p.html"}}  # fmt: skip
-    card = _pr_section(pr, "")
+    card = _pr_section(pr)
     assert '<p class="where">linkedin-mdp #5</p>' in card
     assert card.index("linkedin-mdp #5") < card.index("feat(report)")
     assert 'class="cap">Video walkthrough' in card

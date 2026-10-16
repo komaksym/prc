@@ -141,6 +141,198 @@ class Relation:
     kind: RelationKind
 
 
+LAYOUT_REGISTRY: dict[str, dict[str, Any]] = {
+    "before-after": {
+        "layout": "binary-comparison",
+        "panels": "BEFORE / AFTER",
+        "when": "few files and few calls: a focused before/after change",
+        "links": "chain",
+        "middle": (
+            "- Middle: two columns split by a vertical center divider.",
+            "- Left of the divider: {left}, with its labels as a short list.",
+            "- Right of the divider: {right}, stacked top to bottom, "
+            "each with its labels as a short list.",
+        ),
+        "strip": '- Under both columns: a full-width proof strip holding {strip}, '
+        "with its labels as a short list.",
+        "close": "- Each area has a plain solid numbered header bar with its panel header, "
+        "one simple icon with no letters, digits or digit-like shapes, "
+        "and its labels as a short list.",
+        "arrows": "- Across the divider: one bold arrow from {left} to {right_first}. "
+        "Put no words on the arrow.{strip_clause}",
+        "rule": "Join the left panel to the first right-hand panel with one arrow across "
+        "the center divider, and put no words on it.{strip_rule}",
+    },
+    "pipeline": {
+        "layout": "linear-progression",
+        "panels": "steps in order",
+        "when": "many files or long call chains: a workflow or pipeline",
+        "links": "chain",
+        "middle": (
+            "- Middle: {count} numbered nodes on a single horizontal path, "
+            "left to right in panel order: {nodes}.",
+        ),
+        "strip": "",
+        "close": "- Each node has a plain solid numbered header bar with its panel header, "
+        "one simple icon with no letters, digits or digit-like shapes, "
+        "and its labels as a short list.",
+        "arrows": "- Along the path: one bold arrow from each node to the next ({chain}). "
+        "Put no words on the arrows.",
+        "rule": "Join each node to the next with one arrow along the path, "
+        "and put no words on it.",
+    },
+    "hub": {
+        "layout": "hub-spoke",
+        "panels": "shared center with adapters around it",
+        "when": "few files but many calls sharing one guard",
+        "links": "spokes",
+        "middle": (
+            "- Middle: a center hub holding {center}, with {outer} as spoke nodes around it.",
+        ),
+        "strip": "",
+        "close": "- The hub and each spoke node have a plain solid numbered header bar "
+        "with their panel header, one simple icon with no letters, digits or digit-like "
+        "shapes, and their labels as a short list.",
+        "arrows": "- Spokes: one bold spoke arrow on each spoke between the hub and its node, "
+        "following the panel order ({chain}). Put no words on the arrows.",
+        "rule": "Join the hub to each outer panel with one spoke arrow, and put no words on it.",
+    },
+    "parts": {
+        "layout": "structural-breakdown",
+        "panels": "BEFORE / CHANGE / PARTS / PROOF",
+        "when": "default: many parts to break down",
+        "links": "chain",
+        "middle": (
+            "- Middle: {count} panels in one row, left to right. Each panel has a plain solid "
+            "numbered header bar with its panel header, one simple icon with no letters, digits or "
+            "digit-like shapes, and its labels as a short list.",
+        ),
+        "strip": "",
+        "close": "",
+        "arrows": "- Between panels: one bold arrow from each panel to the next, left to right "
+        "({chain}). Put no words on the arrows.",
+        "rule": "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    },
+}
+
+
+def _brief_files(m: dict[str, Any]) -> list[dict[str, Any]]:
+    brief = m.get("brief") if isinstance(m.get("brief"), dict) else {}
+    files = brief.get("files") if isinstance(brief, dict) else []
+    if not isinstance(files, list):
+        return []
+    return [item for item in files if isinstance(item, dict)]
+
+
+def content_shape(m: dict[str, Any] | None, board: dict[str, Any] | None = None) -> str:
+    """Content shape of a PR: before-after, pipeline, hub, or parts."""
+    if m is None:
+        return "parts"
+    files = _brief_files(m)
+    edges = m.get("edges")
+    n_files = len(files)
+    n_edges = len(edges) if isinstance(edges, list) else 0
+    if isinstance(board, dict):
+        selection = board.get("infographic")
+        if isinstance(selection, dict) and selection.get("mode") == "storyboard-flow":
+            return "pipeline"
+    if n_files <= 3 and n_edges <= 10:
+        return "before-after"
+    if n_files <= 3 and n_edges >= 15:
+        return "hub"
+    if n_files >= 5 or n_edges >= 20:
+        return "pipeline"
+    return "parts"
+
+
+def select_layout(m: dict[str, Any] | None, board: dict[str, Any] | None = None) -> str:
+    """Baoyu layout for a PR: the registry layout for its content shape."""
+    return str(LAYOUT_REGISTRY[content_shape(m, board)]["layout"])
+
+
+def _layout_entry(layout: str) -> dict[str, Any]:
+    """Registry geometry for a baoyu layout, falling back to structural-breakdown."""
+    for entry in LAYOUT_REGISTRY.values():
+        if entry.get("layout") == layout:
+            return entry
+    return LAYOUT_REGISTRY["parts"]
+
+
+def _panel_center(headers: list[str], tones: list[str]) -> int:
+    """Index of the hub panel: the shared part panel, else the middle panel."""
+    for i, tone in enumerate(tones):
+        if tone == "part":
+            return i
+    return len(headers) // 2
+
+
+def _panel_relations(
+    headers: list[str], tones: list[str], layout: str
+) -> tuple[Relation, ...]:
+    """Arrows between authored panels, placed per the layout geometry."""
+    if _layout_entry(layout).get("links") == "spokes":
+        at = _panel_center(headers, tones)
+        center = headers[at]
+        before = [Relation(one, center, "flow") for one in headers[:at]]
+        after = [Relation(center, one, "flow") for one in headers[at + 1 :]]
+        return tuple(before + after)
+    if _layout_entry(layout).get("layout") == "binary-comparison" and len(headers) >= 2:
+        # Two columns split by a divider: one arrow crosses the divider to the
+        # first right-hand panel. Stacked right-hand panels need no arrow
+        # between them, and a trailing proof strip takes arrows from nothing.
+        return (Relation(headers[0], headers[1], "flow"),)
+    return tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
+
+
+def _panel_places(
+    headers: list[str], tones: list[str], relations: tuple[Relation, ...]
+) -> dict[str, str]:
+    """Quoted panel names placed into the registry geometry for every layout."""
+    quoted = [f'"{header}"' for header in headers]
+    strip_raw = (
+        headers[-1] if len(headers) >= 3 and tones and tones[-1] == "proof" else ""
+    )
+    strip = f'"{strip_raw}"' if strip_raw else ""
+    right_names = [header for header in headers[1:] if header != strip_raw]
+    right = ", ".join(f'"{header}"' for header in right_names)
+    at = _panel_center(headers, tones)
+    outer = ", ".join(
+        f'"{header}"' for i, header in enumerate(headers) if i != at
+    )
+    return {
+        "left": quoted[0],
+        "right": right,
+        "right_first": f'"{right_names[0]}"' if right_names else "",
+        "strip": strip,
+        "strip_clause": " Draw no arrows into or out of the proof strip." if strip else "",
+        "strip_rule": " Draw no arrows into or out of the proof strip." if strip else "",
+        "center": f'"{headers[at]}"',
+        "outer": outer,
+        "nodes": ", ".join(quoted),
+        "count": str(len(headers)),
+        "chain": "; ".join(f'"{r.source}" to "{r.target}"' for r in relations),
+    }
+
+
+def _layout_geometry(br: InfographicBrief) -> tuple[list[str], str, list[str]]:
+    """Middle lines, arrows line and arrow rules for the brief's baoyu layout."""
+    entry = _layout_entry(br.layout)
+    headers = [line.text for line in br.lines if line.role == "panel"]
+    tones = list(br.tones) or ["context"] * len(headers)
+    places = _panel_places(headers, tones, br.relations)
+    middle = [line.format(**places) for line in entry["middle"]]
+    if entry["strip"] and places["strip"]:
+        middle.append(entry["strip"].format(**places))
+    if entry["close"]:
+        middle.append(entry["close"])
+    arrows = entry["arrows"].format(**places)
+    rules = [
+        entry["rule"].format(**places),
+        "Draw no other arrows or connector lines.",
+    ]
+    return middle, arrows, rules
+
+
 @dataclass(frozen=True, slots=True)
 class InfographicBrief:
     title: str
@@ -148,6 +340,7 @@ class InfographicBrief:
     relations: tuple[Relation, ...] = ()
     mode: Mode = "source"
     tones: tuple[str, ...] = ()
+    layout: str = "structural-breakdown"
 
 
 @dataclass(frozen=True, slots=True)
@@ -499,10 +692,15 @@ def _short(text: Any, limit: int = LINE_LIMIT) -> TypeGuard[str]:
     return isinstance(text, str) and bool(text.strip()) and len(text) <= limit
 
 
-def _panels(selection: dict[str, Any]) -> InfographicBrief:
+def _panels(
+    selection: dict[str, Any],
+    m: dict[str, Any] | None = None,
+    board: dict[str, Any] | None = None,
+) -> InfographicBrief:
     """A titled-panel brief: exactly the authored headline, subtitle, panel lines and footer.
 
-    The panels read left to right, so the arrows join panel i to panel i + 1 and no other pair.
+    The arrows join the panels per the selected layout geometry: a chain in panel order,
+    except hub-spoke spokes that run between the hub and each outer panel.
     """
     head, sub = selection.get("headline"), selection.get("subtitle", "")
     panels, footer = selection.get("panels"), selection.get("footer", [])
@@ -557,8 +755,11 @@ def _panels(selection: dict[str, Any]) -> InfographicBrief:
             f"panels infographic has {words} words with the disclosure; "
             f"use at most {PANELS_MAX_WORDS} words"
         )
-    relations = tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
-    return InfographicBrief(head.strip(), tuple(lines), relations, "panels", tuple(tones))
+    layout_name = select_layout(m, board)
+    relations = _panel_relations(headers, tones, layout_name)
+    return InfographicBrief(
+        head.strip(), tuple(lines), relations, "panels", tuple(tones), layout_name
+    )
 
 
 def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...]:
@@ -616,7 +817,7 @@ def infobrief(
 ) -> InfographicBrief:
     selection = board.get("infographic") if board is not None else None
     if isinstance(selection, dict) and selection.get("mode") == "panels":
-        return _panels(selection)
+        return _panels(selection, m, board)
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
     story = board is not None and "infographic" in board
@@ -648,7 +849,8 @@ def infobrief(
         tokenize(line.text) == tokenize(fitted[0].text) for line in fitted if line.role == "node"
     ):
         raise ValueError("infographic headline must differ from its group titles after fitting")
-    return InfographicBrief(fitted[0].text, fitted, links, "storyboard-flow" if story else "source")
+    mode = "storyboard-flow" if story else "source"
+    return InfographicBrief(fitted[0].text, fitted, links, mode, (), select_layout(m, board))
 
 
 def allowed_words(br: InfographicBrief) -> set[str]:
@@ -701,7 +903,7 @@ def prompt(br: InfographicBrief) -> str:
     """The image prompt for the baoyu-infographic technical profile, built from the brief only."""
     open_line = (
         "Create one landscape 16:9 infographic with the baoyu-infographic profile: "
-        "technical-schematic style, structural-breakdown layout."
+        f"technical-schematic style, {br.layout} layout."
     )
     if br.mode != "panels":
         rows = [f'- {line.role}: "{line.text}"' for line in br.lines]
@@ -729,7 +931,6 @@ def prompt(br: InfographicBrief) -> str:
             panels.append((line.text, []))
         elif line.role == "item":
             panels[-1][1].append(line.text)
-    chain = "; ".join(f'"{r.source}" to "{r.target}"' for r in br.relations)
     text = [f'Headline: "{br.title}"']
     text += [f'Subtitle: "{sub}"' for sub in by_role["subtitle"]]
     tones = list(br.tones) or ["context"] * len(panels)
@@ -744,6 +945,7 @@ def prompt(br: InfographicBrief) -> str:
         for word in by_role["legend"]
     ]
     text += [f'Disclosure: "{note}"' for note in by_role["note"]]
+    middle, arrows, rules = _layout_geometry(br)
     layout = [
         "Style: a technical-schematic blueprint on pale white grid paper, with thin drafting "
         "lines, dimension ticks and corner marks. Color carries meaning: "
@@ -757,11 +959,8 @@ def prompt(br: InfographicBrief) -> str:
         "",
         "Layout:",
         "- Top: the headline in large bold letters, with the subtitle in smaller letters under it.",
-        f"- Middle: {len(panels)} panels in one row, left to right. Each panel has a plain solid "
-        "numbered header bar with its panel header, one simple icon with no letters, digits or "
-        "digit-like shapes, and its labels as a short list.",
-        f"- Between panels: one bold arrow from each panel to the next, left to right ({chain}). "
-        "Put no words on the arrows.",
+        *middle,
+        arrows,
         "- Bottom: a footer bar across the full width that holds the footer items, the key (each "
         "key word beside a small square swatch of its color) and the disclosure.",
     ]
@@ -775,22 +974,27 @@ def prompt(br: InfographicBrief) -> str:
                 "Text: use only these lines, each exactly once and spelled exactly.",
                 *text,
             ]
-            + ["", "Rules:", *(f"- {rule}" for rule in PANEL_RULES)]
+            + ["", "Rules:", *(f"- {rule}" for rule in rules)]
         )
         + "\n"
     )
 
 
 def brief_dict(br: InfographicBrief) -> dict[str, Any]:
+    profile = dict(PROFILE)
+    profile["layout"] = br.layout
     return {
         "allowed": sorted(allowed_words(br)),
         "disclosure": DISCLOSURE,
         "gate": gate_constants(),
+        "layout": br.layout,
         "lines": [{"role": line.role, "text": line.text} for line in br.lines],
         "mode": br.mode,
-        "profile": dict(PROFILE),
+        "profile": profile,
         "prompt": prompt(br),
-        "prompt_rules": list(PANEL_RULES if br.mode == "panels" else PROMPT_RULES),
+        "prompt_rules": list(
+            _layout_geometry(br)[2] if br.mode == "panels" else PROMPT_RULES
+        ),
         "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
         "title": br.title,
         "tones": list(br.tones),
