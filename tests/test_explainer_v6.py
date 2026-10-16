@@ -1,8 +1,11 @@
 """v6 regressions: every box explained, callouts off the code, drawer, tip, speech."""
 from __future__ import annotations
+
 import json
 from pathlib import Path
+
 import pytest
+
 DATA = Path(__file__).resolve().parent / "data" / "explainer"
 
 def _tiny():
@@ -71,7 +74,7 @@ def test_identifier_speaks_as_one_unit_without_pause():
 
 def test_identifier_gap_check_uses_word_timestamps():
     from prc.explainer.listen import IDENT_GAP_MAX, check_identifier_gaps
-    assert IDENT_GAP_MAX == pytest.approx(0.15)
+    assert abs(IDENT_GAP_MAX - 0.15) < 1e-9
     board = {"scenes": [{"say": ["Check match_names now"]}]}
     tight = [{"word": "check", "start": 0.0, "end": 0.2}, {"word": "match", "start": 0.3, "end": 0.4},
              {"word": "names", "start": 0.45, "end": 0.6}, {"word": "now", "start": 0.7, "end": 0.8}]
@@ -82,7 +85,6 @@ def test_identifier_gap_check_uses_word_timestamps():
     assert len(bad) == 1 and bad[0]["token"] == "match_names" and bad[0]["gap"] > IDENT_GAP_MAX
 
 def _diff_board(map_path="pr12.json"):
-    import re as _re
     m = json.loads((DATA / "maps" / map_path).read_text())
     f = next(f for f in m["files"] if f["hunks"] and f["path"].startswith("src/"))
     long_lines = [ln for h in f["hunks"] for ln in h["lines"] if ln["op"] == "+" and len(ln.get("text", "")) >= 60]
@@ -226,5 +228,5 @@ def test_hunk_drawer_overlays_and_returns_focus(tmp_path):
             pg.wait_for_selector("#panel", state="hidden")
             focused2 = pg.evaluate("document.activeElement && document.activeElement.className")
             assert "pg-hit" in focused2, "Close must return focus to the same box"
-            await_close = pg.close()
+            pg.close()
         b.close()
