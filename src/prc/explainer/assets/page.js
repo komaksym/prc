@@ -151,7 +151,7 @@
   scenes.forEach(function (s, i) {
     var b = document.createElement('button');
     b.type = 'button';
-    var name = s.label || { title: 'Title', outro: 'Summary' }[s.type] || s.type;
+    var name = data.names[i];
     b.innerHTML = '<b>' + (i + 1) + '</b>';
     b.appendChild(document.createTextNode(name));
     b.title = name;

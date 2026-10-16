@@ -24,6 +24,7 @@ from pygments.token import Comment, String  # type: ignore[import-untyped]
 
 from prc import facts
 from prc.presentation import card, diagram
+from prc.tones import TONES
 
 Box = tuple[int, int, int, int]
 """Left, top, width and height of an OCR word, in image pixels."""
@@ -82,15 +83,6 @@ PANEL_RULES = (
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible in the footer bar.",
 )
-# One meaning per color in Okabe-Ito shades; the video and the page use the same five.
-# Each tone: key word, color name, full color, pale tint for fills behind dark text.
-TONES: dict[str, tuple[str, str, str, str]] = {
-    "problem": ("Problem", "vermillion", "#D55E00", "#FBE3D3"),
-    "change": ("Change", "orange", "#E69F00", "#FDF0D2"),
-    "part": ("Part", "sky blue", "#56B4E9", "#DDF0FB"),
-    "proof": ("Proof", "bluish green", "#009E73", "#D5F1E8"),
-    "context": ("Context", "grey", "#8A93A6", "#ECEEF2"),
-}
 _TONE_WORDS = (
     ("problem", ("before", "problem", "bug", "old", "risk", "gap", "broken", "fail")),
     ("proof", ("proof", "test", "tests", "result", "verified", "evidence")),

@@ -1,9 +1,10 @@
 (() => {
   const W = 1920, H = 1080;
-  // Okabe-Ito shades, one meaning each: red problem or removed, gold change, blue part,
-  // green proof or added, grey context. The page key and the infographic use the same five.
+  // Okabe-Ito shades, one meaning each: red problem, gold change, blue part, green proof,
+  // grey context. The key words and colors come from prc/tones.py through window.PRC_KEY.
   const C = { blue: '#56B4E9', green: '#009E73', red: '#D55E00', gold: '#E69F00', grey: '#8A93A6', text: '#ECEFF4', dim: '#5B6475', bg: '#0E1320' };
-  const KEY = [['Problem', C.red], ['Change', C.gold], ['Part', C.blue], ['Proof', C.green], ['Context', C.grey]];
+  const KEY = window.PRC_KEY;
+  if (!Array.isArray(KEY) || !KEY.length) throw new Error('engine.js needs window.PRC_KEY from prc.tones.key_script()');
   const STATUS = { modified: C.gold, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
   const TONE = { bad: C.red, good: C.green, info: C.gold };
   const clamp = x => Math.max(0, Math.min(1, x));

@@ -19,13 +19,14 @@ from prc.explainer.jointest import run as join_run
 from prc.explainer.page import files_url
 from prc.explainer.timing import check_stamped_cues, fit_sentences
 from prc.explainer.voice import Backend
+from prc.tones import key_script
 
 ASSETS = Path(__file__).resolve().parent / "assets"
 FPS = 30
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head>
 <body class="video"><div id="app" class="emount"><div class="escale" id="scale"></div></div>
-<script>window.BOARD = {board};</script><script>{js}
+<script>window.BOARD = {board};</script>{key}<script>{js}
 prcMount(document.getElementById('scale'), window.BOARD, null);</script></body></html>"""
 
 
@@ -323,6 +324,7 @@ def render(
         PAGE.format(
             css=(ASSETS / "engine.css").read_text(),
             board=board_json(board),
+            key=key_script(),
             js=(ASSETS / "engine.js").read_text(),
         )
     )

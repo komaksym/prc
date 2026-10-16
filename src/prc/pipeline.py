@@ -652,7 +652,13 @@ def run_explain(
             info_status = "missing"
         if board is not None:
             render_explain_page(
-                board, used, work, duration, has_video=True, infographic=graphic_bytes
+                board,
+                used,
+                work,
+                duration,
+                has_video=True,
+                infographic=graphic_bytes,
+                git_dir=git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
             )
             page_out = out_dir / "page.html"
 

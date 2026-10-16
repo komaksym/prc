@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import re
 from pathlib import Path
@@ -10,6 +11,12 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MAP = ROOT / "tests/data/explainer/maps/pr12.json"
+
+
+def _link_texts(fragment: str, href: str) -> list[str]:
+    """The visible text of every link to href; syntax colour spans inside a link drop out."""
+    pat = r"<a href='" + re.escape(href) + r"'[^>]*>(.*?)</a>"
+    return [html.unescape(re.sub(r"<[^>]+>", "", x)) for x in re.findall(pat, fragment)]
 
 
 def _change() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
@@ -243,7 +250,7 @@ def test_url_in_a_code_row_opens_its_line_on_github(tmp_path: Path) -> None:
     hunk = data["hunks"][data["targets"][1][0]["hunk"]]
     owner_repo, number = str(m["pr"]).split("#")
     line_url = files_url(owner_repo, number, board["scenes"][1]["file"], line["new"])
-    assert f"<a href='{line_url}' target='_blank' rel='noopener'>{url}</a>" in hunk
+    assert url in _link_texts(hunk, line_url), "the URL is not one link to its line"
     with sync_playwright() as driver:
         browser = driver.chromium.launch()
         context = browser.new_context(viewport={"width": 1280, "height": 800})
@@ -276,7 +283,7 @@ def test_commit_sha_and_file_line_in_a_code_row_open_the_line(tmp_path: Path) ->
     owner_repo, number = str(m["pr"]).split("#")
     line_url = files_url(owner_repo, number, board["scenes"][1]["file"], line["new"])
     for ref in (sha, "client.py:124"):
-        assert f"<a href='{line_url}' target='_blank' rel='noopener'>{ref}</a>" in hunk
+        assert ref in _link_texts(hunk, line_url), ref + " is not one link to its line"
 
 
 def test_arrow_points_from_source_edge_to_target_edge_and_renames_nothing(
@@ -439,3 +446,311 @@ def test_group_boxes_open_their_lines_and_the_reading_path_links_every_unit(
         assert opened.value.url == names.first.get_attribute("href")
         page.screenshot(path=str(tmp_path / "page-boxes.png"), full_page=True)
         browser.close()
+
+
+def test_scene_tabs_name_each_scene_and_the_key_reads_the_same_on_page_and_stage(
+    tmp_path: Path,
+) -> None:
+    """The 2026-10-16 v5 vision pass: the tabs read "2 groups" and "3 groups", and the page
+    key said "Problem or removed" while the title scene said "Problem"."""
+    import copy
+
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from prc.tones import TONES
+
+    m, board, _ = _groups_change()
+    again = copy.deepcopy(board["scenes"][1])
+    again["say"] = ["Then the second name takes over from the first name."]
+    board["scenes"].insert(2, again)
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 900})
+        page.goto((tmp_path / "page.html").as_uri())
+        tabs = page.locator("#strip button")
+        names = [tabs.nth(i).get_attribute("title") for i in range(tabs.count())]
+        assert names == [
+            "Title",
+            "The first name now feeds the second name in this change",
+            "Then the second name takes over from the first name",
+        ]
+        header = page.locator(".pg-key-i").all_inner_texts()
+        tabs.first.click()
+        page.wait_for_selector("#scale .ckey span")
+        stage = page.locator("#scale .ckey span").all_inner_texts()
+        assert header == stage == [t[0] for t in TONES.values()]
+        browser.close()
+
+
+def test_scene_names_suffix_collision_picks_smallest_free_suffix() -> None:
+    from prc.explainer.page import scene_names
+
+    board = {
+        "scenes": [
+            {"type": "groups", "groups": [], "label": "X (2)", "say": [], "cues": []},
+            {"type": "groups", "groups": [], "label": "X", "say": [], "cues": []},
+            {"type": "groups", "groups": [], "label": "X", "say": [], "cues": []},
+        ]
+    }
+    assert scene_names(board) == ["X (2)", "X", "X (3)"]
+
+
+def test_reading_fold_reads_like_a_github_hunk() -> None:
+    """The v5-b `main` fold ran −126, +156, +157, −132: changed lines only, one number column.
+
+    The fold now keeps diff order with the unchanged lines between, an old and a new number
+    column, and each unit line once."""
+    from prc.explainer.page import reading_html
+    from prc.explainer.units import key, units
+
+    m = json.loads((ROOT / "tests/data/explainer/maps/pr14.json").read_text())
+    u = next(u for u in units(m) if u["id"].endswith("collect_private_source.py::collect_sources"))
+    f = next(f for f in m["files"] if f["path"] == u["path"])
+    board = {"scenes": [], "reading": [{"units": [u["id"]], "say": "It collects the sources."}]}
+    fold = reading_html(board, m)
+    rows = re.findall(
+        r"<tr class='(hk-add|hk-del|hk-ctx)[^']*' data-k='([^']*)'>"
+        r"<td class='hk-n'>(.*?)</td><td class='hk-n'>(.*?)</td>",
+        fold,
+    )
+    shown = [k for _, k, _, _ in rows]
+    order = [key(ln) for h in f["hunks"] for ln in h["lines"]]
+    assert shown == sorted(shown, key=order.index), "fold rows leave diff order"
+    assert {key(ln) for ln in u["lines"]} <= set(shown)
+    assert any(cls == "hk-ctx" for cls, _, _, _ in rows), "no unchanged line between changes"
+    for cls, _, old, new in rows:
+        assert bool(old) == (cls != "hk-add") and bool(new) == (cls != "hk-del"), cls
+
+
+def _ln(op: str, n: int, text: str, old: int | None = None) -> dict[str, Any]:
+    """One diff line; added lines carry a new number, removed an old one, context both."""
+    if op == "+":
+        return {"op": "+", "new": n, "text": text}
+    if op == "-":
+        return {"op": "-", "old": n, "text": text}
+    return {"op": " ", "old": old if old is not None else n, "new": n, "text": text}
+
+
+def test_fold_shows_only_its_unit_with_github_context_and_counted_gaps() -> None:
+    """2026-10-16 v5 vision review: a "module lines" card dumped 119 rows of other cards' code,
+    grey with no key; a fold opened on "self._client, request," with no line above it; and a
+    bare "⋯" hid lines between hunks without a count."""
+    import re as _re
+
+    from prc.explainer.page import fold_rows
+
+    first = [_ln(" ", n, f"ctx {n}") for n in range(1, 8)]
+    first += [_ln("+", 8, "return _call("), _ln("+", 9, "self._client,")]
+    first += [_ln("+", n, f"other {n}") for n in range(10, 30)]
+    first += [_ln("+", 30, "CONSTANT = 1"), _ln(" ", 31, "tail 31"), _ln(" ", 32, "tail 32")]
+    second = [_ln(" ", 60, "far 60"), _ln("+", 61, "LAST = 2")]
+    f = {"path": "pkg/mod.py", "hunks": [{"lines": first}, {"lines": second}]}
+    u = {
+        "lines": [
+            ln
+            for ln in first + second
+            if ln["text"] in ("self._client,", "CONSTANT = 1", "LAST = 2")
+        ]
+    }
+    rows = fold_rows(u, f, "o/r", "1")
+    shown = [int(k) for k in _re.findall(r"data-k='\+(\d+)'", "".join(rows))]
+    gaps = [r for r in rows if "hk-gap" in r]
+    assert 8 in shown and 6 in shown, "no lead-in context above the unit's first line"
+    assert 5 not in shown, "more than 3 lines of lead-in context"
+    assert not any(15 <= n <= 24 for n in shown), "other cards' lines dumped into this fold"
+    assert any("14 lines" in g and "other cards" in g for g in gaps), gaps
+    assert any("27 unchanged lines" in g for g in gaps), (
+        "the jump between hunks: no count, or a new name"
+    )
+    assert all(_re.search(r"\d", g) for g in gaps), "a gap row without a count"
+
+
+def test_fold_draws_nested_helper_lines_as_its_own() -> None:
+    """A nested handler showed twice: grey inside its test, then again as its own card."""
+    from prc.explainer.page import fold_rows
+
+    lines = [_ln("+", n, f"line {n}") for n in range(1, 10)]
+    f = {"path": "tests/t.py", "hunks": [{"lines": lines}]}
+    u = {"lines": [ln for ln in lines if ln["new"] not in (4, 5, 6)]}
+    inner = frozenset({"+4", "+5", "+6"})
+    rows = fold_rows(u, f, "o/r", "1", inside=inner)
+    assert not any("hk-dim" in r for r in rows), "nested helper lines drawn grey"
+    assert len(rows) == 9
+
+
+def test_fold_rows_carry_the_video_syntax_colors_and_keep_links() -> None:
+    """2026-10-16 review: fold rows were one grey colour, so keywords, strings and names
+    read the same. The page now paints rows with the video's highlighter."""
+    import re as _re
+
+    from prc.explainer.highlight import paint_map
+    from prc.explainer.page import fold_rows
+
+    line = {"op": "+", "new": 1, "text": "def fetch(n: int) -> str:  # one call"}
+    url = {"op": "+", "new": 2, "text": '    return "https://example.com/x" * 2'}
+    m = {
+        "head_sha": "",
+        "base_sha": "",
+        "files": [{"path": "a.py", "hunks": [{"lines": [line, url]}]}],
+    }
+    f = paint_map(m, None)["files"][0]
+    rows = "".join(fold_rows({"lines": f["hunks"][0]["lines"]}, f, "o/r", "1"))
+    assert "<span class='t-k'>def</span>" in rows, rows
+    assert _re.search(r"<span class='t-c'>[^<]*one call", rows), "comment not painted"
+    assert _re.search(r"<span class='t-n'>2</span>", rows), "number not painted"
+    link = _re.search(r"<a href='[^']*'[^>]*>(.*?)</a>", rows.split("return", 1)[1])
+    assert link and _re.sub(r"<[^>]+>", "", link.group(1)) == "https://example.com/x", (
+        "URL link split"
+    )
+    assert "t-s" in link.group(1), "string colour lost inside the link"
+
+
+def test_blank_changed_lines_never_draw_grey() -> None:
+    """2026-10-16 review: removed blank lines 152-153 drew grey, so the caption claimed another
+    card explained them. Blank lines belong to no card."""
+    from prc.explainer.page import fold_rows
+
+    lines = [
+        _ln("-", 1, "def gone():"),
+        _ln("-", 2, "    return 1"),
+        _ln("-", 3, ""),
+        _ln(" ", 4, "def kept():", old=4),
+    ]
+    f = {"path": "a.py", "hunks": [{"lines": lines}]}
+    rows = fold_rows({"lines": lines[:2]}, f, "o/r", "1")
+    assert not any("hk-dim" in r for r in rows), rows
+
+
+def test_fold_summary_counts_bright_rows_including_nested_helper() -> None:
+    """2026-10-16 PR komaksym/leads-discovery#43: the card said 16 changed lines while its
+    fold showed 28 bright added rows: nested helper lines draw bright by design, and the
+    summary must count the bright rows the reader sees, never another card's dimmed lines."""
+    import re as _re
+
+    from prc.explainer.page import _unit_html
+    from prc.explainer.units import key as unit_key
+
+    own = [_ln("+", n, f"own {n}") for n in (10, 11, 12)]
+    helper = [_ln("+", n, f"helper {n}") for n in (13, 14)]
+    other = [_ln("+", n, f"other {n}") for n in (15, 16)]
+    f = {
+        "path": "pkg/mod.py",
+        "status": "added",
+        "hunks": [
+            {
+                "lines": [
+                    _ln(" ", 7, "ctx 7"),
+                    _ln(" ", 8, "ctx 8"),
+                    _ln(" ", 9, "ctx 9"),
+                    *own,
+                    *helper,
+                    *other,
+                    _ln(" ", 17, "ctx 17"),
+                ]
+            }
+        ],
+    }
+    u = {
+        "id": "pkg/mod.py::test_x",
+        "path": "pkg/mod.py",
+        "role": "test",
+        "kind": "test",
+        "name": "test_x",
+        "status": "added",
+        "line": 10,
+        "removed": False,
+        "lines": own,
+    }
+    frag = _unit_html(u, f, "o/r", "1", None, frozenset(unit_key(ln) for ln in helper))
+    summary = _re.search(r"<summary>(\d+) changed lines?</summary>", frag)
+    assert summary, frag
+    bright = len(_re.findall(r"<tr class='hk-add'", frag))
+    assert bright == len(own) + len(helper) == 5
+    assert int(summary.group(1)) == bright
+    for ln in other:
+        row = _re.search(f"<tr class='([^']*)' data-k='[+]{ln['new']}'>", frag)
+        assert row and "hk-dim" in row.group(1), f"line {ln['new']} of another card draws bright"
+
+
+def test_added_image_file_renders_inline_with_github_link(tmp_path: Path) -> None:
+    """2026-10-16 PR komaksym/linkedin-mdp#5: an added jpg showed only the binary note."""
+    import base64 as _b64
+    import re as _re
+    import subprocess as _sp
+
+    from prc.explainer.page import _unit_html, files_url
+
+    png = _b64.b64decode(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+    )
+    repo = tmp_path / "repo"
+    (repo / "docs/images").mkdir(parents=True)
+    (repo / "docs/images/pic.png").write_bytes(png)
+    _sp.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    _sp.run(["git", "add", "."], cwd=repo, check=True, capture_output=True)
+    _sp.run(
+        ["git", "-c", "user.email=t@t.t", "-c", "user.name=t", "commit", "-m", "img"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+    )
+    head = _sp.run(
+        ["git", "rev-parse", "HEAD"], cwd=repo, check=True, capture_output=True, text=True
+    ).stdout.strip()
+    u: dict[str, Any] = {
+        "id": "docs/images/pic.png",
+        "path": "docs/images/pic.png",
+        "role": "docs",
+        "kind": "file",
+        "name": "docs/images/pic.png",
+        "status": "added",
+        "line": None,
+        "removed": False,
+        "lines": [],
+    }
+    f = {"path": "docs/images/pic.png", "status": "added", "hunks": []}
+    frag = _unit_html(u, f, "o/r", "1", git_dir=str(repo / ".git"), head_sha=head, base_sha=head)
+    url = files_url("o/r", "1", "docs/images/pic.png")
+    assert f"<img src='data:image/png;base64,{_b64.b64encode(png).decode()}'" in frag
+    assert "alt='docs/images/pic.png'" in frag
+    assert "max-width:100%" in frag
+    assert f"<a href='{url}'" in frag
+    plain = _unit_html(u, f, "o/r", "1")
+    assert "<img" not in plain
+    assert "Image file; open it on GitHub" in _re.sub(r"<[^>]+>", "", plain)
+    assert f"<a href='{url}'" in plain
+
+
+def test_long_scene_tab_name_ends_on_a_clause_and_keeps_lists_whole() -> None:
+    """2026-10-16 PR #43: the tab read \"checks connect errors, size...\", cut inside a list."""
+    from prc.explainer.page import scene_names
+
+    say = (
+        "Now `_call` hands each request to `safe_transport_call`, "
+        "which checks connect errors, response size and HTTP status before any body read."
+    )
+    listed = (
+        "Four new tests cover normalize, similarity, match_names, tier, score, rank, "
+        "the old loop and a lot more words"
+    )
+    board = {"scenes": [{"type": "groups", "say": [say]}, {"type": "groups", "say": [listed]}]}
+    first, second = scene_names(board)
+    assert first == "Now _call hands each request to safe_transport_call"
+    assert second.endswith("…") and "normalize, similarity" in second
+
+
+def test_scene_tab_keeps_quotes_on_a_plain_word_code_span() -> None:
+    """2026-10-16 PR #5: the tab read \"the text old\" after the backticks were dropped."""
+    from prc.explainer.page import scene_names
+
+    say = "The test Doc has a note, a begin marker, the text `old`, an end marker and `_call`."
+    (name,) = scene_names({"scenes": [{"type": "groups", "say": [say]}]})
+    assert "the text “old”," in name
+    assert name.endswith("and _call")

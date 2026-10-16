@@ -231,7 +231,7 @@ def test_colours() -> None:
     _, d = clsmap("invitation_shortlist.py", data, 473)
     assert d.get("reason") == {"s"}
     _, d = clsmap("invitation_shortlist.py", data, 474)
-    assert d.get("None") == {"k"}
+    assert d.get("None") == {"n"}
     toks, _ = clsmap("n.py", b"# note\n", 1)
     assert toks and all(t["cls"] == "c" for t in toks)
     _, d = clsmap("f.js", b"const f = () => 1\n", 1)
@@ -243,6 +243,31 @@ def test_colours() -> None:
     assert d.get("hi") == {"c"}
     _, d = clsmap("x.rs", b"fn main() {\n    // hi\n}\n", 1)
     assert d.get("fn") == {"k"}
+
+
+def test_workflow_yaml_tells_keys_values_constants_and_expressions_apart() -> None:
+    """The 2026-10-16 PR #5 workflow folds drew every YAML key and value plain white."""
+    src = (
+        b"permissions:\n"
+        b"  contents: read\n"
+        b"jobs:\n"
+        b"  report:\n"
+        b"    timeout-minutes: 15\n"
+        b"    steps:\n"
+        b"      - with:\n"
+        b"          persist-credentials: false\n"
+        b"        env:\n"
+        b"          TOKEN: ${{ secrets.ORION_TOKEN }}\n"
+        b"        run: uv run pytest  # live check\n"
+    )
+    rows = H.file_runs("private-morning-report.yml", src)
+    cls = {text.strip(): c for runs in rows for text, c in runs if text.strip()}
+    assert cls["permissions"] == cls["timeout-minutes"] == cls["TOKEN"] == "k"
+    assert cls["read"] == "s"
+    assert cls["15"] == cls["false"] == "n"
+    assert cls["${{ secrets.ORION_TOKEN }}"] == "f"
+    assert cls["uv"] == cls["pytest"] == "s"
+    assert cls["# live check"] == "c"
 
 
 def test_blank_row() -> None:

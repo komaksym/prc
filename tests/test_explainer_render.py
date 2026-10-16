@@ -105,8 +105,8 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
 
     assert rendered.duration > 0
     html = (out / "player.html").read_text()
-    assert html.count("</script>") == 2, "only the two real script tags may close"
-    assert "</script>" not in html.replace("</script>", "", 2).replace("<\\/script>", "")
+    assert html.count("</script>") == 3, "only the board, key and engine script tags may close"
+    assert "</script>" not in html.replace("</script>", "", 3).replace("<\\/script>", "")
 
 
 def _write(board: dict[str, Any], tmp_path: Path) -> Path:
