@@ -13,10 +13,13 @@ from prc.presentation.infographic import (
     PANELS_MAX_WORDS,
     allowed_words,
     brief_dict,
+    LAYOUT_REGISTRY,
     content_shape,
     infobrief,
+    prompt as infographic_prompt,
     tokenize,
 )
+from dataclasses import replace
 
 
 def case() -> tuple[dict[str, Any], dict[str, Any]]:
@@ -281,9 +284,15 @@ def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:
         "numbered header",
         "icon",
         "footer bar",
-        "arrow from each panel to the next",
     ):
         assert want in prompt, want
+    arrow_cues = {
+        "binary-comparison": "Across the divider",
+        "linear-progression": "Along the path",
+        "hub-spoke": "Spokes:",
+        "structural-breakdown": "arrow from each panel to the next",
+    }
+    assert arrow_cues[layout] in prompt, layout
     for line in payload["lines"]:
         assert f'"{line["text"]}"' in prompt
     assert '"1. BEFORE" to "2. SWITCH"' in prompt and '"2. SWITCH" to "3. PROOF"' in prompt
@@ -379,3 +388,55 @@ def test_v5_layouts_are_not_all_one() -> None:
         mapping, board = _load_v5(sid)
         seen.add(infobrief(mapping, mapping["brief"], board).layout)
     assert len(seen) > 1
+
+
+def _layout_section(prompt_text: str) -> str:
+    start = prompt_text.index("Layout:")
+    end = prompt_text.index("Text:", start)
+    return prompt_text[start:end]
+
+
+LAYOUT_GEOMETRY_CUES = {
+    "binary-comparison": ("divider", "strip"),
+    "hub-spoke": ("hub", "spoke"),
+    "linear-progression": ("path", "node"),
+    "structural-breakdown": ("one row",),
+}
+
+
+def test_panels_layout_section_describes_registry_geometry() -> None:
+    mapping, board = panels_board()
+    base = infobrief(mapping, mapping["brief"], board)
+    layouts = {entry["layout"] for entry in LAYOUT_REGISTRY.values()}
+    assert set(LAYOUT_GEOMETRY_CUES) == layouts
+    for layout, cues in LAYOUT_GEOMETRY_CUES.items():
+        forced = replace(base, layout=layout)
+        section = _layout_section(infographic_prompt(forced)).lower()
+        for cue in cues:
+            assert cue in section, layout
+
+
+def test_panels_arrow_rules_match_layout_geometry() -> None:
+    mapping, board = panels_board()
+    base = infobrief(mapping, mapping["brief"], board)
+    sections = {}
+    for layout in LAYOUT_GEOMETRY_CUES:
+        forced = replace(base, layout=layout)
+        text = infographic_prompt(forced)
+        rules = text[text.index("Rules:"):]
+        sections[layout] = rules.lower()
+    assert "spoke" in sections["hub-spoke"]
+    assert "divider" in sections["binary-comparison"] or "strip" in sections["binary-comparison"]
+    assert "path" in sections["linear-progression"]
+
+
+def test_v5_prompts_have_different_layout_sections() -> None:
+    missing = [sid for sid in V5_LAYOUTS if not (V5_ROOT / "prepared" / sid / "map.json").is_file()]
+    if missing:
+        pytest.skip("v5 fixtures absent in this checkout")
+    sections = set()
+    for sid in V5_LAYOUTS:
+        mapping, board = _load_v5(sid)
+        text = infographic_prompt(infobrief(mapping, mapping["brief"], board))
+        sections.add(_layout_section(text))
+    assert len(sections) == len(V5_LAYOUTS)
