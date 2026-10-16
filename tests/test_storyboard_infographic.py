@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -11,6 +13,7 @@ from prc.presentation.infographic import (
     PANELS_MAX_WORDS,
     allowed_words,
     brief_dict,
+    content_shape,
     infobrief,
     tokenize,
 )
@@ -267,11 +270,13 @@ def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:
     payload = brief_dict(infobrief(mapping, mapping["brief"], board))
     prompt = payload["prompt"]
 
+    layout = payload["profile"]["layout"]
+    assert layout in ("binary-comparison", "linear-progression", "hub-spoke", "structural-breakdown")
     for want in (
         "baoyu-infographic",
         "technical-schematic",
         "blueprint",
-        "structural-breakdown",
+        layout,
         "landscape 16:9",
         "numbered header",
         "icon",
@@ -335,3 +340,42 @@ def test_bad_panels_fail_before_drawing(change: dict[str, Any], want: str) -> No
 
     with pytest.raises(ValueError, match=want):
         infobrief(mapping, mapping["brief"], board)
+
+
+V5_ROOT = Path("/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/output-v5")
+V5_LAYOUTS = {
+    "v5-a": "linear-progression",
+    "v5-b": "binary-comparison",
+    "v5-c": "hub-spoke",
+}
+
+
+def _load_v5(sid: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    mapping = json.loads((V5_ROOT / "prepared" / sid / "map.json").read_text())
+    board = json.loads((V5_ROOT / "boards" / sid / "board.json").read_text())
+    return mapping, board
+
+
+@pytest.mark.parametrize("sid,layout", sorted(V5_LAYOUTS.items()))
+def test_v5_maps_select_layouts_matching_their_shape(sid: str, layout: str) -> None:
+    if not (V5_ROOT / "prepared" / sid / "map.json").is_file():
+        pytest.skip("v5 fixtures absent in this checkout")
+    mapping, board = _load_v5(sid)
+    brief = infobrief(mapping, mapping["brief"], board)
+    assert brief.mode == "panels"
+    assert brief.layout == layout, content_shape(mapping, board)
+    assert len(set(brief.tones)) >= 3
+    payload = brief_dict(brief)
+    assert payload["profile"]["layout"] == layout
+    assert layout in payload["prompt"]
+
+
+def test_v5_layouts_are_not_all_one() -> None:
+    present = [sid for sid in V5_LAYOUTS if (V5_ROOT / "prepared" / sid / "map.json").is_file()]
+    if len(present) < 2:
+        pytest.skip("v5 fixtures absent in this checkout")
+    seen = set()
+    for sid in present:
+        mapping, board = _load_v5(sid)
+        seen.add(infobrief(mapping, mapping["brief"], board).layout)
+    assert len(seen) > 1

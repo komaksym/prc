@@ -141,6 +141,64 @@ class Relation:
     kind: RelationKind
 
 
+LAYOUT_REGISTRY: dict[str, dict[str, str]] = {
+    "before-after": {
+        "layout": "binary-comparison",
+        "panels": "BEFORE / AFTER",
+        "when": "few files and few calls: a focused before/after change",
+    },
+    "pipeline": {
+        "layout": "linear-progression",
+        "panels": "steps in order",
+        "when": "many files or long call chains: a workflow or pipeline",
+    },
+    "hub": {
+        "layout": "hub-spoke",
+        "panels": "shared center with adapters around it",
+        "when": "few files but many calls sharing one guard",
+    },
+    "parts": {
+        "layout": "structural-breakdown",
+        "panels": "BEFORE / CHANGE / PARTS / PROOF",
+        "when": "default: many parts to break down",
+    },
+}
+
+
+def _brief_files(m: dict[str, Any]) -> list[dict[str, Any]]:
+    brief = m.get("brief") if isinstance(m.get("brief"), dict) else {}
+    files = brief.get("files") if isinstance(brief, dict) else []
+    if not isinstance(files, list):
+        return []
+    return [item for item in files if isinstance(item, dict)]
+
+
+def content_shape(m: dict[str, Any] | None, board: dict[str, Any] | None = None) -> str:
+    """Content shape of a PR: before-after, pipeline, hub, or parts."""
+    if m is None:
+        return "parts"
+    files = _brief_files(m)
+    edges = m.get("edges")
+    n_files = len(files)
+    n_edges = len(edges) if isinstance(edges, list) else 0
+    if isinstance(board, dict):
+        selection = board.get("infographic")
+        if isinstance(selection, dict) and selection.get("mode") == "storyboard-flow":
+            return "pipeline"
+    if n_files <= 3 and n_edges <= 10:
+        return "before-after"
+    if n_files <= 3 and n_edges >= 15:
+        return "hub"
+    if n_files >= 5 or n_edges >= 20:
+        return "pipeline"
+    return "parts"
+
+
+def select_layout(m: dict[str, Any] | None, board: dict[str, Any] | None = None) -> str:
+    """Baoyu layout for a PR: the registry layout for its content shape."""
+    return str(LAYOUT_REGISTRY[content_shape(m, board)]["layout"])
+
+
 @dataclass(frozen=True, slots=True)
 class InfographicBrief:
     title: str
@@ -148,6 +206,7 @@ class InfographicBrief:
     relations: tuple[Relation, ...] = ()
     mode: Mode = "source"
     tones: tuple[str, ...] = ()
+    layout: str = "structural-breakdown"
 
 
 @dataclass(frozen=True, slots=True)
@@ -499,7 +558,11 @@ def _short(text: Any, limit: int = LINE_LIMIT) -> TypeGuard[str]:
     return isinstance(text, str) and bool(text.strip()) and len(text) <= limit
 
 
-def _panels(selection: dict[str, Any]) -> InfographicBrief:
+def _panels(
+    selection: dict[str, Any],
+    m: dict[str, Any] | None = None,
+    board: dict[str, Any] | None = None,
+) -> InfographicBrief:
     """A titled-panel brief: exactly the authored headline, subtitle, panel lines and footer.
 
     The panels read left to right, so the arrows join panel i to panel i + 1 and no other pair.
@@ -558,7 +621,9 @@ def _panels(selection: dict[str, Any]) -> InfographicBrief:
             f"use at most {PANELS_MAX_WORDS} words"
         )
     relations = tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
-    return InfographicBrief(head.strip(), tuple(lines), relations, "panels", tuple(tones))
+    return InfographicBrief(
+        head.strip(), tuple(lines), relations, "panels", tuple(tones), select_layout(m, board)
+    )
 
 
 def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...]:
@@ -616,7 +681,7 @@ def infobrief(
 ) -> InfographicBrief:
     selection = board.get("infographic") if board is not None else None
     if isinstance(selection, dict) and selection.get("mode") == "panels":
-        return _panels(selection)
+        return _panels(selection, m, board)
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
     story = board is not None and "infographic" in board
@@ -648,7 +713,8 @@ def infobrief(
         tokenize(line.text) == tokenize(fitted[0].text) for line in fitted if line.role == "node"
     ):
         raise ValueError("infographic headline must differ from its group titles after fitting")
-    return InfographicBrief(fitted[0].text, fitted, links, "storyboard-flow" if story else "source")
+    mode = "storyboard-flow" if story else "source"
+    return InfographicBrief(fitted[0].text, fitted, links, mode, (), select_layout(m, board))
 
 
 def allowed_words(br: InfographicBrief) -> set[str]:
@@ -701,7 +767,7 @@ def prompt(br: InfographicBrief) -> str:
     """The image prompt for the baoyu-infographic technical profile, built from the brief only."""
     open_line = (
         "Create one landscape 16:9 infographic with the baoyu-infographic profile: "
-        "technical-schematic style, structural-breakdown layout."
+        f"technical-schematic style, {br.layout} layout."
     )
     if br.mode != "panels":
         rows = [f'- {line.role}: "{line.text}"' for line in br.lines]
@@ -782,13 +848,16 @@ def prompt(br: InfographicBrief) -> str:
 
 
 def brief_dict(br: InfographicBrief) -> dict[str, Any]:
+    profile = dict(PROFILE)
+    profile["layout"] = br.layout
     return {
         "allowed": sorted(allowed_words(br)),
         "disclosure": DISCLOSURE,
         "gate": gate_constants(),
+        "layout": br.layout,
         "lines": [{"role": line.role, "text": line.text} for line in br.lines],
         "mode": br.mode,
-        "profile": dict(PROFILE),
+        "profile": profile,
         "prompt": prompt(br),
         "prompt_rules": list(PANEL_RULES if br.mode == "panels" else PROMPT_RULES),
         "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
