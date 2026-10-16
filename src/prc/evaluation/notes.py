@@ -1,11 +1,10 @@
-"""Per-PR notes review hub: title, GitHub link, PRC artifacts, one notes box."""
+"""Per-PR review hub: title, GitHub link, PRC artifacts, judge votes."""
 
 from __future__ import annotations
 
 import json
 import mimetypes
 import threading
-from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, cast
@@ -37,12 +36,7 @@ _ALLOWED_SUFFIXES = frozenset(
 )
 
 _ARTIFACT_FILES = ("infographic.png", "video.mp4", "page.html")
-SPOTCHECK_ID = "spotcheck"
 VERDICTS = frozenset({"right", "wrong", ""})
-
-
-def _utcnow() -> str:
-    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def _load_json(path: Path) -> Any:
@@ -64,7 +58,7 @@ def github_url(pr_identity: str) -> str:
 
 
 class NotesStore:
-    """Roster plus notes JSON on disk; output dirs resolved at request time."""
+    """Roster plus verdict JSON on disk; output dirs resolved at request time."""
 
     def __init__(self, notes_dir: Path) -> None:
         self.notes_dir = notes_dir.resolve()
@@ -87,33 +81,27 @@ class NotesStore:
             )
         except spotcheck.SpotcheckError as error:
             raise NotesError(f"{spot_path}: {error}") from error
-        self.box_ids = [pr["id"] for pr in self.prs] + ([SPOTCHECK_ID] if self.spotcheck else [])
         self.notes_path = self.notes_dir / "notes.json"
         self._lock = threading.Lock()
-        self.notes: dict[str, dict[str, str]] = {}
         self.verdicts: dict[str, str] = {}
-        self._read_notes()
+        self._read_verdicts()
         self.validate_outputs()
 
-    def _read_notes(self) -> None:
+    def _read_verdicts(self) -> None:
         if not self.notes_path.is_file():
-            self.notes = {box: {"text": "", "updated_at": ""} for box in self.box_ids}
+            self.verdicts = {}
             return
         raw = _load_json(self.notes_path)
         if not isinstance(raw, dict):
             raise NotesError("notes.json must be an object")
-        self.notes = {}
-        for box in self.box_ids:
-            item = raw.get(box, {})
-            text = item.get("text", "") if isinstance(item, dict) else ""
-            stamp = item.get("updated_at", "") if isinstance(item, dict) else ""
-            self.notes[box] = {"text": str(text), "updated_at": str(stamp)}
         known = {str(item["id"]) for item in self.spotcheck}
         verdicts = raw.get("verdicts", {})
         if isinstance(verdicts, dict):
             self.verdicts = {
                 str(k): str(v) for k, v in verdicts.items() if k in known and v in VERDICTS and v
             }
+        else:
+            self.verdicts = {}
 
     def output_dir(self, pr_id: str) -> Path:
         identity_path = self.prepared_root / pr_id / "render-identity.json"
@@ -150,23 +138,12 @@ class NotesStore:
             )
         return {
             "prs": prs,
-            "notes": {k: dict(v) for k, v in self.notes.items()},
             "spotcheck": self.spotcheck,
             "verdicts": dict(self.verdicts),
         }
 
     def _write(self) -> None:
-        _atomic_write_json(self.notes_path, {**self.notes, "verdicts": self.verdicts})
-
-    def save_note(self, pr_id: str, text: str) -> dict[str, str]:
-        if not isinstance(text, str):
-            raise NotesError("note text must be a string")
-        if pr_id not in self.notes:
-            raise NotesError("unknown PR id: " + pr_id)
-        with self._lock:
-            self.notes[pr_id] = {"text": text, "updated_at": _utcnow()}
-            self._write()
-            return dict(self.notes[pr_id])
+        _atomic_write_json(self.notes_path, {"verdicts": self.verdicts})
 
     def save_verdict(self, sentence_id: str, verdict: str) -> None:
         """Record whether the judge labeled one spot-check sentence right; "" clears it."""
@@ -253,19 +230,6 @@ def serve(notes_dir: Path, port: int = 0) -> tuple[HTTPServer, str]:
                 self._json(403, {"error": "cross-origin mutation refused"})
                 return
             path = self.path.split("?", 1)[0]
-            if path == "/api/notes":
-                payload = self._read_body()
-                pr_id = str(payload.get("id", ""))
-                if pr_id not in store.notes:
-                    self._json(404, {"error": "unknown PR id: " + pr_id})
-                    return
-                try:
-                    saved = store.save_note(pr_id, payload.get("text", ""))
-                except NotesError as error:
-                    self._json(400, {"error": str(error)})
-                    return
-                self._json(200, {"id": pr_id, **saved})
-                return
             if path == "/api/verdict":
                 payload = self._read_body()
                 sentence_id = str(payload.get("id", ""))

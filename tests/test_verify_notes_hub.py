@@ -17,7 +17,7 @@ CONTROLS = (
     "infographic",
     "video",
     "page.html",
-    "notes box",
+    "judge vote",
 )
 
 
@@ -39,16 +39,21 @@ def test_recipe_forbids_old_study_content() -> None:
     text = RECIPE.read_text(encoding="utf-8").lower()
     assert "no questions" in text or "questions" in text
     assert "notes.json" in text
-    assert "updated_at" in text
+    assert "verdict" in text
+    assert "updated_at" not in text
+    assert "notes box" not in text
+    assert "data-notes-id" not in text
 
 
 def test_driver_covers_every_control_and_evidence() -> None:
     text = DRIVER.read_text(encoding="utf-8")
-    for control in ("github", "infographic", "currentTime", "page", "notes"):
+    for control in ("github", "infographic", "currentTime", "page", "verdict"):
         assert control.lower() in text.lower(), f"driver must cover {control}"
     assert "checks.json" in text
     assert "cleanup" in text.lower()
     assert "agent-browser" in text
+    assert "/api/notes" not in text
+    assert "data-notes-id" not in text
     assert os.access(DRIVER, os.X_OK), "driver must stay executable"
 
 
@@ -99,14 +104,15 @@ def test_handoff_script_meets_contract() -> None:
 
 
 @pytest.mark.parametrize("suffix", ["", "/"])
-def test_live_pass_puts_operator_notes_back_when_a_check_fails(
+def test_live_pass_puts_operator_verdict_back_when_a_check_fails(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, suffix: str
 ) -> None:
-    """2026-10-16: a live pass left \"note for v5-a\" in the real hub and skipped cleanup.
+    """2026-10-16: a live pass left a test verdict in the real hub and skipped cleanup.
 
     The second run uses the hub URL as the handoff record prints it, with a
     trailing slash: the restore then sent Origin "http://host:port/", the hub
-    refused it with 403, and the test notes stayed in the operator's hub.
+    refused it with 403, and the test verdict stayed in the operator's hub.
+    Notes now live in chat; the hub only stores judge votes.
     """
     import importlib.util
     import shutil
@@ -127,9 +133,7 @@ def test_live_pass_puts_operator_notes_back_when_a_check_fails(
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     try:
         state = drv.api_get(url, "/api/state")
-        first_pr = state["prs"][0]["id"]
         first_spot = state["spotcheck"][0]["id"]
-        drv.api_post(url, "/api/notes", {"id": first_pr, "text": "operator note"})
         drv.api_post(url, "/api/verdict", {"id": first_spot, "verdict": "wrong"})
         before = drv.api_get(url, "/api/state")
 
@@ -138,7 +142,6 @@ def test_live_pass_puts_operator_notes_back_when_a_check_fails(
                 self.session = session
 
             def run(self, *args: str) -> str:
-                drv.api_post(url, "/api/notes", {"id": first_pr, "text": "note for x"})
                 drv.api_post(url, "/api/verdict", {"id": first_spot, "verdict": ""})
                 raise drv.Fail("browser died mid-pass")
 
@@ -150,14 +153,13 @@ def test_live_pass_puts_operator_notes_back_when_a_check_fails(
         with pytest.raises(drv.Fail, match="browser died"):
             drv.check_hub(url + suffix, tmp_path, True)
         after = drv.api_get(url, "/api/state")
-        assert after["notes"][first_pr]["text"] == "operator note"
         assert after["verdicts"] == before["verdicts"] == {first_spot: "wrong"}
     finally:
         httpd.shutdown()
         httpd.server_close()
 
 
-def test_live_mode_always_restores_notes() -> None:
+def test_live_mode_always_restores_verdicts() -> None:
     text = DRIVER.read_text(encoding="utf-8")
     assert "opts.cleanup_notes or bool(opts.url)" in text
     assert '"right" if spot and prior_verdicts.get(spot[0]["id"]) == "wrong" else "wrong"' in text
