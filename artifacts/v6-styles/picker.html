@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRC style picker · linkedin-mdp pull request 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/aaaakshat/cm-web-fonts@latest/font/Serif/cmun-serif.css" rel="stylesheet">
+<link rel="stylesheet" href="picker.css">
+</head>
+<body>
+<header class="ph">
+  <div class="ph-in">
+    <h1>PRC style picker <span>linkedin-mdp, pull request 5</span></h1>
+    <p class="ph-line">The same three moments of one pull request in four looks. Pick one look for the video and the page.</p>
+    <nav class="sw" aria-label="Style variants">
+      <button type="button" data-v="control"><kbd>1</kbd>Control</button>
+      <button type="button" data-v="a"><kbd>2</kbd>A · 3Blue1Brown</button>
+      <button type="button" data-v="b"><kbd>3</kbd>B · Explorable</button>
+      <button type="button" data-v="c"><kbd>4</kbd>C · Code first</button>
+    </nav>
+    <p class="refs">References:
+      <a href="https://www.youtube.com/watch?v=aircAruvnKk">3Blue1Brown video</a>
+      <a href="https://docs.manim.community/en/stable/reference/manim.utils.color.html">manim colours</a>
+      <a href="https://ciechanow.ski/gears/">ciechanow.ski gears</a>
+      <a href="https://distill.pub/2020/communicating-with-interactive-articles/">Distill interactive articles</a>
+      <a href="https://motioncanvas.io/docs/code/">Motion Canvas code</a>
+      <a href="https://codehike.org/">Code Hike</a>
+      <a href="https://github.com/komaksym/linkedin-mdp/pull/5">The pull request</a>
+    </p>
+  </div>
+</header>
+
+<main>
+<!-- ============ CONTROL ============ -->
+<section class="variant v-control" id="ccontrol" data-v="control">
+  <div class="vh"><h2>Control · the current look</h2><p class="vn">Today's video and page look, with the same content as the other three.</p></div>
+  <div class="ctl">
+    <p class="ctl-kick">Merged pull request · <a href="https://github.com/komaksym/linkedin-mdp/pull/5">linkedin-mdp</a></p>
+    <h1 class="ctl-title">Daily reconciliation report in a Google Doc</h1>
+
+    <article class="moment ctl-m" data-m="1">
+      <h3>The Google Doc report</h3>
+      <div class="ctl-grid">
+        <div class="box" data-k="inputs">
+          <div class="bt">Complete scenario</div>
+          <div class="rowline st" data-k="st">COMPLETE</div>
+          <div class="ctl-counts">
+            <div class="rowline">Fetched rows: 4</div>
+            <div class="rowline">Matched rows: 3</div>
+            <div class="rowline">Unique matched connections: 2</div>
+            <div class="rowline">Unmatched rows: 1</div>
+            <div class="rowline">Newly inserted events: 1</div>
+            <div class="rowline">Already-present events: 1</div>
+          </div>
+          <div class="cap">The status and the six counts from the test run. Source: <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R247">e2e_doc_report.py:247</a></div>
+        </div>
+        <div class="box" data-k="doc">
+          <div class="bt">Google Doc after the run</div>
+          <div class="rowline keep" data-k="note">🧭 Operator note</div>
+          <div class="rowline mk">[BEGIN AUTOMATED REPORT]</div>
+          <div class="rowline old" data-k="old">old</div>
+          <div class="rowline slot" data-k="slot"><span class="slot-tag">New status</span><span class="slot-v">COMPLETE</span></div>
+          <div class="rowline mk">[END AUTOMATED REPORT]</div>
+          <div class="rowline keep" data-k="keep">Keep this note.</div>
+          <div class="cap">The notes outside the markers stay unchanged. Checked at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R237">e2e_doc_report.py:237</a></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="moment ctl-m" data-m="2">
+      <h3>scripts/report_connections_doc.py: run</h3>
+      <div class="ctl-code">
+        <pre class="code"><span class="cl hl" data-k="l36"><i>36</i>await publisher.prepare()</span><span class="cl"><i>42</i>    summary = await reconcile_connections(guarded_linkedin, supabase)</span><span class="cl"><i>43</i>except LinkedInAPIError:</span><span class="cl"><i>44</i>    result = ReportResult("BLOCKED", datetime.now(timezone.utc), None)</span><span class="cl"><i>50</i>except Exception:</span><span class="cl"><i>51</i>    result = ReportResult("BLOCKED" if linkedin is None else "FAILED", …)</span><span class="cl"><i>66</i>await publisher.publish(result)</span></pre>
+        <div class="callout" data-k="callout"><b>Google checks run first</b><a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R36">report_connections_doc.py:36</a></div>
+      </div>
+      <p class="cap">The script checks the Doc before it reads LinkedIn or writes to Supabase.</p>
+    </article>
+
+    <article class="moment ctl-m" data-m="3">
+      <h3>Summary</h3>
+      <p class="outro-l1" data-k="l1">A daily workflow now writes reconciliation status into a private Google Doc.</p>
+      <div class="tipcard" data-k="tip"><b>Review tip</b>Start at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR139">publish in google_doc_report.py</a>. The tests use fake Google servers.</div>
+    </article>
+
+    <figure class="vid"><video controls preload="metadata" poster="clips/control-poster.jpg" src="clips/control.webm"></video><figcaption>The video in this look.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============ A · 3BLUE1BROWN ============ -->
+<section class="variant v-a" id="ca" data-v="a">
+  <div class="vh"><h2>A · 3Blue1Brown</h2><p class="vn">A dark canvas with no cards. Blue is the Doc's report region, yellow is new, red is removed, green is unchanged. Press Play to watch each scene.</p></div>
+  <div class="a-page">
+    <p class="a-kick">linkedin-mdp · <a href="https://github.com/komaksym/linkedin-mdp/pull/5">pull request 5</a></p>
+    <h1 class="a-title">A daily report that writes into a Google Doc</h1>
+
+    <div class="moment a-m" data-m="1">
+      <div class="a-wrap"><div class="a-stage" id="aDoc"></div></div>
+      <div class="a-row"><button type="button" class="a-play" data-stage="aDoc">Play</button>
+      <p class="a-prose">The reporter owns only the text between the <span class="kb">two markers</span>. It removes <span class="kr">old</span>, writes the <span class="ky">status and six counts</span>, and leaves the <span class="kg">notes outside</span> as they were. The test checks both ends of the Doc at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R237">e2e_doc_report.py:237</a>.</p></div>
+    </div>
+
+    <div class="moment a-m" data-m="2">
+      <div class="a-wrap"><div class="a-stage" id="aCode"></div></div>
+      <div class="a-row"><button type="button" class="a-play" data-stage="aCode">Play</button>
+      <p class="a-prose"><span class="kb">Google checks run first</span>, at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R36">report_connections_doc.py:36</a>. A LinkedIn API error gives the status <span class="ky">BLOCKED</span>. Other errors after the LinkedIn client starts usually give <span class="ky">FAILED</span>.</p></div>
+    </div>
+
+    <div class="moment a-m" data-m="3">
+      <div class="a-wrap"><div class="a-stage" id="aOutro"></div></div>
+      <div class="a-row"><button type="button" class="a-play" data-stage="aOutro">Play</button>
+      <p class="a-prose">Then read <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R195">tests/e2e_doc_report.py</a>. It runs the real script against fake Google, LinkedIn and Supabase servers.</p></div>
+    </div>
+
+    <figure class="vid a-vid"><video controls preload="metadata" poster="clips/a-poster.jpg" src="clips/a.webm"></video><figcaption>The video in this look.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ============ B · EXPLORABLE ============ -->
+<section class="variant v-b" id="cb" data-v="b">
+  <div class="vh"><h2>B · Explorable</h2><p class="vn">Prose beside a model you step through. Change the scenario to see the other outcomes from the test suite.</p></div>
+  <article class="b-page">
+    <header class="b-head">
+      <p class="b-kick">linkedin-mdp · <a href="https://github.com/komaksym/linkedin-mdp/pull/5">pull request 5</a></p>
+      <h1>How the morning report writes into a Google Doc</h1>
+      <p class="b-dek">A daily workflow reconciles LinkedIn connections into Supabase, then writes the result into a private Google Doc. This page lets you step through the two parts a reviewer needs.</p>
+    </header>
+
+    <section class="moment b-chap" data-m="1" id="bDocChap">
+      <h2>1. Writing into the Doc</h2>
+      <div class="b-scrolly">
+        <div class="b-prose">
+          <p class="b-step" data-step="1"><b>Before the run.</b> The test Doc has a note, a begin marker, the text <q>old</q>, an end marker and a second note. See <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R24">e2e_doc_report.py:24</a>.</p>
+          <p class="b-step" data-step="2"><b>Find the markers.</b> The reporter owns only the text between the two markers. It needs exactly one of each, as plain paragraphs in one tab.</p>
+          <p class="b-step" data-step="3"><b>Remove the old text.</b> Whatever sat between the markers goes. The real update is one batch request; this figure splits it in two so you can see each half.</p>
+          <p class="b-step" data-step="4"><b>Write the report.</b> The new text is the status, the run time, the six counts and a next action, built by <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR73">render_report at google_doc_report.py:73</a>.</p>
+          <p class="b-step" data-step="5"><b>Leave the notes alone.</b> The note above and the note below the markers stay the same. The test checks both ends of the Doc at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R237">e2e_doc_report.py:237</a>.</p>
+        </div>
+        <figure class="b-fig" id="bDoc">
+          <div class="b-scen" role="group" aria-label="Scenario"><span>Scenario</span>
+            <button type="button" data-scen="complete">complete</button>
+            <button type="button" data-scen="later_404">later_404</button>
+            <button type="button" data-scen="supabase_timeout">supabase_timeout</button>
+            <button type="button" data-scen="sharing">sharing</button>
+          </div>
+          <div class="b-model"></div>
+          <figcaption class="b-fcap"></figcaption>
+          <div class="b-stepper"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="moment b-chap" data-m="2" id="bCodeChap">
+      <h2>2. The order of work in run()</h2>
+      <div class="b-scrolly">
+        <div class="b-prose">
+          <p class="b-step" data-step="1"><b>Google first.</b> The script checks the Doc before it reads LinkedIn or writes to Supabase. A shared Doc stops the run here, before any other work.</p>
+          <p class="b-step" data-step="2"><b>LinkedIn fails.</b> A LinkedIn API error gives the status BLOCKED. The script still publishes that status to the Doc.</p>
+          <p class="b-step" data-step="3"><b>Something else fails.</b> Other errors after the LinkedIn client starts usually give FAILED. If the client never started, the status is BLOCKED.</p>
+        </div>
+        <figure class="b-fig" id="bCode">
+          <div class="b-flow"></div>
+          <div class="b-codewrap"></div>
+          <div class="b-stepper"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="moment b-chap b-end" data-m="3">
+      <h2>3. What changed</h2>
+      <p class="b-sum">A daily workflow now writes reconciliation status into a private Google Doc.</p>
+      <aside class="b-tip"><b>Review tip</b>Start at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR139">publish in google_doc_report.py</a>. The tests use fake Google servers, so they need no secrets.</aside>
+    </section>
+
+    <figure class="vid b-vid"><video controls preload="metadata" poster="clips/b-poster.jpg" src="clips/b.webm"></video><figcaption>The video in this look.</figcaption></figure>
+  </article>
+</section>
+
+<!-- ============ C · CODE FIRST ============ -->
+<section class="variant v-c" id="cc" data-v="c">
+  <div class="vh"><h2>C · Code first</h2><p class="vn">Every moment is an editor buffer that changes step by step. The lit lines carry the point, and the rest dims.</p></div>
+  <div class="c-page">
+    <p class="c-kick">linkedin-mdp · <a href="https://github.com/komaksym/linkedin-mdp/pull/5">pull request 5</a></p>
+    <h1 class="c-title">Daily reconciliation report in a Google Doc</h1>
+
+    <div class="moment c-m" data-m="1" id="cDoc"></div>
+    <div class="moment c-m" data-m="2" id="cRun"></div>
+    <div class="moment c-m" data-m="3" id="cSum"></div>
+
+    <figure class="vid c-vid"><video controls preload="metadata" poster="clips/c-poster.jpg" src="clips/c.webm"></video><figcaption>The video in this look.</figcaption></figure>
+  </div>
+</section>
+</main>
+<script src="picker.js"></script>
+</body>
+</html>
+

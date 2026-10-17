@@ -1,0 +1,66 @@
+{
+ "control": {
+  "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control.webm",
+  "seconds": 11.84,
+  "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-poster.jpg",
+  "poster_at": 3.86,
+  "moment_marks": [
+   4.26120000000298,
+   7.76620000000298,
+   10.87230000001192
+  ],
+  "frames_sampled": 24,
+  "min_ymax": 232.0,
+  "min_yavg": 30.9,
+  "black_frames_at": [],
+  "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-sheet.png"
+ },
+ "a": {
+  "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/a.webm",
+  "seconds": 19.88,
+  "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/a-poster.jpg",
+  "poster_at": 6.92,
+  "moment_marks": [
+   7.31770000000298,
+   13.86670000000298,
+   18.63440000000596
+  ],
+  "frames_sampled": 40,
+  "min_ymax": 138.0,
+  "min_yavg": 40.0,
+  "black_frames_at": [],
+  "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-a-sheet.png"
+ },
+ "b": {
+  "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/b.webm",
+  "seconds": 15.8,
+  "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/b-poster.jpg",
+  "poster_at": 6.11,
+  "moment_marks": [
+   6.51129999999702,
+   11.82119999998808,
+   14.72669999998808
+  ],
+  "frames_sampled": 32,
+  "min_ymax": 241.0,
+  "min_yavg": 223.9,
+  "black_frames_at": [],
+  "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-b-sheet.png"
+ },
+ "c": {
+  "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/c.webm",
+  "seconds": 17.52,
+  "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/c-poster.jpg",
+  "poster_at": 5.51,
+  "moment_marks": [
+   5.91429999999702,
+   12.828,
+   16.333
+  ],
+  "frames_sampled": 35,
+  "min_ymax": 224.0,
+  "min_yavg": 90.5,
+  "black_frames_at": [],
+  "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-c-sheet.png"
+ }
+}
