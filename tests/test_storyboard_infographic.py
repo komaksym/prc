@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import replace
 import json
 import re
 from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -11,15 +11,17 @@ import pytest
 
 from prc.presentation.infographic import (
     DISCLOSURE,
+    LAYOUT_REGISTRY,
     MAX_WORDS,
     PANELS_MAX_WORDS,
     allowed_words,
     brief_dict,
-    LAYOUT_REGISTRY,
     content_shape,
     infobrief,
-    prompt as infographic_prompt,
     tokenize,
+)
+from prc.presentation.infographic import (
+    prompt as infographic_prompt,
 )
 
 
@@ -65,12 +67,14 @@ def case() -> tuple[dict[str, Any], dict[str, Any]]:
                     {
                         "id": "request",
                         "title": "Missing reference",
+                        "sub": "HTTP 404 reply",
                         "col": 0,
                         "items": [{"id": "input", "text": "404", "ground": "404"}],
                     },
                     {
                         "id": "result",
                         "title": "Explicit not-found result",
+                        "sub": "handler return value",
                         "col": 1,
                         "items": [{"id": "output", "text": "not_found", "ground": "not_found"}],
                     },
@@ -110,6 +114,7 @@ def test_arrow_to_a_group_and_a_same_text_fly_both_map_to_story_flows() -> None:
         {
             "id": "log",
             "title": "Log entry",
+            "sub": "written after the reply",
             "col": 2,
             "items": [{"id": "logged", "text": "404", "ground": "404"}],
         }
@@ -151,6 +156,7 @@ def test_duplicate_item_id_cannot_change_a_flow_endpoint() -> None:
         {
             "id": "third",
             "title": "Another branch",
+            "sub": "second 404 reply",
             "col": 2,
             "items": [{"id": "input", "text": "404", "ground": "404"}],
         }
@@ -174,6 +180,7 @@ def test_duplicate_group_titles_cannot_merge_distinct_endpoints(title: str) -> N
         {
             "id": "third",
             "title": title,
+            "sub": "second 404 reply",
             "col": 2,
             "items": [{"id": "third_input", "text": "404", "ground": "404"}],
         }

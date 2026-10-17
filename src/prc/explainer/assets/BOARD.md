@@ -223,7 +223,16 @@ Set `"tone"` on a panel to pick its color. Without it, the brief reads the title
 
 The brief's permitted text is exactly these strings: the headline, the subtitle, the numbered panel headers, the panel lines, the footer items, the key words and the disclosure. Nothing comes from the pull request title or the checker verdict. The gate passes an image only when OCR reads every line and finds no other word.
 
-The brief's `prompt` (also written to `infographic/prompt.md`) asks for the baoyu-infographic technical profile: a technical-schematic blueprint style, a structural-breakdown layout, landscape 16:9, numbered panel headers, one simple icon per panel, one arrow from each panel to the next, and a footer bar. The brief records those arrows as relations from panel i to panel i + 1 and no other pair.
+The brief's `prompt` (also written to `infographic/prompt.md`) asks for the baoyu-infographic technical profile: a technical-schematic blueprint style, landscape 16:9, numbered panel headers, one simple icon per panel, and a footer bar. The layout comes from the pull request's content shape (`content_shape` and `LAYOUT_REGISTRY` in `src/prc/presentation/infographic.py`):
+
+| Content shape | Layout | Arrows the brief records |
+|---|---|---|
+| before-after: 3 files or fewer, 10 calls or fewer | binary-comparison | one arrow from the left panel across the divider to the first right panel; none into the proof strip |
+| hub: 3 files or fewer, 15 calls or more | hub-spoke | one spoke between the hub and each outer panel |
+| pipeline: 5 files or more, 20 calls or more, or a storyboard-flow board | linear-progression | one arrow from each node to the next |
+| parts: everything else | structural-breakdown | one arrow from each panel to the next |
+
+The prompt names exactly the arrows the brief records, so the picture and the gate agree.
 
 The gate does not check the arrows between panels. A panel frame holds many text lines, so the ink test that joins two text boxes is not reliable there. Check by eye that each panel points to the next before you publish.
 

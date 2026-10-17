@@ -849,7 +849,7 @@ def infobrief(
         tokenize(line.text) == tokenize(fitted[0].text) for line in fitted if line.role == "node"
     ):
         raise ValueError("infographic headline must differ from its group titles after fitting")
-    mode = "storyboard-flow" if story else "source"
+    mode: Mode = "storyboard-flow" if story else "source"
     return InfographicBrief(fitted[0].text, fitted, links, mode, (), select_layout(m, board))
 
 
@@ -907,7 +907,7 @@ def prompt(br: InfographicBrief) -> str:
     )
     if br.mode != "panels":
         rows = [f'- {line.role}: "{line.text}"' for line in br.lines]
-        arrows = [f'- "{r.source}" to "{r.target}" ({r.kind})' for r in br.relations]
+        flows = [f'- "{r.source}" to "{r.target}" ({r.kind})' for r in br.relations]
         return (
             "\n".join(
                 [
@@ -916,7 +916,7 @@ def prompt(br: InfographicBrief) -> str:
                     "Text: use only these lines, each exactly once and spelled exactly.",
                     *rows,
                 ]
-                + (["", "Arrows, source to target:", *arrows] if arrows else [])
+                + (["", "Arrows, source to target:", *flows] if flows else [])
                 + ["", "Rules:", *(f"- {rule}" for rule in PROMPT_RULES)]
             )
             + "\n"

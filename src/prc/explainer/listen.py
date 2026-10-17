@@ -65,7 +65,9 @@ GOOD = "The user gets s2e3, and ErrNotExist stays in next_episode.py."
 IDENT_GAP_MAX = 0.15
 
 
-def check_identifier_gaps(board, words) -> list:
+def check_identifier_gaps(
+    board: dict[str, Any], words: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
     """Gaps inside one identifier from Parakeet word timestamps.
 
     board holds narration text; words is a list of {word, start, end} in
@@ -76,7 +78,7 @@ def check_identifier_gaps(board, words) -> list:
     """
     seq = [(str(w.get("word", "")).lower(), float(w.get("start", 0.0)), float(w.get("end", 0.0))) for w in words]
     said = [t for sc in board.get("scenes", []) for line in scripted(sc) for t in code_tokens(line)]
-    bad = []
+    bad: list[dict[str, Any]] = []
     for token in dict.fromkeys(said):
         expect = heard_as(token).lower().split()
         if len(expect) < 2:
@@ -91,7 +93,7 @@ def check_identifier_gaps(board, words) -> list:
     return bad
 
 
-def parakeet_words(cli, wav: Path) -> list:
+def parakeet_words(cli: Path | str, wav: Path) -> list[dict[str, Any]]:
     """Word timestamps from muesli-cli JSON when it carries them, else []."""
     import json as _json
     import subprocess as _sp
@@ -262,10 +264,11 @@ def listen(folder: Path, choice: str = "auto") -> dict[str, Any]:
     transcript = engine.transcribe(narration)
     checks = check_tokens(json.loads((folder / "board.json").read_text()), transcript)
     board_doc = json.loads((folder / "board.json").read_text())
-    gaps: list = []
-    if engine.name == "parakeet":
+    gaps: list[dict[str, Any]] = []
+    cli = _muesli_cli() if engine.name == "parakeet" else None
+    if cli is not None:
         try:
-            gaps = check_identifier_gaps(board_doc, parakeet_words(_muesli_cli(), narration))
+            gaps = check_identifier_gaps(board_doc, parakeet_words(cli, narration))
         except Exception:
             gaps = []
     report = {

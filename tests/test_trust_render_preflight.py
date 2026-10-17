@@ -308,7 +308,7 @@ def test_card_and_video_outro_render_code_names() -> None:
         page.wait_for_function("window.ready === true")
         page.evaluate("window.seek(window.BOARD.scenes.at(-1).end - 0.5)")
         page.screenshot(path=str(proof / "video-outro.png"))
-        outro = page.locator(".outro .l1, .outro .l2").evaluate_all(f"els => els.map({read})")
+        outro = page.locator(".outro .l1, .outro .l2 .tbody").evaluate_all(f"els => els.map({read})")
         page.set_viewport_size({"width": 1200, "height": 630})
         cards = []
         for name in ("outro", "spoken"):
@@ -814,17 +814,17 @@ def stacked_notes_board() -> dict[str, Any]:
     }
 
 
-def test_stacked_clamped_notes_still_flag_overlap(tmp_path: Path) -> None:
+def test_stacked_clamped_notes_fail_the_render(tmp_path: Path) -> None:
     from prc.explainer.check import verify_board
-    from prc.explainer.render import render
+    from prc.explainer.render import RenderError, render
     from prc.explainer.voice import NoneBackend
 
     m = long_map()
     b = stacked_notes_board()
     facts = verify_board(b, m)
     assert facts.get("note_risks"), "four long notes on one row must warn in check"
-    rendered = render(b, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
-    assert any("overlaps code" in w for w in rendered.layout_warnings), rendered.layout_warnings
+    with pytest.raises(RenderError, match="overlaps code"):
+        render(b, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
 
 
 def test_late_numeric_cue_rejected_in_check() -> None:

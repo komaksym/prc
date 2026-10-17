@@ -34,15 +34,15 @@ NUMBER_WORDS = {
 COUNT_LIKE = ("row", "matched", "unmatched", "inserted", "event", "fetch", "count")
 
 
-def _parse_count(label: str):
+def _parse_count(label: str) -> int | None:
     low = label.lower()
     if "count" not in low:
         return None
-    m = __import__("re").search(r"(\d+)", low)
+    m = re.search(r"(\d+)", low)
     if m:
         return int(m.group(1))
     for w, n in NUMBER_WORDS.items():
-        if __import__("re").search(r"(?<!\w)" + w + r"(?!\w)", low):
+        if re.search(r"(?<!\w)" + w + r"(?!\w)", low):
             return n
     return None
 
@@ -52,8 +52,8 @@ def _count_like(text: str) -> bool:
     return any(k in low for k in COUNT_LIKE)
 
 
-def box_role_problems(i: int, s) -> list:
-    problems = []
+def box_role_problems(i: int, s: dict[str, Any]) -> list[str]:
+    problems: list[str] = []
     groups = s.get("groups", [])
     item_group = {}
     for g in groups:

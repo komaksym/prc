@@ -18,7 +18,7 @@ from prc.explainer.speech import code_tokens, heard_as, speakable
         ("Start at onComplete in note.ts.", "Start at on, complete in note dot T S."),
         (
             "Start at select_next_episode in next_episode.py.",
-            "Start at select, next episode in next, episode dot P Y.",
+            "Start at select next episode in next episode dot P Y.",
         ),
         ("A WELCOME10 code.", "A WELCOME 10 code."),
         ("It reads parseYAMLFile.", "It reads parse, YAML file."),
@@ -29,9 +29,14 @@ def test_code_names_become_words(text: str, said: str) -> None:
     assert speakable(text) == said
 
 
-def test_first_word_of_a_code_name_keeps_its_last_sound() -> None:
-    """Defect: Kokoro ran "find next" together, and Parakeet and Whisper heard "fine next"."""
-    assert speakable("Now it calls find_next_episode.") == "Now it calls find, next episode."
+def test_snake_case_name_reads_as_one_name_without_a_pause() -> None:
+    """Defect (2026-10-16 review): a comma made Kokoro pause inside match_names.
+
+    The earlier "fine next" mishearing is now caught by the listen gate
+    (check_identifier_gaps and the lost-token check), not by a comma.
+    """
+    assert speakable("Now it calls find_next_episode.") == "Now it calls find next episode."
+    assert speakable("Before, match_names kept every row.") == "Before, match names kept every row."
 
 
 def test_brand_name_keeps_its_final_sound() -> None:
@@ -95,7 +100,7 @@ def test_code_tokens_are_found_in_spoken_order() -> None:
 def test_captions_keep_code_and_cues_still_match() -> None:
     """Defect: the rewrite leaks into captions, or a cue phrase naming code stops matching."""
     scene = {"say": ["Now it calls `select_next_episode` for each show."]}
-    assert spoken(scene) == ["Now it calls select, next episode for each show."]
+    assert spoken(scene) == ["Now it calls select next episode for each show."]
     assert find_phrase(scene, "calls select_next_episode") == [(0, 7)]
 
 

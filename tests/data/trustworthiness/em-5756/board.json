@@ -34,6 +34,7 @@
         {
           "id": "bar",
           "title": "Toolbar",
+          "sub": "the note button",
           "col": 0,
           "row": true,
           "items": [
@@ -156,6 +157,7 @@
         {
           "id": "bar",
           "title": "Toolbar",
+          "sub": "the note button",
           "col": 0,
           "row": true,
           "items": [
