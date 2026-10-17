@@ -10,6 +10,7 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parent
 SHOTS, CLIPS = ROOT / "shots", ROOT / "clips"
 VARIANTS = ["control", "a", "b", "c"]
+CLIP_URL = {"control-paper": "control&pal=paper"}  # clip name -> ?clip= query
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -107,7 +108,7 @@ def clips(names):
             ctx = b.new_context(viewport={"width": 1280, "height": 720}, record_video_dir=str(raw_dir), record_video_size={"width": 1280, "height": 720})
             t0 = time.monotonic()
             pg = ctx.new_page()
-            pg.goto(base + "/picker.html?clip=" + v)
+            pg.goto(base + "/picker.html?clip=" + CLIP_URL.get(v, v))
             pg.wait_for_function("window.__ready === true", timeout=20000)
             pg.wait_for_timeout(300)
             t_go = time.monotonic() - t0

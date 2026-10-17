@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily reconciliation report in a Google Doc, linkedin-mdp pull request 5</title>
+<script>if (/[?&]clip=1(&|$)/.test(location.search)) document.documentElement.classList.add('clip');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#m1">Skip to the report</a>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#top"><svg class="glyph" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="6" cy="5.5" r="2.6"/><circle cx="6" cy="18.5" r="2.6"/><circle cx="18" cy="18.5" r="2.6"/><path d="M6 8.1v7.8M18 15.9V10a3.5 3.5 0 0 0-3.5-3.5H11"/><path d="M13 4l-2.4 2.5L13 9"/></svg><span>PRC</span></a>
+    <a class="gh" href="https://github.com/komaksym/linkedin-mdp/pull/5">Open the pull request on GitHub</a>
+  </div>
+</header>
+
+<div class="clip-head" aria-hidden="true">
+  <svg class="glyph" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="6" cy="5.5" r="2.6"/><circle cx="6" cy="18.5" r="2.6"/><circle cx="18" cy="18.5" r="2.6"/><path d="M6 8.1v7.8M18 15.9V10a3.5 3.5 0 0 0-3.5-3.5H11"/><path d="M13 4l-2.4 2.5L13 9"/></svg>
+  <b>Daily reconciliation report in a Google Doc</b>
+  <span>linkedin-mdp, pull request 5</span>
+  <span class="clip-prog"><i></i><i></i><i></i></span>
+</div>
+
+<main id="top">
+  <section class="hero wrap" aria-labelledby="title">
+    <div class="hero-card">
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 1200 240" preserveAspectRatio="none">
+          <path class="hill-far" d="M0 150 C 160 90 300 120 430 100 C 560 80 640 40 790 60 C 930 80 1040 30 1200 50 L1200 240 L0 240 Z"/>
+          <path class="hill-mid" d="M0 190 C 140 150 260 170 400 150 C 560 128 700 160 860 120 C 990 90 1100 120 1200 104 L1200 240 L0 240 Z"/>
+          <path class="hill-near" d="M0 222 C 200 196 380 214 560 198 C 760 180 960 210 1200 186 L1200 240 L0 240 Z"/>
+          <ellipse class="bloom" cx="860" cy="150" rx="70" ry="16"/>
+          <ellipse class="bloom" cx="260" cy="196" rx="54" ry="12"/>
+          <ellipse class="bloom" cx="1080" cy="120" rx="40" ry="10"/>
+        </svg>
+      </div>
+      <div class="hero-text">
+        <p class="hero-meta"><span class="merged">Merged</span><a href="https://github.com/komaksym/linkedin-mdp/pull/5">komaksym/linkedin-mdp, pull request 5</a></p>
+        <h1 id="title">Daily reconciliation report in a Google Doc</h1>
+        <p class="hero-dek">What the change does, the order of work in the code, and where to start your review.</p>
+      </div>
+    </div>
+    <nav class="toc" aria-label="On this page">
+      <a href="#m1"><span class="toc-n">1</span>The Google Doc report</a>
+      <a href="#m2"><span class="toc-n">2</span>Order of work in run()</a>
+      <a href="#m3"><span class="toc-n">3</span>Where to start</a>
+    </nav>
+  </section>
+
+  <section class="moment" id="m1" aria-labelledby="m1-h">
+    <div class="stage wrap">
+      <header class="mh" data-b="1">
+        <h2 id="m1-h">The Google Doc report</h2>
+        <p>Each run replaces the text between two markers. The notes outside the markers stay.</p>
+      </header>
+      <div class="switch">
+        <span class="switch-label" id="scenLabel">Test scenario</span>
+        <div class="seg" role="group" aria-labelledby="scenLabel">
+          <button type="button" data-scen="complete" aria-pressed="true">complete</button>
+          <button type="button" data-scen="later_404" aria-pressed="false">later_404</button>
+          <button type="button" data-scen="supabase_timeout" aria-pressed="false">supabase_timeout</button>
+          <button type="button" data-scen="sharing" aria-pressed="false">sharing</button>
+        </div>
+        <p class="scen-cap" id="scenCap" aria-live="polite"></p>
+      </div>
+      <div class="m1-grid">
+        <section class="run" id="run" data-b="2" aria-label="This run"></section>
+        <figure class="doc" data-b="4">
+          <div class="doc-head"><span class="gdoc" aria-hidden="true"></span><span>Google Doc after the run</span></div>
+          <div class="doc-body" id="docBody"></div>
+          <figcaption class="cap">The notes outside the markers stay unchanged. Checked at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R237">e2e_doc_report.py:237</a></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="moment" id="m2" aria-labelledby="m2-h">
+    <div class="stage wrap">
+      <header class="mh" data-b="1">
+        <h2 id="m2-h">Order of work in run()</h2>
+        <p>The script checks the Doc before it reads LinkedIn or writes to Supabase.</p>
+      </header>
+      <figure class="code" data-b="2">
+        <figcaption class="code-head">
+          <a class="path" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R21">scripts/report_connections_doc.py</a>
+          <span class="fn">run()</span>
+          <span class="code-hint">Each line number opens the line on GitHub</span>
+        </figcaption>
+        <ol class="lines" id="lines"></ol>
+      </figure>
+    </div>
+  </section>
+
+  <section class="moment" id="m3" aria-labelledby="m3-h">
+    <div class="stage wrap">
+      <header class="mh" data-b="1">
+        <h2 id="m3-h">Where to start</h2>
+      </header>
+      <p class="summary" data-b="2">A daily workflow now writes reconciliation status into a private Google Doc.</p>
+      <aside class="tip" data-b="3" aria-label="Review tip">
+        <p class="tip-label">Review tip</p>
+        <p class="tip-main">Start at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR139">publish in google_doc_report.py</a>.</p>
+        <p class="tip-sub">The tests use fake Google servers.</p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot wrap">
+  <p>Made by PRC from <a href="https://github.com/komaksym/linkedin-mdp/pull/5">pull request 5</a>. Every file and line reference opens GitHub.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

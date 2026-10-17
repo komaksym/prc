@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRC looks, round 7 · linkedin-mdp pull request 5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v7-arena/picker.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <p class="crumb">PRC · <a href="https://github.com/komaksym/linkedin-mdp/pull/5">linkedin-mdp pull request 5</a></p>
+    <h1>Four looks for the page and the video</h1>
+    <p class="lede">Each look shows the same three moments: the Google Doc report, the order of work in run(), and where to start. Scroll to compare, or jump with the links or the keys 1 to 4. Pick one look for the page and one for the video.</p>
+  </div>
+</header>
+<div class="tabbar"><div class="wrap"><nav class="tabs" aria-label="Jump to a look">
+      <a href="#control" data-v="control"><kbd>1</kbd>Control</a>
+      <a href="#paper" data-v="paper"><kbd>2</kbd>Control on paper</a>
+      <a href="#warm" data-v="warm"><kbd>3</kbd>Warm paper</a>
+      <a href="#dark" data-v="dark"><kbd>4</kbd>Dark product</a>
+    </nav></div></div>
+
+<main class="wrap">
+  <section class="look" id="control" data-v="control" aria-label="Control">
+    <div class="look-head">
+      <div>
+        <h2>Control</h2>
+        <p>The current look. Dark navy cards, mono rows, and a side note beside the code. This is the look to beat.</p>
+      </div>
+      <a class="open" href="v6-styles/picker.html#control&amp;solo">Open the full page</a>
+    </div>
+    <div class="pair">
+      <figure class="frame"><iframe title="Control page" src="v6-styles/picker.html#control&amp;solo"></iframe><figcaption>Page. Scroll inside the frame.</figcaption></figure>
+      <figure class="vid"><video controls preload="metadata" poster="v6-styles/clips/control-poster.jpg" src="v6-styles/clips/control.webm"></video><figcaption>The video in this look.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="look" id="paper" data-v="paper" aria-label="Control on paper">
+    <div class="look-head">
+      <div>
+        <h2>Control on paper</h2>
+        <p>The same layout and motion as Control, with the Explorable palette: warm paper, dark ink, blue links. Only the colors change.</p>
+      </div>
+      <a class="open" href="v6-styles/picker.html#control&amp;solo&amp;pal=paper">Open the full page</a>
+    </div>
+    <div class="pair">
+      <figure class="frame"><iframe title="Control on paper page" src="v6-styles/picker.html#control&amp;solo&amp;pal=paper"></iframe><figcaption>Page. Scroll inside the frame.</figcaption></figure>
+      <figure class="vid"><video controls preload="metadata" poster="v6-styles/clips/control-paper-poster.jpg" src="v6-styles/clips/control-paper.webm"></video><figcaption>The video in this look.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="look" id="warm" data-v="warm" aria-label="Warm paper">
+    <div class="look-head">
+      <div>
+        <h2>Warm paper</h2>
+        <p>Inspired by wondering.app. A painted header band, a serif title, and the Doc in suggestion mode with Kept, Removed and Written chips. Notes sit in a column beside the code.</p>
+      </div>
+      <a class="open" href="v7-arena/candidate-1/wondering/index.html">Open the full page</a>
+    </div>
+    <div class="pair">
+      <figure class="frame"><iframe title="Warm paper page" src="v7-arena/candidate-1/wondering/index.html"></iframe><figcaption>Page. Scroll inside the frame. Try the test scenario switch.</figcaption></figure>
+      <figure class="vid"><video controls preload="metadata" poster="v7-arena/candidate-1/wondering/clip-poster.jpg" src="v7-arena/candidate-1/wondering/clip.webm"></video><figcaption>The video in this look.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="look" id="dark" data-v="dark" aria-label="Dark product">
+    <div class="look-head">
+      <div>
+        <h2>Dark product</h2>
+        <p>A Linear and Vercel register. The Doc is a unified diff with a +10 −1 diffstat, and each note is a review comment under its code line.</p>
+      </div>
+      <a class="open" href="v7-arena/candidate-1/yours/index.html">Open the full page</a>
+    </div>
+    <div class="pair">
+      <figure class="frame"><iframe title="Dark product page" src="v7-arena/candidate-1/yours/index.html"></iframe><figcaption>Page. Scroll inside the frame. Try the test scenario switch.</figcaption></figure>
+      <figure class="vid"><video controls preload="metadata" poster="v7-arena/candidate-1/yours/clip-poster.jpg" src="v7-arena/candidate-1/yours/clip.webm"></video><figcaption>The video in this look.</figcaption></figure>
+    </div>
+  </section>
+
+  <details class="notes">
+    <summary>How these four were chosen</summary>
+    <p>Three builders each made a warm and a dark direction. A separate judge scored all six on polish, a 30-second read, code readability, color, fit to the Control layout, and an 800 px width. Warm paper and Dark product come from the same builder and scored 27 and 28 of 30.</p>
+    <p>Rejected: <a href="v7-arena/candidate-2/wondering/index.html">builder 2 warm</a> and <a href="v7-arena/candidate-2/yours/index.html">builder 2 dark</a> leave the Doc and the code blank until you scroll them into view. <a href="v7-arena/candidate-3/wondering/index.html">Builder 3 warm</a> and <a href="v7-arena/candidate-3/yours/index.html">builder 3 dark</a> are clean but look almost the same, and their videos overlap titles during transitions.</p>
+  </details>
+</main>
+
+<footer class="wrap foot"><p>Every file and line reference inside the pages opens <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files">the pull request diff on GitHub</a>.</p></footer>
+<script src="v7-arena/picker.js"></script>
+</body>
+</html>

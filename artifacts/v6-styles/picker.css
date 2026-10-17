@@ -71,6 +71,31 @@ pre.code .cl.hl{background:#3a2e1a;box-shadow:inset 3px 0 0 #e69f00}
 .v-control .vid video{border-radius:10px;border:1px solid #2a3348}
 .v-control .vid figcaption{color:#8a93a6}
 
+/* Control layout on the Explorable paper palette (?pal=paper). Same meanings, light washes. */
+body.solo .ph,body.solo .vh,body.solo .vid{display:none}
+.pal-paper .v-control{background:#fbf8f1;color:#26231e}
+.pal-paper .ctl a{color:#1f5fbf;text-decoration-color:rgba(31,95,191,.4)}
+.pal-paper .ctl a:hover{text-decoration-color:#1f5fbf}
+.pal-paper .ctl-kick,.pal-paper .box .bt,.pal-paper .cap{color:#8a8172}
+.pal-paper .ctl-title{font-family:'Source Serif 4',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+.pal-paper .ctl-m{border-top-color:#e4dccb}
+.pal-paper .ctl-m h3{color:#4a453c}
+.pal-paper .box{background:#fff;border:1px solid #e4dccb;box-shadow:0 1px 0 #efe8d9,0 10px 30px -18px rgba(70,55,20,.25)}
+.pal-paper .rowline{background:#faf7f0;border-color:#e1d8c4;color:#26231e}
+.pal-paper .rowline.st{background:#fff1d6;border-color:#b7791f;color:#7a4a00}
+.pal-paper .rowline.old{background:#fce4df;border-color:#c2412d;color:#c2412d}
+.pal-paper .rowline.mk{color:#1f5fbf}
+.pal-paper .rowline.slot{border-color:#b9ad93;color:#26231e;background:#fff}
+.pal-paper .slot-tag{color:#1f5fbf}
+.pal-paper .rowline.keep{background:#e3f2e8;border-color:#2f7d4f;box-shadow:inset 0 0 0 1px #2f7d4f}
+.pal-paper pre.code{background:#fff;border-color:#e4dccb;color:#26231e}
+.pal-paper pre.code .cl i{color:#b0a690}
+.pal-paper pre.code .cl.hl{background:#fff1d6;box-shadow:inset 3px 0 0 #b7791f}
+.pal-paper .callout{background:#eef3fb;border-color:#1f5fbf;color:#26231e}
+.pal-paper .tipcard{background:#fff;border-color:#e4dccb;border-left-color:#1f5fbf}
+.pal-paper .tipcard b{color:#1f5fbf}
+.pal-paper .v-control .vid video{border-color:#e4dccb}
+
 /* =========================================================
    A: 3Blue1Brown
    ========================================================= */

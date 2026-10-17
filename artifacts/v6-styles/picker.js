@@ -548,7 +548,7 @@ var CTL = {
     var rows = $$('.rowline', m), old = $('[data-k="old"]', m), sv = $('.slot-v', m), st = $('[data-k="st"]', m);
     rows.forEach(function (r, i) { anim(r, [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { delay: i * 55, duration: 380 }); });
     old.style.textDecoration = 'none'; sv.style.opacity = 0;
-    $$('.keep', m).forEach(function (k) { k.style.boxShadow = 'none'; k.style.borderColor = '#3a4458'; });
+    $$('.keep', m).forEach(function (k) { k.style.boxShadow = 'none'; k.style.borderColor = PAPER ? '#e1d8c4' : '#3a4458'; });
     await sleep(1300);
     old.style.textDecoration = ''; anim(old, [{ opacity: 1 }, { opacity: .45 }], { duration: 400 });
     await sleep(500);
@@ -558,14 +558,15 @@ var CTL = {
     await anim(c, [{ transform: 'none' }, { transform: 'translate(' + (b.left - a.left - 10) + 'px,' + (b.top - a.top - 6) + 'px)', width: b.width + 'px' }], { duration: 900 }).finished;
     c.remove(); sv.style.opacity = 1;
     await sleep(350);
-    $$('.keep', m).forEach(function (k) { k.style.boxShadow = ''; k.style.borderColor = ''; anim(k, [{ boxShadow: '0 0 0 0 #009e73' }, { boxShadow: '0 0 0 6px rgba(0,158,115,.35)' }, { boxShadow: 'inset 0 0 0 1px #009e73' }], { duration: 700 }); });
+    var G = PAPER ? '#2f7d4f' : '#009e73';
+    $$('.keep', m).forEach(function (k) { k.style.boxShadow = ''; k.style.borderColor = ''; anim(k, [{ boxShadow: '0 0 0 0 ' + G }, { boxShadow: '0 0 0 6px rgba(0,158,115,.35)' }, { boxShadow: 'inset 0 0 0 1px ' + G }], { duration: 700 }); });
     await sleep(800);
   },
   2: async function (m) {
     $$('.cl', m).forEach(function (r, i) { anim(r, [{ opacity: 0 }, { opacity: 1 }], { delay: i * 70, duration: 300 }); });
     var co = $('.callout', m); co.style.opacity = 0;
     await sleep(900);
-    anim($('.hl', m), [{ background: '#0e1320' }, { background: '#3a2e1a' }], { duration: 500 });
+    anim($('.hl', m), [{ background: PAPER ? '#ffffff' : '#0e1320' }, { background: PAPER ? '#fff1d6' : '#3a2e1a' }], { duration: 500 });
     co.style.opacity = ''; anim(co, [{ opacity: 0, transform: 'translateX(20px)' }, { opacity: 1, transform: 'none' }], { duration: 600 });
     await sleep(1200);
   },
@@ -581,11 +582,17 @@ var CTL = {
    boot and clip mode
    ========================================================= */
 var params = new URLSearchParams(location.search), CLIP = params.get('clip');
+// Flags come from the query (clip recording) or the hash (#control&solo&pal=paper, safe over file://).
+function hashView() { return location.hash.slice(1).split('&')[0]; }
+var flags = new URLSearchParams(location.search.slice(1) + '&' + location.hash.slice(1).split('&').slice(1).join('&'));
+var PAPER = flags.get('pal') === 'paper';
+if (PAPER) document.body.classList.add('pal-paper');
+if (flags.has('solo')) document.body.classList.add('solo');
 buildA(); var BD = buildBDoc(), BC = buildBCode(); buildC();
 window.addEventListener('resize', fitStages);
-window.addEventListener('hashchange', function () { var h = location.hash.slice(1); if (ORDER.indexOf(h) >= 0) show(h); });
+window.addEventListener('hashchange', function () { var h = hashView(); if (ORDER.indexOf(h) >= 0) show(h); });
 onShow.push(function (v) { if (v === 'a') fitStages(); });
-var start = CLIP || (location.hash || '').slice(1);
+var start = CLIP || hashView();
 show(ORDER.indexOf(start) >= 0 ? start : 'control');
 fitStages();
 

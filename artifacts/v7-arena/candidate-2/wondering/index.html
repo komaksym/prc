@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily reconciliation report in a Google Doc - PR 5 review</title>
+<meta name="description" content="A two minute review of pull request 5. The report, the order of work, and where to start.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Public+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wash" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="grain"></span></div>
+<header class="mast">
+<p class="mast-kick"><svg class="star" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2.6l2.5 5.9 6.4.5-4.9 4.2 1.5 6.2L12 16l-5.5 3.4 1.5-6.2-4.9-4.2 6.4-.5z" fill="currentColor"/></svg><span>Calm review of <a href="https://github.com/komaksym/linkedin-mdp/pull/5">pull request 5</a> in linkedin-mdp</span></p>
+<h1>Daily reconciliation report in a Google Doc</h1>
+<p class="dek"><em>You can review this in two minutes.</em> A daily workflow writes status into a private Doc. This page shows the report, the order, and where to start.</p>
+<ul class="key" aria-label="Colour key">
+<li><i class="sw sw-blue"></i>Blue marks places to read on GitHub.</li>
+<li><i class="sw sw-green"></i>Green marks kept text and COMPLETE.</li>
+<li><i class="sw sw-coral"></i>Coral marks removed text.</li>
+<li><i class="sw sw-amber"></i>Amber marks BLOCKED.</li>
+<li><i class="sw sw-red"></i>Red marks FAILED.</li>
+<li><i class="sw sw-sun"></i>Yellow washes new text.</li>
+</ul>
+</header>
+<main>
+<section class="moment" data-moment="1" aria-labelledby="m1h">
+<div class="m-prose">
+<p class="m-no">Moment 1 of 3</p>
+<h2 id="m1h">The report in the Doc</h2>
+<p>The test runs the complete path. It stores status and six counts. Notes outside the markers stay the same.</p>
+<p>Counts come from <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R247">e2e_doc_report.py:247</a>. Both ends are checked at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R237">e2e_doc_report.py:237</a>.</p>
+<div class="scen" role="group" aria-label="Test scenario">
+<span class="scen-label" id="scenLabel">Test scenario</span>
+<div class="scen-btns" role="group" aria-labelledby="scenLabel">
+<button type="button" data-scen="complete" aria-pressed="true">complete</button>
+<button type="button" data-scen="later_404" aria-pressed="false">later_404</button>
+<button type="button" data-scen="supabase_timeout" aria-pressed="false">supabase_timeout</button>
+<button type="button" data-scen="sharing" aria-pressed="false">sharing</button>
+</div>
+</div>
+</div>
+<div class="m-fig">
+<div class="sheet run" aria-label="This run">
+<h3>This run</h3>
+<p class="status" data-run="status"><span class="stamp st-complete">COMPLETE</span></p>
+<dl class="counts" data-run="counts">
+<div><dt>Fetched rows</dt><dd>4</dd></div>
+<div><dt>Matched rows</dt><dd>3</dd></div>
+<div><dt>Unique matched connections</dt><dd>2</dd></div>
+<div><dt>Unmatched rows</dt><dd>1</dd></div>
+<div><dt>Newly inserted events</dt><dd>1</dd></div>
+<div><dt>Already-present events</dt><dd>1</dd></div>
+</dl>
+<p class="runmeta" data-run="meta">Exit code 0. Run time 2026-09-30 10:00:00 CEST.</p>
+</div>
+<div class="sheet doc" aria-label="Google Doc after the run">
+<div class="docbar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><h3>Google Doc after the run</h3></div>
+<div class="docbody">
+<p class="note kept" data-doc="note">Operator note <span class="kept-tag">kept</span></p>
+<p class="marker">[BEGIN AUTOMATED REPORT]</p>
+<div class="slot" data-doc="slot">
+<p class="old" data-doc="old">old</p>
+<div class="news" data-doc="news">
+<p class="news-title">LinkedIn CONNECTIONS reconciliation</p>
+<p class="news-status">Status: COMPLETE</p>
+<p>Run time: 2026-09-30 10:00:00 CEST</p>
+<p>Fetched rows: 4</p>
+<p>Matched rows: 3</p>
+<p>Unique matched connections: 2</p>
+<p>Unmatched rows: 1</p>
+<p>Newly inserted events: 1</p>
+<p>Already-present events: 1</p>
+<p class="next">Next action: review the aggregate counts; investigate unmatched rows if needed.</p>
+</div>
+</div>
+<p class="marker">[END AUTOMATED REPORT]</p>
+<p class="note kept" data-doc="keep">Keep this note. <span class="kept-tag">kept</span></p>
+<p class="stopped" data-doc="stopped" hidden>Exit 2. The Doc is shared. The run stops early. It writes nothing.</p>
+</div>
+</div>
+<p class="figcap" data-cap="doc">Exit 0. The run is COMPLETE. All six counts are known.</p>
+</div>
+</section>
+<section class="moment" data-moment="2" aria-labelledby="m2h">
+<div class="m-prose">
+<p class="m-no">Moment 2 of 3</p>
+<h2 id="m2h">The order of work</h2>
+<p>Google checks run first at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R36">report_connections_doc.py:36</a>. A LinkedIn error gives BLOCKED. Other errors give FAILED, or BLOCKED when the client never started.</p>
+<ol class="flow" aria-label="Three steps in run">
+<li><span class="f-no">1</span><span><b>Check the Doc</b><span class="f-sub">Google first</span></span></li>
+<li><span class="f-no">2</span><span><b>Reconcile</b><span class="f-sub">LinkedIn and Supabase</span></span></li>
+<li><span class="f-no">3</span><span><b>Publish the status</b><span class="f-sub">Back to Google</span></span></li>
+</ol>
+</div>
+<div class="m-fig">
+<div class="codewrap">
+<div class="codehead"><span>scripts/report_connections_doc.py</span><span class="runs">run()</span></div>
+<pre class="code" aria-label="Order of work in run"><code>
+<span class="cl" data-line="36"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R36">36</a><span class="tk-kw">await</span> <span class="tk-fn">publisher.prepare</span>()</span>
+<span class="cl fold" aria-hidden="true"><span class="ln">..</span><span class="tk-com">5 lines hidden</span></span>
+<span class="cl" data-line="42"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R42">42</a>    summary = <span class="tk-kw">await</span> <span class="tk-fn">reconcile_connections</span>(guarded_linkedin, supabase)</span>
+<span class="cl" data-line="43"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R43">43</a><span class="tk-kw">except</span> LinkedInAPIError:</span>
+<span class="cl" data-line="44"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R44">44</a>    result = <span class="tk-fn">ReportResult</span>(<span class="tk-str">BLOCKED</span>, datetime.<span class="tk-fn">now</span>(timezone.utc), <span class="tk-kw">None</span>)</span>
+<span class="cl fold" aria-hidden="true"><span class="ln">..</span><span class="tk-com">5 lines hidden</span></span>
+<span class="cl" data-line="50"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R50">50</a><span class="tk-kw">except</span> Exception:</span>
+<span class="cl" data-line="51"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R51">51</a>    result = <span class="tk-fn">ReportResult</span>(<span class="tk-str">BLOCKED</span> <span class="tk-kw">if</span> linkedin <span class="tk-kw">is</span> <span class="tk-kw">None</span> <span class="tk-kw">else</span> <span class="tk-str">FAILED</span>, ...)</span>
+<span class="cl fold" aria-hidden="true"><span class="ln">..</span><span class="tk-com">14 lines hidden</span></span>
+<span class="cl" data-line="66"><a class="ln" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R66">66</a><span class="tk-kw">await</span> <span class="tk-fn">publisher.publish</span>(result)</span>
+</code></pre>
+<p class="sidenote">Google checks run first. See <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R36">report_connections_doc.py:36</a>.</p>
+</div>
+</div>
+</section>
+<section class="moment" data-moment="3" aria-labelledby="m3h">
+<div class="m-prose center">
+<p class="m-no">Moment 3 of 3</p>
+<h2 id="m3h">What changed</h2>
+<p class="summary">A daily workflow now writes reconciliation status into a private Google Doc.</p>
+<aside class="tip"><h3>Review tip</h3><p>Start at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR139">publish in google_doc_report.py</a>. Tests use fake Google servers.</p></aside>
+</div>
+</section>
+</main>
+<footer class="foot">
+<p>Built from <a href="https://github.com/komaksym/linkedin-mdp/pull/5">linkedin-mdp pull request 5</a>, merged. Every line number opens its GitHub line.</p>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>

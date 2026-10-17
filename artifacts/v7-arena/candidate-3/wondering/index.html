@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Daily reconciliation report in a Google Doc — Wondering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <p class="kick"><span class="merged">merged</span><a class="repo" href="https://github.com/komaksym/linkedin-mdp/pull/5">linkedin-mdp / pull 5</a></p>
+  <h1>Daily reconciliation report in a Google Doc</h1>
+  <p class="dek">What the report wrote, the order of work, and where to start the review.</p>
+</header>
+
+<main>
+
+  <section class="moment" id="m1">
+    <div class="mhead"><span class="mnum">1</span><h2>The Google Doc report</h2></div>
+    <div class="duo">
+      <div class="runside">
+        <div class="runcard">
+          <div class="runtop">
+            <span class="runlab">This run</span>
+            <div class="scen" role="group" aria-label="Test scenario">
+              <button type="button" data-scen="complete" class="on" aria-pressed="true">complete</button>
+              <button type="button" data-scen="later_404" aria-pressed="false">later_404</button>
+              <button type="button" data-scen="supabase_timeout" aria-pressed="false">supabase_timeout</button>
+              <button type="button" data-scen="sharing" aria-pressed="false">sharing</button>
+            </div>
+          </div>
+          <div class="status-row"><span class="statlab">Status</span><span class="stat st-complete" id="w-stat">COMPLETE</span></div>
+          <div class="counts" id="w-counts"></div>
+          <p class="exit" id="w-exit">Exit code 0</p>
+        </div>
+        <p class="scap" id="w-scap"></p>
+        <p class="cap">The status and the six counts from the test run. Source: <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R247">e2e_doc_report.py:247</a></p>
+      </div>
+      <figure class="docfig">
+        <div class="sheet">
+          <div class="sheet-bar"><i class="page-dot"></i><span class="doc-name" id="w-docname">Google Doc after the run</span></div>
+          <div class="sheet-body">
+            <p class="drow kept"><span class="dt">Operator note</span><span class="dtag t-kept">unchanged</span></p>
+            <p class="drow mk"><span class="dt">[BEGIN AUTOMATED REPORT]</span></p>
+            <div class="region">
+              <p class="drow old struck"><span class="dt">old</span><span class="dtag t-old">removed</span></p>
+              <div class="news" id="w-news"></div>
+            </div>
+            <p class="drow mk"><span class="dt">[END AUTOMATED REPORT]</span></p>
+            <p class="drow kept"><span class="dt">Keep this note.</span><span class="dtag t-kept">unchanged</span></p>
+            <p class="dstop" id="w-stop" hidden>Preflight refused the run: the Doc is shared with another account. Nothing between the markers changes.</p>
+          </div>
+        </div>
+        <figcaption class="cap">The notes outside the markers stay unchanged. Checked at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R237">e2e_doc_report.py:237</a></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="moment" id="m2">
+    <div class="mhead"><span class="mnum">2</span><h2>The order of work in <code>run()</code></h2><a class="file" href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R21">scripts/report_connections_doc.py</a></div>
+    <div class="codebox"><div class="code" id="w-code"></div></div>
+    <div class="notes">
+      <div class="note"><span class="nb b-doc">36</span><p>Google checks run first. A shared Doc stops the run here, before any other work. <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R36">report_connections_doc.py:36</a></p></div>
+      <div class="note"><span class="nb b-blocked">44</span><p>A LinkedIn API error gives <b class="w-blocked">BLOCKED</b>. The script still publishes that status. <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R44">report_connections_doc.py:44</a></p></div>
+      <div class="note"><span class="nb b-failed">51</span><p>Other errors after the client starts give <b class="w-failed">FAILED</b>; with no client started, <b class="w-blocked">BLOCKED</b>. <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R51">report_connections_doc.py:51</a></p></div>
+    </div>
+    <p class="cap">The script checks the Doc before it reads LinkedIn or writes to Supabase.</p>
+  </section>
+
+  <section class="moment" id="m3">
+    <div class="mhead"><span class="mnum">3</span><h2>Summary</h2></div>
+    <p class="sum">A daily workflow now writes reconciliation status into a private Google Doc.</p>
+    <aside class="tip"><span class="tiplab">Review tip</span><p>Start at <a href="https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR139">publish in google_doc_report.py</a>. The tests use fake Google servers.</p></aside>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
