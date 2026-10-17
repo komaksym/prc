@@ -10,7 +10,7 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parent
 SHOTS, CLIPS = ROOT / "shots", ROOT / "clips"
 VARIANTS = ["control", "a", "b", "c"]
-CLIP_URL = {"control-" + p: "control&pal=" + p for p in ("paper", "coded", "marker", "card", "grid", "docs")}  # clip name -> ?clip= query
+CLIP_URL = {"control-" + p: "control&pal=" + p for p in ("paper", "coded", "marker", "card", "grid", "docs", "cream", "gallery", "cotton", "stone", "ivory")}  # clip name -> ?clip= query
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):

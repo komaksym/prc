@@ -486,3 +486,210 @@ pre.code .tk-kw{color:var(--syn-kw)}pre.code .tk-str{color:var(--syn-str)}pre.co
 .pal-docs .tipcard{border-left:4px solid #1a73e8}
 .pal-docs .tipcard b{color:#1a73e8}
 .pal-docs .v-control .vid video{border-color:#dadce0}
+
+/* ---------- round 9: four seeded light looks on the Control layout (#control&solo&pal=NAME) ---------- */
+/* Shared subtraction for round 9: no tracked capitals, sentence-case labels. */
+.pal-cream .ctl-kick,.pal-cream .box .bt,.pal-cream .slot-tag,.pal-cream .tipcard b,
+.pal-gallery .box .bt,.pal-gallery .slot-tag,.pal-gallery .tipcard b,
+.pal-cotton .ctl-kick,.pal-cotton .box .bt,.pal-cotton .slot-tag,.pal-cotton .tipcard b,
+.pal-stone .ctl-kick,.pal-stone .box .bt,.pal-stone .slot-tag,.pal-stone .tipcard b{text-transform:none;letter-spacing:0}
+
+/* Cream: the warm, airy register of wondering.app. Soft filled pills, large radii, no outlines. */
+.pal-cream{--a-row-bd:transparent;--a-keep:#2e7d4f;--a-hl0:#fffcf0;--a-hl1:#fdebc4;--syn-kw:#9b3d8f;--syn-str:#2e7d4f;--syn-fn:#2457b3;--syn-cls:#a35a12;--syn-const:#b8392b}
+.pal-cream .v-control{background:#fffcf0;color:#261312}
+.pal-cream .ctl{font-family:'Public Sans',Inter,sans-serif;max-width:1120px}
+.pal-cream .ctl a{color:#2457b3;text-decoration-color:rgba(36,87,179,.35)}
+.pal-cream .ctl-kick{font:500 14px 'Public Sans',sans-serif;color:#8a7a70}
+.pal-cream .box .bt,.pal-cream .cap{font:500 13px 'Public Sans',sans-serif;color:#8a7a70}
+.pal-cream .ctl-title{font:600 42px/1.12 'Public Sans',sans-serif;letter-spacing:-.03em;color:#261312;margin:8px 0 18px}
+.pal-cream .ctl-m{border-top:0;padding:28px 0 8px}
+.pal-cream .ctl-m h3{font:600 18px 'Public Sans',sans-serif;letter-spacing:-.01em;color:#261312}
+.pal-cream .ctl-grid{gap:20px}
+.pal-cream .box{background:#fff7e3;border:0;border-radius:24px;padding:20px 22px;box-shadow:none}
+.pal-cream .rowline{font:500 14.5px 'JetBrains Mono',monospace;background:#fffcf0;border:0;border-radius:999px;padding:7px 14px;margin:4px 0;color:#261312}
+.pal-cream .rowline.st{background:#fdebc4;color:#7a4300;font-weight:700}
+.pal-cream .rowline.old{background:#fbe0da;color:#b8392b}
+.pal-cream .rowline.mk{background:transparent;color:#2457b3}
+.pal-cream .rowline.slot{background:transparent;border:1.5px dashed #cdb9a6;border-radius:18px;color:#261312}
+.pal-cream .slot-tag{font:600 12px 'Public Sans',sans-serif;color:#2457b3}
+.pal-cream .rowline.keep{background:#dff1e4;color:#1f5f3b;box-shadow:none}
+.pal-cream pre.code{font-family:'JetBrains Mono',monospace;background:#fff7e3;border:0;border-radius:20px;padding:16px 0;color:#261312}
+.pal-cream pre.code .cl i{color:#c4b2a4}
+.pal-cream pre.code .cl.hl{background:#fdebc4;box-shadow:none}
+.pal-cream .callout{background:#e8eefb;border:0;border-radius:20px;padding:14px 16px;color:#261312}
+.pal-cream .outro-l1{font:600 34px/1.25 'Public Sans',sans-serif;letter-spacing:-.025em}
+.pal-cream .tipcard{background:#fff7e3;border:0;border-radius:20px;color:#261312}
+.pal-cream .tipcard b{font:600 13px 'Public Sans',sans-serif;color:#2457b3}
+.pal-cream .v-control .vid video{border:0;border-radius:20px}
+
+/* Gallery: a white wall with hairline frames, square corners and numbered moments. */
+.pal-gallery{--a-row-bd:#e7e7e4;--a-keep:#1d7a4a;--a-hl0:#ffffff;--a-hl1:#fff0c7;--syn-kw:#7a2e8e;--syn-str:#1d7a4a;--syn-fn:#1f4fa8;--syn-cls:#995500;--syn-const:#b22d22}
+.pal-gallery .v-control{background:#ffffff;color:#111111}
+.pal-gallery .ctl{font-family:'Hanken Grotesk',sans-serif;max-width:1080px;padding-top:40px}
+.pal-gallery .ctl a{color:#1f4fa8;text-decoration-color:rgba(31,79,168,.3)}
+.pal-gallery .ctl-kick{font:500 13px 'Hanken Grotesk',sans-serif;letter-spacing:0;text-transform:none;color:#8c8c88}
+.pal-gallery .box .bt,.pal-gallery .cap{font:400 13px 'Hanken Grotesk',sans-serif;color:#8c8c88}
+.pal-gallery .ctl-title{font:400 46px/1.08 Spectral,Georgia,serif;letter-spacing:-.02em;margin:10px 0 30px;max-width:22ch}
+.pal-gallery .ctl{counter-reset:mom}
+.pal-gallery .ctl-m{counter-increment:mom;border-top:1px solid #111;padding:22px 0 18px;display:grid;grid-template-columns:72px minmax(0,1fr);column-gap:8px}
+.pal-gallery .ctl-m::before{content:counter(mom,upper-roman);grid-row:1 / span 4;font:400 22px Spectral,Georgia,serif;color:#111}
+.pal-gallery .ctl-m h3{font:600 14px 'Hanken Grotesk',sans-serif;color:#111}
+.pal-gallery .box{background:#fff;border:1px solid #d9d9d5;border-radius:0;box-shadow:none;padding:16px 18px}
+.pal-gallery .rowline{font:400 14px 'Red Hat Mono',monospace;background:none;border:0;border-bottom:1px solid #eeeeeb;border-radius:0;margin:0;padding:8px 2px;color:#111}
+.pal-gallery .rowline.st{color:#8a4b00;font-weight:600;box-shadow:inset 0 -3px 0 #f0b43a}
+.pal-gallery .rowline.old{color:#b22d22}
+.pal-gallery .rowline.mk{color:#1f4fa8}
+.pal-gallery .rowline.slot{border:1px dashed #9a9a95;padding:8px 10px;margin:6px 0}
+.pal-gallery .slot-tag{font:500 12px 'Hanken Grotesk',sans-serif;color:#1f4fa8}
+.pal-gallery .rowline.keep{color:#1d7a4a;box-shadow:inset 3px 0 0 #1d7a4a;padding-left:10px}
+.pal-gallery pre.code{font-family:'Red Hat Mono',monospace;background:#fafaf8;border:1px solid #d9d9d5;border-radius:0;color:#111}
+.pal-gallery pre.code .cl i{color:#b5b5b0}
+.pal-gallery pre.code .cl.hl{background:#fff0c7;box-shadow:inset 2px 0 0 #c98a00}
+.pal-gallery .callout{background:#fff;border:1px solid #111;border-radius:0;color:#111}
+.pal-gallery .outro-l1{font:400 36px/1.2 Spectral,Georgia,serif;letter-spacing:-.015em}
+.pal-gallery .tipcard{background:#fff;border:1px solid #d9d9d5;border-left:2px solid #1f4fa8;border-radius:0}
+.pal-gallery .tipcard b{font:600 13px 'Hanken Grotesk',sans-serif;color:#1f4fa8}
+.pal-gallery .v-control .vid video{border:1px solid #d9d9d5;border-radius:0}
+@media (max-width:860px){.pal-gallery .ctl-m{grid-template-columns:minmax(0,1fr)}.pal-gallery .ctl-m::before{grid-row:auto}}
+
+/* Cotton: printed on cotton rag paper. Grain from an SVG noise filter, letterpress serif, navy ink. */
+.pal-cotton{--a-row-bd:#e2ddd2;--a-keep:#2c6e49;--a-hl0:#fbfaf6;--a-hl1:#f8e7bd;--syn-kw:#6b2d84;--syn-str:#2c6e49;--syn-fn:#1e4a8c;--syn-cls:#8d5a14;--syn-const:#a63224}
+.pal-cotton .v-control{color:#1c2a44;background-color:#fbfaf6;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .36  0 0 0 0 .31  0 0 0 0 .22  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.pal-cotton .ctl{font-family:'Libre Franklin',sans-serif;max-width:1100px}
+.pal-cotton .ctl a{color:#1e4a8c;text-decoration-color:rgba(30,74,140,.35)}
+.pal-cotton .ctl-kick{font:italic 400 15px 'Libre Caslon Text',Georgia,serif;color:#6e6a60}
+.pal-cotton .box .bt,.pal-cotton .cap{font:italic 400 13.5px 'Libre Caslon Text',Georgia,serif;color:#6e6a60}
+.pal-cotton .ctl-title{font:700 40px/1.15 'Libre Caslon Text',Georgia,serif;letter-spacing:-.01em;color:#1c2a44}
+.pal-cotton .ctl-m{border-top:1px solid #d8d1c2;padding-top:24px}
+.pal-cotton .ctl-m h3{font:700 17px 'Libre Caslon Text',Georgia,serif;color:#1c2a44}
+.pal-cotton .box{background:rgba(255,255,255,.55);border:1px solid #ddd6c7;border-radius:2px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 1px 2px rgba(60,50,30,.06)}
+.pal-cotton .rowline{font:400 14.5px 'IBM Plex Mono',monospace;background:none;border:0;border-bottom:1px dotted #cfc7b6;border-radius:0;margin:0;padding:7px 4px;color:#1c2a44}
+.pal-cotton .rowline.st{color:#7c4a00;font-weight:600;background:#f8e7bd}
+.pal-cotton .rowline.old{color:#a63224;background:#f6dcd5}
+.pal-cotton .rowline.mk{color:#1e4a8c}
+.pal-cotton .rowline.slot{border:1px dashed #a89f8c;border-radius:2px;padding:7px 8px;margin:4px 0}
+.pal-cotton .slot-tag{font:italic 400 12.5px 'Libre Caslon Text',Georgia,serif;color:#1e4a8c}
+.pal-cotton .rowline.keep{color:#2c6e49;background:#e1efe3;box-shadow:none}
+.pal-cotton pre.code{font-family:'IBM Plex Mono',monospace;background:rgba(255,255,255,.6);border:1px solid #ddd6c7;border-radius:2px;color:#1c2a44}
+.pal-cotton pre.code .cl i{color:#b3aa98}
+.pal-cotton pre.code .cl.hl{background:#f8e7bd;box-shadow:inset 3px 0 0 #b7791f}
+.pal-cotton .callout{background:rgba(255,255,255,.6);border:1px solid #ddd6c7;border-left:3px solid #1e4a8c;border-radius:2px;color:#1c2a44}
+.pal-cotton .callout b{font:700 15px 'Libre Caslon Text',Georgia,serif}
+.pal-cotton .outro-l1{font:400 34px/1.3 'Libre Caslon Text',Georgia,serif}
+.pal-cotton .tipcard{background:rgba(255,255,255,.6);border:1px solid #ddd6c7;border-left:3px solid #1e4a8c;border-radius:2px}
+.pal-cotton .tipcard b{font:italic 400 14px 'Libre Caslon Text',Georgia,serif;color:#1e4a8c}
+.pal-cotton .v-control .vid video{border:1px solid #ddd6c7;border-radius:2px}
+
+/* Stone: a quiet product surface in the register of current YC tools. Geist, graphite, flat zebra rows. */
+.pal-stone{--a-row-bd:#e4e0d8;--a-keep:#16794c;--a-hl0:#ffffff;--a-hl1:#fdf0cf;--syn-kw:#8c3ab8;--syn-str:#16794c;--syn-fn:#2a5bd7;--syn-cls:#a65c00;--syn-const:#c03221}
+.pal-stone .v-control{background:#f3f1ec;color:#1c1b19}
+.pal-stone .ctl{font-family:Geist,Inter,sans-serif;max-width:1100px}
+.pal-stone .ctl a{color:#2a5bd7;text-decoration-color:rgba(42,91,215,.3)}
+.pal-stone .ctl-kick{font:500 13px Geist,sans-serif;color:#8a857b}
+.pal-stone .box .bt,.pal-stone .cap{font:500 12.5px Geist,sans-serif;color:#8a857b}
+.pal-stone .ctl-title{font:600 38px/1.12 Geist,sans-serif;letter-spacing:-.035em;color:#1c1b19}
+.pal-stone .ctl-m{border-top:1px solid #e4e0d8;padding-top:22px}
+.pal-stone .ctl-m h3{font:600 15px Geist,sans-serif;letter-spacing:-.01em;color:#1c1b19}
+.pal-stone .box{background:#fff;border:1px solid #e4e0d8;border-radius:12px;box-shadow:0 1px 2px rgba(28,27,25,.04);padding:6px 6px 12px}
+.pal-stone .box .bt{padding:8px 10px 2px;margin-bottom:4px}
+.pal-stone .box .cap{padding:10px 10px 0}
+.pal-stone .rowline{font:450 13.5px 'Geist Mono',monospace;background:none;border:0;border-radius:6px;margin:0;padding:7px 10px;color:#1c1b19}
+.pal-stone .ctl-counts .rowline:nth-child(odd){background:#f7f6f2}
+.pal-stone .rowline.st{background:#fdf0cf;color:#7d4a00;font-weight:600}
+.pal-stone .rowline.old{background:#fce5e0;color:#c03221}
+.pal-stone .rowline.mk{color:#2a5bd7}
+.pal-stone .rowline.slot{border:1px dashed #c9c3b6;margin:3px 0}
+.pal-stone .slot-tag{font:500 11.5px Geist,sans-serif;color:#2a5bd7}
+.pal-stone .rowline.keep{background:#e2f2e9;color:#16794c;box-shadow:none}
+.pal-stone pre.code{font-family:'Geist Mono',monospace;background:#fff;border:1px solid #e4e0d8;border-radius:12px;color:#1c1b19}
+.pal-stone pre.code .cl i{color:#b9b4a9}
+.pal-stone pre.code .cl.hl{background:#fdf0cf;box-shadow:inset 2px 0 0 #d39b1d}
+.pal-stone .callout{background:#fff;border:1px solid #e4e0d8;border-radius:12px;color:#1c1b19}
+.pal-stone .callout b{font:600 14px Geist,sans-serif}
+.pal-stone .outro-l1{font:600 32px/1.22 Geist,sans-serif;letter-spacing:-.03em}
+.pal-stone .tipcard{background:#fff;border:1px solid #e4e0d8;border-radius:12px}
+.pal-stone .tipcard b{font:600 12.5px Geist,sans-serif;color:#2a5bd7}
+.pal-stone .v-control .vid video{border:1px solid #e4e0d8;border-radius:12px}
+
+
+/* ---------- round 9, critic round 1 fixes (scores: stone 7, gallery 6, cream 5.5, cotton 4.5) ---------- */
+/* Stone: no zebra, tints inset to the label edge, quieter summary, ink-blue links, more air between sections. */
+.pal-stone .ctl-counts .rowline:nth-child(odd){background:none}
+.pal-stone .box{padding:14px 14px 14px}
+.pal-stone .box .bt{padding:0 10px 4px}
+.pal-stone .box .cap{padding:10px 10px 0}
+.pal-stone .ctl a{color:#2f4f8f;text-decoration-color:rgba(47,79,143,.3)}
+.pal-stone .rowline.mk,.pal-stone .slot-tag,.pal-stone .tipcard b{color:#2f4f8f}
+.pal-stone .ctl-m{padding:28px 0 24px}
+.pal-stone .ctl-title{font-weight:600;letter-spacing:-.03em}
+.pal-stone .outro-l1{font:500 28px/1.3 Geist,sans-serif;letter-spacing:-.02em}
+/* Gallery: numeral moves onto the heading baseline, one grey hairline, warmer wall, wider balanced measure. */
+.pal-gallery .v-control{background:#fcfbf8}
+.pal-gallery .ctl-m{display:block;border-top-color:#d9d9d5;padding:26px 0 22px}
+.pal-gallery .ctl-m::before{content:none}
+.pal-gallery .ctl-m h3::before{content:counter(mom,upper-roman);display:inline-block;min-width:34px;font:400 15px Spectral,Georgia,serif;color:#8c8c88}
+.pal-gallery .callout{border-color:#d9d9d5}
+.pal-gallery .ctl-title{max-width:none;text-wrap:balance}
+.pal-gallery .outro-l1{max-width:30ch;text-wrap:balance}
+/* Cream: 8 px corners, white cards with a warm hairline, every row boxed, lighter summary. */
+.pal-cream .box,.pal-cream pre.code,.pal-cream .tipcard{background:#ffffff;border:1px solid #efe3cc;border-radius:14px}
+.pal-cream .callout{border-radius:14px}
+.pal-cream .rowline{border-radius:8px;background:#fffaf0}
+.pal-cream .rowline.mk{background:#fffaf0}
+.pal-cream .rowline.slot{border-radius:8px;background:#fff}
+.pal-cream .box .cap{font-size:12.5px}
+.pal-cream .outro-l1{font:500 30px/1.28 'Public Sans',sans-serif;letter-spacing:-.02em}
+.pal-cream .v-control .vid video{border-radius:14px}
+/* Cotton: modern mono, roman sans captions, solid hairlines, air under the eyebrow, inset tints. */
+.pal-cotton .rowline,.pal-cotton pre.code{font-family:'JetBrains Mono',monospace}
+.pal-cotton .ctl-kick,.pal-cotton .box .bt,.pal-cotton .cap,.pal-cotton .slot-tag{font:400 13px 'Libre Franklin',sans-serif;font-style:normal;color:#7a7468}
+.pal-cotton .tipcard b{font:600 13px 'Libre Franklin',sans-serif;font-style:normal}
+.pal-cotton .rowline{border-bottom:1px solid #ebe5d9}
+.pal-cotton .ctl-title{margin-top:8px}
+.pal-cotton .box{padding:16px 18px}
+
+/* Ivory: the critic's synthesis. Stone's structure on Cream's ivory page, paper's tracked eyebrows, a quiet headline. */
+.pal-ivory{--a-row-bd:#ece4d3;--a-keep:#1f7a4d;--a-hl0:#ffffff;--a-hl1:#fdf0cf;--syn-kw:#8c3ab8;--syn-str:#1f7a4d;--syn-fn:#2f4f8f;--syn-cls:#a65c00;--syn-const:#c03221}
+.pal-ivory .v-control{background:#fffcf0;color:#261312}
+.pal-ivory .ctl{font-family:Geist,Inter,sans-serif;max-width:1100px}
+.pal-ivory .ctl a{color:#2f4f8f;text-decoration-color:rgba(47,79,143,.3)}
+.pal-ivory .ctl-kick,.pal-ivory .box .bt{font:600 11px Geist,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#9a8f80}
+.pal-ivory .cap{font:400 12.5px Geist,sans-serif;color:#8f8476}
+.pal-ivory .ctl-title{font:600 38px/1.12 Geist,sans-serif;letter-spacing:-.03em;color:#261312;margin:10px 0 8px}
+.pal-ivory .ctl-m{border-top:1px solid #ece4d3;padding:28px 0 24px}
+.pal-ivory .ctl-m h3{font:600 15px Geist,sans-serif;letter-spacing:-.01em;color:#261312}
+.pal-ivory .box{background:#fff;border:1px solid #ece4d3;border-radius:12px;box-shadow:0 1px 2px rgba(38,19,18,.04);padding:14px}
+.pal-ivory .box .bt{padding:0 10px 6px}
+.pal-ivory .box .cap{padding:10px 10px 0}
+.pal-ivory .rowline{font:450 13.5px 'Geist Mono',monospace;background:none;border:0;border-radius:6px;margin:0;padding:7px 10px;color:#261312}
+.pal-ivory .rowline.st{background:#fdf0cf;color:#7d4a00;font-weight:600}
+.pal-ivory .rowline.old{background:#fce5e0;color:#c03221}
+.pal-ivory .rowline.mk{color:#2f4f8f}
+.pal-ivory .rowline.slot{border:1px dashed #cfc4b0;margin:3px 0}
+.pal-ivory .slot-tag{font:600 10.5px Geist,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#2f4f8f}
+.pal-ivory .rowline.keep{background:#e4f2e9;color:#1f7a4d;box-shadow:none}
+.pal-ivory pre.code{font-family:'Geist Mono',monospace;background:#fff;border:1px solid #ece4d3;border-radius:12px;color:#261312}
+.pal-ivory pre.code .cl i{color:#bdb3a2}
+.pal-ivory pre.code .cl.hl{background:#fdf0cf;box-shadow:inset 2px 0 0 #d39b1d}
+.pal-ivory .callout{background:#fff;border:1px solid #ece4d3;border-radius:12px;color:#261312}
+.pal-ivory .callout b{font:600 14px Geist,sans-serif}
+.pal-ivory .outro-l1{font:500 28px/1.3 Geist,sans-serif;letter-spacing:-.02em;color:#261312;text-wrap:balance}
+.pal-ivory .tipcard{background:#fff;border:1px solid #ece4d3;border-left:1px solid #ece4d3;border-radius:12px}
+.pal-ivory .tipcard b{font:600 10.5px Geist,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#2f4f8f}
+.pal-ivory .v-control .vid video{border:1px solid #ece4d3;border-radius:12px}
+
+
+/* ---------- round 9, critic round 2 fixes (scores: ivory 7.5, stone 7, gallery 6.5, cream 6, cotton 5) ---------- */
+/* Ivory: softer page, stronger caps labels, one set of dividers, card footers on one line. */
+.pal-ivory .v-control{background:#fbf8f1}
+.pal-ivory .ctl-kick,.pal-ivory .box .bt{font:650 11.5px Geist,sans-serif;letter-spacing:.11em;color:#7d7266}
+.pal-ivory .ctl-m{border-top:0;padding:22px 0 18px}
+.pal-ivory .ctl-title{margin-bottom:12px}
+/* Shared: card captions sit on the card floor, so the two footers line up. */
+.pal-ivory .ctl-grid .box,.pal-stone .ctl-grid .box,.pal-cream .ctl-grid .box{display:flex;flex-direction:column}
+.pal-ivory .ctl-grid .box .cap,.pal-stone .ctl-grid .box .cap,.pal-cream .ctl-grid .box .cap{margin-top:auto}
+/* Stone: looser title tracking, even section gaps. Gallery: no numerals. Cream: the callout matches the cards. */
+.pal-stone .ctl-title{letter-spacing:-.02em}
+.pal-gallery .ctl-m h3::before{content:none}
+.pal-cream .callout{background:#ffffff;border:1px solid #efe3cc}
+

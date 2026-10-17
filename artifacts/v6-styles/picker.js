@@ -587,10 +587,10 @@ function hashView() { return location.hash.slice(1).split('&')[0]; }
 var flags = new URLSearchParams(location.search.slice(1) + '&' + location.hash.slice(1).split('&').slice(1).join('&'));
 // A light theme on the Control layout: body.pal-NAME. Its animation colours live in CSS variables.
 var PAL = flags.get('pal');
-if (/^(paper|coded|marker|card|grid|docs)$/.test(PAL || '')) document.body.classList.add('pal-' + PAL);
+if (/^(paper|coded|marker|card|grid|docs|cream|gallery|cotton|stone|ivory)$/.test(PAL || '')) document.body.classList.add('pal-' + PAL);
 function cv(name, dflt) { return getComputedStyle(document.body).getPropertyValue(name).trim() || dflt; }
 // Syntax colours for the round-8 themes. Paper and the dark Control stay plain, as the user saw them.
-if (/^(coded|marker|card|grid|docs)$/.test(PAL || '')) {
+if (/^(coded|marker|card|grid|docs|cream|gallery|cotton|stone|ivory)$/.test(PAL || '')) {
   var TOK = /("[^"]*")|\b(await|except|if|else|is|not|return|async|def)\b|\b(None|True|False)\b|\b([A-Z][A-Za-z]+)\b|\b([a-z_][a-z_0-9]*)(?=\()/g;
   $$('#ccontrol pre.code .cl').forEach(function (line) {
     Array.prototype.slice.call(line.childNodes).forEach(function (n) {
