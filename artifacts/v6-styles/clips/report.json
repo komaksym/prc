@@ -330,5 +330,175 @@
       "Inter",
       "JetBrains Mono"
     ]
+  },
+  "control-audun": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-audun.webm",
+    "seconds": 12.36,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-audun-poster.jpg",
+    "poster_at": 3.85,
+    "moment_marks": [
+      4.248400000002235,
+      7.7591000000014905,
+      10.86920000000298
+    ],
+    "frames_sampled": 25,
+    "min_ymax": 237.0,
+    "min_yavg": 222.0,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-audun-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Geist Mono",
+      "Instrument Sans",
+      "Inter",
+      "JetBrains Mono"
+    ]
+  },
+  "control-belvedir": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-belvedir.webm",
+    "seconds": 12.16,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-belvedir-poster.jpg",
+    "poster_at": 3.88,
+    "moment_marks": [
+      4.2831000000014905,
+      7.79420000000298,
+      10.90310000000149
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 237.0,
+    "min_yavg": 227.6,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-belvedir-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Geist Mono",
+      "Inter",
+      "JetBrains Mono",
+      "Newsreader"
+    ]
+  },
+  "control-omanta": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-omanta.webm",
+    "seconds": 12.08,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-omanta-poster.jpg",
+    "poster_at": 3.86,
+    "moment_marks": [
+      4.256199999999255,
+      7.76539999999851,
+      10.87589999999851
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 237.0,
+    "min_yavg": 224.5,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-omanta-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Geist Mono",
+      "Inter",
+      "JetBrains Mono",
+      "Libre Caslon Text"
+    ]
+  },
+  "control-speko": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-speko.webm",
+    "seconds": 12.32,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-speko-poster.jpg",
+    "poster_at": 3.86,
+    "moment_marks": [
+      4.264,
+      7.772699999999255,
+      10.880599999997765
+    ],
+    "frames_sampled": 25,
+    "min_ymax": 238.0,
+    "min_yavg": 226.7,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-speko-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Geist",
+      "Geist Mono",
+      "Hanken Grotesk",
+      "Inter",
+      "JetBrains Mono"
+    ]
+  },
+  "control-gumloop": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-gumloop.webm",
+    "seconds": 12.0,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-gumloop-poster.jpg",
+    "poster_at": 3.88,
+    "moment_marks": [
+      4.280300000000745,
+      7.792199999999255,
+      10.906599999997765
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 237.0,
+    "min_yavg": 224.2,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-gumloop-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Figtree",
+      "Geist Mono",
+      "Inter",
+      "JetBrains Mono"
+    ]
+  },
+  "control-bond": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-bond.webm",
+    "seconds": 12.28,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-bond-poster.jpg",
+    "poster_at": 3.86,
+    "moment_marks": [
+      4.255199999999255,
+      7.765300000000745,
+      10.871
+    ],
+    "frames_sampled": 25,
+    "min_ymax": 237.0,
+    "min_yavg": 225.6,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-bond-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Fraunces",
+      "Geist Mono",
+      "Instrument Sans",
+      "Inter",
+      "JetBrains Mono"
+    ]
+  },
+  "control-herdr": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-herdr.webm",
+    "seconds": 12.0,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-herdr-poster.jpg",
+    "poster_at": 3.85,
+    "moment_marks": [
+      4.2533000000007455,
+      7.758,
+      10.867199999999254
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 236.0,
+    "min_yavg": 219.2,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-herdr-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless), round 10",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Archivo",
+      "DM Sans",
+      "Inter",
+      "JetBrains Mono"
+    ]
   }
 }
