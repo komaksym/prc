@@ -138,17 +138,17 @@
   },
   "control-card": {
     "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-card.webm",
-    "seconds": 10.56,
+    "seconds": 12.28,
     "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-card-poster.jpg",
-    "poster_at": 3.85,
+    "poster_at": 3.88,
     "moment_marks": [
-      4.246900000000023,
-      7.750800000000047,
-      10.858800000000047
+      4.2815,
+      7.789,
+      10.896200000000187
     ],
-    "frames_sampled": 21,
-    "min_ymax": 234.0,
-    "min_yavg": 216.3,
+    "frames_sampled": 24,
+    "min_ymax": 237.0,
+    "min_yavg": 216.4,
     "black_frames_at": [],
     "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-card-sheet.png",
     "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
