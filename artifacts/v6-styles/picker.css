@@ -693,3 +693,6 @@ pre.code .tk-kw{color:var(--syn-kw)}pre.code .tk-str{color:var(--syn-str)}pre.co
 .pal-gallery .ctl-m h3::before{content:none}
 .pal-cream .callout{background:#ffffff;border:1px solid #efe3cc}
 
+/* Vision review: no one-word last line on titles and summaries in the round-9 looks. */
+.pal-cream .ctl-title,.pal-cotton .ctl-title,.pal-stone .ctl-title,.pal-ivory .ctl-title,
+.pal-cream .outro-l1,.pal-cotton .outro-l1,.pal-stone .outro-l1{text-wrap:balance}
