@@ -348,3 +348,141 @@ body.clip .c-m{padding:40px 60px;display:flex;flex-direction:column;justify-cont
 body.clip .c-cap{font-size:20px}
 body.clip .c-row{font-size:15px}
 
+
+/* ---------- round 8: light looks on the Control layout (#control&solo&pal=NAME) ---------- */
+/* Animation colours come from the theme: --a-row-bd, --a-keep, --a-hl0, --a-hl1. Code colours: --syn-*. */
+pre.code .tk-kw{color:var(--syn-kw)}pre.code .tk-str{color:var(--syn-str)}pre.code .tk-fn{color:var(--syn-fn)}pre.code .tk-cls{color:var(--syn-cls)}pre.code .tk-const{color:var(--syn-const)}
+.pal-paper{--a-row-bd:#e1d8c4;--a-keep:#2f7d4f;--a-hl0:#ffffff;--a-hl1:#fff1d6}
+
+/* Paper, coded: the paper palette, quieter rows with a colour bar, syntax colours */
+.pal-coded{--a-row-bd:#e9e1cf;--a-keep:#2f7d4f;--a-hl0:#ffffff;--a-hl1:#fff1d6;--syn-kw:#8b3fa8;--syn-str:#2f7d4f;--syn-fn:#1f5fbf;--syn-cls:#9a5b00;--syn-const:#b23a2c}
+.pal-coded .v-control{background:#fbf8f1;color:#26231e}
+.pal-coded .ctl{font-family:'IBM Plex Sans',sans-serif}
+.pal-coded .ctl a{color:#1f5fbf;text-decoration-color:rgba(31,95,191,.35)}
+.pal-coded .ctl-kick,.pal-coded .box .bt,.pal-coded .cap{color:#857c6c;font-family:'IBM Plex Sans',sans-serif}
+.pal-coded .ctl-title{font:500 40px/1.15 Newsreader,Georgia,serif;letter-spacing:-.015em}
+.pal-coded .ctl-m{border-top-color:#e9e1cf}
+.pal-coded .ctl-m h3{font:600 15px 'IBM Plex Sans',sans-serif;color:#3d382f}
+.pal-coded .box{background:#fff;border:1px solid #e9e1cf;border-radius:10px;box-shadow:0 1px 0 #efe8d9}
+.pal-coded .rowline{font-family:'IBM Plex Mono',monospace;background:none;border:0;border-left:3px solid #e9e1cf;border-bottom:1px solid #f3eee2;border-radius:0;margin:0;padding:7px 12px;color:#26231e}
+.pal-coded .rowline.st{border-left-color:#b7791f;background:#fff6e2;color:#7a4a00}
+.pal-coded .rowline.old{border-left-color:#c2412d;background:#fdeeea;color:#c2412d}
+.pal-coded .rowline.mk{color:#1f5fbf;border-left-color:#9db8e3}
+.pal-coded .rowline.slot{border-left:3px dashed #b9ad93;background:#fff}
+.pal-coded .slot-tag{color:#1f5fbf}
+.pal-coded .rowline.keep{border-left-color:#2f7d4f;background:#edf6f0;box-shadow:none}
+.pal-coded pre.code{font-family:'IBM Plex Mono',monospace;background:#fff;border-color:#e9e1cf;color:#26231e}
+.pal-coded pre.code .cl i{color:#b8ae99}
+.pal-coded pre.code .cl.hl{background:#fff1d6;box-shadow:inset 3px 0 0 #b7791f}
+.pal-coded .callout{background:#fff;border:1px solid #e9e1cf;border-left:3px solid #1f5fbf;color:#26231e}
+.pal-coded .outro-l1{font-family:Newsreader,Georgia,serif;font-size:32px}
+.pal-coded .tipcard{background:#fff;border-color:#e9e1cf;border-left-color:#1f5fbf}
+.pal-coded .tipcard b{color:#1f5fbf}
+.pal-coded .v-control .vid video{border-color:#e9e1cf}
+
+/* Highlighter: a white printout marked by a reviewer */
+.pal-marker{--a-row-bd:transparent;--a-keep:#1f9d55;--a-hl0:#ffffff;--a-hl1:#fff27a;--syn-kw:#7c3aed;--syn-str:#15803d;--syn-fn:#1d4ed8;--syn-cls:#b45309;--syn-const:#be123c}
+.pal-marker .v-control{background:#f4f3ef;color:#1d1d1b}
+.pal-marker .ctl{font-family:'Atkinson Hyperlegible',sans-serif}
+.pal-marker .ctl a{color:#1d4ed8;text-decoration-color:rgba(29,78,216,.35)}
+.pal-marker .ctl-kick,.pal-marker .box .bt,.pal-marker .cap{color:#77756d;font-family:'Atkinson Hyperlegible',sans-serif}
+.pal-marker .ctl-title{font:600 40px/1.15 Literata,Georgia,serif;letter-spacing:-.01em}
+.pal-marker .ctl-m{border-top-color:#e6e4dd}
+.pal-marker .ctl-m h3{font:700 16px 'Atkinson Hyperlegible',sans-serif;color:#1d1d1b}
+.pal-marker .box{background:#fff;border:1px solid #e6e4dd;border-radius:4px;box-shadow:0 1px 2px rgba(29,29,27,.06)}
+.pal-marker .rowline{font-family:'IBM Plex Mono',monospace;width:fit-content;max-width:100%;border:0;border-radius:0;background:none;padding:3px 10px;margin:3px 0;color:#1d1d1b}
+.pal-marker .rowline.st{font-weight:700;background:linear-gradient(100deg,transparent 2px,#ffe45c 7px,#ffe45c calc(100% - 7px),transparent calc(100% - 2px))}
+.pal-marker .rowline.old{color:#9f1239;background:linear-gradient(100deg,transparent 2px,#ffc4cf 7px,#ffc4cf calc(100% - 7px),transparent calc(100% - 2px))}
+.pal-marker .rowline.mk{color:#1d4ed8}
+.pal-marker .rowline.slot{width:auto;border:1.5px dashed #c9c6bb;border-radius:4px;background:#fff}
+.pal-marker .slot-tag{color:#1d4ed8}
+.pal-marker .rowline.keep{box-shadow:none;background:linear-gradient(100deg,transparent 2px,#bdf0c9 7px,#bdf0c9 calc(100% - 7px),transparent calc(100% - 2px))}
+.pal-marker pre.code{font-family:'IBM Plex Mono',monospace;background:#fff;border-color:#e6e4dd;border-radius:4px;color:#1d1d1b}
+.pal-marker pre.code .cl i{color:#b5b2a8}
+.pal-marker pre.code .cl.hl{background:linear-gradient(100deg,transparent 0,#fff27a 6px,#fff27a 60%,transparent 64%);box-shadow:none}
+.pal-marker .callout{background:#fff;border:1px solid #e6e4dd;border-radius:4px;color:#1d1d1b}
+.pal-marker .callout b{display:inline-block;background:linear-gradient(100deg,transparent 1px,#fff27a 5px,#fff27a calc(100% - 5px),transparent calc(100% - 1px));padding:0 6px;margin-left:-6px}
+.pal-marker .outro-l1{font-family:Literata,Georgia,serif}
+.pal-marker .tipcard{background:#fff;border-color:#e6e4dd;border-left-color:#1d4ed8;border-radius:4px}
+.pal-marker .tipcard b{color:#1d4ed8}
+.pal-marker .v-control .vid video{border-color:#e6e4dd}
+
+/* Index card: white ruled cards on a cool desk */
+.pal-card{--a-row-bd:#d6e2f3;--a-keep:#1e7a46;--a-hl0:#ffffff;--a-hl1:#fff0c2;--syn-kw:#6d28d9;--syn-str:#1e7a46;--syn-fn:#2350b8;--syn-cls:#a3561a;--syn-const:#b42318}
+.pal-card .v-control{background:#e8edf3;color:#1b2433}
+.pal-card .ctl{font-family:'IBM Plex Sans',sans-serif}
+.pal-card .ctl a{color:#2350b8;text-decoration-color:rgba(35,80,184,.35)}
+.pal-card .ctl-kick,.pal-card .cap{color:#5d6b80}
+.pal-card .ctl-title{font:600 38px/1.18 'IBM Plex Serif',Georgia,serif}
+.pal-card .ctl-m{border-top-color:#cfd8e4}
+.pal-card .ctl-m h3{font:600 15px 'IBM Plex Sans',sans-serif;color:#1b2433}
+.pal-card .box,.pal-card pre.code,.pal-card .callout,.pal-card .tipcard{background:#fff;border:0;border-radius:3px;box-shadow:0 1px 2px rgba(27,36,51,.08),0 10px 24px -16px rgba(27,36,51,.35)}
+.pal-card .box{padding-left:38px;background-image:linear-gradient(90deg,transparent 24px,#e9a3a3 24px,#e9a3a3 25.5px,transparent 25.5px)}
+.pal-card .box .bt{color:#2350b8;border-bottom:1.5px solid #e39b9b;padding-bottom:7px}
+.pal-card .rowline{font-family:'IBM Plex Mono',monospace;border:0;border-bottom:1px solid #d6e2f3;border-radius:0;margin:0;padding:7px 4px;background:none;color:#1b2433}
+.pal-card .rowline.st{background:#fff0c2;color:#8a4b00;font-weight:600}
+.pal-card .rowline.old{color:#b42318}
+.pal-card .rowline.mk{color:#2350b8}
+.pal-card .rowline.slot{border-bottom:1px dashed #9fb3d1;background:#f6f9fe}
+.pal-card .slot-tag{color:#2350b8}
+.pal-card .rowline.keep{background:#eaf6ee;color:#1e7a46;box-shadow:none}
+.pal-card pre.code{font-family:'IBM Plex Mono',monospace;color:#1b2433}
+.pal-card pre.code .cl{border-bottom:1px solid #eef3fa}
+.pal-card pre.code .cl i{color:#9aa8bc}
+.pal-card pre.code .cl.hl{background:#fff0c2;box-shadow:inset 3px 0 0 #c98a1b}
+.pal-card .callout{border-left:3px solid #2350b8;color:#1b2433}
+.pal-card .tipcard{border-left:3px solid #2350b8}
+.pal-card .tipcard b{color:#2350b8}
+.pal-card .outro-l1{font-family:'IBM Plex Serif',Georgia,serif}
+
+/* Notebook: grid paper and firm ink outlines */
+.pal-grid{--a-row-bd:#c9d0c0;--a-keep:#23784a;--a-hl0:#ffffff;--a-hl1:#f6e7b8;--syn-kw:#7b2cbf;--syn-str:#23784a;--syn-fn:#1f5f8b;--syn-cls:#8a5a00;--syn-const:#a8361f}
+.pal-grid .v-control{background-color:#f6f7f1;background-image:linear-gradient(#e4e8da 1px,transparent 1px),linear-gradient(90deg,#e4e8da 1px,transparent 1px);background-size:24px 24px;color:#1f2a24}
+.pal-grid .ctl{font-family:'Atkinson Hyperlegible',sans-serif}
+.pal-grid .ctl a{color:#1f5f8b;text-decoration-color:rgba(31,95,139,.4)}
+.pal-grid .ctl-kick,.pal-grid .box .bt,.pal-grid .cap{color:#4c5a51}
+.pal-grid .ctl-title{font:700 40px/1.12 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+.pal-grid .ctl-m{border-top:1.5px solid #1f2a24}
+.pal-grid .ctl-m h3{font:600 17px 'Bricolage Grotesque',sans-serif;color:#1f2a24}
+.pal-grid .box{background:#fff;border:1.5px solid #1f2a24;border-radius:6px}
+.pal-grid .rowline{font-family:'Fira Code',monospace;border:1px solid #c9d0c0;border-radius:4px;background:#fbfcf8;color:#1f2a24}
+.pal-grid .rowline.st{background:#f6e7b8;border-color:#8a5a00;color:#6b4500;font-weight:600}
+.pal-grid .rowline.old{background:#f9dcd5;border-color:#a8361f;color:#a8361f}
+.pal-grid .rowline.mk{color:#1f5f8b}
+.pal-grid .rowline.slot{border:1.5px dashed #1f2a24;background:#fff}
+.pal-grid .slot-tag{color:#1f5f8b}
+.pal-grid .rowline.keep{background:#dcefe2;border-color:#23784a;box-shadow:inset 0 0 0 1px #23784a}
+.pal-grid pre.code{font-family:'Fira Code',monospace;background:#fff;border:1.5px solid #1f2a24;border-radius:6px;color:#1f2a24}
+.pal-grid pre.code .cl i{color:#9aa596}
+.pal-grid pre.code .cl.hl{background:#f6e7b8;box-shadow:inset 3px 0 0 #8a5a00}
+.pal-grid .callout{background:#fff;border:1.5px solid #1f2a24;border-left:5px solid #1f5f8b;color:#1f2a24}
+.pal-grid .outro-l1{font:600 32px/1.3 'Bricolage Grotesque',sans-serif}
+.pal-grid .tipcard{background:#fff;border:1.5px solid #1f2a24;border-left:5px solid #1f5f8b}
+.pal-grid .tipcard b{color:#1f5f8b}
+.pal-grid .v-control .vid video{border-color:#1f2a24}
+
+/* Doc suggestions: the visual language of the Google Doc the PR writes */
+.pal-docs{--a-row-bd:transparent;--a-keep:#137333;--a-hl0:#ffffff;--a-hl1:#fef7e0;--syn-kw:#9334e6;--syn-str:#188038;--syn-fn:#1967d2;--syn-cls:#b06000;--syn-const:#c5221f}
+.pal-docs .v-control{background:#eef0f3;color:#202124}
+.pal-docs .ctl{font-family:'Roboto Flex',Roboto,sans-serif}
+.pal-docs .ctl a{color:#1a73e8;text-decoration-color:rgba(26,115,232,.4)}
+.pal-docs .ctl-kick,.pal-docs .box .bt,.pal-docs .cap{color:#5f6368;font-family:'Roboto Flex',Roboto,sans-serif}
+.pal-docs .ctl-title{font:600 36px/1.2 Lora,Georgia,serif}
+.pal-docs .ctl-m{border-top-color:#dadce0}
+.pal-docs .ctl-m h3{font:500 16px 'Roboto Flex',Roboto,sans-serif;color:#202124}
+.pal-docs .box,.pal-docs pre.code,.pal-docs .callout,.pal-docs .tipcard{background:#fff;border:1px solid #dadce0;border-radius:8px;box-shadow:0 1px 2px rgba(60,64,67,.15),0 1px 3px 1px rgba(60,64,67,.08)}
+.pal-docs .rowline{font-family:'Roboto Mono',monospace;border:0;border-radius:4px;background:none;padding:5px 8px;margin:2px 0;color:#202124}
+.pal-docs .rowline.st{background:#fef7e0;color:#b06000;font-weight:600}
+.pal-docs .rowline.old{background:#fce8e6;color:#c5221f}
+.pal-docs .rowline.mk{color:#1a73e8}
+.pal-docs .rowline.slot{background:#f3e8fd;color:#8430ce;border-bottom:2px solid #8430ce;border-radius:4px 4px 0 0}
+.pal-docs .slot-tag{color:#8430ce}
+.pal-docs .rowline.keep{background:#e6f4ea;color:#137333;box-shadow:none}
+.pal-docs pre.code{font-family:'Roboto Mono',monospace;color:#202124}
+.pal-docs pre.code .cl i{color:#9aa0a6}
+.pal-docs pre.code .cl.hl{background:#fef7e0;box-shadow:inset 3px 0 0 #f9ab00}
+.pal-docs .callout{border-left:4px solid #1a73e8;color:#202124}
+.pal-docs .outro-l1{font-family:Lora,Georgia,serif}
+.pal-docs .tipcard{border-left:4px solid #1a73e8}
+.pal-docs .tipcard b{color:#1a73e8}
+.pal-docs .v-control .vid video{border-color:#dadce0}

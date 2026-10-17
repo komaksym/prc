@@ -548,7 +548,7 @@ var CTL = {
     var rows = $$('.rowline', m), old = $('[data-k="old"]', m), sv = $('.slot-v', m), st = $('[data-k="st"]', m);
     rows.forEach(function (r, i) { anim(r, [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { delay: i * 55, duration: 380 }); });
     old.style.textDecoration = 'none'; sv.style.opacity = 0;
-    $$('.keep', m).forEach(function (k) { k.style.boxShadow = 'none'; k.style.borderColor = PAPER ? '#e1d8c4' : '#3a4458'; });
+    $$('.keep', m).forEach(function (k) { k.style.boxShadow = 'none'; k.style.borderColor = cv('--a-row-bd', '#3a4458'); });
     await sleep(1300);
     old.style.textDecoration = ''; anim(old, [{ opacity: 1 }, { opacity: .45 }], { duration: 400 });
     await sleep(500);
@@ -558,7 +558,7 @@ var CTL = {
     await anim(c, [{ transform: 'none' }, { transform: 'translate(' + (b.left - a.left - 10) + 'px,' + (b.top - a.top - 6) + 'px)', width: b.width + 'px' }], { duration: 900 }).finished;
     c.remove(); sv.style.opacity = 1;
     await sleep(350);
-    var G = PAPER ? '#2f7d4f' : '#009e73';
+    var G = cv('--a-keep', '#009e73');
     $$('.keep', m).forEach(function (k) { k.style.boxShadow = ''; k.style.borderColor = ''; anim(k, [{ boxShadow: '0 0 0 0 ' + G }, { boxShadow: '0 0 0 6px rgba(0,158,115,.35)' }, { boxShadow: 'inset 0 0 0 1px ' + G }], { duration: 700 }); });
     await sleep(800);
   },
@@ -566,7 +566,7 @@ var CTL = {
     $$('.cl', m).forEach(function (r, i) { anim(r, [{ opacity: 0 }, { opacity: 1 }], { delay: i * 70, duration: 300 }); });
     var co = $('.callout', m); co.style.opacity = 0;
     await sleep(900);
-    anim($('.hl', m), [{ background: PAPER ? '#ffffff' : '#0e1320' }, { background: PAPER ? '#fff1d6' : '#3a2e1a' }], { duration: 500 });
+    anim($('.hl', m), [{ background: cv('--a-hl0', '#0e1320') }, { background: cv('--a-hl1', '#3a2e1a') }], { duration: 500 });
     co.style.opacity = ''; anim(co, [{ opacity: 0, transform: 'translateX(20px)' }, { opacity: 1, transform: 'none' }], { duration: 600 });
     await sleep(1200);
   },
@@ -585,8 +585,26 @@ var params = new URLSearchParams(location.search), CLIP = params.get('clip');
 // Flags come from the query (clip recording) or the hash (#control&solo&pal=paper, safe over file://).
 function hashView() { return location.hash.slice(1).split('&')[0]; }
 var flags = new URLSearchParams(location.search.slice(1) + '&' + location.hash.slice(1).split('&').slice(1).join('&'));
-var PAPER = flags.get('pal') === 'paper';
-if (PAPER) document.body.classList.add('pal-paper');
+// A light theme on the Control layout: body.pal-NAME. Its animation colours live in CSS variables.
+var PAL = flags.get('pal');
+if (/^(paper|coded|marker|card|grid|docs)$/.test(PAL || '')) document.body.classList.add('pal-' + PAL);
+function cv(name, dflt) { return getComputedStyle(document.body).getPropertyValue(name).trim() || dflt; }
+// Syntax colours for the round-8 themes. Paper and the dark Control stay plain, as the user saw them.
+if (/^(coded|marker|card|grid|docs)$/.test(PAL || '')) {
+  var TOK = /("[^"]*")|\b(await|except|if|else|is|not|return|async|def)\b|\b(None|True|False)\b|\b([A-Z][A-Za-z]+)\b|\b([a-z_][a-z_0-9]*)(?=\()/g;
+  $$('#ccontrol pre.code .cl').forEach(function (line) {
+    Array.prototype.slice.call(line.childNodes).forEach(function (n) {
+      if (n.nodeType !== 3) return;
+      var html = n.textContent.replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; })
+        .replace(TOK, function (m, s, k, c, cl, f) {
+          var t = s ? 'str' : k ? 'kw' : c ? 'const' : cl ? 'cls' : 'fn';
+          return '<span class="tk-' + t + '">' + m + '</span>';
+        });
+      var span = document.createElement('span'); span.innerHTML = html;
+      line.replaceChild(span, n);
+    });
+  });
+}
 if (flags.has('solo')) document.body.classList.add('solo');
 buildA(); var BD = buildBDoc(), BC = buildBCode(); buildC();
 window.addEventListener('resize', fitStages);

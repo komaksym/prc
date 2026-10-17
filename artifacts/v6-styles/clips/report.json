@@ -65,18 +65,150 @@
   },
   "control-paper": {
     "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-paper.webm",
-    "seconds": 11.96,
+    "seconds": 11.8,
     "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-paper-poster.jpg",
-    "poster_at": 3.87,
+    "poster_at": 3.86,
     "moment_marks": [
-      4.2662999999970195,
-      7.7765,
-      10.8875
+      4.262900000000023,
+      7.7704000000000235,
+      10.882599999999977
     ],
     "frames_sampled": 24,
-    "min_ymax": 242.0,
-    "min_yavg": 225.7,
+    "min_ymax": 237.0,
+    "min_yavg": 226.0,
     "black_frames_at": [],
-    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-paper-sheet.png"
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-paper-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Inter",
+      "JetBrains Mono",
+      "Source Serif 4"
+    ]
+  },
+  "control-coded": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-coded.webm",
+    "seconds": 12.04,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-coded-poster.jpg",
+    "poster_at": 3.85,
+    "moment_marks": [
+      4.251800000000046,
+      7.759900000000023,
+      10.865
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 237.0,
+    "min_yavg": 225.9,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-coded-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
+    "page_errors": [],
+    "fonts_loaded": [
+      "IBM Plex Mono",
+      "IBM Plex Sans",
+      "Inter",
+      "JetBrains Mono",
+      "Newsreader"
+    ]
+  },
+  "control-marker": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-marker.webm",
+    "seconds": 12.36,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-marker-poster.jpg",
+    "poster_at": 3.85,
+    "moment_marks": [
+      4.250599999999976,
+      7.7542999999999305,
+      10.859699999999954
+    ],
+    "frames_sampled": 25,
+    "min_ymax": 237.0,
+    "min_yavg": 222.1,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-marker-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Atkinson Hyperlegible",
+      "IBM Plex Mono",
+      "Inter",
+      "JetBrains Mono",
+      "Literata"
+    ]
+  },
+  "control-card": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-card.webm",
+    "seconds": 10.56,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-card-poster.jpg",
+    "poster_at": 3.85,
+    "moment_marks": [
+      4.246900000000023,
+      7.750800000000047,
+      10.858800000000047
+    ],
+    "frames_sampled": 21,
+    "min_ymax": 234.0,
+    "min_yavg": 216.3,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-card-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
+    "page_errors": [],
+    "fonts_loaded": [
+      "IBM Plex Mono",
+      "IBM Plex Sans",
+      "IBM Plex Serif",
+      "Inter",
+      "JetBrains Mono"
+    ]
+  },
+  "control-grid": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-grid.webm",
+    "seconds": 11.92,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-grid-poster.jpg",
+    "poster_at": 3.84,
+    "moment_marks": [
+      4.24429999999993,
+      7.7515,
+      10.858099999999977
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 238.0,
+    "min_yavg": 222.7,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-grid-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Atkinson Hyperlegible",
+      "Bricolage Grotesque",
+      "Fira Code",
+      "Inter",
+      "JetBrains Mono"
+    ]
+  },
+  "control-docs": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-docs.webm",
+    "seconds": 12.04,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-docs-poster.jpg",
+    "poster_at": 3.85,
+    "moment_marks": [
+      4.254900000000023,
+      7.762,
+      10.8675
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 237.0,
+    "min_yavg": 219.4,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-docs-sheet.png",
+    "recorded_in": "cua space local:prc-v8-clips (Linux Chromium headless)",
+    "page_errors": [],
+    "fonts_loaded": [
+      "Inter",
+      "JetBrains Mono",
+      "Lora",
+      "Roboto Flex",
+      "Roboto Mono"
+    ]
   }
 }
