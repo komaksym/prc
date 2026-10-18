@@ -500,5 +500,53 @@
       "Inter",
       "JetBrains Mono"
     ]
+  },
+  "control-essay": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-essay.webm",
+    "seconds": 12.48,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-essay-poster.jpg",
+    "poster_at": 4.08,
+    "moment_marks": [
+      4.48459999999404,
+      7.9930999999940395,
+      11.10040000000596
+    ],
+    "frames_sampled": 25,
+    "min_ymax": 241.0,
+    "min_yavg": 227.7,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-essay-sheet.png"
+  },
+  "control-workspace": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-workspace.webm",
+    "seconds": 12.2,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-workspace-poster.jpg",
+    "poster_at": 4.09,
+    "moment_marks": [
+      4.489799999982119,
+      7.99590000000596,
+      11.103900000005961
+    ],
+    "frames_sampled": 24,
+    "min_ymax": 243.0,
+    "min_yavg": 227.8,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-workspace-sheet.png"
+  },
+  "control-labsheet": {
+    "clip": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-labsheet.webm",
+    "seconds": 12.48,
+    "poster": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/clips/control-labsheet-poster.jpg",
+    "poster_at": 4.08,
+    "moment_marks": [
+      4.483800000011921,
+      7.993400000005961,
+      11.1
+    ],
+    "frames_sampled": 25,
+    "min_ymax": 241.0,
+    "min_yavg": 228.8,
+    "black_frames_at": [],
+    "sheet": "/Users/koval/dev/prc/.claude/worktrees/v3-study/artifacts/v6-styles/shots/clip-control-labsheet-sheet.png"
   }
 }

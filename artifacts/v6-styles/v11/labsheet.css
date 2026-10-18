@@ -1,0 +1,71 @@
+ /* labsheet (round 11, fix round 2) design spec: omanta + illume, seed lhzmQUyOpLupJ5xLHpeIUH87uytRTlWwn6Agbl32.
+    Grid: centred lab sheet 1020px on a desk tinted close to the sheet (edge to edge, 1px sheet border + 0 1px 0 lift); title rule, figures, code and tip share one content width; at >=1200px the two Doc figures sit side by side and the callout sits beside the code; single column under 860px; two-col compact moments in clip.
+    Card structure: transparent figure plates, no radius, no fill: one 1px top rule plus the caption defines each figure (no Fig. numbers); rows are table rows with dotted leaders and tabular figures (the six count rows hold one text node each in the DOM, so no CSS label/number grid split is possible); one note style for callout + tip (2px ink top rule, no sides, no fill); COMPLETE reads as a left-bar state row like kept/removed.
+    Type: Newsreader serif title 44px + summary 30px, IBM Plex Sans labels, IBM Plex Mono 13px rows; section heads keep their real case; italic Newsreader captions without numbers.
+    Colours: desk #f0ebdd, sheet #fefcf5, ink #2a2520; amber status tick, green kept tick, red removed strike, blue markers/links, dashed run-write slot; links stay blue underlined.
+    Shape: radius 0 everywhere, 1px hairlines, 1px top plate rules, 2px ink note rules, one 1px sheet border only.
+    Decoration: none beyond the sheet lift (no gradients, no glows, no emoji).
+    Seed take: lhzm lower run sets warm paper/ink; QUyOpLup mixed case sets serif/mono pairing; 5x+6 counts size the six table rows; 87 sets 8px base + 7px dotted rhythm; 32 sets 32px section gap. */
+ @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap');
+ .pal-labsheet{overflow-x:clip}
+ body.pal-labsheet{background:#f0ebdd}
+ .pal-labsheet .v-control{background:#f0ebdd;color:#2a2520;min-height:100vh;display:flow-root}
+ .pal-labsheet .ctl{font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;max-width:1020px;margin:28px auto 72px;background:#fefcf5;border:1px solid #d8cfb8;border-top:4px solid #2a2520;box-shadow:0 1px 0 rgba(60,50,30,.25);padding:48px 56px 60px;counter-reset:lab}
+ .pal-labsheet .ctl a{color:#1d4ed8;text-decoration:underline;text-decoration-color:rgba(29,78,216,.5);text-underline-offset:3px}
+ .pal-labsheet .ctl a:hover{text-decoration-color:#1d4ed8}
+ .pal-labsheet .ctl-kick{font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#6f675c}
+ .pal-labsheet .ctl-title{font-family:Newsreader,Georgia,serif;font-weight:500;font-size:44px;line-height:1.08;letter-spacing:-.015em;color:#211c14;margin:10px 0 0;padding-bottom:20px;border-bottom:1px solid #2a2520;text-wrap:balance}
+ .pal-labsheet .ctl-m{border-top:0;margin:0;padding:32px 0 8px;counter-increment:lab}
+ .pal-labsheet .ctl-m + .ctl-m{border-top:1px solid #e0d7c1;margin-top:24px}
+ .pal-labsheet .ctl-m h3{font:600 13px 'IBM Plex Sans',sans-serif;letter-spacing:.02em;color:#2a2520;margin:0 0 16px}
+ .pal-labsheet .ctl-m h3::before{content:counter(lab) ". ";font-family:'IBM Plex Mono',monospace;font-weight:600;color:#6f675c;margin-right:6px}
+ .pal-labsheet .ctl-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+ .pal-labsheet .box{background:transparent;border:0;border-top:1px solid #2a2520;border-radius:0;box-shadow:none;padding:0 0 4px;display:flex;flex-direction:column;min-width:0}
+ .pal-labsheet .box .bt{font:600 11px 'IBM Plex Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#6f675c;margin:0;padding:10px 6px 8px;border-bottom:1px solid #e0d7c1}
+ .pal-labsheet .rowline{font:500 13px 'IBM Plex Mono',monospace;background:transparent;border:0;border-bottom:1px dotted #c9bfa9;border-radius:0;margin:0;padding:8px 6px;color:#2a2520}
+ .pal-labsheet .ctl-counts{display:block;margin:0}
+ .pal-labsheet .ctl-counts .rowline{font-variant-numeric:tabular-nums}
+ .pal-labsheet .rowline.st{background:#fdf0c7;border:0;border-left:3px solid #9a6b0f;border-radius:0;box-shadow:none;color:#6b3f00;font-weight:700;padding:8px 6px 8px 9px;margin:0}
+ .pal-labsheet .rowline.keep{background:#eef5ea;border-left:3px solid #2f7d4f;box-shadow:none;color:#1e6b3a;padding-left:9px}
+ .pal-labsheet .rowline.old{background:#fbe9e3;border-left:3px solid #b3261e;box-shadow:none;color:#9c1f16;text-decoration:line-through;padding-left:9px}
+ .pal-labsheet .rowline.mk{color:#1d4ed8;background:transparent}
+ .pal-labsheet .rowline.slot{background:transparent;border:1.5px dashed #8a8172;border-radius:0;padding:8px 10px;margin:8px 0;color:#2a2520}
+ .pal-labsheet .slot-tag{display:block;font:700 10px 'IBM Plex Sans',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#1d4ed8;margin-bottom:2px}
+ .pal-labsheet .slot-v{font-weight:600}
+ .pal-labsheet .box .cap{margin:auto 0 0;padding:10px 6px 8px;border:0;background:transparent}
+ .pal-labsheet .cap{font:italic 400 13px Newsreader,Georgia,serif;color:#6f675c}
+ .pal-labsheet .ctl-code{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+ .pal-labsheet .callout{background:transparent;border:0;border-top:2px solid #2a2520;border-radius:0;box-shadow:none;padding:10px 2px;color:#2a2520;font-size:13px;line-height:1.6;margin:0}
+ .pal-labsheet .callout b{display:block;font:700 11px 'IBM Plex Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#2a2520;margin-bottom:4px}
+ .pal-labsheet .ctl-code + .cap{margin-top:10px}
+ .pal-labsheet .outro-l1{font-family:Newsreader,Georgia,serif;font-weight:500;font-size:30px;line-height:1.3;letter-spacing:-.01em;color:#211c14;max-width:28ch}
+ .pal-labsheet .tipcard{margin-top:16px;background:transparent;border:0;border-top:2px solid #2a2520;border-radius:0;box-shadow:none;padding:12px 2px;font-size:14px;line-height:1.65;color:#2a2520;max-width:none}
+ .pal-labsheet .tipcard b{display:block;font:700 11px 'IBM Plex Sans',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#2a2520;margin-bottom:6px}
+ .pal-labsheet .v-control .vid video{width:100%;border:1px solid #d8cfb8;border-radius:0;background:#000}
+ .pal-labsheet .v-control .vid figcaption{color:#6f675c;font-size:13px;margin-top:8px;font-style:italic;font-family:Newsreader,Georgia,serif}
+ @media (min-width:1200px){
+ body:not(.clip).pal-labsheet .ctl-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ body:not(.clip).pal-labsheet .ctl-code{grid-template-columns:minmax(0,1fr) 230px;gap:16px;align-items:start}
+ }
+ @media (max-width:860px){
+ .pal-labsheet .ctl{max-width:none;margin:0;border-left:0;border-right:0;padding:28px 18px 48px}
+ .pal-labsheet .ctl-title{font-size:32px}
+ .pal-labsheet .ctl-grid{grid-template-columns:minmax(0,1fr)}
+ .pal-labsheet .ctl-code{grid-template-columns:minmax(0,1fr)}
+ .pal-labsheet .outro-l1{font-size:26px}
+ }
+ body.clip.pal-labsheet .v-control{background:#fefcf5;min-height:0}
+ body.clip.pal-labsheet .ctl{max-width:none;margin:0;border:0;box-shadow:none;padding:0}
+ body.clip.pal-labsheet .ctl-m{padding:30px 56px 16px;margin:0;border:0}
+ body.clip.pal-labsheet .ctl-m[data-m="1"] .ctl-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+ body.clip.pal-labsheet .box{padding:0 0 2px}
+ body.clip.pal-labsheet .box .bt{padding:8px 6px 6px}
+ body.clip.pal-labsheet .rowline{font-size:12px;padding:5px 6px}
+ body.clip.pal-labsheet .rowline.st{margin:5px 0;padding:6px 8px 6px 9px}
+ body.clip.pal-labsheet .rowline.slot{margin:5px 0;padding:6px 8px}
+ body.clip.pal-labsheet .box .cap{padding:6px;font-size:12px}
+ body.clip.pal-labsheet .ctl-code{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:start}
+ body.clip.pal-labsheet .callout{font-size:13px;padding:8px 10px}
+ body.clip.pal-labsheet .outro-l1{font-size:32px}
+ body.clip.pal-labsheet .tipcard{font-size:14px;padding:10px 12px;max-width:none}
+ 

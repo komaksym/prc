@@ -1,0 +1,74 @@
+/* workspace spec: one IDE window, kick strip + headline + joined panes, warm canvas (10 lines)
+1 grid: body:not(.clip) .ctl is one window (max 1180px): mono kick strip row, Inter 22px headline row, then panes m1/m2/m3/vid stacked full width, gap 0, shared 1px borders, no floating cards.
+2 cards: outer 1px frame radius 10px overflow hidden; moment-1 split panes share 1px divider gap 0 with align start; .bt mono tab strips + h3 Inter strips stay tinted, caps are transparent footers; tip is a full-width status strip.
+3 type: mono for labels only (kick 11px, bt 11px, slot-tag 10px, rows 13px tabular); prose in Inter (title 600 22px, h3 600 14px, summary 20px, callout/tip 13px); paths keep real case.
+4 colours: warm desk #f1ebe0, window #fffdf7, ink #2b2620, muted #7a7264, lines #d8cfba/#ece4d0; amber #7a4a00 on #fff3d4, green #1e6b3a on #e6f2e9, red #b3261e on #fde7e2 + strike, blue #1f5fbf links/markers, slot dashed #8a94a6.
+5 shape: window 10px, inner panes 0, code 0, slot 0; 1px shared borders only; flat, no shadow.
+6 decoration: none (no gradient/glow/shadow; inset 3px colour ticks carry meaning, not decor).
+7 callout is the right side panel of the code pane (1fr 260px, shared divider, no card); tip is a status strip (2px blue top rule, inline Inter label, no card).
+8 seed AHhQLbsI1dDoK43BQjJ4JsDNUDKkx2En04rDGHXk: digits 1/4/3/4/2/0/4 set 1px dividers, 3px ticks, radii 10/0, title pads 12/20px, window 1180px; letters point to warm paper + herdr mono ruling.
+9 fixes round 1: rail dropped; blank row gone via align start + footer tops; 800px title/h3 collision gone via stacked title rows with shared borders.
+10 fixes round 2 (critic-2): black bands confirmed gone (body bg + flow-root kept); title its own Inter headline row, kick is block so the space before LINKEDIN-MDP survives; code single frame; slot full-width dashed block; caps transparent so only header strips tint.
+*/
+body.pal-workspace{background:#f1ebe0}
+.pal-workspace .v-control{background:#f1ebe0;color:#2b2620;min-height:100vh;display:flow-root}
+.pal-workspace .ctl{font-family:Inter,system-ui,-apple-system,sans-serif;max-width:1180px;margin:24px auto 64px;padding:0;background:#fffdf7;border:1px solid #d8cfba;border-radius:10px;overflow:hidden}
+body:not(.clip).pal-workspace .ctl{display:grid;grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:0;align-items:stretch}
+body:not(.clip).pal-workspace .ctl-kick{grid-column:1/-1;grid-row:1}
+body:not(.clip).pal-workspace .ctl-title{grid-column:1/-1;grid-row:2}
+body:not(.clip).pal-workspace .ctl-m[data-m="1"]{grid-column:1/-1;grid-row:3}
+body:not(.clip).pal-workspace .ctl-m[data-m="2"]{grid-column:1/-1;grid-row:4}
+body:not(.clip).pal-workspace .ctl-m[data-m="3"]{grid-column:1/-1;grid-row:5}
+body:not(.clip).pal-workspace .vid{grid-column:1/-1;grid-row:6}
+.pal-workspace .ctl-kick{display:block;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#7a7264;background:#f6f1e5;border-bottom:1px solid #d8cfba;margin:0;padding:12px 20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pal-workspace .ctl-title{font:600 22px/1.25 Inter,system-ui,sans-serif;letter-spacing:-.01em;color:#2b2620;background:#fffdf7;border-bottom:1px solid #d8cfba;margin:0;padding:16px 20px 14px;text-wrap:balance}
+.pal-workspace .ctl a{color:#1f5fbf;text-decoration:underline;text-decoration-color:rgba(31,95,191,.45);text-underline-offset:3px}
+.pal-workspace .ctl a:hover{text-decoration-color:#1f5fbf}
+.pal-workspace .ctl-m{border-top:0;margin:0;padding:0}
+body:not(.clip).pal-workspace .ctl-m[data-m="2"],body:not(.clip).pal-workspace .ctl-m[data-m="3"],body:not(.clip).pal-workspace .vid{border-top:1px solid #d8cfba}
+.pal-workspace .ctl-m h3{display:block;background:#fbf7ec;border-bottom:1px solid #d8cfba;margin:0;padding:8px 20px;font:600 14px/1.4 Inter,system-ui,sans-serif;letter-spacing:0;color:#2b2620}
+.pal-workspace .ctl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;background:transparent;border:0;border-radius:0;align-items:start}
+.pal-workspace .box{background:transparent;border:0;border-radius:0;box-shadow:none;padding:0;display:block;min-width:0}
+.pal-workspace .box[data-k="inputs"]{border-right:1px solid #d8cfba}
+.pal-workspace .box .bt{display:block;background:#fbf7ec;border-bottom:1px solid #d8cfba;padding:8px 20px;margin:0;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#7a7264}
+.pal-workspace .rowline{font:500 13px 'JetBrains Mono',monospace;background:transparent;border:0;border-bottom:1px solid #ece4d0;border-radius:0;margin:0;padding:7px 20px;color:#2b2620}
+.pal-workspace .ctl-counts{display:block;margin:0}
+.pal-workspace .ctl-counts .rowline:last-child{border-bottom:0}
+.pal-workspace .box[data-k="doc"]>div.rowline:last-of-type{border-bottom:0}
+.pal-workspace .box .cap{margin-top:0;padding:10px 20px;border-top:1px solid #d8cfba;background:transparent;font-size:12px;color:#6e6656}
+.pal-workspace .cap{font-size:12.5px;color:#6e6656}
+.pal-workspace .rowline.st{background:#fff3d4;color:#7a4a00;font-weight:700;box-shadow:inset 3px 0 0 #b7791f}
+.pal-workspace .rowline.keep{background:#e6f2e9;color:#1e6b3a;box-shadow:inset 3px 0 0 #2f7d4f}
+.pal-workspace .rowline.old{background:#fde7e2;color:#b3261e;text-decoration:line-through;box-shadow:inset 3px 0 0 #c2412d}
+.pal-workspace .rowline.mk{color:#1f5fbf;background:transparent}
+.pal-workspace .rowline.slot{border:0;border-top:1px dashed #8a94a6;border-bottom:1px dashed #8a94a6;border-radius:0;margin:0;padding:7px 20px;background:transparent;color:#2b2620}
+.pal-workspace .slot-tag{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#1f5fbf;display:block;margin-bottom:2px}
+.pal-workspace .ctl-code{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:0;align-items:stretch;border:0}
+.pal-workspace .ctl-code pre.code{border:0;border-radius:0}
+.pal-workspace .callout{background:#fbf7ec;border:0;border-left:1px solid #d8cfba;border-radius:0;box-shadow:none;padding:12px 16px;color:#2b2620;font-size:13px;margin:0}
+.pal-workspace .callout b{display:block;font:600 13px Inter,system-ui,sans-serif;letter-spacing:0;margin-bottom:6px;color:#2b2620}
+.pal-workspace .ctl-code + .cap{margin:0;padding:10px 20px;border-top:1px solid #d8cfba;background:transparent}
+.pal-workspace .outro-l1{font:600 20px/1.4 Inter,system-ui,sans-serif;letter-spacing:-.01em;color:#2b2620;max-width:60ch;margin:0;padding:16px 20px 0}
+.pal-workspace .tipcard{background:#fffdf7;border:0;border-top:2px solid #1f5fbf;border-radius:0;box-shadow:none;padding:10px 20px 16px;margin:14px 0 0;font-size:13px;color:#2b2620;max-width:none;line-height:1.6}
+.pal-workspace .tipcard b{display:inline;font:700 11px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#1f5fbf;margin:0 8px 0 0}
+.pal-workspace .vid{margin:0;padding:16px 20px 20px}
+.pal-workspace .v-control .vid video{border:1px solid #d8cfba;border-radius:8px}
+.pal-workspace .v-control .vid figcaption{color:#7a7264}
+body.clip.pal-workspace .v-control{background:#f1ebe0}
+body.clip.pal-workspace .ctl{background:#fffdf7;border:0;border-radius:0;margin:0;max-width:none}
+body.clip.pal-workspace .ctl-m{padding:34px 44px}
+body.clip.pal-workspace .ctl-code{grid-template-columns:minmax(0,1fr) 280px}
+@media (max-width:860px){
+body:not(.clip).pal-workspace .ctl{grid-template-columns:minmax(0,1fr);margin:12px auto 40px;max-width:none}
+body:not(.clip).pal-workspace .ctl-kick{grid-column:1;grid-row:1;padding:10px 16px;white-space:normal}
+body:not(.clip).pal-workspace .ctl-title{grid-column:1;grid-row:2;font-size:20px;padding:12px 16px 10px}
+body:not(.clip).pal-workspace .ctl-m[data-m="1"]{grid-column:1;grid-row:3}
+body:not(.clip).pal-workspace .ctl-m[data-m="2"]{grid-column:1;grid-row:4}
+body:not(.clip).pal-workspace .ctl-m[data-m="3"]{grid-column:1;grid-row:5}
+body:not(.clip).pal-workspace .vid{grid-column:1;grid-row:6}
+.pal-workspace .ctl-grid{grid-template-columns:minmax(0,1fr)}
+.pal-workspace .box[data-k="inputs"]{border-right:0;border-bottom:1px solid #d8cfba}
+.pal-workspace .ctl-code{grid-template-columns:minmax(0,1fr)}
+.pal-workspace .callout{border-left:0;border-top:1px solid #d8cfba}
+.pal-workspace .outro-l1{font-size:18px}
+}

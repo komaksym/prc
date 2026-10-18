@@ -556,7 +556,10 @@ var CTL = {
     c.style.cssText = 'position:fixed;margin:0;z-index:9;left:' + a.left + 'px;top:' + a.top + 'px;width:' + a.width + 'px';
     document.body.appendChild(c);
     await anim(c, [{ transform: 'none' }, { transform: 'translate(' + (b.left - a.left - 10) + 'px,' + (b.top - a.top - 6) + 'px)', width: b.width + 'px' }], { duration: 900 }).finished;
-    c.remove(); sv.style.opacity = 1;
+    // Fade the chip out so the recorder sees a repaint; an instant remove leaves it frozen in looks with no glow.
+    sv.style.opacity = 1;
+    await anim(c, [{ opacity: 1 }, { opacity: 0 }], { duration: 220 }).finished;
+    c.remove();
     await sleep(350);
     var G = cv('--a-keep', '#009e73');
     $$('.keep', m).forEach(function (k) { k.style.boxShadow = ''; k.style.borderColor = ''; anim(k, [{ boxShadow: '0 0 0 0 ' + G }, { boxShadow: '0 0 0 6px rgba(0,158,115,.35)' }, { boxShadow: 'inset 0 0 0 1px ' + G }], { duration: 700 }); });
@@ -587,10 +590,10 @@ function hashView() { return location.hash.slice(1).split('&')[0]; }
 var flags = new URLSearchParams(location.search.slice(1) + '&' + location.hash.slice(1).split('&').slice(1).join('&'));
 // A light theme on the Control layout: body.pal-NAME. Its animation colours live in CSS variables.
 var PAL = flags.get('pal');
-if (/^(paper|coded|marker|card|grid|docs|cream|gallery|cotton|stone|ivory|audun|belvedir|omanta|speko|gumloop|bond|herdr)$/.test(PAL || '')) document.body.classList.add('pal-' + PAL);
+if (/^(paper|coded|marker|card|grid|docs|cream|gallery|cotton|stone|ivory|audun|belvedir|omanta|speko|gumloop|bond|herdr|essay|workspace|labsheet)$/.test(PAL || '')) document.body.classList.add('pal-' + PAL);
 function cv(name, dflt) { return getComputedStyle(document.body).getPropertyValue(name).trim() || dflt; }
 // Syntax colours for the round-8 themes. Paper and the dark Control stay plain, as the user saw them.
-if (/^(coded|marker|card|grid|docs|cream|gallery|cotton|stone|ivory|audun|belvedir|omanta|speko|gumloop|bond|herdr)$/.test(PAL || '')) {
+if (/^(coded|marker|card|grid|docs|cream|gallery|cotton|stone|ivory|audun|belvedir|omanta|speko|gumloop|bond|herdr|essay|workspace|labsheet)$/.test(PAL || '')) {
   var TOK = /("[^"]*")|\b(await|except|if|else|is|not|return|async|def)\b|\b(None|True|False)\b|\b([A-Z][A-Za-z]+)\b|\b([a-z_][a-z_0-9]*)(?=\()/g;
   $$('#ccontrol pre.code .cl').forEach(function (line) {
     Array.prototype.slice.call(line.childNodes).forEach(function (n) {

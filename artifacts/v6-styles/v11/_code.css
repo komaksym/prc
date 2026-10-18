@@ -1,0 +1,9 @@
+/* round 11: the one code view every round 11 look shares. Paper's code box plus fixed GitHub-light syntax colours.
+   Looks never style pre.code; /private/tmp/prc-v11/check.py fails any drift. */
+.pal-essay,.pal-workspace,.pal-labsheet{--syn-kw:#cf222e;--syn-str:#0a3069;--syn-fn:#8250df;--syn-cls:#953800;--syn-const:#0550ae;--a-hl0:#ffffff;--a-hl1:#fff1d6}
+.pal-essay pre.code,.pal-workspace pre.code,.pal-labsheet pre.code{background:#fff;border-color:#e4dccb;color:#26231e}
+.pal-essay pre.code .cl i,.pal-workspace pre.code .cl i,.pal-labsheet pre.code .cl i{color:#b0a690}
+.pal-essay pre.code .cl.hl,.pal-workspace pre.code .cl.hl,.pal-labsheet pre.code .cl.hl{background:#fff1d6;box-shadow:inset 3px 0 0 #b7791f}
+
+/* round 11: every clip moment starts at the same top anchor, so the summary does not jump between moments; paper stays the untouched control */
+body.clip:is(.pal-essay,.pal-workspace,.pal-labsheet) .ctl-m[data-m="3"]{justify-content:flex-start}
