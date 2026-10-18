@@ -1,0 +1,99 @@
+/* Look: Control on paper. The dark baseline layout and cards on warm paper.
+   Light ink for the key (prc/tones.py LIGHT). Same shapes, same motion as the baseline. */
+:root { --prc-bg: #FBF8F1; --prc-text: #26231E; --prc-dim: #B9AD93; }
+html, body, .emount { background: #FBF8F1; }
+body { color: #26231E; }
+.emount .eheader { color: #8A8172; } .emount .eheader b { color: #26231E; }
+.emount .ecap { color: #1D1A15; text-shadow: none; font-weight: 400; }
+.emount .ecap code { color: #8A4D00; }
+.emount .efoot { color: #8A8172; }
+.emount .ebar { background: #B7791F; }
+
+.kicker { color: #B7791F; }
+.ptitle { color: #1D1A15; }
+.ptitle .claim { background-image: linear-gradient(#B7791F, #B7791F); }
+.ptitle .badge { color: #FFFFFF; background: #B7791F; }
+.meta { color: #6E675C; } .meta .add { color: #2F7D4F; } .meta .del { color: #C2412D; }
+.ckey { color: #4A453C; }
+
+.legend { color: #6E675C; }
+.nlabel { fill: #26231E; } .nsub { fill: #6E675C; } .cardt { fill: #FFFFFF; }
+.calc-h { color: #1F5FBF; }
+.chip .v { color: #26231E; border-color: #B9AD93; background: #FFFFFF; } .chip .n { color: #6E675C; }
+.chip.bad .v { border-color: #C2412D; color: #C2412D; background: #FCE4DF; }
+.arrow { color: #B9AD93; }
+.tick { fill: #8A8172; } .tl-room { fill: #6E675C; } .tl-l { fill: #26231E; } .tl-s { fill: #4A453C; }
+.tl-l, .tl-s { stroke: #FBF8F1; }
+.tl-ov, .tl-stamp { fill: #C2412D; } .tl-ask { fill: #B7791F; }
+.tl-msg { border-color: #C2412D; background: #FCE4DF; } .tl-msg .k { color: #C2412D; } .tl-msg .t { color: #26231E; }
+
+.list .big { color: #2F7D4F; } .list .item .ok { color: #2F7D4F; }
+.list .item code { color: #8A4D00; } .list .item .c { color: #8A8172; } .list .more { color: #6E675C; }
+.bars .big { color: #26231E; } .brow .bl { color: #26231E; }
+
+.grp { border: 2px solid #E4DCCB; background: #FFFFFF; box-shadow: 0 2px 0 #EFE8D9, 0 22px 50px -30px rgba(70, 55, 20, .35); }
+.grp .gt { color: #8A8172; } .grp .gs { color: #26231E; } .grp .gs code { color: #8A4D00; }
+.pill { color: #26231E; border-color: #1F5FBF; background: #EEF3FB; }
+.pill.slot { border-color: #B9AD93; background: #FFFFFF; }
+.pill.fly { box-shadow: 0 12px 28px rgba(70, 55, 20, .22); background: linear-gradient(#EEF3FB, #EEF3FB), #FFFFFF; }
+.gmark, .gnote, .galabel, .dnote { background: #FFFFFF; }
+
+.rc .num { background: #B7791F; color: #FFFFFF; }
+.rc .row { border-bottom-color: #E4DCCB; } .rc .kind { color: #8A8172; } .rc .txt { color: #26231E; } .rc .cite { color: #8A8172; }
+.stat { border-color: #E4DCCB; background: #FFFFFF; } .stat .l { color: #26231E; }
+
+.outro .tip { border-color: #1F5FBF; background: #FFFFFF; color: #26231E; }
+.outro .tip .tlabel { color: #1F5FBF; } .outro .tip .tbody code { color: #8A4D00; }
+.outro .cmd { border-color: #E4DCCB; color: #26231E; background: #FFFFFF; } .outro .cmd b { color: #1F5FBF; }
+.outro .fine { color: #8A8172; }
+
+.diff .dlabel code { color: #8A4D00; } .diff .dpath { color: #8A8172; } .diff .dpath b { color: #26231E; }
+.diff .code { border-color: #E4DCCB; background: #FFFFFF; }
+.drow { color: #26231E; } .drow .ln { color: #A79C86; } .drow.gap .tx { color: #B9AD93; }
+.drow .k { color: #1F5FBF; } .drow .s { color: #8A4D00; } .drow .n { color: #B7791F; }
+.drow .c { color: #8A8172; } .drow .f { color: #6B3FA0; }
+
+/* Page chrome */
+body.pg { color: #26231E; background: #FBF8F1; }
+body.pg a { color: #1F5FBF; }
+body.pg button, body.pg .pg-btn { color: #26231E; background: #FFFFFF; border-color: #E4DCCB; }
+body.pg button:hover:not(:disabled), body.pg .pg-btn:hover { border-color: #B7791F; }
+body.pg button:focus-visible, body.pg a:focus-visible, body.pg summary:focus-visible { outline-color: #B7791F; }
+.pg-head h1, .pg-read h2 { color: #1D1A15; }
+.pg-meta, .pg-counter, .rd-lead, .rd-role h3, .rd-st, .pg-nc, .hk-key { color: #6E675C; }
+.pg-key, .rd-in { color: #4A453C; }
+.pg-hint, .pg-rc, .pg-more, .rd-p, .rd-bin { color: #8A8172; }
+.pg-stage { border-color: #E4DCCB; }
+body.pg .pg-play { background: #B7791F; color: #FFFFFF; border-color: #B7791F; }
+body.pg .pg-play:hover:not(:disabled) { background: #9A6416; }
+body.pg .pg-rc a, body.pg .pg-gh { color: #1F5FBF; }
+body.pg .pg-strip button { color: #4A453C; }
+body.pg .pg-strip button b { border-color: #D9CFB9; background: #F4EFE3; color: #4A453C; }
+body.pg .pg-strip button.on { border-color: #B7791F; color: #8A4D00; }
+.pg-nc summary:hover, .rd-code summary:hover { color: #26231E; }
+.pg-read { border-top-color: #E4DCCB; }
+.rd { background: #FFFFFF; border-color: #E4DCCB; }
+.rd-say { color: #26231E; }
+.rd-say code, .rd-name code { color: #8A4D00; } body.pg .rd-name code { color: #1F5FBF; }
+.rd-u { border-left-color: #B7791F; } .rd-u.tone-proof { border-left-color: #2F7D4F; }
+.rd-u.tone-problem { border-left-color: #C2412D; } .rd-u.tone-change { border-left-color: #B7791F; }
+.rd-code summary { color: #6E675C; }
+.rd-code table.hk, .pg-panel-diff { border-color: #E4DCCB; }
+.pg-panel { background: #FFFFFF; border-color: #E4DCCB; box-shadow: 0 18px 60px rgba(70, 55, 20, .2); }
+.pg-panel-head h2 { color: #26231E; }
+.hk-head { color: #8A8172; border-bottom-color: #E4DCCB; }
+table.hk .hk-n { color: #A79C86; } table.hk .hk-s { color: #8A8172; } table.hk .hk-t { color: #26231E; }
+table.hk tr.hk-add { background: #E6F2E9; } table.hk tr.hk-del { background: #FBE6E1; }
+table.hk tr.hk-add .hk-s { color: #2F7D4F; } table.hk tr.hk-del .hk-s { color: #C2412D; }
+table.hk tr.hk-hit { box-shadow: inset 3px 0 #B7791F; background: #FFF1D6; }
+table.hk tr.hk-gap .hk-t { color: #8A8172; }
+table.hk .hk-n a:hover { color: #B7791F; }
+table.hk .t-k { color: #1F5FBF; } table.hk .t-s { color: #8A4D00; } table.hk .t-n { color: #B7791F; }
+table.hk .t-c { color: #8A8172; } table.hk .t-f { color: #6B3FA0; }
+#scale .efoot a, #scale .list .c a, #scale .rc .cite a { color: #6E675C; text-decoration-color: #C9BEA6; }
+#scale .efoot a:hover, #scale .list .c a:hover, #scale .rc .cite a:hover, #scale .meta a:hover { color: #B7791F; }
+#scale .meta a { text-decoration-color: #C9BEA6; }
+#scale .pg-hit:hover { outline-color: #B7791F88; } #scale .pg-hit.pg-on { outline-color: #B7791F; }
+.pg-info { background: #FFFFFF; border-color: #E4DCCB; color: #26231E; }
+.pg-info::backdrop { background: rgba(38, 35, 30, .55); }
+

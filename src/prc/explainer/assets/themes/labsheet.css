@@ -1,0 +1,135 @@
+/* Look: Lab sheet. A lab notebook sheet on a desk: square corners, hairlines,
+   figure plates with no fill and one 1px top rule plus a caption, rows that read
+   like table rows, and one shared note style (2px ink top rule, no sides, no fill).
+   Light ink for the key (prc/tones.py LIGHT). Same shapes, same motion as baseline. */
+:root { --prc-bg: #FEFCF5; --prc-text: #2A2520; --prc-dim: #6E675C; }
+html, body, .emount { background: #FEFCF5; }
+body { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.emount { border-radius: 0; }
+.emount .eheader { color: #6E675C; } .emount .eheader b { color: #2A2520; }
+.emount .ecap { color: #2A2520; text-shadow: none; font-weight: 400; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
+.emount .ecap code { color: #8A4D00; }
+.emount .efoot { color: #6E675C; }
+.emount .ebar { background: #B7791F; }
+.emount a { color: #1F5FBF; text-decoration: underline; text-decoration-color: rgba(31, 95, 191, 0.45); text-underline-offset: 2px; }
+.emount a:hover { text-decoration-color: #1F5FBF; }
+
+.kicker { color: #8A4D00; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.ptitle { color: #2A2520; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
+.ptitle .claim { background-image: linear-gradient(#B7791F, #B7791F); }
+.ptitle .badge { color: #FFFFFF; background: #B7791F; border-radius: 0; }
+.meta { color: #6E675C; } .meta .add { color: #2F7D4F; } .meta .del { color: #C2412D; }
+.ckey { color: #6E675C; }
+
+.legend { color: #6E675C; }
+.legend i { border-radius: 0; }
+.nlabel { fill: #2A2520; } .nsub { fill: #6E675C; } .cardt { fill: #2A2520; }
+.calc-h { color: #1F5FBF; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.chip .v { color: #2A2520; border-color: #6E675C; background: #FFFFFF; border-radius: 0; border-width: 1px; box-shadow: none; }
+.chip .n { color: #6E675C; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.chip.bad .v { border-color: #C2412D; color: #C2412D; background: #FBE6E1; }
+.arrow { color: #6E675C; }
+.tick { fill: #6E675C; } .tl-room { fill: #6E675C; } .tl-l { fill: #2A2520; } .tl-s { fill: #6E675C; }
+.tl-l, .tl-s { stroke: #FEFCF5; }
+.tl-ov, .tl-stamp { fill: #C2412D; } .tl-ask { fill: #B7791F; }
+.tl-msg { border: 0; border-top: 2px solid #2A2520; border-radius: 0; background: #FEFCF5; box-shadow: none; }
+.tl-msg .k { color: #8A4D00; } .tl-msg .t { color: #2A2520; }
+
+.list .big { color: #2F7D4F; }
+.list .lbl { font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #2A2520; }
+.list .item { border-bottom: 1px dotted #C9BFA9; }
+.list .item .ok { color: #2F7D4F; }
+.list .item code { color: #8A4D00; } .list .item .c { color: #6E675C; } .list .more { color: #6E675C; }
+.bars .big { color: #2A2520; }
+.bars .lbl { font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #2A2520; }
+.brow .bl { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.brow .bt { background: #EFE8D6; } .brow .bf { border-radius: 0; }
+
+.grp { border: 0; border-top: 1px solid #2A2520; border-radius: 0; background: transparent; box-shadow: none; }
+.grp .gt { color: #6E675C; } .grp .gs { color: #2A2520; } .grp .gs code { color: #8A4D00; }
+.pill { border-width: 1px; border-color: #1F5FBF; border-radius: 0; background: #FFFFFF; color: #2A2520; box-shadow: none; }
+.pill.slot { border-style: dashed; border-color: #6E675C; border-width: 1px; background: transparent; }
+.pill.fly { box-shadow: none; background: #FFFFFF; }
+.gmark { border-radius: 0; background: #FEFCF5; }
+.gmark .ring { border-radius: 0; }
+.gnote, .galabel, .dnote { border: 0; border-top: 2px solid #2A2520; border-radius: 0; background: #FEFCF5; box-shadow: none; color: #2A2520; }
+.gnote code, .galabel code, .dnote code { color: #8A4D00; }
+.dleader { border-radius: 0; }
+
+.rc .num { border-radius: 0; background: #B7791F; color: #FFFFFF; }
+.rc .q { font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #2A2520; }
+.rc .row { border-bottom: 1px solid #E0D7C1; } .rc .kind { color: #8A4D00; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.rc .txt { color: #2A2520; } .rc .cite { color: #6E675C; }
+.rc .verdict { border-radius: 0; background: #FEFCF5; }
+.stat { border: 0; border-top: 1px solid #2A2520; border-radius: 0; background: transparent; box-shadow: none; }
+.stat .v { font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.stat .l { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+
+.outro .l1 { font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #2A2520; }
+.outro .tip { border: 0; border-top: 2px solid #2A2520; border-radius: 0; background: transparent; box-shadow: none; color: #2A2520; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
+.outro .tip .tlabel { color: #1F5FBF; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.outro .tip .tbody code { color: #8A4D00; }
+.outro .cmd { border: 1px solid #D8CFB8; border-radius: 0; color: #2A2520; background: #FFFFFF; box-shadow: none; }
+.outro .cmd b { color: #1F5FBF; }
+.outro .fine { color: #6E675C; }
+
+.diff .dlabel { font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #2A2520; }
+.diff .dlabel code { color: #8A4D00; } .diff .dpath { color: #6E675C; } .diff .dpath b { color: #2A2520; }
+.diff .code { border: 1px solid #D8CFB8; border-radius: 0; background: #FFFFFF; box-shadow: none; }
+.drow { color: #2A2520; }
+.drow .ln { color: #6E675C; } .drow.gap .tx { color: #6E675C; }
+.drow .k { color: #1F5FBF; } .drow .s { color: #8A4D00; } .drow .n { color: #B7791F; }
+.drow .c { color: #6E675C; } .drow .f { color: #6B3FA0; }
+.drow .strike { background: #C2412D; }
+
+/* Page chrome: the stage sits on a sheet with one 1px border on the desk colour;
+   the reading section reads like numbered lab steps. */
+body.pg { color: #2A2520; background: #F0EBDD; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+body.pg a { color: #1F5FBF; }
+body.pg button, body.pg .pg-btn { color: #2A2520; background: #FFFFFF; border-color: #6E675C; border-radius: 0; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+body.pg button:hover:not(:disabled), body.pg .pg-btn:hover { border-color: #B7791F; }
+body.pg button:focus-visible, body.pg a:focus-visible, body.pg summary:focus-visible { outline-color: #B7791F; }
+.pg-head h1 { color: #2A2520; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
+.pg-read h2 { color: #2A2520; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
+.pg-meta, .pg-counter, .rd-lead, .rd-st, .pg-nc, .hk-key { color: #6E675C; }
+.pg-key, .rd-in { color: #575046; }
+.pg-hint, .pg-rc, .pg-more, .rd-p, .rd-bin { color: #6E675C; }
+.pg-stage { border: 1px solid #2A2520; border-radius: 0; background: #FEFCF5; box-shadow: 0 1px 0 rgba(60, 50, 30, 0.25); }
+body.pg .pg-play { background: #2A2520; color: #FEFCF5; border-color: #2A2520; }
+body.pg .pg-play:hover:not(:disabled) { background: #4A4238; }
+body.pg .pg-rc a, body.pg .pg-gh { color: #1F5FBF; }
+.pg-read a, .pg-rc a { text-decoration: underline; text-decoration-color: rgba(31, 95, 191, 0.45); text-underline-offset: 2px; }
+body.pg .pg-strip button { color: #575046; border-radius: 0; background: #FFFFFF; border-color: #D8CFB8; }
+body.pg .pg-strip button b { border: 1px solid #D8CFB8; border-radius: 0; background: #F4EFE3; color: #575046; }
+body.pg .pg-strip button.on { border-color: #B7791F; color: #8A4D00; }
+.pg-nc summary:hover, .rd-code summary:hover { color: #2A2520; }
+.pg-read { border: 1px solid #D8CFB8; border-radius: 0; background: #FEFCF5; box-shadow: 0 1px 0 rgba(60, 50, 30, 0.25); max-width: var(--stage-w); margin-left: auto; margin-right: auto; margin-top: 28px; padding: 18px 20px 22px; border-top: 1px solid #D8CFB8; counter-reset: labstep; }
+.rd { background: transparent; border: 0; border-top: 1px solid #E0D7C1; border-radius: 0; }
+.rd-role { counter-increment: labstep; }
+.rd-role h3 { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
+.rd-role h3::before { content: counter(labstep, decimal-leading-zero) ". "; font-family: ui-monospace, "SF Mono", Menlo, monospace; color: #8A4D00; }
+.rd-say { color: #2A2520; }
+.rd-say code, .rd-name code { color: #8A4D00; } body.pg .rd-name code { color: #1F5FBF; }
+.rd-u { border-left-color: #B7791F; } .rd-u.tone-proof { border-left-color: #2F7D4F; }
+.rd-u.tone-problem { border-left-color: #C2412D; } .rd-u.tone-change { border-left-color: #B7791F; }
+.rd-code summary { color: #6E675C; }
+.rd-code table.hk, .pg-panel-diff { border-color: #D8CFB8; border-radius: 0; }
+.pg-panel { background: #FEFCF5; border: 1px solid #2A2520; border-radius: 0; box-shadow: 0 1px 0 rgba(60, 50, 30, 0.25); }
+.pg-panel-head h2 { color: #2A2520; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.hk-head { color: #6E675C; border-bottom-color: #E0D7C1; }
+table.hk .hk-n { color: #6E675C; } table.hk .hk-s { color: #6E675C; } table.hk .hk-t { color: #2A2520; }
+table.hk tr.hk-add { background: #E6F2E9; } table.hk tr.hk-del { background: #FBE6E1; }
+table.hk tr.hk-add .hk-s { color: #2F7D4F; } table.hk tr.hk-del .hk-s { color: #C2412D; }
+table.hk tr.hk-hit { box-shadow: inset 3px 0 #B7791F; background: #FFF1D6; }
+table.hk tr.hk-dim { opacity: 0.55; }
+table.hk tr.hk-gap .hk-t { color: #6E675C; }
+table.hk .hk-n a:hover { color: #B7791F; }
+table.hk .t-k { color: #1F5FBF; } table.hk .t-s { color: #8A4D00; } table.hk .t-n { color: #8A4D00; }
+table.hk .t-c { color: #6E675C; } table.hk .t-f { color: #6B3FA0; }
+#scale .efoot a, #scale .list .c a, #scale .rc .cite a { color: #1F5FBF; text-decoration: underline; text-decoration-color: rgba(31, 95, 191, 0.45); }
+#scale .efoot a:hover, #scale .list .c a:hover, #scale .rc .cite a:hover, #scale .meta a:hover { color: #1F5FBF; }
+#scale .meta a { text-decoration-color: rgba(31, 95, 191, 0.45); }
+#scale .pg-hit:hover { outline-color: rgba(183, 121, 31, 0.55); } #scale .pg-hit.pg-on { outline-color: #B7791F; }
+.pg-info { background: #FEFCF5; border: 1px solid #2A2520; border-radius: 0; color: #2A2520; }
+.pg-info::backdrop { background: rgba(42, 37, 32, 0.55); }
+.pg-info img { border-radius: 0; }

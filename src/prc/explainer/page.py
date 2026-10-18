@@ -24,6 +24,7 @@ from typing import Any
 
 from prc.explainer.highlight import _git_reader, paint_map
 from prc.explainer.preflight import line_coverage
+from prc.explainer.themes import look
 from prc.explainer.units import Unit, units
 from prc.explainer.units import key as unit_key
 from prc.tones import key_html, key_script
@@ -618,7 +619,7 @@ def not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
     )
 
 
-def _header(m: dict[str, Any], has_video: bool, has_info: bool) -> str:
+def _header(m: dict[str, Any], has_video: bool, has_info: bool, ink: str = "dark") -> str:
     owner_repo = str(m["pr"]).split("#")[0]
     pr = html.escape(str(m["pr"]))
     pr_link = f"<a href='{html.escape(m['url'])}'>{pr}</a>" if m.get("url") else pr
@@ -632,7 +633,7 @@ def _header(m: dict[str, Any], has_video: bool, has_info: bool) -> str:
         "<header class='pg-head'><div class='pg-id'>"
         f"<h1>{html.escape(str(m['title']))}</h1>"
         f"<p class='pg-meta'>{pr_link} · {html.escape(str(m['author']))} · head "
-        f"<a href='{commit}'><code>{str(m['head_sha'])[:7]}</code></a></p>{key_html()}</div>"
+        f"<a href='{commit}'><code>{str(m['head_sha'])[:7]}</code></a></p>{key_html(ink)}</div>"
         f"<div class='pg-actions'>{actions}</div></header>"
     )
 
@@ -649,7 +650,9 @@ def render_page(
     has_video: bool,
     infographic: bytes | None = None,
     git_dir: str | None = None,
+    look_name: str = "dark",
 ) -> str:
+    theme = look(look_name)
     out_dir.mkdir(parents=True, exist_ok=True)
     m = paint_map(m, git_dir)
     hunks, where = _hunks(m)
@@ -669,7 +672,7 @@ def render_page(
         else ""
     )
     body = (
-        _header(m, has_video, has_info)
+        _header(m, has_video, has_info, theme.ink)
         + "<main id='main' class='pg-main'><section class='pg-col'>"
         + "<div id='stage' class='emount pg-stage'><div id='scale' class='escale'></div></div>"
         + "<div class='pg-controls'><button id='prev' type='button'>Previous</button>"
@@ -692,15 +695,16 @@ def render_page(
     page = (
         "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
         "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        "<meta name='color-scheme' content='dark'><meta name='referrer' content='no-referrer'>"
+        f"<meta name='color-scheme' content='{theme.ink}'><meta name='referrer' content='no-referrer'>"
         "<link rel='icon' href='data:,'>"
         f"<title>{html.escape(str(m['title']))}</title><style>"
         + (ASSETS / "engine.css").read_text()
         + (ASSETS / "page.css").read_text()
+        + theme.css()
         + "</style></head><body class='pg'>"
         + body
         + f"<script>window.PRC={_json(data)};</script>"
-        + key_script()
+        + key_script(theme.ink)
         + "<script>"
         + (ASSETS / "engine.js").read_text()
         + "</script><script>"

@@ -640,9 +640,11 @@ if (CLIP) {
     var ms = $$('#c' + CLIP + ' .moment'), t0 = performance.now();
     window.__marks = [];
     for (var i = 0; i < ms.length; i++) {
+      // Sequential cut: the old moment fades out fully (.moment transition is 0.4 s)
+      // before the next moment fades in, so new cards never land on old ones.
+      if (i > 0) { ms[i - 1].classList.remove('live'); await sleep(450); }
       PREP[CLIP](ms[i], i);
       ms[i].classList.add('live');
-      if (i > 0) setTimeout(function (prev) { prev.classList.remove('live'); }, 650, ms[i - 1]);
       await sleep(400);
       await PLAY[CLIP](ms[i], i);
       window.__marks.push((performance.now() - t0) / 1000);

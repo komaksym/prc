@@ -1,0 +1,122 @@
+/* Look: Essay, long-form editorial. Ruled ledgers instead of boxes: hairline
+   rules, square corners, flat fills, no shadows. Group titles are small
+   letterspaced caps over a 1px ink rule; the review tip is a pull-quote with a
+   2px rule above. Serif display type (Baskerville, then Iowan Old Style) for
+   titles and captions; system sans for kickers and labels; mono only for code
+   and line references. Paper #FCFAF3, ink #26221B, muted #6E675C, hairline
+   #E3D8BF. Meaning colours follow the light key: amber text #8A4D00 for change
+   and status, green #2F7D4F for proof and added lines, blue #1F5FBF for parts,
+   markers and links; warm red is not used, and an empty slot is a dashed
+   outline. Measured classes (.pill, .plabel, .grp .gt/.gs, .drow, .dnote,
+   .gnote, .galabel, .chip .v) keep their engine fonts; only paint changes. */
+:root { --prc-bg: #FCFAF3; --prc-text: #26221B; --prc-dim: #6E675C; }
+html, body, .emount { background: #FCFAF3; }
+body { color: #26221B; }
+.emount .eheader { color: #6E675C; } .emount .eheader b { color: #26221B; }
+.emount .ecap { color: #26221B; text-shadow: none; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.emount .ecap code { color: #8A4D00; }
+.emount .efoot { color: #6E675C; }
+.emount .ebar { background: #B7791F; }
+.kicker { color: #8A4D00; }
+.ptitle { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.ptitle .claim { background-image: linear-gradient(#B7791F, #B7791F); }
+.ptitle .badge { color: #FFFFFF; background: #8A4D00; border-radius: 0; box-shadow: none; }
+.meta { color: #6E675C; } .meta .add { color: #2F7D4F; } .meta .del { color: #26221B; text-decoration: line-through; }
+.ckey { color: #4A453C; }
+.legend { color: #6E675C; }
+.nlabel { fill: #26221B; } .nsub { fill: #6E675C; } .cardt { fill: #FFFFFF; }
+.calc-h { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.chip .v { color: #26221B; border-color: #6E675C; background: #FCFAF3; border-radius: 0; box-shadow: none; }
+.chip .n { color: #6E675C; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.chip.good .v { border-color: #2F7D4F; color: #2F7D4F; }
+.chip.info .v { border-color: #B7791F; color: #8A4D00; }
+.chip.bad .v { border-color: #26221B; color: #26221B; }
+.arrow { color: #6E675C; }
+.tick { fill: #6E675C; } .tl-room { fill: #6E675C; } .tl-l { fill: #26221B; } .tl-s { fill: #4A453C; }
+.tl-l, .tl-s { stroke: #FCFAF3; }
+.tl-ov, .tl-stamp { fill: #26221B; } .tl-ask { fill: #8A4D00; }
+.tl-msg { border-color: #8A4D00; background: #FCFAF3; border-radius: 0; box-shadow: none; } .tl-msg .k { color: #8A4D00; } .tl-msg .t { color: #26221B; }
+.list .big { color: #2F7D4F; }
+.list .lbl { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.list .item { border-bottom: 1px solid #E3D8BF; }
+.list .item .ok { color: #2F7D4F; }
+.list .item code { color: #8A4D00; } .list .item .c { color: #6E675C; } .list .more { color: #6E675C; }
+.bars .big { color: #26221B; }
+.bars .lbl { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.brow .bl { color: #26221B; }
+.brow .bf { border-radius: 0; }
+.grp { border: 0; border-radius: 0; background: none; box-shadow: none; }
+.grp .gt { color: #6E675C; border-bottom: 1px solid #26221B; padding-bottom: 8px; margin-top: 13px; }
+.grp .gs { color: #26221B; } .grp .gs code { color: #8A4D00; }
+.pill { color: #26221B; border-color: #1F5FBF; background: #FCFAF3; border-radius: 0; box-shadow: none; }
+.pill.slot { border: 2px dashed #6E675C; background: none; }
+.pill.fly { box-shadow: none; background: #FCFAF3; }
+.gmark { border-radius: 0; background: #FCFAF3; }
+.gmark .ring { border-radius: 0; }
+.gnote, .galabel, .dnote { background: #FCFAF3; border-radius: 0; box-shadow: none; }
+.rc .num { background: none; color: #26221B; border: 1px solid #26221B; border-radius: 0; }
+.rc .q { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.rc .row { border-bottom-color: #E3D8BF; } .rc .kind { color: #6E675C; } .rc .txt { color: #26221B; } .rc .cite { color: #6E675C; }
+.rc .verdict { border-radius: 0; background: #FCFAF3; box-shadow: none; }
+.stat { border: 0; border-top: 2px solid #26221B; border-radius: 0; background: none; box-shadow: none; } .stat .l { color: #26221B; }
+.outro .l1 { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.outro .tip { border: 0; border-top: 2px solid #26221B; border-radius: 0; background: none; box-shadow: none; color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.outro .tip .tlabel { color: #6E675C; } .outro .tip .tbody code { color: #8A4D00; }
+.outro .cmd { border: 0; border-radius: 0; background: none; box-shadow: none; color: #26221B; } .outro .cmd b { color: #1F5FBF; }
+.outro .fine { color: #6E675C; }
+.diff .dlabel { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.diff .dlabel code { color: #8A4D00; } .diff .dpath { color: #6E675C; } .diff .dpath b { color: #26221B; }
+.diff .code { border: 1px solid #E3D8BF; border-radius: 0; background: #FFFFFF; box-shadow: none; }
+.drow { color: #26221B; } .drow .ln { color: #6E675C; } .drow.gap .tx { color: #6E675C; }
+.drow .strike { background: #26221B; }
+.drow .k { color: #1F5FBF; } .drow .s { color: #8A4D00; } .drow .n { color: #7A4300; }
+.drow .c { color: #6E675C; } .drow .f { color: #6B3FA0; }
+/* Page chrome: a narrow centred reading column with wide whitespace; the scene strip reads like a table of contents. */
+body.pg { color: #26221B; background: #FCFAF3; }
+body.pg a { color: #1F5FBF; text-decoration: underline; }
+body.pg a.pg-btn { text-decoration: none; }
+body.pg button, body.pg .pg-btn { color: #26221B; background: #FCFAF3; border-color: #6E675C; }
+body.pg button:hover:not(:disabled), body.pg .pg-btn:hover { border-color: #26221B; }
+body.pg button:focus-visible, body.pg a:focus-visible, body.pg summary:focus-visible { outline-color: #8A4D00; }
+.pg-head h1 { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.pg-read h2 { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; }
+.pg-meta, .pg-counter, .rd-lead, .rd-role h3, .rd-st, .pg-nc, .hk-key { color: #6E675C; }
+.pg-key, .rd-in { color: #4A453C; }
+.pg-hint, .pg-rc, .pg-more, .rd-p, .rd-bin { color: #6E675C; }
+.pg-stage { border-color: #E3D8BF; }
+body.pg .pg-play { background: #8A4D00; color: #FFFFFF; border-color: #8A4D00; }
+body.pg .pg-play:hover:not(:disabled) { background: #7A4300; border-color: #7A4300; }
+body.pg .pg-rc a, body.pg .pg-gh { color: #1F5FBF; }
+.pg-strip { display: grid; gap: 0; }
+body.pg .pg-strip button { color: #26221B; background: none; border: 0; border-bottom: 1px solid #E3D8BF; border-radius: 0; max-width: none; text-align: left; padding: 10px 4px; }
+body.pg .pg-strip button b { border: 1px solid #6E675C; border-radius: 0; background: none; color: #4A453C; }
+body.pg .pg-strip button.on { border-bottom-color: #8A4D00; color: #8A4D00; }
+body.pg .pg-strip button.on b { border-color: #8A4D00; color: #8A4D00; }
+.pg-nc summary:hover, .rd-code summary:hover { color: #26221B; }
+.pg-read { border-top: 2px solid #26221B; max-width: 820px; margin: 56px auto 0; padding: 40px 0 0; }
+.rd-role h3 { border-bottom: 1px solid #26221B; padding-bottom: 8px; }
+.rd { background: none; border: 0; border-bottom: 1px solid #E3D8BF; border-radius: 0; padding: 22px 0; }
+.rd-say { color: #26221B; font-family: Baskerville, "Iowan Old Style", Palatino, Charter, serif; font-size: 16px; }
+.rd-say code, .rd-name code { color: #8A4D00; } body.pg .rd-name code { color: #1F5FBF; }
+.rd-u { border-left: 2px solid #8A4D00; } .rd-u.tone-proof { border-left-color: #2F7D4F; }
+.rd-u.tone-problem { border-left-color: #26221B; } .rd-u.tone-change { border-left-color: #8A4D00; }
+.rd-code summary { color: #6E675C; }
+.rd-code table.hk, .pg-panel-diff { border-color: #E3D8BF; }
+.pg-panel { background: #FCFAF3; border-color: #6E675C; border-radius: 0; box-shadow: none; }
+.pg-panel-head h2 { color: #26221B; }
+.hk-head { color: #6E675C; border-bottom-color: #E3D8BF; }
+table.hk .hk-n { color: #6E675C; } table.hk .hk-s { color: #6E675C; } table.hk .hk-t { color: #26221B; }
+table.hk tr.hk-add { background: #E6F2E9; } table.hk tr.hk-del { background: #F1ECE0; }
+table.hk tr.hk-add .hk-s { color: #2F7D4F; } table.hk tr.hk-del .hk-s { color: #26221B; }
+table.hk tr.hk-del .hk-t { text-decoration: line-through; }
+table.hk tr.hk-hit { box-shadow: inset 3px 0 #B7791F; background: #FDF0D5; }
+table.hk tr.hk-gap .hk-t { color: #6E675C; }
+table.hk .hk-n a:hover { color: #8A4D00; }
+table.hk .t-k { color: #1F5FBF; } table.hk .t-s { color: #8A4D00; } table.hk .t-n { color: #7A4300; }
+table.hk .t-c { color: #6E675C; } table.hk .t-f { color: #6B3FA0; }
+#scale .efoot a, #scale .list .c a, #scale .rc .cite a { color: #1F5FBF; text-decoration: underline; text-decoration-color: #1F5FBF; }
+#scale .efoot a:hover, #scale .list .c a:hover, #scale .rc .cite a:hover, #scale .meta a:hover { color: #8A4D00; }
+#scale .meta a { text-decoration: underline; text-decoration-color: #1F5FBF; }
+#scale .pg-hit:hover { outline-color: #8A4D00; } #scale .pg-hit.pg-on { outline-color: #8A4D00; }
+.pg-info { background: #FCFAF3; border-color: #6E675C; border-radius: 0; color: #26221B; }
+.pg-info::backdrop { background: rgba(38, 34, 27, .55); }

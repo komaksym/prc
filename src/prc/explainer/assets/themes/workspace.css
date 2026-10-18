@@ -1,0 +1,137 @@
+/* Look: Workspace. One IDE window on a warm desk.
+   Desk #F1EBE0, window #FFFDF7, ink #2B2620, muted #7A7264, lines
+   #D8CFBA and #ECE4D0. Joined panes share 1px borders; the outer frame
+   is radius 10px, inner panes radius 0, flat, no shadow. Group titles
+   are tinted tab strips in caps; the tip is a full-width status strip
+   with a 2px blue top rule. Sans prose (system-ui), mono labels
+   (ui-monospace / SF Mono). Page: header, stage, controls and scene
+   strip join into one window with shared borders; the scene strip reads
+   like editor tabs.
+   Meaning colours: amber #B7791F, amber text #8A4D00 on paper, for
+   change and status; green #2F7D4F for kept and added; red #C2412D
+   for removed; blue #1F5FBF for parts, markers and links; a dashed
+   muted outline marks an empty slot. Engine.js still paints key
+   colours inline.
+   Measured classes keep their engine fonts: .pill, .plabel, .grp .gt,
+   .grp .gs, .drow, .dnote, .gnote, .galabel, .chip .v. */
+:root { --prc-bg: #F1EBE0; --prc-text: #2B2620; --prc-dim: #7A7264; }
+html, body, .emount { background: #F1EBE0; }
+body { color: #2B2620; }
+.emount .eheader { left: 0; right: 0; top: 0; padding: 15px 48px; background: #F6F1E5; border-bottom: 1px solid #D8CFBA; color: #7A7264; font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.emount .eheader b { color: #2B2620; }
+.emount .ecap { color: #2B2620; text-shadow: none; font-family: system-ui, -apple-system, sans-serif; font-weight: 400; }
+.emount .ecap code { color: #8A4D00; }
+.emount .efoot { left: 0; right: 0; bottom: 6px; padding: 9px 48px; background: #FFFDF7; border-top: 1px solid #D8CFBA; color: #7A7264; }
+.emount .efoot a { color: #1F5FBF; text-decoration: underline; text-underline-offset: 3px; }
+.emount .ebar { background: #B7791F; }
+
+.kicker { color: #8A4D00; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.ptitle { color: #2B2620; font-family: system-ui, -apple-system, sans-serif; }
+.ptitle .claim { background-image: linear-gradient(#B7791F, #B7791F); }
+.ptitle .badge { color: #FFFFFF; background: #8A4D00; }
+.meta { color: #575046; } .meta .add { color: #2F7D4F; } .meta .del { color: #C2412D; }
+.ckey { color: #575046; }
+.ckey i { border: 1px solid rgba(43, 38, 32, .35); border-radius: 2px; }
+
+.legend { color: #575046; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 20px; top: 17px; z-index: 6; }
+.legend i { border-radius: 2px; border-width: 2px; }
+.nlabel { fill: #2B2620; } .nsub { fill: #7A7264; } .cardt { fill: #FFFFFF; }
+.calc-h { color: #1F5FBF; }
+.chip .v { color: #2B2620; border-color: #D8CFBA; border-width: 2px; border-radius: 0; background: #FFFDF7; box-shadow: none; }
+.chip .n { color: #575046; }
+.chip.bad .v { border-color: #C2412D; color: #C2412D; background: #FCE4DF; }
+.arrow { color: #7A7264; }
+.tick { fill: #7A7264; } .tl-room { fill: #6E675C; } .tl-l { fill: #2B2620; } .tl-s { fill: #575046; }
+.tl-l, .tl-s { stroke: #F1EBE0; }
+.tl-ov, .tl-stamp { fill: #C2412D; } .tl-ask { fill: #8A4D00; }
+.tl-msg { border: 2px solid #C2412D; border-radius: 0; background: #FCE4DF; box-shadow: none; }
+.tl-msg .k { color: #C2412D; } .tl-msg .t { color: #2B2620; }
+
+.list .big { color: #2F7D4F; } .list .item { color: #2B2620; } .list .item .ok { color: #2F7D4F; }
+.list .item code { color: #8A4D00; } .list .item .c { color: #7A7264; } .list .more { color: #575046; }
+.list .lbl { color: #2B2620; font-family: system-ui, -apple-system, sans-serif; }
+.list .c a, .rc .cite a, .meta a { color: #1F5FBF; text-decoration: underline; text-underline-offset: 3px; }
+.bars .big { color: #2B2620; } .brow .bl { color: #2B2620; }
+.bars .lbl { color: #2B2620; font-family: system-ui, -apple-system, sans-serif; }
+.brow .bf { border-radius: 0; }
+
+.grp { border: 1px solid #D8CFBA; border-radius: 10px; background: #FFFDF7; box-shadow: none; overflow: hidden; }
+.grp .gt { margin: 0; padding: 12px 24px; background: #F6F1E5; border-bottom: 1px solid #D8CFBA; color: #575046; }
+.grp .gs { margin: 10px 24px 0; color: #2B2620; } .grp .gs code { color: #8A4D00; }
+.pill { color: #2B2620; border-color: #1F5FBF; border-width: 2px; border-radius: 0; background: #EEF3FB; box-shadow: none; }
+.pill.slot { border-style: dashed; border-color: #7A7264; border-width: 2px; background: transparent; }
+.pill.fly { box-shadow: none; background: #EEF3FB; }
+.gmark { background: #FFFDF7; }
+.gnote, .galabel, .dnote { background: #FFFDF7; border-radius: 0; border-width: 2px; }
+
+.rc .num { background: #8A4D00; color: #FFFFFF; border-radius: 0; }
+.rc .q { color: #2B2620; font-family: system-ui, -apple-system, sans-serif; }
+.rc .row { border-bottom: 1px solid #ECE4D0; } .rc .kind { color: #7A7264; } .rc .txt { color: #2B2620; } .rc .cite { color: #7A7264; }
+.stat { border: 1px solid #D8CFBA; border-radius: 10px; background: #FFFDF7; box-shadow: none; }
+.stat .l { color: #2B2620; }
+
+.outro .l1 { color: #2B2620; font-family: system-ui, -apple-system, sans-serif; }
+.outro .tip { display: block; max-width: none; margin: 48px 0 0; padding: 14px 32px 16px; text-align: left; border: 0; border-top: 2px solid #1F5FBF; border-bottom: 1px solid #D8CFBA; border-radius: 0; background: #FFFDF7; box-shadow: none; font-family: system-ui, -apple-system, sans-serif; font-size: 32px; color: #2B2620; }
+.outro .tip .tlabel { display: inline; margin: 0 14px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 20px; color: #1F5FBF; }
+.outro .tip .tbody { display: inline; }
+.outro .tip .tbody code { color: #8A4D00; }
+.outro .cmd { border: 1px solid #D8CFBA; border-radius: 0; color: #2B2620; background: #FFFDF7; box-shadow: none; } .outro .cmd b { color: #1F5FBF; }
+.outro .fine { color: #7A7264; }
+
+.diff .dlabel { color: #2B2620; font-family: system-ui, -apple-system, sans-serif; }
+.diff .dlabel code { color: #8A4D00; } .diff .dpath { color: #7A7264; } .diff .dpath b { color: #2B2620; }
+.diff .code { border: 1px solid #D8CFBA; border-radius: 10px; background: #FFFFFF; box-shadow: none; }
+.drow { color: #2B2620; } .drow .ln { color: #7A7264; } .drow.gap .tx { color: #7A7264; }
+.drow .k { color: #1F5FBF; } .drow .s { color: #8A4D00; } .drow .n { color: #B7791F; }
+.drow .c { color: #7A7264; } .drow .f { color: #1F5FBF; }
+.drow .strike { background: #C2412D; }
+.drow a { color: #1F5FBF; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Page chrome: header, stage, controls and scene strip join into one IDE window. */
+body.pg { color: #2B2620; background: #F1EBE0; }
+body.pg a { color: #1F5FBF; text-decoration: underline; text-underline-offset: 3px; }
+body.pg button, body.pg .pg-btn { color: #2B2620; background: #FFFDF7; border: 1px solid #D8CFBA; border-radius: 6px; text-decoration: none; }
+body.pg button:hover:not(:disabled), body.pg .pg-btn:hover { border-color: #B7791F; color: #2B2620; }
+body.pg button:focus-visible, body.pg a:focus-visible, body.pg summary:focus-visible { outline: 2px solid #B7791F; outline-offset: 2px; }
+.pg-head { background: #FFFDF7; border: 1px solid #D8CFBA; border-bottom: 0; border-radius: 10px 10px 0 0; padding: 16px 20px 12px; margin-bottom: 0; }
+.pg-head h1, .pg-read h2 { color: #2B2620; }
+.pg-meta, .pg-counter, .rd-lead, .rd-role h3, .rd-st, .pg-nc, .hk-key { color: #575046; }
+.pg-key, .rd-in { color: #575046; }
+.pg-hint, .pg-rc, .pg-more, .rd-p, .rd-bin { color: #7A7264; }
+.pg-main { background: #FFFDF7; border: 1px solid #D8CFBA; border-radius: 0 0 10px 10px; padding: 16px 20px 20px; }
+.pg-stage { border: 1px solid #D8CFBA; border-radius: 0; background: #F1EBE0; }
+.pg-controls { border-top: 1px solid #ECE4D0; margin-top: 12px; padding-top: 12px; }
+body.pg .pg-play { background: #8A4D00; color: #FFFFFF; border-color: #8A4D00; }
+body.pg .pg-play:hover:not(:disabled) { background: #6F3E00; border-color: #6F3E00; color: #FFFFFF; }
+body.pg .pg-rc a, body.pg .pg-gh { color: #1F5FBF; }
+.pg-strip { border-bottom: 1px solid #D8CFBA; padding-bottom: 0; }
+body.pg .pg-strip button { max-width: 300px; white-space: normal; text-align: left; line-height: 1.3; color: #575046; background: #F6F1E5; border: 1px solid #D8CFBA; border-bottom: 0; border-radius: 8px 8px 0 0; margin-bottom: -1px; }
+body.pg .pg-strip button b { border: 1px solid #D8CFBA; border-radius: 4px; background: #FFFDF7; color: #575046; }
+body.pg .pg-strip button.on { border-color: #D8CFBA; border-bottom: 1px solid #FFFDF7; color: #8A4D00; background: #FFFDF7; }
+.pg-nc summary:hover, .rd-code summary:hover { color: #2B2620; }
+.pg-read { margin-top: 16px; border: 1px solid #D8CFBA; border-radius: 10px; background: #FFFDF7; padding: 18px 20px 20px; }
+.rd { background: #FBF7EC; border: 1px solid #ECE4D0; border-radius: 0; }
+.rd-say { color: #2B2620; }
+.rd-say code, .rd-name code { color: #8A4D00; } body.pg .rd-name code { color: #1F5FBF; }
+.rd-u { border-left: 3px solid #B7791F; } .rd-u.tone-proof { border-left-color: #2F7D4F; }
+.rd-u.tone-problem { border-left-color: #C2412D; } .rd-u.tone-change { border-left-color: #B7791F; }
+.rd-code summary { color: #575046; }
+.rd-code table.hk, .pg-panel-diff { border-color: #D8CFBA; }
+.pg-panel { background: #FFFDF7; border: 1px solid #D8CFBA; border-radius: 10px; box-shadow: none; }
+.pg-panel-head h2 { color: #2B2620; }
+.hk-head { color: #7A7264; border-bottom-color: #D8CFBA; }
+table.hk .hk-n { color: #7A7264; } table.hk .hk-s { color: #7A7264; } table.hk .hk-t { color: #2B2620; }
+table.hk tr.hk-add { background: #E6F2E9; } table.hk tr.hk-del { background: #FBE6E1; }
+table.hk tr.hk-del .hk-t { color: #575046; text-decoration: line-through; }
+table.hk tr.hk-add .hk-s { color: #2F7D4F; } table.hk tr.hk-del .hk-s { color: #C2412D; }
+table.hk tr.hk-hit { box-shadow: inset 3px 0 #B7791F; background: #FFF1D6; }
+table.hk tr.hk-gap .hk-t { color: #7A7264; }
+table.hk .hk-n a:hover { color: #1F5FBF; }
+table.hk .t-k { color: #1F5FBF; } table.hk .t-s { color: #8A4D00; } table.hk .t-n { color: #B7791F; }
+table.hk .t-c { color: #7A7264; } table.hk .t-f { color: #1F5FBF; }
+#scale .efoot a, #scale .list .c a, #scale .rc .cite a { color: #1F5FBF; text-decoration: underline; text-decoration-color: #1F5FBF; }
+#scale .efoot a:hover, #scale .list .c a:hover, #scale .rc .cite a:hover, #scale .meta a:hover { color: #1F5FBF; }
+#scale .meta a { text-decoration: underline; text-decoration-color: #1F5FBF; }
+#scale .pg-hit:hover { outline-color: #B7791F88; } #scale .pg-hit.pg-on { outline-color: #B7791F; }
+.pg-info { background: #FFFDF7; border: 1px solid #D8CFBA; border-radius: 10px; color: #2B2620; }
+.pg-info::backdrop { background: rgba(43, 38, 32, .55); }

@@ -19,23 +19,38 @@ TONES: dict[str, tuple[str, str, str, str]] = {
     "context": ("Context", "grey", "#8A93A6", "#ECEEF2"),
 }
 
+# The same five hues, darkened so text and strokes read on a light page. Each look picks
+# one ink set; the key words never change between inks.
+LIGHT: dict[str, str] = {
+    "problem": "#C2412D",
+    "change": "#B7791F",
+    "part": "#1F5FBF",
+    "proof": "#2F7D4F",
+    "context": "#6E675C",
+}
 
-def key_pairs() -> list[tuple[str, str]]:
-    """Key word and full color of each tone, in key order."""
-    return [(word, color) for word, _, color, _ in TONES.values()]
+
+def key_pairs(ink: str = "dark") -> list[tuple[str, str]]:
+    """Key word and color of each tone, in key order, for the dark or the light ink."""
+    if ink not in ("dark", "light"):
+        raise ValueError(f"ink {ink!r} is not dark or light")
+    return [
+        (word, LIGHT[tone] if ink == "light" else color)
+        for tone, (word, _, color, _) in TONES.items()
+    ]
 
 
-def key_script() -> str:
+def key_script(ink: str = "dark") -> str:
     """The script tag that gives engine.js its key; engine.js has no key of its own."""
-    return "<script>window.PRC_KEY=" + json.dumps(key_pairs()) + ";</script>"
+    return "<script>window.PRC_KEY=" + json.dumps(key_pairs(ink)) + ";</script>"
 
 
-def key_html() -> str:
+def key_html(ink: str = "dark") -> str:
     return (
         "<p class='pg-key' aria-label='Color key'>"
         + "".join(
             f"<span class='pg-key-i'><i style='background:{color}'></i>{html.escape(word)}</span>"
-            for word, color in key_pairs()
+            for word, color in key_pairs(ink)
         )
         + "</p>"
     )

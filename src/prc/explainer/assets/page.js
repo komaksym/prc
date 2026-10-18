@@ -103,10 +103,34 @@
     var keep = playing();
     cur = i;
     closePanel(false);
+    var ghost = fadeOut();
     mount(i);
+    fadeIn(ghost);
     if (keep) audio.currentTime = scenes[i].start;
     seek(keep ? scenes[i].start : rest(scenes[i]));
     update();
+  }
+
+  // Stepping to another scene fades the old scene out first, then the new scene in.
+  // The two never show together, so new cards never land on the old scene's cards.
+  var FADE_OUT = 160, FADE_IN = 220;
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fadeOut() {
+    stage.querySelectorAll('.pg-ghost').forEach(function (g) { g.remove(); });
+    if (still || !scale.firstChild || !scale.animate) return null;
+    var ghost = scale.cloneNode(true);
+    ghost.removeAttribute('id');
+    ghost.classList.add('pg-ghost');
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.inert = true;
+    stage.appendChild(ghost);
+    ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE_OUT, easing: 'ease-in', fill: 'forwards' })
+      .finished.then(function () { ghost.remove(); }, function () {});
+    return ghost;
+  }
+  function fadeIn(ghost) {
+    if (!ghost) return;
+    scale.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_IN, delay: FADE_OUT, easing: 'ease-out', fill: 'backwards' });
   }
 
   // While narration plays, the stage follows the audio clock; crossing a scene

@@ -211,16 +211,16 @@ def test_page_footer_receipts_open_their_lines_on_github(tmp_path: Path) -> None
         page = context.new_page()
         page.goto((tmp_path / "page.html").as_uri())
         page.locator("#strip button").nth(1).click()
-        links = page.locator(".efoot a")
-        page.wait_for_function("document.querySelectorAll('.efoot a').length > 0")
+        links = page.locator("#scale .efoot a")
+        page.wait_for_function("document.querySelectorAll('#scale .efoot a').length > 0")
         hrefs = [links.nth(i).get_attribute("href") for i in range(links.count())]
         assert hrefs == [files_url(owner_repo, number, p, n) for p, n, _ in picks]
         with context.expect_page() as opened:
             links.first.click()
         assert opened.value.url == hrefs[0]
         page.locator("#strip button").first.click()
-        heads = page.locator(".efoot a")
-        page.wait_for_function("document.querySelectorAll('.efoot a').length === 2")
+        heads = page.locator("#scale .efoot a")
+        page.wait_for_function("document.querySelectorAll('#scale .efoot a').length === 2")
         assert (
             heads.nth(1).get_attribute("href")
             == f"https://github.com/{owner_repo}/commit/{m['head_sha']}"

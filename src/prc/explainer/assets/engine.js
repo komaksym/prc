@@ -1,10 +1,14 @@
 (() => {
   const W = 1920, H = 1080;
-  // Okabe-Ito shades, one meaning each: red problem, gold change, blue part, green proof,
-  // grey context. The key words and colors come from prc/tones.py through window.PRC_KEY.
-  const C = { blue: '#56B4E9', green: '#009E73', red: '#D55E00', gold: '#E69F00', grey: '#8A93A6', text: '#ECEFF4', dim: '#5B6475', bg: '#0E1320' };
   const KEY = window.PRC_KEY;
   if (!Array.isArray(KEY) || !KEY.length) throw new Error('engine.js needs window.PRC_KEY from prc.tones.key_script()');
+  // One meaning per color, in key order: red problem, gold change, blue part, green proof,
+  // grey context. The colors come from prc/tones.py through window.PRC_KEY; paper, ink and
+  // muted ink come from the look's CSS variables (prc/explainer/themes.py).
+  const [red, gold, blue, green, grey] = KEY.map(k => k[1]);
+  const look = getComputedStyle(document.documentElement);
+  const v = (name, dflt) => look.getPropertyValue(name).trim() || dflt;
+  const C = { blue, green, red, gold, grey, text: v('--prc-text', '#ECEFF4'), dim: v('--prc-dim', '#5B6475'), bg: v('--prc-bg', '#0E1320') };
   const STATUS = { modified: C.gold, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
   const TONE = { bad: C.red, good: C.green, info: C.gold };
   const clamp = x => Math.max(0, Math.min(1, x));
@@ -692,7 +696,7 @@
     const scenes = B.scenes
       .map((s, idx) => ({ s, idx }))
       .filter(x => sceneIndex == null || x.idx === sceneIndex)
-      .map(x => { const r = D('scene', null, stage); return { s: x.s, root: r, update: MAKERS[x.s.type](x.s, r) }; });
+      .map(x => { const r = D('scene', null, stage); return { s: x.s, root: r, update: MAKERS[x.s.type](x.s, r), after: x.idx ? B.scenes[x.idx - 1].end : -Infinity }; });
     const sentences = scenes.flatMap(sc => (sc.s.nocap ? [] : sc.s.sentences));
     let lastCap, lastFoot;
     // The footer names receipts; on the clickable page each receipt opens its line on GitHub.
@@ -700,7 +704,12 @@
 
     const seek = t => {
       scenes.forEach(sc => {
-        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, ...sc.s.fade));
+        // Scenes are sequential: a scene enters only after the previous scene's window ends,
+        // and leaves at its own end, so the next scene's cards never land on the current
+        // scene. render also refuses a board whose windows overlap.
+        const from = Math.max(sc.s.start, sc.after);
+        const inside = t >= from && t < sc.s.end;
+        const o = inside ? Math.min(prog(t, from, 0.45), 1 - prog(t, ...sc.s.fade)) : 0;
         sc.root.style.opacity = o;
         sc.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
         if (o > 0.001) sc.update(t);

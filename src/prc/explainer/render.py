@@ -17,6 +17,7 @@ from prc.explainer.diffrows import diff_layout, pair_rows, prepare, wrap_row
 from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
 from prc.explainer.page import files_url
+from prc.explainer.themes import Look, look
 from prc.explainer.timing import check_stamped_cues, fit_sentences
 from prc.explainer.voice import Backend
 from prc.tones import key_script
@@ -24,7 +25,7 @@ from prc.tones import key_script
 ASSETS = Path(__file__).resolve().parent / "assets"
 FPS = 30
 
-PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head>
+PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}{look}</style></head>
 <body class="video"><div id="app" class="emount"><div class="escale" id="scale"></div></div>
 <script>window.BOARD = {board};</script>{key}<script>{js}
 prcMount(document.getElementById('scale'), window.BOARD, null);</script></body></html>"""
@@ -285,46 +286,39 @@ def silence(cursor: float, out: Path) -> None:
     )  # fmt: skip
 
 
-def render(
+def overlapping_scenes(board: dict[str, Any]) -> list[str]:
+    """Scene windows that overlap. The engine shows a scene only inside its own window,
+    so overlapping windows would cut a scene before its fade; render refuses them."""
+    scenes = board["scenes"]
+    return [
+        f"scene {b.get('i', n + 1)} starts at {float(b['start']):.3f}s, "
+        f"before scene {a.get('i', n)} ends at {float(a['end']):.3f}s"
+        for n, (a, b) in enumerate(zip(scenes, scenes[1:], strict=False))
+        if float(b["start"]) < float(a["end"]) - 1e-6
+    ]
+
+
+def record(
     board: dict[str, Any],
-    m: dict[str, Any],
-    facts: dict[str, Any],
     out: Path,
-    backend: Backend,
-    git_dir: str | None = None,
+    narration: Path,
+    duration: float,
+    theme: Look,
     keys_only: bool = False,
-) -> Rendered:
-    check_tools(need_video=not keys_only)
+) -> list[str]:
+    """Write player.html in the look, check its DOM, take key frames and record video.mp4."""
     from playwright.sync_api import sync_playwright
 
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "audio").mkdir(exist_ok=True)
-    fill(board, m, facts, git_dir)
-    join_gate(board, m, out)
-    log: list[dict[str, Any]] = []
-    cursor, clips = fit_sentences(board, backend, out / "audio", log)
-    stamped = check_stamped_cues(board)
-    if stamped:
-        raise RenderError("cue timing failed after narration fit:\n" + "\n".join(stamped))
-    for s in board["scenes"]:
-        if s["type"] == "graph":
-            layout(s, m)
-    if log:
-        (out / "phrases.json").write_text(json.dumps(log, indent=1))
-
-    narration = out / "narration.wav"
-    if not keys_only:
-        if backend.has_audio:
-            mix_narration(clips, cursor, narration)
-        else:
-            silence(cursor, narration)
-
+    overlaps = overlapping_scenes(board)
+    if overlaps:
+        raise RenderError("scene windows overlap:\n  " + "\n  ".join(overlaps))
     player = out / "player.html"
     player.write_text(
         PAGE.format(
             css=(ASSETS / "engine.css").read_text(),
+            look=theme.css(),
             board=board_json(board),
-            key=key_script(),
+            key=key_script(theme.ink),
             js=(ASSETS / "engine.js").read_text(),
         )
     )
@@ -397,7 +391,7 @@ def render(
                 stdin=subprocess.PIPE,
             )  # fmt: skip
             assert ffmpeg.stdin is not None
-            for n in range(int(round(cursor * FPS)) + 1):
+            for n in range(int(round(duration * FPS)) + 1):
                 page.evaluate(f"seek({n / FPS})")
                 ffmpeg.stdin.write(page.screenshot(type="jpeg", quality=92))
             ffmpeg.stdin.close()
@@ -409,7 +403,42 @@ def render(
             browser.close()
             raise RenderError("page errors: " + " | ".join(errors))
         browser.close()
+    return warnings
 
+
+def render(
+    board: dict[str, Any],
+    m: dict[str, Any],
+    facts: dict[str, Any],
+    out: Path,
+    backend: Backend,
+    git_dir: str | None = None,
+    keys_only: bool = False,
+) -> Rendered:
+    check_tools(need_video=not keys_only)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "audio").mkdir(exist_ok=True)
+    fill(board, m, facts, git_dir)
+    join_gate(board, m, out)
+    log: list[dict[str, Any]] = []
+    cursor, clips = fit_sentences(board, backend, out / "audio", log)
+    stamped = check_stamped_cues(board)
+    if stamped:
+        raise RenderError("cue timing failed after narration fit:\n" + "\n".join(stamped))
+    for s in board["scenes"]:
+        if s["type"] == "graph":
+            layout(s, m)
+    if log:
+        (out / "phrases.json").write_text(json.dumps(log, indent=1))
+
+    narration = out / "narration.wav"
+    if not keys_only:
+        if backend.has_audio:
+            mix_narration(clips, cursor, narration)
+        else:
+            silence(cursor, narration)
+
+    warnings = record(board, out, narration, cursor, look("dark"), keys_only=keys_only)
     return Rendered(cursor, int(round(cursor * FPS)) + 1, warnings, log)
 
 
@@ -421,3 +450,19 @@ def render_board(
     m = json.loads(map_path.read_text())
     facts = verify_board(board, m)
     return render(board, m, facts, out, backend, git_dir)
+
+
+def render_look(src: Path, out: Path, name: str, keys_only: bool = False) -> Rendered:
+    """Record a finished output again in another look: same board, same narration.
+
+    src holds board.json (filled and timed), map.json and narration.wav from a full
+    render. No voice synthesis runs, so every look of a pull request says the same words
+    at the same times.
+    """
+    check_tools(need_video=not keys_only)
+    theme = look(name)
+    board = json.loads((src / "board.json").read_text())
+    out.mkdir(parents=True, exist_ok=True)
+    duration = float(board["duration"])
+    warnings = record(board, out, src / "narration.wav", duration, theme, keys_only)
+    return Rendered(duration, int(round(duration * FPS)) + 1, warnings, [])

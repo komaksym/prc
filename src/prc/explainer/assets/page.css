@@ -89,6 +89,7 @@ table.hk .hk-n a { color: inherit; text-decoration: none; }
 table.hk .hk-n a:hover { color: #E69F00; text-decoration: underline; }
 
 #scale .pg-hit { cursor: pointer; border-radius: 8px; }
+#stage .pg-ghost { pointer-events: none; }
 #scale .pill.fly, #scale svg { pointer-events: none; }
 #scale .efoot a, #scale .list .c a, #scale .rc .cite a { color: #8A93A6; text-decoration: underline; text-decoration-color: #4F5868; }
 #scale .efoot a:hover, #scale .list .c a:hover, #scale .rc .cite a:hover { color: #E69F00; }
