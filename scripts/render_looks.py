@@ -24,10 +24,12 @@ sys.path.insert(0, str(ROOT / "src"))
 from prc.explainer.page import render_page  # noqa: E402
 from prc.explainer.render import render_look  # noqa: E402
 from prc.explainer.themes import LOOKS  # noqa: E402
+from prc.explainer.voice import probe_seconds  # noqa: E402
 
 SOURCE = ROOT / "artifacts/output-v5/outputs/final"
 OUT = ROOT / "artifacts/v12-looks"
 GIT_CACHE = ROOT / "artifacts/output-v4/git-cache"
+DEFAULT_PR = "linkedin-mdp-5"
 
 
 def sources() -> dict[str, Path]:
@@ -48,12 +50,15 @@ def git_dir(m: dict) -> str | None:
     return str(found) if found.exists() else None
 
 
-def build(slug: str, src: Path, name: str, keys_only: bool) -> Path:
+def build(slug: str, src: Path, name: str, keys_only: bool, page_only: bool = False) -> Path:
     out = OUT / slug / name
     out.mkdir(parents=True, exist_ok=True)
     board = json.loads((src / "board.json").read_text())
     m = json.loads((src / "map.json").read_text())
-    rendered = render_look(src, out, name, keys_only=keys_only)
+    if page_only:
+        duration = probe_seconds(out / "video.mp4")
+    else:
+        duration = render_look(src, out, name, keys_only=keys_only).duration
     info = src / "infographic.png"
     if info.exists():
         shutil.copyfile(info, out / "infographic.png")
@@ -61,17 +66,18 @@ def build(slug: str, src: Path, name: str, keys_only: bool) -> Path:
         board,
         m,
         out,
-        rendered.duration,
+        duration,
         has_video=not keys_only,
         infographic=info.read_bytes() if info.exists() else None,
         git_dir=git_dir(m),
         look_name=name,
     )
-    print(f"{slug} {name}: {rendered.duration:.1f}s -> {out}", flush=True)
+    print(f"{slug} {name}: {duration:.1f}s -> {out}", flush=True)
     return out
 
 
 def hub(found: dict[str, Path]) -> Path:
+    count = "one pull request" if len(found) == 1 else f"{len(found)} pull requests"
     rows = []
     for slug, src in found.items():
         m = json.loads((src / "map.json").read_text())
@@ -118,8 +124,8 @@ td img{{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radiu
 td b{{display:block;font-size:14px}} td span{{font-size:14px}}
 a{{color:#1f5fbf}} a:hover{{text-decoration-thickness:2px}}
 </style></head><body><main>
-<h1>PRC artifacts for three pull requests, in five looks</h1>
-<p class='lead'>Each row is one pull request. Each column is one look. Every look uses the same storyboard, narration and timing, so only paper, ink, type and card shape change. The first column is the original dark baseline. Each infographic is the gated infographic from the baseline output, shared by every look. Open a page to step through it, or open the video to watch it.</p>
+<h1>PRC artifacts for {html.escape(count)}, in five looks</h1>
+<p class='lead'>Each column is one look. Every look uses the same storyboard, narration and timing, so only paper, ink, type and card shape change. The first column is the original dark baseline. Each infographic is the gated infographic from the baseline output, shared by every look. Open a page to step through it, or open the video to watch it.</p>
 <table><thead><tr><th scope='col'>Pull request</th>{heads}</tr></thead><tbody>{"".join(rows)}</tbody></table>
 </main></body></html>"""
     path = OUT / "index.html"
@@ -133,14 +139,18 @@ def main() -> None:
     parser.add_argument("--pr", action="append", help="slug, for example linkedin-mdp-5")
     parser.add_argument("--look", action="append", choices=list(LOOKS))
     parser.add_argument("--keys-only", action="store_true", help="key frames and page, no video")
+    parser.add_argument(
+        "--page-only", action="store_true", help="rebuild page.html beside the existing video"
+    )
     parser.add_argument("--hub-only", action="store_true")
     args = parser.parse_args()
     found = sources()
+    chosen = args.pr or [DEFAULT_PR]
     if not args.hub_only:
-        for slug in args.pr or list(found):
+        for slug in chosen:
             for name in args.look or list(LOOKS):
-                build(slug, found[slug], name, args.keys_only)
-    hub(found)
+                build(slug, found[slug], name, args.keys_only, args.page_only)
+    hub({slug: found[slug] for slug in chosen})
 
 
 if __name__ == "__main__":

@@ -759,3 +759,46 @@ def test_scene_tab_keeps_quotes_on_a_plain_word_code_span() -> None:
     (name,) = scene_names({"scenes": [{"type": "groups", "say": [say]}]})
     assert "the text “old”," in name
     assert name.endswith("and _call")
+
+
+def test_long_code_lines_wrap_inside_their_reading_fold(tmp_path: Path) -> None:
+    """2026-10-18 vision review: fold rows such as line 115 ran off the card mid-word at
+    "the current revi", with no scroll cue, in the dark and lab sheet pages."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.units import units
+    from prc.explainer.voice import NoneBackend
+
+    m, board, _ = _groups_change()
+    tail = "  # " + " ".join(["the current revision does not match"] * 8) + " " + "y" * 160
+    for f in m["files"]:
+        for h in f["hunks"]:
+            for ln in h["lines"]:
+                ln["text"] = ln["text"] + tail
+    board["reading"] = [{"units": [u["id"]], "say": "This part changes."} for u in units(m)]
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    for name in ("dark", "labsheet"):
+        out = tmp_path / name
+        render_page(board, m, out, board["scenes"][-1]["end"], has_video=False, look_name=name)
+        with sync_playwright() as driver:
+            browser = driver.chromium.launch()
+            page = browser.new_page(viewport={"width": 1280, "height": 900})
+            page.goto((out / "page.html").as_uri())
+            page.evaluate(
+                "document.querySelectorAll('#reading details.rd-code').forEach(d => d.open = true)"
+            )
+            spill = page.evaluate(
+                """() => [...document.querySelectorAll('#reading details.rd-code')].flatMap(d => {
+                    const edge = d.getBoundingClientRect().right + 1;
+                    return [...d.querySelectorAll('td')]
+                        .filter(c => c.getBoundingClientRect().right > edge)
+                        .map(c => c.textContent.slice(0, 40));
+                })"""
+            )
+            page.screenshot(path=str(out / "folds.png"), full_page=True)
+            browser.close()
+        assert spill == [], f"{name}: fold cells spill past the card: {spill[:3]}"
