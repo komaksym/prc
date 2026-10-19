@@ -468,3 +468,5 @@ Implement reliable PR continuous integration per user policy: public repositorie
 - [ ] C3. Run the repository verification command, inspect the workflow file, deslop the diff, commit explicit task files, and record agent delivery verification.
 
 Throughput checkpoint. This worker owns only its isolated clone. No subagent fan-out: one small sequential change owns one checkout, so parallel writers would share mutable state. Parent owns rulesets, integration, visual, push, and PR.
+
+Independent review found two runner prerequisites. The existing zero-skip release verifier needs macOS sips and tesseract for OCR. Frozen sync also needs an online constrained wheel installation to populate offline resolution metadata. Use the macOS runner and prepare that cache before the unchanged release verifier. New regression tests cover both prerequisites. Restrict push runs to main and cancel superseded PR runs.

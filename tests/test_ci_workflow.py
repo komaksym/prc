@@ -58,3 +58,18 @@ def test_ci_workflow_has_permissions_timeout_evidence() -> None:
     assert "contents: read" in text, "workflow must restrict to read contents"
     assert "timeout-minutes" in text, "workflow must bound the job runtime"
     assert "upload-artifact" in text, "workflow must upload verify logs as evidence"
+
+
+def test_ci_runner_supports_zero_skip_ocr_checks() -> None:
+    text = read_workflow()
+    assert "runs-on: macos-latest" in text, "release OCR tests require macOS sips"
+    assert "brew install ffmpeg tesseract" in text, "release tests require OCR tools"
+
+
+def test_ci_prepares_locked_wheel_cache_before_offline_verification() -> None:
+    text = read_workflow()
+    assert "uv export --frozen --extra video" in text
+    assert "--no-dev --no-emit-project --no-hashes" in text
+    assert "uv pip install --python" in text
+    assert "--constraint" in text
+    assert text.index("uv pip install --python") < text.index("bash scripts/verify-release.sh")

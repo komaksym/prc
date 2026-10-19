@@ -2,15 +2,20 @@ name: ci
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -18,12 +23,20 @@ jobs:
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v5
-      - name: Install ffmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install media and OCR tools
+        run: brew install ffmpeg tesseract
       - name: Sync dependencies with video extra
         run: uv sync --frozen --extra video
       - name: Install Playwright Chromium
         run: uv run playwright install --with-deps chromium
+      - name: Prepare locked dependencies for offline wheel tests
+        shell: bash
+        run: |
+          uv build --offline --wheel --out-dir "$RUNNER_TEMP/prc-ci-wheel"
+          uv export --frozen --extra video --no-dev --no-emit-project --no-hashes --output-file "$RUNNER_TEMP/prc-ci-constraints.txt"
+          uv venv --python .venv/bin/python "$RUNNER_TEMP/prc-ci-cache"
+          wheel=("$RUNNER_TEMP"/prc-ci-wheel/prc-*.whl)
+          uv pip install --python "$RUNNER_TEMP/prc-ci-cache/bin/python" --constraint "$RUNNER_TEMP/prc-ci-constraints.txt" "${wheel[0]}[video]"
       - name: Run isolated release verification
         run: bash scripts/verify-release.sh
       - name: Upload verify evidence
@@ -33,4 +46,3 @@ jobs:
           name: release-verify
           path: artifacts/release/verify/
           retention-days: 14
-
