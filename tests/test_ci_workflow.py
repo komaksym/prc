@@ -30,13 +30,12 @@ def test_ci_workflow_triggers_always() -> None:
     assert "workflow_dispatch" in text, "workflow must trigger on workflow_dispatch"
 
 
-def test_ci_workflow_runs_verification_steps() -> None:
+def test_ci_workflow_runs_release_verification() -> None:
     text = read_workflow()
-    assert "ruff check" in text, "workflow must run ruff check"
-    assert "ruff format" in text, "workflow must run ruff format check"
-    assert "mypy" in text, "workflow must run mypy"
-    assert "pytest" in text, "workflow must run pytest"
-    assert "uv build" in text, "workflow must run uv build"
+    assert "scripts/verify-release.sh" in text, (
+        "workflow must run the isolated release verifier that owns "
+        "lint, mypy, tests, build, and real CLI E2E"
+    )
 
 
 def test_ci_workflow_supports_media_tests() -> None:
@@ -46,9 +45,16 @@ def test_ci_workflow_supports_media_tests() -> None:
     assert "chromium" in text, "workflow must install Chromium for media tests"
 
 
-def test_ci_workflow_runs_real_cli_e2e() -> None:
+def test_ci_workflow_avoids_duplicated_e2e() -> None:
     text = read_workflow()
-    assert "prc explain" in text, "workflow must run a real CLI E2E render"
-    assert "fixture:shop" in text, "E2E must use the offline fixture source"
-    assert "shop.json" in text, "E2E must use the checked shop board"
-    assert "--voice none" in text, "E2E must render silent video without voice downloads"
+    assert "prc explain" not in text, (
+        "workflow must not duplicate the CLI E2E owned by verify-release.sh"
+    )
+
+
+def test_ci_workflow_has_permissions_timeout_evidence() -> None:
+    text = read_workflow()
+    assert "permissions:" in text, "workflow must declare minimal permissions"
+    assert "contents: read" in text, "workflow must restrict to read contents"
+    assert "timeout-minutes" in text, "workflow must bound the job runtime"
+    assert "upload-artifact" in text, "workflow must upload verify logs as evidence"

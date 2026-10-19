@@ -5,9 +5,13 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,37 +24,13 @@ jobs:
         run: uv sync --frozen --extra video
       - name: Install Playwright Chromium
         run: uv run playwright install --with-deps chromium
-      - name: Lint
-        run: uv run ruff check .
-      - name: Format check
-        run: uv run ruff format --check .
-      - name: Typecheck
-        run: uv run mypy
-      - name: Tests
-        run: uv run pytest -q
-      - name: Build
-        run: uv build
-      - name: Real CLI E2E (fixture shop, silent video)
-        run: |
-          uv run prc doctor
-          uv run prc board check tests/data/boards/shop.json --source fixture:shop
-          rm -rf artifacts/ci-explain
-          uv run prc explain --source fixture:shop --board tests/data/boards/shop.json --voice none --out artifacts/ci-explain > /tmp/prc-e2e.json
-          cat /tmp/prc-e2e.json
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          import subprocess
-          result = json.loads(Path("/tmp/prc-e2e.json").read_text())
-          assert result["check_passed"] is True, result
-          folder = Path(result["out"])
-          if not folder.is_absolute():
-              folder = Path.cwd() / folder
-          for name in ["map.html", "video.mp4", "doc.html", "card.png", "comment.md", "run.json"]:
-              assert (folder / name).is_file(), name
-          probe = json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height,r_frame_rate", "-of", "json", str(folder / "video.mp4")]))
-          stream = probe["streams"][0]
-          assert (stream["width"], stream["height"], stream["r_frame_rate"]) == (1920, 1080, "30/1"), stream
-          print("E2E outputs verified at", folder)
-          PY
+      - name: Run isolated release verification
+        run: bash scripts/verify-release.sh
+      - name: Upload verify evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-verify
+          path: artifacts/release/verify/
+          retention-days: 14
 
