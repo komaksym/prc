@@ -136,7 +136,7 @@ body.video .emount { width: 1920px; height: 1080px; }
 .drow .mt { display: inline-block; }
 .drow a { color: inherit; text-decoration: none; }
 .drow .sg { flex: none; align-self: flex-start; width: 56px; text-align: center; font-weight: 700; }
-.drow .ln { flex: none; align-self: flex-start; color: #5B6475; font-size: 0.72em; text-align: right; padding-right: 12px; }
+.drow .ln { flex: none; align-self: flex-start; color: #5B6475; font-size: 0.72em; text-align: right; padding-left: 14px; padding-right: 12px; }
 .drow .tx { position: relative; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; padding-right: 24px; }
 .drow.gap .tx { color: #3E4759; }
 .drow .strike { position: absolute; left: 0; top: 50%; height: 3px; margin-top: -1px; width: 0; background: #D55E00; }

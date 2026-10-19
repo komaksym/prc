@@ -177,3 +177,35 @@ def test_a_wrapped_added_row_shows_its_text_only_at_full_height(tmp_path: Path) 
                 squeezed.append(round(t, 2))
         browser.close()
     assert squeezed == [], f"row text shows before its row is full height at {squeezed}"
+
+
+def test_a_note_bar_leaves_the_line_number_readable(tmp_path: Path) -> None:
+    """2026-10-19 v12 review, linkedin-mdp #5 in the dark and paper videos: the 6 px note
+    bar on a row's left edge sat on the first digit of its line number (36, 146, 173, 15)."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from test_explainer_v6 import _diff_board
+
+    m, board, _, ln = _diff_board()
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        gaps = page.evaluate(
+            """seek(window.BOARD.scenes[1].end - 0.4),
+            [...document.querySelectorAll('.diff .drow')].filter(r => r.style.boxShadow).map(row => {
+                const ln = row.querySelector('.ln');
+                const range = document.createRange();
+                range.selectNodeContents(ln);
+                return range.getBoundingClientRect().left - row.getBoundingClientRect().left;
+            })"""
+        )
+        browser.close()
+    assert gaps, "the fixture needs a row with a note bar"
+    assert min(gaps) >= 12, f"line number starts {min(gaps)} px from the row edge; the bar is 6 px"
