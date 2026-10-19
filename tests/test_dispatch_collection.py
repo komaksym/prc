@@ -23,7 +23,12 @@ def test_close_dispatch_row_is_present() -> None:
 def test_transition_row_is_present() -> None:
     """2026-10-18: prototype clips showed two scenes at once at every cut."""
     text = _agents_text()
-    for marker in ("one scene at a time", "tests/test_transitions.py", "hook case 8"):
+    for marker in (
+        "one scene at a time",
+        "tests/test_transitions.py",
+        "hook case 8",
+        "opens to its full height before its text shows",
+    ):
         assert marker in text, f"AGENTS.md rule table must name {marker}"
 
 

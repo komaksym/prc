@@ -431,6 +431,9 @@ def test_group_boxes_open_their_lines_and_the_reading_path_links_every_unit(
         ]
         assert page.locator(".pg-key-i").count() == 5
         assert "reading path" in page.locator("#not-covered").inner_text()
+        # 2026-10-18 vision review: the link said "the reading path" but the section it
+        # opens was headed "Every change, in reading order" -- one section, two names.
+        assert "reading path" in page.locator("#reading h2").first.inner_text().lower()
         names = page.locator("#reading .rd-name")
         assert names.count() == len(all_units)
         hrefs = {names.nth(i).get_attribute("href") for i in range(names.count())}

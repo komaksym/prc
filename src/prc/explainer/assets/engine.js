@@ -631,12 +631,15 @@
         let k = 1;
         if (R.r.op === '+') k = prog(t, ...R.r.motion.reveal);
         const enter = R.r.gap ? 1 : prog(t, ...R.r.motion.enter);
-        R.y = y; R.hk = k;
+        // An added row opens to its full height in the first half of its reveal, and its text
+        // fades in only in the second half, so wrapped lines never squeeze onto each other.
+        const open = clamp(k * 2);
+        R.y = y; R.hk = open; R.vis = clamp(k * 2 - 1);
         R.el.style.top = y + 'px';
-        R.el.style.height = R.h * k + 'px';
+        R.el.style.height = R.h * open + 'px';
         // Removed rows stay on screen: their text dims to 0.85 and the row tints red. No strike, no close.
-        R.el.style.opacity = enter * clamp(k * 2 - 1) * (R.r.op === '-' ? lerp(1, 0.85, prog(t, R.t0, 0.3)) : 1);
-        y += R.h * k;
+        R.el.style.opacity = enter * R.vis * (R.r.op === '-' ? lerp(1, 0.85, prog(t, R.t0, 0.3)) : 1);
+        y += R.h * open;
         if (!R.ct) return;
         if (!R.chg) R.chg = [...R.el.querySelectorAll('.mt.chg')];
         let bg = 0, color = C.green;
@@ -662,7 +665,7 @@
       });
       box.style.height = y + TOP + 'px';
       notes.forEach(N => {
-        const o = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * clamp(N.R.hk * 2 - 1);
+        const o = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * N.R.vis;
         N.el.style.left = N.x + 'px';
         N.el.style.opacity = o;
         if (N.below) {

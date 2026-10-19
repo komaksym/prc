@@ -573,7 +573,7 @@ def reading_html(board: dict[str, Any], m: dict[str, Any], git_dir: str | None =
         if role in by_role
     )
     return (
-        "<section id='reading' class='pg-read'><h2>Every change, in reading order</h2>"
+        "<section id='reading' class='pg-read'><h2>The reading path: every change, in order</h2>"
         f"<p class='rd-lead'>{len(known)} changed units. Each name opens its line on GitHub; "
         "each fold shows its changed lines.</p>" + sections + "</section>"
     )

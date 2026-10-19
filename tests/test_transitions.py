@@ -138,3 +138,42 @@ def test_light_look_key_reads_the_light_ink_on_page_and_stage(tmp_path: Path) ->
 
     assert header == stage == [rgb(LIGHT[t]) for t in TONES]
     assert bg == rgb("#FBF8F1")
+
+
+def test_a_wrapped_added_row_shows_its_text_only_at_full_height(tmp_path: Path) -> None:
+    """2026-10-18 v12 review, linkedin-mdp #5 at 75.7 s in every look: while an added row
+    that wraps to two lines grew open, its text already showed, so the two lines squeezed
+    onto each other and onto the rows around it, and the last line was cut in half."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from test_explainer_v6 import _diff_board
+
+    m, board, path, ln = _diff_board()
+    ln["text"] = ln["text"] + "  # " + " ".join(["the snapshot ended on a short page"] * 4)
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        rows = page.evaluate("window.BOARD.scenes[1].rows.filter(r => r.op === '+')")
+        assert any(r.get("breaks") for r in rows), "the fixture row must wrap to two lines"
+        start, dur = rows[0]["motion"]["reveal"]
+        squeezed = []
+        for k in range(int((dur + 0.4) * 30) + 1):
+            t = start - 0.2 + k / 30
+            bad = page.evaluate(
+                f"""seek({t}), [...document.querySelectorAll('.diff .drow')].filter(row => {{
+                    const tx = row.querySelector('.tx');
+                    return tx && parseFloat(row.style.opacity || '1') > {VISIBLE}
+                        && row.clientHeight + 1 < tx.offsetHeight;
+                }}).length"""
+            )
+            if bad:
+                squeezed.append(round(t, 2))
+        browser.close()
+    assert squeezed == [], f"row text shows before its row is full height at {squeezed}"
