@@ -454,3 +454,19 @@ Rebuild all 12 PR outputs with current source into a new run, re-read with fresh
 - [ ] H5. Independent review, launch docs, full verifier, commit. Operator gates (license, repo name, push, PyPI, human session) stay with the user.
 
 Q4/Q5 outcome, 2026-10-08: baseline committed on verification-skill; local main fast-forwarded (ancestor, no unique commits). No remote is configured, so no push or PR exists. Ticket 01 resolved. Ticket 02 stays blocked on the human repository-identity decision. Ticket 03 stays open for human review. Final independent recheck of the four source fixes is pending; narrow tests, lint, types, and the 572-test package check pass.
+
+# PR continuous integration, 2026-10-19
+
+## Summary
+
+Implement reliable PR continuous integration per user policy: public repositories use rulesets; private repositories use CI plus global agent merge instruction, no paid upgrade. This clone is currently public with no CI on main. Add one always-triggered CI workflow with a stable named job that runs lint, mypy, tests, build, and a real CLI end-to-end render. Support media tests with ffmpeg and Playwright Chromium in CI. Keep the required check context stable for the public main ruleset. Do not alter rulesets from this clone.
+
+## Milestones
+
+- [ ] C1. Add failing workflow validation test that requires the stable workflow file, stable job name, always-on triggers, and verification steps including lint, mypy, tests, build, ffmpeg, Chromium, and real CLI E2E.
+- [ ] C2. Add always-triggered CI workflow with stable names and media support, then turn the validation test green.
+- [ ] C3. Run the repository verification command, inspect the workflow file, deslop the diff, commit explicit task files, and record agent delivery verification.
+
+Throughput checkpoint. This worker owns only its isolated clone. No subagent fan-out: one small sequential change owns one checkout, so parallel writers would share mutable state. Parent owns rulesets, integration, visual, push, and PR.
+
+Independent review found two runner prerequisites. The existing zero-skip release verifier needs macOS sips and tesseract for OCR. Frozen sync also needs an online constrained wheel installation to populate offline resolution metadata. Use the macOS runner and prepare that cache before the unchanged release verifier. New regression tests cover both prerequisites. Restrict push runs to main and cancel superseded PR runs.
