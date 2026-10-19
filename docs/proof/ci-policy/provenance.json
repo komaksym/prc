@@ -1,0 +1,10 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "image_gen",
+  "image_sha256": "b049306a79141c9ede10f62d0bab4a6eb58e86d28baf349f1739b4fc7327fe3b",
+  "prompt_path": "prompts/infographic.md",
+  "prompt_sha256": "7bd2ae4297abdfaa57d163bd60d36ec56f80926ebefab3cdf09de8f8f6641ea7",
+  "purpose": "This infographic shows the public and private CI merge policy.",
+  "visual_note": "Viewed the exact saved PNG. It reads CI before every agent merge, PRIVATE REPOSITORIES, PUBLIC REPOSITORIES, No ruleset, No paid upgrade, and The agent merges only the verified PR head. All text is legible within the bordered light canvas.",
+  "created_at": "2026-10-19T14:00:13Z"
+}
