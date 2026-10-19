@@ -1,0 +1,12 @@
+{
+ "skill": "baoyu-infographic",
+ "backend": "image_gen",
+ "image_path": "/Users/koval/dev/prc/.claude/worktrees/v3-study/infographic/v13-one-pr/infographic.png",
+ "image_sha256": "dd5cec1a41be30ccaffedae07afd430772839f0e560cd9f3ec6faf75b7a12d54",
+ "prompt_path": "/Users/koval/dev/prc/.claude/worktrees/v3-study/prompts/07-infographic-v13-one-pr.md",
+ "prompt_sha256": "5d35003d9e3cdd7042f9fda698d518871f80b2517fd3d602fce820fb0047f71b",
+ "purpose": "Shows what round 13 fixed, what you review, the proof, and who looked",
+ "visual_note": "Viewed the image. Words seen: title 'PRC Round 13: One PR in Five Looks, Scene by Scene'; panels 'WHAT THE REVIEW FOUND', 'WHAT CHANGED' with 'Row opens first, text shows second', 'WHAT YOU REVIEW' with Dark (baseline), Paper, Essay, Lab sheet, Workspace; 'PROOF' with '1098 tests pass'; 'WHO LOOKED' with '3 Muse Spark reviewers read every shot'. All text spelled as prompted.",
+ "method_note": "Prompt follows the baoyu-infographic layout and palette used for rounds 11 and 12; image rendered by the image_gen tool. Agent claim, not cryptographic proof.",
+ "created_at": "2026-10-19T14:00:08.836845+00:00"
+}
