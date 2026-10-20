@@ -18,6 +18,7 @@ from prc.changemap import ChangeMap, build_change_map
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
 from prc.explainer import render as explain_render
 from prc.explainer.check import verify_board
+from prc.explainer.evidence import load_beside
 from prc.explainer.page import render_page as render_explain_page
 from prc.explainer.timing import estimate as estimate_seconds
 from prc.explainer.timing import predict as predict_seconds
@@ -571,8 +572,9 @@ def run_explain(
         board: dict[str, Any] | None = None
         if board_path is not None:
             board = json.loads(board_path.read_text())
+            evidence = load_beside(map_path)
             try:
-                facts = verify_board(board, used)
+                facts = verify_board(board, used, evidence)
             except SystemExit as error:
                 raise ExplainCheckError(str(error)) from error
             check_passed = True
@@ -591,6 +593,7 @@ def run_explain(
                 work,
                 backend,
                 git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
+                evidence_dir=map_path.parent if evidence is not None and map_path is not None else None,
             )
             board_out = out_dir / "board.json"
             (work / "board.json").write_text(json.dumps(board, indent=2, sort_keys=True))
