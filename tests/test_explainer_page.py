@@ -736,6 +736,42 @@ def test_added_image_file_renders_inline_with_github_link(tmp_path: Path) -> Non
     assert f"<a href='{url}'" in plain
 
 
+def test_changed_file_without_lines_says_why_and_links_its_lines_on_github() -> None:
+    """2026-10-20 pythonarcade/arcade#2977: CHANGELOG.md (72 KB, +1 line) read "binary or empty"."""
+    import re as _re
+
+    from prc.explainer.page import _unit_html, files_url
+
+    u: dict[str, Any] = {
+        "id": "CHANGELOG.md",
+        "path": "CHANGELOG.md",
+        "role": "docs",
+        "kind": "file",
+        "name": "CHANGELOG.md",
+        "status": "modified",
+        "line": None,
+        "removed": False,
+        "lines": [],
+    }
+    f = {
+        "path": "CHANGELOG.md",
+        "status": "modified",
+        "kind": "opaque",
+        "added": 1,
+        "removed": 0,
+        "hunks": [],
+    }
+    frag = _unit_html(u, f, "o/r", "1")
+    text = _re.sub(r"<[^>]+>", "", frag)
+    assert "binary or empty" not in text
+    assert "1 changed line is not shown here" in text
+    assert f"<a href='{files_url('o/r', '1', 'CHANGELOG.md')}'" in frag
+    empty = dict(f, added=0, kind="code")
+    assert "No text lines (binary or empty file)." in _re.sub(
+        r"<[^>]+>", "", _unit_html(u, empty, "o/r", "1")
+    )
+
+
 def test_long_scene_tab_name_ends_on_a_clause_and_keeps_lists_whole() -> None:
     """2026-10-16 PR #43: the tab read \"checks connect errors, size...\", cut inside a list."""
     from prc.explainer.page import scene_names
@@ -805,3 +841,52 @@ def test_long_code_lines_wrap_inside_their_reading_fold(tmp_path: Path) -> None:
             page.screenshot(path=str(out / "folds.png"), full_page=True)
             browser.close()
         assert spill == [], f"{name}: fold cells spill past the card: {spill[:3]}"
+
+
+def test_a_title_code_span_reads_as_code_never_as_backticks(tmp_path: Path) -> None:
+    """2026-10-19 nicegui #6380: "Fix `ui.scene` objects" showed its backticks on the page."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, _ = _groups_change()
+    m["title"] = "Fix `ui.scene` objects created early"
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 800})
+        page.goto((tmp_path / "page.html").as_uri())
+        page.wait_for_selector("#scale .ptitle span")
+        assert page.inner_html(".pg-head h1") == "Fix <code>ui.scene</code> objects created early"
+        assert page.title() == "Fix ui.scene objects created early"
+        assert page.text_content("#scale .ptitle") == "Fix ui.scene objects created early"
+        browser.close()
+
+
+def test_tabs_start_with_a_capital_and_count_scenes_name_what_they_count() -> None:
+    """2026-10-19 v14: tabs read "lines added", "new tests" and "core: queue moves"."""
+    from prc.explainer.page import scene_names
+
+    board = {
+        "scenes": [
+            {"type": "diff", "label": "core: queue moves, refresh on query", "say": ["x."]},
+            {"type": "diff", "label": "_get_counts, line for line", "say": ["x."]},
+            {
+                "type": "bars",
+                "label": "lines added",
+                "say": ["Most added lines sit in the grid index."],
+            },
+            {"type": "list", "label": "new tests", "say": ["New tests cover moved sprites."]},
+        ]
+    }
+    assert scene_names(board) == [
+        "Core: queue moves, refresh on query",
+        "_get_counts, line for line",
+        "Most added lines sit in the grid index",
+        "New tests cover moved sprites",
+    ]

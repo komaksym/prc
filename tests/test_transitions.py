@@ -209,3 +209,39 @@ def test_a_note_bar_leaves_the_line_number_readable(tmp_path: Path) -> None:
         browser.close()
     assert gaps, "the fixture needs a row with a note bar"
     assert min(gaps) >= 12, f"line number starts {min(gaps)} px from the row edge; the bar is 6 px"
+
+
+@pytest.mark.parametrize("look", ["dark", "labsheet"])
+def test_a_mark_on_a_labelled_box_leaves_the_label_readable(tmp_path: Path, look: str) -> None:
+    """2026-10-20 v14 review, nicegui #6380 labsheet video at 21.5 s and 34.5 s: the status
+    mark on the CLIENT slot sat on its "BOX POSITION" label, which read "BOX POSITIO"."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, _ = _groups_change()
+    scene = board["scenes"][1]
+    scene["groups"][1]["items"][0]["label"] = "box position"
+    scene["cues"].append({"at": [0, 0.4], "do": "mark", "id": "a1", "text": "\u2717"})
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["duration"], has_video=False, look_name=look)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        overlap = page.evaluate(
+            """seek(window.BOARD.scenes[1].end - 0.4), (() => {
+                const a = document.querySelector('.plabel').getBoundingClientRect();
+                const b = document.querySelector('.gmark').getBoundingClientRect();
+                const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+                const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+                return w > 0 && h > 0 ? [w, h] : null;
+            })()"""
+        )
+        browser.close()
+    assert overlap is None, f"the mark covers {overlap} px of the box label"

@@ -141,7 +141,8 @@ def fill(
             ]
 
         if s["type"] == "title":
-            s["title"] = m["title"]
+            # The title types one plain character at a time, so a code span drops its backticks.
+            s["title"] = str(m["title"]).replace("`", "")
             s["meta"] = (
                 f'<span class="add">+{added}</span> <span class="del">−{removed}</span> · '
                 f'<a href="https://github.com/{owner_repo}/pull/{number}" target="_blank" rel="noopener">{m["pr"]}</a>'
@@ -153,7 +154,7 @@ def fill(
                 {"text": "  →  head "},
                 {"text": m["head_sha"][:7], "url": commit + m["head_sha"]},
             ]
-            segments, rest = [], m["title"]
+            segments, rest = [], s["title"]
             for claim in s.get("claims", []):
                 before, _, rest = rest.partition(claim["text"])
                 segments += [{"text": before}, {"text": claim["text"], "claim": claim["n"]}]

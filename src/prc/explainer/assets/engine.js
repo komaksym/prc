@@ -378,6 +378,8 @@
         const B = box(c.id), tone = tones(c.tone || 'bad');
         const el = D('gmark', `${esc(c.text || '✗')}<i class="ring"></i>`, root);
         Object.assign(el.style, { left: B.x + B.w - 30 + 'px', top: B.y - 20 + 'px', color: tone, borderColor: tone });
+        // The mark covers the box's last 30 px; a top-right label ends left of it.
+        if (B.label) B.label.style.right = '42px';
         marks.push({ el, ring: el.querySelector('.ring'), t: c.t });
         B.flash.push({ t: c.t, color: tone });
       } else if (c.do === 'note') {

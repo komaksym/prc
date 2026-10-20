@@ -66,7 +66,9 @@ body { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, 
 .stat .l { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
 
 .outro .l1 { font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #2A2520; }
-.outro .tip { border: 0; border-top: 2px solid #2A2520; border-radius: 0; background: transparent; box-shadow: none; color: #2A2520; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
+/* The tip and the GitHub link are one framed pair: same hairline frame and white fill,
+   with a blue top rule on the tip so its label and frame read as one card. */
+.outro .tip { border: 1px solid #D8CFB8; border-top: 3px solid #1F5FBF; border-radius: 0; background: #FFFFFF; box-shadow: none; color: #2A2520; font-family: "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; }
 .outro .tip .tlabel { color: #1F5FBF; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
 .outro .tip .tbody code { color: #8A4D00; }
 .outro .cmd { border: 1px solid #D8CFB8; border-radius: 0; color: #2A2520; background: #FFFFFF; box-shadow: none; }

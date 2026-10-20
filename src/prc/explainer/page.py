@@ -371,7 +371,11 @@ def scene_names(board: dict[str, Any]) -> list[str]:
     used: set[str] = set()
     for s in board["scenes"]:
         say = [x.get("show", "") if isinstance(x, dict) else str(x) for x in s.get("say", [])]
-        if isinstance(s.get("label"), str) and s["label"].strip():
+        counts = s.get("type") in ("list", "bars", "stats")
+        if counts and say and say[0].strip():
+            # A count scene's label captions its number ("lines added"); the narration names it.
+            name = _shorten(say[0])
+        elif isinstance(s.get("label"), str) and s["label"].strip():
             name = _shorten(s["label"])
         elif s.get("type") == "title":
             name = "Title"
@@ -384,6 +388,9 @@ def scene_names(board: dict[str, Any]) -> list[str]:
         else:
             name = _shorten(" · ".join(str(g.get("title", "")) for g in s.get("groups", [])))
         name = name or "Scene"
+        # A plain lowercase first word reads as a fragment; a code name keeps its case.
+        if re.match(r"[a-z]+\b(?![_.(])", name):
+            name = name[0].upper() + name[1:]
         base, n = name, 2
         while name in used:
             name = f"{base} ({n})"
@@ -507,6 +514,16 @@ def _unit_html(
             + f"<table class='hk'><tbody>{joined}</tbody></table></details>"
         )
     else:
+        changed = int(f.get("added") or 0) + int(f.get("removed") or 0)
+        unread = (
+            f"<p class='rd-bin'>{changed} changed "
+            + ("line is" if changed == 1 else "lines are")
+            + " not shown here: the file is too large or not text. "
+            f"<a href='{html.escape(files_url(owner_repo, number, str(u['path'])))}' "
+            "target='_blank' rel='noopener'>Read them on GitHub</a>.</p>"
+            if changed
+            else "<p class='rd-bin'>No text lines (binary or empty file).</p>"
+        )
         code = (
             _image_html(
                 str(u["path"]),
@@ -516,7 +533,7 @@ def _unit_html(
                 head_sha,
                 base_sha,
             )
-            or "<p class='rd-bin'>No text lines (binary or empty file).</p>"
+            or unread
         )
     return (
         f"<li class='rd-u tone-{tone}' id='{_anchor(u['id'])}' data-unit='{html.escape(u['id'])}'>"
@@ -631,7 +648,7 @@ def _header(m: dict[str, Any], has_video: bool, has_info: bool, ink: str = "dark
         actions += "<a class='pg-btn' href='video.mp4'>Video file</a>"
     return (
         "<header class='pg-head'><div class='pg-id'>"
-        f"<h1>{html.escape(str(m['title']))}</h1>"
+        f"<h1>{re.sub(r'`([^`]+)`', r'<code>\1</code>', html.escape(str(m['title'])))}</h1>"
         f"<p class='pg-meta'>{pr_link} · {html.escape(str(m['author']))} · head "
         f"<a href='{commit}'><code>{str(m['head_sha'])[:7]}</code></a></p>{key_html(ink)}</div>"
         f"<div class='pg-actions'>{actions}</div></header>"
@@ -697,7 +714,7 @@ def render_page(
         "<meta name='viewport' content='width=device-width,initial-scale=1'>"
         f"<meta name='color-scheme' content='{theme.ink}'><meta name='referrer' content='no-referrer'>"
         "<link rel='icon' href='data:,'>"
-        f"<title>{html.escape(str(m['title']))}</title><style>"
+        f"<title>{html.escape(str(m['title']).replace('`', ''))}</title><style>"
         + (ASSETS / "engine.css").read_text()
         + (ASSETS / "page.css").read_text()
         + theme.css()
