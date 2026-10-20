@@ -398,9 +398,10 @@ def _main(argv: list[str] | None = None) -> int:
             return 0
 
         from prc.explainer.check import verify_board
+        from prc.explainer.evidence import load_beside
 
         try:
-            facts = verify_board(board_doc, used)
+            facts = verify_board(board_doc, used, load_beside(args.map))
         except SystemExit as error:
             print(str(error), file=sys.stderr)
 

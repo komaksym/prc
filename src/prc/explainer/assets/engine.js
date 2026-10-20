@@ -528,6 +528,33 @@
     return t => cards.forEach(c => { const k = prog(t, c.at, 0.5); c.el.style.opacity = k; c.el.style.transform = `translateY(${lerp(34, 0, k)}px)`; });
   };
 
+  MAKERS.screens = (s, root) => {
+    const wrap = D('screens', null, root);
+    const n = (s.images || []).length;
+    const row = D('srow', null, wrap);
+    const c = (s.cues || []).find(q => q.do === 'show'), step = (c && c.step) || 0.3;
+    const base = c ? c.t : s.start + 0.3;
+    const figs = (s.images || []).map((img, i) => {
+      const fig = D('sfig' + (n === 1 ? ' single' : ''), null, row);
+      D('slabel', esc(img.label || ''), fig);
+      const frame = D('sframe', null, fig);
+      const el = document.createElement('img');
+      el.src = img.src || ('evidence/' + img.path);
+      el.alt = img.caption || s.caption || '';
+      el.loading = 'eager';
+      frame.appendChild(el);
+      return { fig, el, at: base + i * step };
+    });
+    const cap = D('scap', fmt(s.caption || ''), wrap);
+    const src = D('ssrc', null, wrap);
+    src.innerHTML = 'Source: <a href="' + esc(s.source_url || '') + '" target="_blank" rel="noopener">PR description</a>';
+    return t => {
+      figs.forEach(f => { const k = prog(t, f.at, 0.5); f.fig.style.opacity = k; f.fig.style.transform = 'translateY(' + lerp(20, 0, k) + 'px)'; });
+      cap.style.opacity = prog(t, s.start + 0.2, 0.5);
+      src.style.opacity = prog(t, s.start + 0.4, 0.5);
+    };
+  };
+
   MAKERS.outro = (s, root) => {
     const wrap = D('outro', null, root);
     const l1 = D('l1', fmt(s.l1), wrap);

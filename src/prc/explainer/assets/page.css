@@ -117,3 +117,6 @@ table.hk .hk-n a:hover { color: #E69F00; text-decoration: underline; }
 /* Syntax colours: the same classes and colours as the video's diff rows (engine.css .drow). */
 table.hk .t-k { color: #56B4E9; } table.hk .t-s { color: #E3B866; } table.hk .t-n { color: #E69F00; }
 table.hk .t-c { color: #8A93A6; font-style: italic; } table.hk .t-f { color: #B7C6FF; }
+
+/* Notice: the PR changes the UI but carries no shot. Framed line near the top. */
+.pg-notice { max-width: var(--stage-w); margin: 0 auto 12px; padding: 10px 14px; border: 2px solid #E69F00; border-radius: 10px; background: #121828; color: #ECEFF4; font: 500 14px system-ui, sans-serif; }

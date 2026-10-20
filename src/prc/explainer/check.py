@@ -371,6 +371,7 @@ VERBS: dict[str, set[str]] = {
     "stats": {"card"},
     "outro": {"l1", "l2", "cmd"},
     "diff": {"step", "note"},
+    "screens": {"show"},
 }
 NEEDS = {"list": "items", "receipt": "rows"}
 
@@ -588,6 +589,8 @@ def scene_ids(s: dict[str, Any]) -> set[str]:
         return {r["id"] for r in s["rows"]}
     if s["type"] == "diff":
         return {ref if isinstance(ref, str) else ref["ref"] for ref in s["lines"]}
+    if s["type"] == "screens":
+        return {img.get("path", "") for img in s.get("images", []) if isinstance(img, dict)}
     return set()
 
 
@@ -842,6 +845,7 @@ def _validate_shape(board: dict[str, Any]) -> None:
         "list": "items",
         "stats": "cards",
         "receipt": "rows",
+        "screens": "images",
     }
     for i, scene in enumerate(board["scenes"]):
         if not isinstance(scene, dict):
@@ -896,8 +900,12 @@ def _validate_shape(board: dict[str, Any]) -> None:
         raise SystemExit("receipts failed:\n" + "\n".join(problems))
 
 
-def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
+def verify_board(board: dict[str, Any], m: dict[str, Any], evidence: dict[str, Any] | None = None) -> dict[str, Any]:
     _validate_shape(board)
+    if evidence is None:
+        inline = board.get("evidence")
+        if isinstance(inline, dict) and "shots" in inline:
+            evidence = inline
     verdicts: dict[int, tuple[str, str]] = {}
     bar_facts: dict[str, Any] = {}
     ck = Checker(m)
@@ -1074,6 +1082,34 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             else:
                 verdicts[i] = ("NOT FOUND IN THE CODE", "bad")
 
+        if s["type"] == "screens":
+            imgs = s.get("images", [])
+            if not isinstance(imgs, list) or not (1 <= len(imgs) <= 2):
+                ck.fail(f"scene {i}: a screens scene shows 1 or 2 evidence images side by side")
+            else:
+                for img in imgs:
+                    if not isinstance(img, dict) or not isinstance(img.get("path"), str) or not isinstance(img.get("label"), str):
+                        ck.fail(f"scene {i}: each screens image needs a path and a label")
+                    elif evidence is not None:
+                        known = {sh.get("path") for sh in evidence.get("shots", []) if isinstance(sh, dict)}
+                        if img.get("path") not in known:
+                            ck.fail(f"scene {i}: {img.get('path')!r} is not in evidence.json; a screens scene may cite only paths in evidence.json")
+            if not isinstance(s.get("caption"), str) or not s.get("caption", "").strip():
+                ck.fail(f"scene {i}: a screens scene needs a caption saying what changed on screen")
+            if not isinstance(s.get("source_url"), str) or not s.get("source_url", "").strip():
+                ck.fail(f"scene {i}: a screens scene needs a source_url to the PR on GitHub")
+
+    if evidence is not None:
+        has_shots = bool(evidence.get("shots")) and bool(evidence.get("ui_change"))
+        has_notice = bool(evidence.get("notice"))
+        has_screens = any(s.get("type") == "screens" for s in board["scenes"])
+        if has_shots and not has_screens:
+            ck.fail('board needs one screens scene showing the evidence images (kind "screens")')
+        if has_notice and has_screens:
+            ck.fail("board has a notice and must not contain screens; the notice says the PR was not run")
+        if has_notice and board.get("notice") != evidence.get("notice"):
+            ck.fail(f'board "notice" must be exactly {evidence.get("notice")!r}; the page shows it at the top')
+
     for problem in join_preflight(board, m):
         ck.fail(problem)
     missing = missing_behavior_files(board, m)
@@ -1147,9 +1183,11 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
 
 
 def main(argv: list[str]) -> int:
+    from prc.explainer.evidence import load_beside
+
     board = json.loads(Path(argv[0]).read_text())
     m = json.loads(Path(argv[1]).read_text())
-    facts = verify_board(board, m)
+    facts = verify_board(board, m, load_beside(Path(argv[1])))
     print(f"{facts['receipts']} receipts verified")
 
     print(

@@ -135,3 +135,11 @@ table.hk .t-c { color: #6E675C; } table.hk .t-f { color: #6B3FA0; }
 .pg-info { background: #FEFCF5; border: 1px solid #2A2520; border-radius: 0; color: #2A2520; }
 .pg-info::backdrop { background: rgba(42, 37, 32, 0.55); }
 .pg-info img { border-radius: 0; }
+
+/* Screens on lab sheet: figure plates with hairline frame and white fill. */
+.screens .slabel { color: #6E675C; }
+.screens .sframe { border: 1px solid #D8CFB8; border-radius: 0; background: #FFFFFF; box-shadow: none; }
+.screens .scap { color: #2A2520; }
+.screens .ssrc { color: #6E675C; }
+.screens .ssrc a { color: #1F5FBF; }
+.pg-notice { background: #FFFFFF; border: 1px solid #D8CFB8; border-top: 3px solid #1F5FBF; border-radius: 0; color: #2A2520; }

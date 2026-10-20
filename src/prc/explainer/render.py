@@ -14,6 +14,7 @@ from typing import Any
 from prc.explainer import highlight
 from prc.explainer.check import verify_board
 from prc.explainer.diffrows import diff_layout, pair_rows, prepare, wrap_row
+from prc.explainer.evidence import copy_shots, load_beside
 from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
 from prc.explainer.page import files_url
@@ -109,6 +110,7 @@ def fill(
     m: dict[str, Any],
     facts: dict[str, Any],
     git_dir: str | None = None,
+    evidence_dir: Path | str | None = None,
 ) -> None:
     repo, number = m["pr"].split("/")[1].split("#")
     owner_repo = m["pr"].split("#")[0]
@@ -191,6 +193,15 @@ def fill(
         if s["type"] == "stats":
             for c in s["cards"]:
                 c["value"] = c["value"].format(**values)
+        if s["type"] == "screens":
+            for img in s.get("images", []):
+                if isinstance(img, dict) and isinstance(img.get("path"), str):
+                    name = Path(str(img["path"])).name
+                    img.setdefault("src", f"evidence/{name}")
+            if not s.get("source_url") and m.get("url"):
+                s["source_url"] = str(m["url"])
+            s["footer"] = ""
+            s["footer_parts"] = []
         if s["type"] == "outro":
             s["url"] = (m.get("url") or "pr").removeprefix("https://")
             s.setdefault("fine", "")
@@ -368,6 +379,14 @@ def record(
         if dom_errs:
             browser.close()
             raise RenderError("DOM text mismatch:\n  " + "\n  ".join(dom_errs))
+        screens_total = sum(len(s.get("images", [])) for s in board["scenes"] if s.get("type") == "screens")
+        if screens_total:
+            loaded = page.evaluate("() => [...document.querySelectorAll('.screens .sframe img')].map(function(i){return {src: i.getAttribute('src'), w: i.naturalWidth}})")
+            bad = [e for e in loaded if not e.get("w")]
+            if bad or len(loaded) != screens_total:
+                browser.close()
+                raise RenderError("screens images failed to load: " + repr(loaded))
+
         warnings = list(page.evaluate("window.lint || []"))
         overlaps = [w for w in warnings if "overlaps code" in w]
         if overlaps:
@@ -415,11 +434,14 @@ def render(
     backend: Backend,
     git_dir: str | None = None,
     keys_only: bool = False,
+    evidence_dir: Path | str | None = None,
 ) -> Rendered:
     check_tools(need_video=not keys_only)
     out.mkdir(parents=True, exist_ok=True)
     (out / "audio").mkdir(exist_ok=True)
-    fill(board, m, facts, git_dir)
+    fill(board, m, facts, git_dir, evidence_dir)
+    if evidence_dir is not None:
+        copy_shots(board, Path(evidence_dir), out)
     join_gate(board, m, out)
     log: list[dict[str, Any]] = []
     cursor, clips = fit_sentences(board, backend, out / "audio", log)
@@ -444,13 +466,16 @@ def render(
 
 
 def render_board(
-    board_path: Path, map_path: Path, out: Path, backend: Backend, git_dir: str | None = None
+    board_path: Path, map_path: Path, out: Path, backend: Backend, git_dir: str | None = None, evidence_dir: Path | str | None = None
 ) -> Rendered:
     """Check, fill and render a board file against a map file. Used by tests and the CLI."""
     board = json.loads(board_path.read_text())
     m = json.loads(map_path.read_text())
-    facts = verify_board(board, m)
-    return render(board, m, facts, out, backend, git_dir)
+    evidence = load_beside(map_path)
+    facts = verify_board(board, m, evidence)
+    if evidence_dir is None:
+        evidence_dir = map_path.parent
+    return render(board, m, facts, out, backend, git_dir, evidence_dir=evidence_dir)
 
 
 def render_look(src: Path, out: Path, name: str, keys_only: bool = False) -> Rendered:
@@ -464,6 +489,7 @@ def render_look(src: Path, out: Path, name: str, keys_only: bool = False) -> Ren
     theme = look(name)
     board = json.loads((src / "board.json").read_text())
     out.mkdir(parents=True, exist_ok=True)
+    copy_shots(board, src, out)
     duration = float(board["duration"])
     warnings = record(board, out, src / "narration.wav", duration, theme, keys_only)
     return Rendered(duration, int(round(duration * FPS)) + 1, warnings, [])

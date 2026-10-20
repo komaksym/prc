@@ -22,6 +22,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from prc.explainer.evidence import copy_shots
 from prc.explainer.highlight import _git_reader, paint_map
 from prc.explainer.preflight import line_coverage
 from prc.explainer.themes import look
@@ -286,6 +287,8 @@ def _refs(scene: dict[str, Any]) -> list[Ref]:
                     path, n = str(it["line"]).rsplit(":", 1)
                     boxes.append((path, abs(int(n)), int(n) < 0, str(it["id"])))
         return boxes
+    if scene.get("type") == "screens":
+        return []
     refs: list[Ref] = []
     for item in scene.get("items", []):
         path, n = str(item["cite"]).rsplit(":", 1)
@@ -668,10 +671,16 @@ def render_page(
     infographic: bytes | None = None,
     git_dir: str | None = None,
     look_name: str = "dark",
+    evidence_dir: Path | str | None = None,
 ) -> str:
     theme = look(look_name)
     out_dir.mkdir(parents=True, exist_ok=True)
+    copy_shots(board, Path(evidence_dir) if evidence_dir is not None else out_dir, out_dir)
     m = paint_map(m, git_dir)
+    notice_html = ""
+    notice = board.get("notice")
+    if isinstance(notice, str) and notice.strip():
+        notice_html = f"<p class='pg-notice'>{html.escape(notice)}</p>"
     hunks, where = _hunks(m)
     data = {
         "board": board,
@@ -690,6 +699,7 @@ def render_page(
     )
     body = (
         _header(m, has_video, has_info, theme.ink)
+        + notice_html
         + "<main id='main' class='pg-main'><section class='pg-col'>"
         + "<div id='stage' class='emount pg-stage'><div id='scale' class='escale'></div></div>"
         + "<div class='pg-controls'><button id='prev' type='button'>Previous</button>"

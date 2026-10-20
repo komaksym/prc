@@ -153,6 +153,26 @@ Give each card a `card` cue with its zero-based `i`. The checker rejects any car
 
 `{"type": "stats", "cards": [{"value": "{tests_added}", "label": "new tests", "tone": "good"}], "cues": [{"at": "...", "do": "card", "i": 0}]}`. Values are fact strings.
 
+### screens, the real UI from the pull request
+
+Use this scene when `evidence.json` sits beside the map. `prc` collects it from the PR description and preview links. It never runs the app.
+
+`{"type": "screens", "images": [{"path": "shot-0.png", "label": "Before and after"}], "caption": "Steps 1 and 2 now show a done check.", "source_url": "https://github.com/OWNER/REPO/pull/N", "say": ["..."], "cues": [{"at": "...", "do": "show"}]}`
+
+- `images`: 1 or 2 shots. Each `path` must be a `path` in `evidence.json`. Use two shots for a before and after pair.
+- `label`: what the shot shows, in at most 4 words. Read the image first. Do not guess.
+- `caption`: one sentence that names the visible change on the screen.
+- `source_url`: the PR on GitHub.
+- Put the scene right after the title, so the reader sees the screen before the code.
+
+The check fails in three cases:
+
+- `evidence.json` has shots and the board has no screens scene.
+- A screens scene cites a file that is not in `evidence.json`.
+- `evidence.json` has a `notice` and the board has a screens scene.
+
+When `evidence.json` has a `notice`, set the board field `"notice"` to that exact text. The page shows it at the top. Never draw a screen with boxes when no real image exists.
+
 ### outro
 
 Include `l1`, `l2`, and `cmd` cues. The checker rejects missing reveal cues because those elements would stay invisible. `fine` is optional small print under the command; when absent the checker fills an empty default and the video shows nothing there.
