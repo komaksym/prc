@@ -1,0 +1,479 @@
+{
+  "name": "v15-stepper",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged pull request",
+      "say": [
+        "This pull request fixes done marks in a stepper.",
+        "The fix keeps earlier steps checked when the value holds a step object."
+      ]
+    },
+    {
+      "type": "screens",
+      "images": [
+        {
+          "path": "shot-0.png",
+          "label": "Stepper before and after"
+        }
+      ],
+      "caption": "Steps 1 and 2 change from grey numbers to blue done checks.",
+      "source_url": "https://github.com/zauberzeug/nicegui/pull/6200",
+      "say": [
+        "The screenshot shows a stepper with three steps.",
+        "The fix turns steps 1 and 2 from grey numbers into blue done checks."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show"
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "val",
+          "title": "Selected value",
+          "sub": "Step object for three",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "v",
+              "text": "three"
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "Steps",
+          "sub": "no step shows done",
+          "col": 1,
+          "row": false,
+          "items": [
+            {
+              "id": "s1",
+              "text": "one"
+            },
+            {
+              "id": "s2",
+              "text": "two"
+            },
+            {
+              "id": "s3",
+              "text": "three"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "tests/test_stepper.py:40",
+          "match": "ui.step('one')"
+        },
+        {
+          "line": "tests/test_stepper.py:41",
+          "match": "ui.step('two')"
+        },
+        {
+          "line": "tests/test_stepper.py:42",
+          "match": "ui.step('three')"
+        },
+        {
+          "line": "tests/test_stepper.py:45",
+          "match": "stepper.value = step_three"
+        },
+        {
+          "line": "nicegui/elements/stepper.py:41",
+          "match": "if value in names else False"
+        }
+      ],
+      "say": [
+        "The test builds a stepper with `one`, `two` and `three`.",
+        "The handler compares the Step object with names and clears all done marks."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "val"
+          ]
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "s1",
+            "s2",
+            "s3"
+          ]
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "arrow",
+          "from": "v",
+          "to": "s3"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "mark",
+          "id": "s1",
+          "text": "✗",
+          "tone": "bad"
+        },
+        {
+          "at": [
+            1,
+            0.7
+          ],
+          "do": "mark",
+          "id": "s2",
+          "text": "✗",
+          "tone": "bad"
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "val",
+          "title": "Selected value",
+          "sub": "Step object for three",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "v",
+              "text": "three"
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "title": "Steps",
+          "sub": "first two steps show done",
+          "col": 1,
+          "row": false,
+          "items": [
+            {
+              "id": "s1",
+              "text": "one",
+              "tone": "good"
+            },
+            {
+              "id": "s2",
+              "text": "two",
+              "tone": "good"
+            },
+            {
+              "id": "s3",
+              "text": "three"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "tests/test_stepper.py:40",
+          "match": "ui.step('one')"
+        },
+        {
+          "line": "tests/test_stepper.py:41",
+          "match": "ui.step('two')"
+        },
+        {
+          "line": "tests/test_stepper.py:42",
+          "match": "ui.step('three')"
+        },
+        {
+          "line": "nicegui/elements/stepper.py:38",
+          "match": "_value_to_model_value"
+        },
+        {
+          "line": "tests/test_stepper.py:46",
+          "match": ":done"
+        }
+      ],
+      "say": [
+        "The fix converts the Step object to its name before the check.",
+        "Steps `one` and `two` now carry done checks and `three` stays current."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "val"
+          ]
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "s1",
+            "s2",
+            "s3"
+          ]
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "arrow",
+          "from": "v",
+          "to": "s3"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "mark",
+          "id": "s1",
+          "text": "✓",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.7
+          ],
+          "do": "mark",
+          "id": "s2",
+          "text": "✓",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "diff",
+      "file": "nicegui/elements/stepper.py",
+      "label": "The change, line for line",
+      "lines": [
+        "36",
+        "37",
+        {
+          "ref": "38",
+          "step": 0
+        },
+        "39",
+        "40",
+        "41"
+      ],
+      "say": [
+        "The handler converts the value with `_value_to_model_value`.",
+        "The loop then marks earlier steps done from names."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "38",
+          "text": "convert Step to name",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.2
+          ],
+          "do": "note",
+          "line": "40",
+          "text": "loops each step",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.8
+    },
+    {
+      "type": "bars",
+      "label": "lines added",
+      "bars": [
+        {
+          "id": "core",
+          "label": "stepper logic",
+          "paths": [
+            "nicegui/elements/"
+          ],
+          "tone": "blue"
+        },
+        {
+          "id": "rest",
+          "label": "tests",
+          "paths": [
+            "tests/"
+          ],
+          "tone": "grey"
+        }
+      ],
+      "say": [
+        "The stepper holds the fix and tests hold the new check.",
+        "The video spends its time on the stepper."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "bars",
+          "step": 0.2
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "list",
+      "big": "{tests_added}",
+      "label": "new tests",
+      "tone": "good",
+      "mark": "✓",
+      "code": true,
+      "items": [
+        {
+          "text": "test_done_decoration_with_step_object",
+          "cite": "tests/test_stepper.py:33"
+        }
+      ],
+      "say": [
+        "New tests run the page and check done flags."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ],
+      "hold": 1
+    },
+    {
+      "type": "outro",
+      "l1": "Step objects now keep done marks.",
+      "l2": "Start at `_handle_value_change` in `nicegui/elements/stepper.py`; it converts the value first.",
+      "say": [
+        "Step objects now keep done marks.",
+        "Start at `_handle_value_change` in `nicegui/elements/stepper.py`; it converts the value first."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            1,
+            0
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "cmd"
+        }
+      ],
+      "hold": 2
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "nicegui/elements/stepper.py::Stepper._handle_value_change"
+      ],
+      "say": "The handler converts the Step object to its name and marks earlier steps done."
+    },
+    {
+      "units": [
+        "tests/test_stepper.py::<module>"
+      ],
+      "say": "The module imports `User` for the new test."
+    },
+    {
+      "units": [
+        "tests/test_stepper.py::test_done_decoration_with_step_object.page"
+      ],
+      "say": "The page builds a stepper with `one`, `two` and `three`."
+    },
+    {
+      "units": [
+        "tests/test_stepper.py::test_done_decoration_with_step_object"
+      ],
+      "say": "The test sets `stepper.value` to the third step and checks done flags."
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Step object keeps done marks",
+    "subtitle": "One conversion in the handler",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Step object misses names",
+          "No step shows done"
+        ]
+      },
+      {
+        "title": "CHANGE",
+        "tone": "change",
+        "lines": [
+          "Handler converts Step to name",
+          "Done check uses names"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "proof",
+        "lines": [
+          "Test sets third step object",
+          "First two steps show done"
+        ]
+      }
+    ],
+    "footer": [
+      "Start at the handler"
+    ]
+  }
+}

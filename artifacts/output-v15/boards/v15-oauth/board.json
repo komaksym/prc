@@ -1,0 +1,330 @@
+{
+  "name": "v15-oauth",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged pull request",
+      "say": [
+        "Reviewers see a clear warning when a Space lacks OAuth scopes.",
+        "A second fix maps oversized upload headers to a clean error."
+      ]
+    },
+    {
+      "type": "screens",
+      "images": [
+        {
+          "path": "shot-0.png",
+          "label": "Workflow canvas warning"
+        }
+      ],
+      "caption": "The canvas shows a yellow toast warning that sign-in lacks `inference-api` and `write-repos`.",
+      "source_url": "https://github.com/gradio-app/gradio/pull/13767",
+      "say": [
+        "The Space runs with only basic sign-in scopes.",
+        "The canvas warns the author to add the missing scopes."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show"
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "sp",
+          "title": "Space",
+          "sub": "Space with bare hf_oauth true",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "o",
+              "text": "oauth"
+            }
+          ]
+        },
+        {
+          "id": "cv",
+          "title": "Canvas",
+          "sub": "Workflow canvas on the Space",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "m",
+              "text": "missingScopes"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "js/workflowcanvas/workflow/hf-auth.svelte.ts:174",
+          "match": "oauth"
+        },
+        {
+          "line": "js/workflowcanvas/workflow/hf-auth.svelte.ts:110",
+          "match": "missingScopes"
+        }
+      ],
+      "say": [
+        "The Space signs in with only basic scopes.",
+        "The canvas reads the missing list and warns the author."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "sp",
+            "cv"
+          ]
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "arrow",
+          "from": "o",
+          "to": "m",
+          "label": "checks missing scopes"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "js/workflowcanvas/workflow/hf-auth.svelte.ts",
+      "label": "OAuth scope check",
+      "lines": [
+        {
+          "ref": "160",
+          "step": 1
+        },
+        {
+          "ref": "164",
+          "step": 1
+        },
+        {
+          "ref": "165",
+          "step": 1
+        },
+        {
+          "ref": "173",
+          "step": 1
+        },
+        {
+          "ref": "174",
+          "step": 1
+        },
+        {
+          "ref": "175",
+          "step": 1
+        },
+        {
+          "ref": "184",
+          "step": 1
+        }
+      ],
+      "say": [
+        "The client asks the server for the granted OAuth scopes.",
+        "It stores the missing list and `hasScope` blocks unknown scopes."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 2
+    },
+    {
+      "type": "diff",
+      "file": "gradio/route_utils.py",
+      "label": "Header error mapping",
+      "lines": [
+        "43",
+        "-832",
+        "833",
+        "838",
+        "844",
+        "846"
+      ],
+      "say": [
+        "The parser also catches `MultipartParseError` from the new library.",
+        "It raises `Headers exceeded maximum allowed size` for header failures."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 2
+    },
+    {
+      "type": "outro",
+      "l1": "Missing OAuth scopes now warn the author before nodes fail.",
+      "l2": "Start at `refreshOAuthScopes` in `hf-auth.svelte.ts`; the save guard needs a scope test.",
+      "say": [
+        "Missing OAuth scopes now warn the author before nodes fail.",
+        "Start at `refreshOAuthScopes` in the HF auth file; the save guard needs a scope test."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd"
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts::createHFAuth.init",
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts::createHFAuth.refreshOAuthScopes"
+      ],
+      "say": [
+        "The init routine also refreshes the OAuth scope list.",
+        "The refresh function calls `get_oauth_scopes` and stores the missing map."
+      ]
+    },
+    {
+      "units": [
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts::createHFAuth",
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts::createHFAuth.hasScope"
+      ],
+      "say": [
+        "The factory holds the missing scope map and a known flag.",
+        "The guard allows all scopes for non-OAuth sources and blocks missing ones."
+      ]
+    },
+    {
+      "units": [
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts::createHFAuth.object@294.missingScopes",
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts::createHFAuth.object@294.scopesKnown"
+      ],
+      "say": [
+        "The getter exposes the current missing scope map.",
+        "The getter exposes the scope check state."
+      ]
+    },
+    {
+      "units": [
+        "gradio/workflow.py"
+      ],
+      "say": [
+        "The module defines the required OAuth scopes and reports missing ones.",
+        "It exposes `get_oauth_scopes` for the canvas."
+      ]
+    },
+    {
+      "units": [
+        "js/workflowcanvas/workflow/WorkflowCanvas.svelte"
+      ],
+      "say": [
+        "The canvas fetches the scope list and shows a warning toast.",
+        "It disables Save when `write-repos` is missing."
+      ]
+    },
+    {
+      "units": [
+        "gradio/route_utils.py::<module>",
+        "gradio/route_utils.py::GradioMultiPartParser.parse"
+      ],
+      "say": [
+        "The module imports `MultipartParseError` for the new parser check.",
+        "The parser catches the new error and raises a clear header message."
+      ]
+    },
+    {
+      "units": [
+        "test/requirements.in",
+        "test/requirements.txt"
+      ],
+      "say": [
+        "The manifests pin `ruff==0.12.9` for the backend lint."
+      ]
+    },
+    {
+      "units": [
+        ".changeset/large-moons-listen.md",
+        ".changeset/olive-donkeys-shout.md"
+      ],
+      "say": [
+        "The changesets describe the upload fix and the OAuth warning."
+      ]
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Missing scopes warn before failure",
+    "subtitle": "OAuth check plus upload fix",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Bare sign-in succeeds",
+          "Nodes fail with 403",
+          "Uploads fail with 500"
+        ]
+      },
+      {
+        "title": "CHANGE",
+        "tone": "change",
+        "lines": [
+          "Client reads OAuth scopes",
+          "Warns about missing scopes",
+          "Maps header errors clearly"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "proof",
+        "lines": [
+          "Toast names missing scopes",
+          "Save guard checks scope",
+          "Headers get clear message"
+        ]
+      }
+    ],
+    "footer": [
+      "Start at refreshOAuthScopes"
+    ]
+  }
+}

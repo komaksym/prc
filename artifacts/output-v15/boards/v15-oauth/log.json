@@ -1,0 +1,5 @@
+{
+  "check_runs": 4,
+  "final_check": "pass",
+  "notes": "Board passes check but preview cannot render because Chromium will not launch in the sandbox."
+}

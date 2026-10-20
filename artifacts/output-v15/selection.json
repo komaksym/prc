@@ -1,0 +1,74 @@
+{
+  "rule": "v15: three public front-end PRs that carry screenshots, to test real UI evidence",
+  "prs": [
+    {
+      "id": "v15-stepper",
+      "kind": "front-end: NiceGUI stepper done decoration",
+      "pr_identity": "zauberzeug/nicegui#6200",
+      "url": "https://github.com/zauberzeug/nicegui/pull/6200",
+      "title": "Fix lost step 'done' decoration when navigating a stepper by Step object",
+      "head_sha": "515c356aa3a82da5c9782cbf0f18965aa30b9519",
+      "base_sha": "3bb58aeed130e1040e1b5dd72fbedd1e17fd5852",
+      "merged_at": "2026-07-31T20:21:42Z",
+      "files": [
+        "nicegui/elements/stepper.py",
+        "tests/test_stepper.py"
+      ]
+    },
+    {
+      "id": "v15-sparkline",
+      "kind": "front-end: Textual terminal UI sparkline height",
+      "pr_identity": "Textualize/textual#6171",
+      "url": "https://github.com/Textualize/textual/pull/6171",
+      "title": "Allow Sparkline to be of any height",
+      "head_sha": "5edbb92cd4d24eac5444fc1c172e710141062f75",
+      "base_sha": "43189c45494eefabcf5c77285b7b376d44df0701",
+      "merged_at": "2026-01-15T15:20:46Z",
+      "files": [
+        "CHANGELOG.md",
+        "src/textual/renderables/sparkline.py",
+        "src/textual/widgets/_sparkline.py",
+        "tests/renderables/test_sparkline.py",
+        "tests/snapshot_tests/__snapshots__/test_snapshots/test_sparkline.svg",
+        "tests/snapshot_tests/snapshot_apps/sparkline.py",
+        "tests/snapshot_tests/test_snapshots.py"
+      ]
+    },
+    {
+      "id": "v15-oauth",
+      "kind": "front-end: Gradio workflow OAuth scope warning",
+      "pr_identity": "gradio-app/gradio#13767",
+      "url": "https://github.com/gradio-app/gradio/pull/13767",
+      "title": "workflow: warn when a Space's OAuth scopes are missing",
+      "head_sha": "0ca80f92581ee9c287fdc2e1d865bb5cb8b02544",
+      "base_sha": "e9dabaa18afea53329cc99282f28c69c70e237c5",
+      "merged_at": "2026-08-19T16:59:03Z",
+      "files": [
+        ".changeset/large-moons-listen.md",
+        ".changeset/olive-donkeys-shout.md",
+        "gradio/route_utils.py",
+        "gradio/workflow.py",
+        "js/workflowcanvas/workflow/WorkflowCanvas.svelte",
+        "js/workflowcanvas/workflow/hf-auth.svelte.ts",
+        "test/requirements.in",
+        "test/requirements.txt"
+      ]
+    },
+    {
+      "id": "v15-notice",
+      "kind": "front-end without screenshots: notice path",
+      "pr_identity": "zauberzeug/nicegui#6380",
+      "url": "https://github.com/zauberzeug/nicegui/pull/6380",
+      "title": "Fix `ui.scene` objects created before the scene is mounted",
+      "head_sha": "b81fca12f12271b57b6ddcadd263b4c35b15aabd",
+      "base_sha": "df3dcc3949bd2d0642e044895aefd4bd10c38349",
+      "merged_at": "2026-10-07T05:30:15Z",
+      "files": [
+        "nicegui/elements/scene/scene.py",
+        "nicegui/elements/scene/scene_object3d.py",
+        "tests/test_scene.py",
+        "website/documentation/content/scene_documentation.py"
+      ]
+    }
+  ]
+}

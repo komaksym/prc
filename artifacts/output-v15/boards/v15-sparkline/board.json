@@ -1,0 +1,516 @@
+{
+ "name": "v15-sparkline",
+ "scenes": [
+  {
+   "type": "title",
+   "kicker": "Merged pull request",
+   "say": [
+    "The `Sparkline` widget grows beyond one line.",
+    "Height now controls the row count."
+   ]
+  },
+  {
+   "type": "screens",
+   "images": [
+    {
+     "path": "shot-0.png",
+     "label": "Tall and short sparklines"
+    }
+   ],
+   "caption": "The app shows six sparkline rows at varied heights.",
+   "source_url": "https://github.com/Textualize/textual/pull/6171",
+   "say": [
+    "The screen shows six sparkline rows at different heights.",
+    "Tall bars fill the top row."
+   ],
+   "cues": [
+    {
+     "at": "six sparkline rows",
+     "do": "show"
+    }
+   ]
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "data",
+     "title": "Data three values",
+     "sub": "three numbers feed one row",
+     "col": 0,
+     "row": true,
+     "ground": "[1, 2, 3]",
+     "items": [
+      {
+       "id": "d1",
+       "text": "1"
+      },
+      {
+       "id": "d2",
+       "text": "2"
+      },
+      {
+       "id": "d3",
+       "text": "3"
+      }
+     ]
+    },
+    {
+     "id": "canvas",
+     "title": "Canvas rows",
+     "sub": "one row shows three bars",
+     "col": 1,
+     "row": true,
+     "ground": "▁",
+     "items": [
+      {
+       "id": "b1",
+       "text": "▁"
+      },
+      {
+       "id": "b2",
+       "text": "▄"
+      },
+      {
+       "id": "b3",
+       "text": "█"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/renderables/test_sparkline.py:104",
+     "match": "[1, 2, 3]"
+    },
+    {
+     "line": "tests/renderables/test_sparkline.py:80",
+     "match": "▁"
+    },
+    {
+     "line": "src/textual/renderables/sparkline.py:-102",
+     "match": "Measurement(self.width or options.max_width, 1)"
+    }
+   ],
+   "say": [
+    "The caller passes three values with width three.",
+    "The old code draws one row with three bars."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "arrow",
+     "from": "d3",
+     "to": "b1",
+     "label": "shapes one bar"
+    }
+   ]
+  },
+  {
+   "type": "groups",
+   "groups": [
+    {
+     "id": "data",
+     "title": "Data three values",
+     "sub": "three numbers feed three rows",
+     "col": 0,
+     "row": true,
+     "ground": "[1, 2, 3]",
+     "items": [
+      {
+       "id": "d1",
+       "text": "1"
+      },
+      {
+       "id": "d2",
+       "text": "2"
+      },
+      {
+       "id": "d3",
+       "text": "3"
+      }
+     ]
+    },
+    {
+     "id": "canvas",
+     "title": "Canvas rows",
+     "sub": "three rows show same data",
+     "col": 1,
+     "row": false,
+     "ground": "height=3",
+     "items": [
+      {
+       "id": "r1",
+       "text": "1"
+      },
+      {
+       "id": "r2",
+       "text": "2"
+      },
+      {
+       "id": "r3",
+       "text": "3"
+      }
+     ]
+    }
+   ],
+   "cite": [
+    {
+     "line": "tests/renderables/test_sparkline.py:104",
+     "match": "[1, 2, 3]"
+    },
+    {
+     "line": "tests/renderables/test_sparkline.py:101",
+     "match": "height=3"
+    },
+    {
+     "line": "src/textual/renderables/sparkline.py:72",
+     "match": "height = self.height or 1"
+    }
+   ],
+   "say": [
+    "The caller passes the same three values.",
+    "The new code draws three rows for height three."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "fly",
+     "from": "d1",
+     "to": "r1"
+    }
+   ]
+  },
+  {
+   "type": "diff",
+   "file": "src/textual/renderables/sparkline.py",
+   "label": "Height logic in renderable",
+   "lines": [
+    "72",
+    "89",
+    "90",
+    "102",
+    "103",
+    "104",
+    "113"
+   ],
+   "say": [
+    "The method falls back to height one.",
+    "It scales the bar range by height.",
+    "It draws one pass per height level."
+   ],
+   "cues": [
+    {
+     "at": "falls back",
+     "do": "step",
+     "n": 1
+    }
+   ],
+   "hold": 3
+  },
+  {
+   "type": "diff",
+   "file": "src/textual/widgets/_sparkline.py",
+   "label": "Widget passes height along",
+   "lines": [
+    "104",
+    "105",
+    "106"
+   ],
+   "say": [
+    "The widget passes its vertical size to the renderable."
+   ],
+   "cues": [
+    {
+     "at": "passes its vertical size",
+     "do": "step",
+     "n": 1
+    }
+   ],
+   "hold": 2
+  },
+  {
+   "type": "list",
+   "label": "new tests",
+   "tone": "good",
+   "mark": "✓",
+   "code": false,
+   "more": null,
+   "items": [
+    {
+     "text": "test_sparkline_height",
+     "cite": "tests/renderables/test_sparkline.py:103"
+    },
+    {
+     "text": "SparklineApp",
+     "cite": "tests/snapshot_tests/snapshot_apps/sparkline.py:11"
+    },
+    {
+     "text": "summary_function=max",
+     "cite": "tests/snapshot_tests/snapshot_apps/sparkline.py:21"
+    }
+   ],
+   "say": [
+    "The pull request adds a height test for one to three rows.",
+    "It also adds a snapshot app with three summary functions."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "items",
+     "step": 0.3
+    }
+   ]
+  },
+  {
+   "type": "bars",
+   "label": "lines added",
+   "bars": [
+    {
+     "id": "core",
+     "label": "render logic",
+     "paths": [
+      "src/textual/renderables/sparkline.py",
+      "src/textual/widgets/_sparkline.py"
+     ],
+     "tone": "blue"
+    },
+    {
+     "id": "rest",
+     "label": "tests and docs",
+     "paths": [
+      "tests/",
+      "CHANGELOG.md"
+     ],
+     "tone": "grey"
+    }
+   ],
+   "say": [
+    "Added lines cluster in the renderable and the widget.",
+    "Tests and the changelog carry the rest."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "bars",
+     "step": 0.2
+    },
+    {
+     "at": [
+      1,
+      0.1
+     ],
+     "do": "dim",
+     "keep": [
+      "core"
+     ]
+    }
+   ]
+  },
+  {
+   "type": "stats",
+   "cards": [
+    {
+     "value": "{tests_added}",
+     "label": "new tests",
+     "tone": "good"
+    },
+    {
+     "value": "{changed}",
+     "label": "changed functions",
+     "tone": "blue"
+    }
+   ],
+   "say": [
+    "The change adds coverage for taller rows.",
+    "The cards show the test and code counts."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0.1
+     ],
+     "do": "card",
+     "i": 0
+    },
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "card",
+     "i": 1
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "l1": "Sparkline height now scales rows instead of one line.",
+   "l2": "Start at `__rich_console__` in `sparkline.py`.",
+   "fine": "Tests cover heights one to three.",
+   "nocap": true,
+   "say": [
+    "Sparkline height now scales rows instead of one line.",
+    "Start at `__rich_console__` in `sparkline.py`."
+   ],
+   "cues": [
+    {
+     "at": [
+      0,
+      0
+     ],
+     "do": "l1"
+    },
+    {
+     "at": [
+      0,
+      0.5
+     ],
+     "do": "l2"
+    },
+    {
+     "at": [
+      0,
+      0.9
+     ],
+     "do": "cmd"
+    }
+   ]
+  }
+ ],
+ "reading": [
+  {
+   "units": [
+    "src/textual/widgets/_sparkline.py::Sparkline.render"
+   ],
+   "say": "The widget passes its vertical size to the renderable."
+  },
+  {
+   "units": [
+    "src/textual/renderables/sparkline.py::Sparkline"
+   ],
+   "say": "The class holds data, width, and a new height option."
+  },
+  {
+   "units": [
+    "src/textual/renderables/sparkline.py::Sparkline.__init__"
+   ],
+   "say": "The initializer stores the requested height value."
+  },
+  {
+   "units": [
+    "src/textual/renderables/sparkline.py::Sparkline.__rich_console__"
+   ],
+   "say": [
+    "The method draws one row per height level.",
+    "It maps each bucket value to stacked bar segments."
+   ]
+  },
+  {
+   "units": [
+    "src/textual/renderables/sparkline.py::Sparkline.__rich_measure__"
+   ],
+   "say": "The method reports width and height for layout."
+  },
+  {
+   "units": [
+    "tests/renderables/test_sparkline.py::test_sparkline_height"
+   ],
+   "say": "The test renders three values at heights one to three."
+  },
+  {
+   "units": [
+    "tests/snapshot_tests/__snapshots__/test_snapshots/test_sparkline.svg"
+   ],
+   "say": "The snapshot stores the tall sparkline rendering."
+  },
+  {
+   "units": [
+    "tests/snapshot_tests/snapshot_apps/sparkline.py::<module>"
+   ],
+   "say": "The module builds random data for three charts."
+  },
+  {
+   "units": [
+    "tests/snapshot_tests/snapshot_apps/sparkline.py::SparklineApp"
+   ],
+   "say": "The app shows three sparklines with full height."
+  },
+  {
+   "units": [
+    "tests/snapshot_tests/snapshot_apps/sparkline.py::SparklineApp.compose"
+   ],
+   "say": "The method yields charts for max, mean, and min."
+  },
+  {
+   "units": [
+    "tests/snapshot_tests/test_snapshots.py"
+   ],
+   "say": "The file registers the sparkline snapshot test."
+  },
+  {
+   "units": [
+    "CHANGELOG.md"
+   ],
+   "say": "The changelog notes multi-height sparkline support."
+  }
+ ],
+ "infographic": {
+  "mode": "panels",
+  "headline": "Sparkline grows beyond one line",
+  "subtitle": "Height option controls vertical rows",
+  "panels": [
+   {
+    "title": "BEFORE",
+    "tone": "problem",
+    "lines": [
+     "Height stayed at one",
+     "Bars used eight symbols",
+     "Widget ignored vertical size"
+    ]
+   },
+   {
+    "title": "CHANGE",
+    "tone": "change",
+    "lines": [
+     "Height accepts line count",
+     "Render loops over rows",
+     "Widget passes widget height"
+    ]
+   },
+   {
+    "title": "PARTS",
+    "tone": "part",
+    "lines": [
+     "Renderable draws stacked rows",
+     "Widget supplies vertical size",
+     "Measure reports full height"
+    ]
+   },
+   {
+    "title": "PROOF",
+    "tone": "proof",
+    "lines": [
+     "Height test checks three sizes",
+     "Snapshot shows tall charts"
+    ]
+   }
+  ],
+  "footer": [
+   "Start at renderable console"
+  ]
+ }
+}
