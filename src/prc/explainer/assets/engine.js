@@ -542,7 +542,13 @@
       el.src = img.src || ('evidence/' + img.path);
       el.alt = img.caption || s.caption || '';
       el.loading = 'eager';
-      frame.appendChild(el);
+      // The page opens the full-size shot in a new tab; the video ignores the link.
+      const full = document.createElement('a');
+      full.href = el.getAttribute('src');
+      full.target = '_blank';
+      full.rel = 'noopener';
+      full.appendChild(el);
+      frame.appendChild(full);
       return { fig, el, at: base + i * step };
     });
     const cap = D('scap', fmt(s.caption || ''), wrap);
