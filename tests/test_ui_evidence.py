@@ -87,6 +87,51 @@ def test_ui_change_false_for_pure_python(tmp_path: Path) -> None:
     assert ev["notice"] is None
 
 
+def test_preview_link_in_a_comment_becomes_a_real_chrome_shot(
+    tmp_path: Path, monkeypatch: Any
+) -> None:
+    """A preview link in a PR comment yields one real browser screenshot shot."""
+    from prc.explainer import evidence
+
+    comment = "Preview ready: https://pr-42-acme.hf.space/app, have a look."
+    assert evidence.extract_preview_urls(comment) == ["https://pr-42-acme.hf.space/app"]
+
+    srv, base = _serve()
+    try:
+        # The host match only accepts preview hosts; point it at the local page so
+        # Chrome takes a real screenshot of a real served page.
+        found: list[str] = []
+
+        def local_preview(text: str) -> list[str]:
+            found.extend(evidence._PREVIEW.findall(text))
+            return [f"{base}/page.html"]
+
+        monkeypatch.setattr(evidence, "extract_preview_urls", local_preview)
+        ev = evidence.collect(
+            {"body": "no images", "comments": [{"body": comment}]},
+            _map(["nicegui/elements/stepper.py"]),
+            tmp_path,
+        )
+    finally:
+        srv.shutdown()
+    assert [u.rstrip(",") for u in found] == ["https://pr-42-acme.hf.space/app"]
+    assert [s["source"] for s in ev["shots"]] == ["preview"]
+    shot = tmp_path / "evidence" / ev["shots"][0]["path"]
+    assert evidence.is_real_image(shot.read_bytes())
+    assert ev["notice"] is None
+
+
+def test_dead_preview_link_leaves_the_notice(tmp_path: Path, monkeypatch: Any) -> None:
+    """A preview link that does not answer adds no shot, so the notice stays."""
+    from prc.explainer import evidence
+
+    monkeypatch.setattr(evidence, "extract_preview_urls", lambda text: ["http://127.0.0.1:9/none"])
+    ev = evidence.collect({"body": "x"}, _map(["nicegui/elements/stepper.py"]), tmp_path)
+    assert ev["shots"] == []
+    assert ev["notice"] == evidence.NOTICE
+    assert not list((tmp_path / "evidence").glob("shot-*"))
+
+
 def test_notice_set_for_ui_without_media(tmp_path: Path) -> None:
     from prc.explainer.evidence import NOTICE, collect
 
