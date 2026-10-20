@@ -747,6 +747,11 @@ def _panels(
         lines.append(BriefLine("panel", header))
         lines += [BriefLine("item", text.strip()) for text in items]
     lines += [BriefLine("footer", text.strip()) for text in footer]
+    if marked := next((line.text for line in lines if "`" in line.text), None):
+        raise ValueError(
+            f"panels infographic line {marked!r} has a backtick; an image draws it as written, "
+            "so name the code without backticks"
+        )
     lines += [BriefLine("legend", TONES[tone][0]) for tone in dict.fromkeys(tones)]
     lines.append(BriefLine("note", DISCLOSURE))
     words = _word_count(tuple(lines))

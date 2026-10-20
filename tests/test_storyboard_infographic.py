@@ -343,6 +343,14 @@ def test_panels_words_fit_the_raised_cap() -> None:
             "at most 6 words",
         ),
         ({"footer": ["a", "b", "c", "d"]}, "0 to 3 footer"),
+        # 2026-10-19 sklearn #34386: the board footer "Start at `_get_counts`" was drawn
+        # with its backticks, because a raster image cannot show a code span.
+        ({"footer": ["Start at `_get_counts`"]}, "backtick"),
+        ({"headline": "Faster `Counter` pass"}, "backtick"),
+        (
+            {"panels": [{"title": "A", "lines": ["Calls `_unique` once"]}, PANELS["panels"][1]]},
+            "backtick",
+        ),
         ({"headline": ""}, "headline"),
         ({"panels": [PANELS["panels"][0], PANELS["panels"][0]]}, "unique panel titles"),
         (
