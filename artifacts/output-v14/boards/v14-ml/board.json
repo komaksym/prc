@@ -1,0 +1,556 @@
+{
+  "name": "v14-ml",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged encoder speedup",
+      "say": [
+        "An encoder turns text categories into numbers for models.",
+        "This change speeds up category counts for string columns."
+      ],
+      "cite": [
+        {
+          "line": "doc/whats_new/upcoming_changes/sklearn.preprocessing/34386.efficiency.rst:1",
+          "match": "Improved fit time of"
+        },
+        {
+          "line": "doc/whats_new/upcoming_changes/sklearn.preprocessing/34386.efficiency.rst:3",
+          "match": "min_frequency"
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "vals",
+          "title": "Input values",
+          "sub": "object array with mixed forms",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "va",
+              "text": "a"
+            },
+            {
+              "id": "vn",
+              "text": "np.nan"
+            },
+            {
+              "id": "v1",
+              "text": "NAN1"
+            },
+            {
+              "id": "v2",
+              "text": "NAN2"
+            }
+          ]
+        },
+        {
+          "id": "cnt",
+          "title": "Old counter",
+          "sub": "slow check before the change",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "slow",
+              "text": "is_scalar_nan"
+            },
+            {
+              "id": "nc",
+              "text": "nan_count"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "sklearn/utils/tests/test_encode.py:286",
+          "match": "\"a\", np.nan, NAN1"
+        },
+        {
+          "line": "sklearn/utils/tests/test_encode.py:289",
+          "match": "[\"a\", np.nan]"
+        },
+        {
+          "line": "sklearn/utils/_encode.py:-333",
+          "match": "if not is_scalar_nan(item):"
+        },
+        {
+          "line": "sklearn/utils/_encode.py:-336",
+          "match": "nan_count"
+        }
+      ],
+      "say": [
+        "The `_unique` helper lists each distinct value and its count.",
+        "A missing value means `None` or a not-a-number marker.",
+        "Before the change, `_get_counts` checked each value for a missing marker, one at a time."
+      ],
+      "cues": [
+        {
+          "at": "checked each value",
+          "do": "arrow",
+          "from": "vals",
+          "to": "slow",
+          "label": "checks each value"
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "vals",
+          "title": "Input values",
+          "sub": "object array with mixed forms",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "va",
+              "text": "a"
+            },
+            {
+              "id": "vn",
+              "text": "np.nan"
+            },
+            {
+              "id": "v1",
+              "text": "NAN1"
+            },
+            {
+              "id": "v2",
+              "text": "NAN2"
+            }
+          ]
+        },
+        {
+          "id": "cnt",
+          "title": "New counter",
+          "sub": "fast count after the change",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "fc",
+              "text": "Counter"
+            },
+            {
+              "id": "nv",
+              "text": "nan_values"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "sklearn/utils/tests/test_encode.py:286",
+          "match": "\"a\", np.nan, NAN1"
+        },
+        {
+          "line": "sklearn/utils/tests/test_encode.py:290",
+          "match": "[2, 6]"
+        },
+        {
+          "line": "sklearn/utils/_encode.py:341",
+          "match": "counter = Counter(values)"
+        },
+        {
+          "line": "sklearn/utils/_encode.py:345",
+          "match": "is_scalar_nan(uniques[-1])"
+        },
+        {
+          "line": "sklearn/utils/_encode.py:347",
+          "match": "sum(counter[nan] for nan in nan_values)"
+        }
+      ],
+      "say": [
+        "After the change, `_get_counts` uses the fast `Counter` directly.",
+        "It sums each stored missing form into the last slot."
+      ],
+      "cues": [
+        {
+          "at": "fast Counter",
+          "do": "arrow",
+          "from": "vals",
+          "to": "fc",
+          "label": "counts values"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "sklearn/utils/_encode.py",
+      "label": "The counts change, line for line",
+      "lines": [
+        {
+          "ref": "-353",
+          "step": 1
+        },
+        {
+          "ref": "341",
+          "step": 1
+        },
+        "342",
+        "343",
+        {
+          "ref": "-356",
+          "step": 1
+        },
+        {
+          "ref": "-357",
+          "step": 1
+        },
+        {
+          "ref": "344",
+          "step": 1
+        },
+        {
+          "ref": "345",
+          "step": 1
+        },
+        {
+          "ref": "346",
+          "step": 1
+        },
+        {
+          "ref": "347",
+          "step": 1
+        },
+        "348"
+      ],
+      "say": [
+        "The new code counts string values with the standard `Counter`.",
+        "A direct lookup fills each slot, with no `KeyError` guard.",
+        "All missing forms sum into the final slot."
+      ],
+      "cues": [
+        {
+          "at": "standard Counter",
+          "do": "step",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "sklearn/utils/_missing.py",
+      "label": "The helper change, line for line",
+      "lines": [
+        {
+          "ref": "-4",
+          "step": 1
+        },
+        {
+          "ref": "-5",
+          "step": 1
+        },
+        "4",
+        {
+          "ref": "5",
+          "step": 1
+        },
+        {
+          "ref": "6",
+          "step": 1
+        },
+        {
+          "ref": "-40",
+          "step": 2
+        },
+        {
+          "ref": "-44",
+          "step": 2
+        },
+        {
+          "ref": "40",
+          "step": 2
+        }
+      ],
+      "say": [
+        "A small helper spots one missing value at a time.",
+        "Five lines of type checks become one direct return."
+      ],
+      "cues": [
+        {
+          "at": "spots one missing value",
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": "one direct return",
+          "do": "step",
+          "n": 2
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "sklearn/utils/_encode.py",
+      "label": "The plumbing change, line for line",
+      "lines": [
+        "137",
+        "138",
+        "139",
+        {
+          "ref": "-135",
+          "step": 1
+        },
+        {
+          "ref": "140",
+          "step": 1
+        },
+        {
+          "ref": "141",
+          "step": 1
+        },
+        {
+          "ref": "142",
+          "step": 1
+        },
+        "143",
+        {
+          "ref": "201",
+          "step": 1
+        }
+      ],
+      "say": [
+        "`_extract_missing` keeps every distinct missing form in one list.",
+        "`_unique_python` passes that list into `_get_counts`."
+      ],
+      "cues": [
+        {
+          "at": "every distinct missing form",
+          "do": "step",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "type": "bars",
+      "label": "lines added",
+      "bars": [
+        {
+          "id": "core",
+          "label": "count logic",
+          "paths": [
+            "sklearn/utils/_encode.py",
+            "sklearn/utils/_missing.py"
+          ],
+          "tone": "blue"
+        },
+        {
+          "id": "rest",
+          "label": "tests, docs",
+          "paths": [
+            "sklearn/utils/tests/",
+            "doc/"
+          ],
+          "tone": "grey"
+        }
+      ],
+      "say": [
+        "Two code files change counting; tests and docs record the result."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "bars",
+          "step": 0.2
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "label": "new test",
+      "tone": "good",
+      "mark": "✓",
+      "code": true,
+      "big": "{tests_added}",
+      "items": [
+        {
+          "text": "def test_get_counts_multiple_nans():",
+          "cite": "sklearn/utils/tests/test_encode.py:281"
+        },
+        {
+          "text": "When both np.nan and float(\"nan\") are present, they get merged into np.nan.",
+          "cite": "sklearn/utils/tests/test_encode.py:283"
+        },
+        {
+          "text": "expected_counts = [2, 6]",
+          "cite": "sklearn/utils/tests/test_encode.py:290"
+        }
+      ],
+      "say": [
+        "One test mixes `np.nan` with two `float(\"nan\")` objects.",
+        "It expects counts of 2 and 6, end to end."
+      ],
+      "assert": [
+        {
+          "fact": "tests_added",
+          "equals": 1
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "l1": "String counts now run faster with identical results.",
+      "l2": "Start review at `_get_counts` in `sklearn/utils/_encode.py`; the missing-value sum is the key.",
+      "fine": "Merged PR scikit-learn/scikit-learn#34386.",
+      "say": [
+        "String counts now run faster with identical results.",
+        "Start review at `_get_counts` in `sklearn/utils/_encode.py`; the missing-value sum is the key."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd"
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "sklearn/utils/_encode.py::_unique_python"
+      ],
+      "say": [
+        "The `_unique_python` helper routes object arrays through missing-value extraction and counting."
+      ]
+    },
+    {
+      "units": [
+        "sklearn/utils/_encode.py::_extract_missing",
+        "sklearn/utils/_encode.py::MissingValues"
+      ],
+      "say": [
+        "`_extract_missing` separates missing values from the value set.",
+        "`MissingValues` now carries every distinct missing form in one list."
+      ]
+    },
+    {
+      "units": [
+        "sklearn/utils/_encode.py::_get_counts",
+        "sklearn/utils/_encode.py::_NaNCounter.__init__",
+        "sklearn/utils/_encode.py::_NaNCounter._generate_items",
+        "sklearn/utils/_encode.py::_NaNCounter.__missing__"
+      ],
+      "say": [
+        "`_get_counts` counts each unique with the standard `Counter`.",
+        "Three removed `_NaNCounter` methods disappear with the class."
+      ]
+    },
+    {
+      "units": [
+        "sklearn/utils/_encode.py::_NaNCounter",
+        "sklearn/utils/_encode.py::<module>"
+      ],
+      "say": [
+        "The `_NaNCounter` subclass leaves the codebase.",
+        "The module trades one import for `Iterable` and `Real`."
+      ]
+    },
+    {
+      "units": [
+        "sklearn/utils/_missing.py::<module>",
+        "sklearn/utils/_missing.py::is_scalar_nan"
+      ],
+      "say": [
+        "`is_scalar_nan` now checks one real-number type with `isnan`.",
+        "The module imports `isnan` and `Real` for that check."
+      ]
+    },
+    {
+      "units": [
+        "sklearn/utils/tests/test_encode.py::<module>",
+        "sklearn/utils/tests/test_encode.py::test_get_counts_multiple_nans"
+      ],
+      "say": [
+        "The test module defines two distinct `float` missing objects.",
+        "The new test expects merged counts of 2 and 6."
+      ]
+    },
+    {
+      "units": [
+        "doc/whats_new/upcoming_changes/sklearn.preprocessing/34386.efficiency.rst"
+      ],
+      "say": [
+        "The changelog notes faster encoder fitting when counts matter."
+      ]
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Faster string counts for encoders",
+    "subtitle": "One Counter pass, same results",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Old check ran per value",
+          "Counting slowed encoder fit"
+        ]
+      },
+      {
+        "title": "CHANGE",
+        "tone": "change",
+        "lines": [
+          "Plain Counter counts values",
+          "Missing forms merge at end"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "proof",
+        "lines": [
+          "One test expects 2 and 6",
+          "Fit time drops for encoders"
+        ]
+      },
+      {
+        "title": "COVERAGE",
+        "tone": "context",
+        "lines": [
+          "Changelog notes faster fit",
+          "Two code files change"
+        ]
+      }
+    ],
+    "footer": [
+      "Start at _get_counts"
+    ]
+  }
+}

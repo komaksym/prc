@@ -1,0 +1,687 @@
+{
+  "name": "v14-game",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged pull request",
+      "say": [
+        "Arcade is a Python library for 2D games with fast collision checks.",
+        "A spatial hash is a grid index that tracks which sprites sit in each square.",
+        "This pull request defers grid updates until the next query."
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "moves",
+          "title": "three writes",
+          "sub": "three writes before any query",
+          "col": 0,
+          "row": false,
+          "items": [
+            {
+              "id": "m1",
+              "text": "center_x = 200"
+            },
+            {
+              "id": "m2",
+              "text": "center_y = 200"
+            },
+            {
+              "id": "m3",
+              "text": "angle = 45"
+            }
+          ]
+        },
+        {
+          "id": "query",
+          "title": "next query",
+          "sub": "one lookup after the writes",
+          "col": 1,
+          "row": false,
+          "items": [
+            {
+              "id": "q",
+              "text": "(200, 200)"
+            },
+            {
+              "id": "r",
+              "text": "[sprite]"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:65",
+          "match": "center_x = 200"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:66",
+          "match": "center_y = 200"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:67",
+          "match": "angle = 45"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:70",
+          "match": "get_sprites_near_point((200, 200))"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:71",
+          "match": "adds == [sprite]"
+        }
+      ],
+      "say": [
+        "Before the change each position write re-added the sprite at once.",
+        "Three writes in the test caused three costly re-adds before any query."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.3
+          ],
+          "do": "arrow",
+          "from": "m1",
+          "to": "r",
+          "label": "re-add now"
+        },
+        {
+          "at": [
+            0,
+            0.6
+          ],
+          "do": "arrow",
+          "from": "m2",
+          "to": "r",
+          "label": "re-add now"
+        },
+        {
+          "at": [
+            1,
+            0.3
+          ],
+          "do": "arrow",
+          "from": "m3",
+          "to": "r",
+          "label": "re-add now"
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "moves",
+          "title": "three writes",
+          "sub": "three writes before any query",
+          "col": 0,
+          "row": false,
+          "items": [
+            {
+              "id": "m1",
+              "text": "center_x = 200"
+            },
+            {
+              "id": "m2",
+              "text": "center_y = 200"
+            },
+            {
+              "id": "m3",
+              "text": "angle = 45"
+            }
+          ]
+        },
+        {
+          "id": "query",
+          "title": "next query",
+          "sub": "one lookup after the writes",
+          "col": 1,
+          "row": false,
+          "items": [
+            {
+              "id": "q",
+              "text": "(200, 200)"
+            },
+            {
+              "id": "r",
+              "text": "[sprite]"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:65",
+          "match": "center_x = 200"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:66",
+          "match": "center_y = 200"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:67",
+          "match": "angle = 45"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:70",
+          "match": "get_sprites_near_point((200, 200))"
+        },
+        {
+          "line": "tests/unit/spritelist/test_spatial_hash_moves.py:71",
+          "match": "adds == [sprite]"
+        }
+      ],
+      "say": [
+        "After the change each write only records the sprite in a moved set.",
+        "The next query refreshes the grid once and skips sprites that stay inside the same squares."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.3
+          ],
+          "do": "arrow",
+          "from": "m1",
+          "to": "q",
+          "label": "waits for query"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "arrow",
+          "from": "m2",
+          "to": "q",
+          "label": "waits for query"
+        },
+        {
+          "at": [
+            0,
+            0.7
+          ],
+          "do": "arrow",
+          "from": "m3",
+          "to": "q",
+          "label": "waits for query"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "arrow",
+          "from": "q",
+          "to": "r"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "arcade/sprite_list/spatial_hash.py",
+      "label": "core: queue moves, refresh on query",
+      "lines": [
+        {
+          "ref": "121",
+          "step": 1
+        },
+        {
+          "ref": "123",
+          "step": 1
+        },
+        {
+          "ref": "126",
+          "step": 1
+        },
+        {
+          "ref": "131",
+          "step": 1
+        },
+        {
+          "ref": "132",
+          "step": 1
+        },
+        {
+          "ref": "133",
+          "step": 1
+        },
+        {
+          "ref": "190",
+          "step": 2
+        }
+      ],
+      "say": [
+        "`_update_moved` drains the moved set and re-adds only sprites that left their old cells.",
+        "`move` only adds the sprite to that set and does no grid work."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": [
+            1,
+            0.2
+          ],
+          "do": "step",
+          "n": 2
+        },
+        {
+          "at": [
+            1,
+            0.6
+          ],
+          "do": "note",
+          "line": "190",
+          "text": "marks only, no re-add",
+          "tone": "info"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "arcade/sprite_list/spatial_hash.py",
+      "label": "every query refreshes first",
+      "lines": [
+        "112",
+        "118",
+        "213",
+        "228",
+        "241"
+      ],
+      "say": [
+        "Each query path calls `_update_moved` before it reads the grid.",
+        "The same call guards point, rect, and sprite lookups."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "note",
+          "line": "228",
+          "text": "queries refresh first",
+          "tone": "info"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "benchmarks/spatial_hash/add_remove_vs_move.py",
+      "label": "benchmark uses current calls",
+      "lines": [
+        {
+          "ref": "20",
+          "step": 1
+        },
+        {
+          "ref": "22",
+          "step": 1
+        },
+        {
+          "ref": "23",
+          "step": 1
+        },
+        {
+          "ref": "29",
+          "step": 2
+        },
+        {
+          "ref": "32",
+          "step": 2
+        },
+        {
+          "ref": "33",
+          "step": 2
+        }
+      ],
+      "say": [
+        "The benchmark now uses current `add` and `remove` calls.",
+        "The `move` case queries once after moving so deferred updates run."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": [
+            1,
+            0.2
+          ],
+          "do": "step",
+          "n": 2
+        },
+        {
+          "at": [
+            1,
+            0.6
+          ],
+          "do": "note",
+          "line": "33",
+          "text": "deferred work runs here",
+          "tone": "info"
+        }
+      ]
+    },
+    {
+      "type": "bars",
+      "label": "lines added",
+      "bars": [
+        {
+          "id": "index",
+          "label": "grid index",
+          "paths": [
+            "arcade/sprite_list/spatial_hash.py"
+          ],
+          "tone": "blue"
+        },
+        {
+          "id": "bench",
+          "label": "benchmark",
+          "paths": [
+            "benchmarks/"
+          ],
+          "tone": "info"
+        },
+        {
+          "id": "rest",
+          "label": "tests docs changelog",
+          "paths": [
+            "CHANGELOG.md",
+            "doc/",
+            "tests/"
+          ],
+          "tone": "grey"
+        }
+      ],
+      "say": [
+        "Most added lines sit in the grid index, with smaller updates elsewhere.",
+        "Tests and docs carry the remaining new lines."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "bars",
+          "step": 0.2
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "big": "{tests_added}",
+      "label": "new move tests",
+      "tone": "good",
+      "mark": "✓",
+      "code": true,
+      "more": null,
+      "items": [
+        {
+          "text": "test_query_finds_moved_sprite",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:33"
+        },
+        {
+          "text": "test_collision_check_sees_moved_sprite",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:49"
+        },
+        {
+          "text": "test_several_moves_update_once",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:59"
+        },
+        {
+          "text": "test_move_within_same_cells_is_skipped",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:74"
+        },
+        {
+          "text": "test_remove_after_move",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:83"
+        },
+        {
+          "text": "test_contents_include_moves",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:94"
+        },
+        {
+          "text": "test_reset_forgets_moves",
+          "cite": "tests/unit/spritelist/test_spatial_hash_moves.py:104"
+        }
+      ],
+      "say": [
+        "New tests cover moved sprites through queries and collisions.",
+        "They also check single updates, same-cell skips, removal, contents, and reset."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "l1": "Deferred grid updates keep collision queries correct with fewer re-adds.",
+      "l2": "Start review at `_update_moved` in `spatial_hash.py`; same-cell timing stays unmeasured.",
+      "nocap": true,
+      "say": [
+        "Deferred grid updates keep collision queries correct with fewer re-adds.",
+        "Start review at `_update_moved` in `spatial_hash.py`."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            1,
+            0
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "cmd"
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash"
+      ],
+      "say": "The class docstring now says moves wait for the next query."
+    },
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.__init__"
+      ],
+      "say": "The constructor keeps private cell maps plus a pending moved set."
+    },
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.move"
+      ],
+      "say": "`move` only records the sprite in the moved set."
+    },
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash._update_moved"
+      ],
+      "say": [
+        "`_update_moved` re-adds only sprites that left their old cells.",
+        "It ignores removed sprites and same-cell moves."
+      ]
+    },
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.add",
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.remove",
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.reset"
+      ],
+      "say": [
+        "`add` stores cell bounds per sprite for later skip checks.",
+        "`remove` drops all tracking and pending marks, while `reset` clears every map."
+      ]
+    },
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.contents",
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.buckets_for_sprite"
+      ],
+      "say": "Both properties refresh pending moves before returning their maps."
+    },
+    {
+      "units": [
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.get_sprites_near_sprite",
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.get_sprites_near_point",
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.get_sprites_near_rect",
+        "arcade/sprite_list/spatial_hash.py::SpatialHash.count"
+      ],
+      "say": [
+        "Each lookup refreshes pending moves before scanning cells.",
+        "`count` reads the private bucket map directly."
+      ]
+    },
+    {
+      "units": [
+        "benchmarks/spatial_hash/add_remove_vs_move.py::add_remove",
+        "benchmarks/spatial_hash/add_remove_vs_move.py::move"
+      ],
+      "say": [
+        "`add_remove` now uses current `add` and `remove` calls.",
+        "`move` queries once after moving so deferred updates run."
+      ]
+    },
+    {
+      "units": [
+        "tests/unit/spritelist/test_spatial_hash_moves.py::<module>",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::make_list",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::count_adds",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::count_adds.add"
+      ],
+      "say": [
+        "The module docstring states moves apply at the next query.",
+        "`make_list` builds a hashed list, while `count_adds` wraps `add` to record re-adds."
+      ]
+    },
+    {
+      "units": [
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_query_finds_moved_sprite",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_collision_check_sees_moved_sprite"
+      ],
+      "say": [
+        "Queries find a sprite at its new cell and miss its old cell.",
+        "Collision checks also see the moved sprite at its new spot."
+      ]
+    },
+    {
+      "units": [
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_several_moves_update_once",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_move_within_same_cells_is_skipped"
+      ],
+      "say": [
+        "Multiple writes cause only one re-add at the next query.",
+        "A tiny shift inside the same cells causes no re-add."
+      ]
+    },
+    {
+      "units": [
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_remove_after_move",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_contents_include_moves",
+        "tests/unit/spritelist/test_spatial_hash_moves.py::test_reset_forgets_moves"
+      ],
+      "say": [
+        "Removal after a move leaves no trace at old or new cells.",
+        "`contents` reflects pending moves, while `reset` forgets them."
+      ]
+    },
+    {
+      "units": [
+        "CHANGELOG.md",
+        "doc/programming_guide/performance_tips.rst"
+      ],
+      "say": [
+        "The guide now explains deferred updates with measured frame times.",
+        "The changelog records this pull request."
+      ]
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Deferred grid updates for moving sprites",
+    "subtitle": "Spatial hash defers moves until query",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Every move removed and added",
+          "Three writes caused three re-adds"
+        ]
+      },
+      {
+        "title": "CHANGE",
+        "tone": "change",
+        "lines": [
+          "Move only marks moved set",
+          "Query refreshes grid once"
+        ]
+      },
+      {
+        "title": "PARTS",
+        "tone": "part",
+        "lines": [
+          "SpatialHash tracks cells per sprite",
+          "Queries share one refresh call"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "proof",
+        "lines": [
+          "Seven tests cover queries and collisions",
+          "Same-cell moves cause zero re-adds"
+        ]
+      }
+    ],
+    "footer": [
+      "Start at _update_moved"
+    ]
+  }
+}

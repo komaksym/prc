@@ -1,0 +1,54 @@
+{
+  "rule": "v14: three public Python PRs of different kinds (front-end, gaming, ML perf), light look only",
+  "prs": [
+    {
+      "id": "v14-ui",
+      "kind": "front-end: web UI framework, 3D scene element",
+      "pr_identity": "zauberzeug/nicegui#6380",
+      "url": "https://github.com/zauberzeug/nicegui/pull/6380",
+      "title": "Fix `ui.scene` objects created before the scene is mounted",
+      "head_sha": "b81fca12f12271b57b6ddcadd263b4c35b15aabd",
+      "base_sha": "df3dcc3949bd2d0642e044895aefd4bd10c38349",
+      "merged_at": "2026-10-07T05:30:15Z",
+      "files": [
+        "nicegui/elements/scene/scene.py",
+        "nicegui/elements/scene/scene_object3d.py",
+        "tests/test_scene.py",
+        "website/documentation/content/scene_documentation.py"
+      ]
+    },
+    {
+      "id": "v14-game",
+      "kind": "gaming: game engine sprite collision, performance",
+      "pr_identity": "pythonarcade/arcade#2977",
+      "url": "https://github.com/pythonarcade/arcade/pull/2977",
+      "title": "Defer spatial hash updates until the next query",
+      "head_sha": "3d0c5f139f8341b6d94bf1e72050c7e295ff325b",
+      "base_sha": "5561a229fa8d1e3002139fe3b9647e367e08e0a8",
+      "merged_at": "2026-10-09T21:58:16Z",
+      "files": [
+        "CHANGELOG.md",
+        "arcade/sprite_list/spatial_hash.py",
+        "benchmarks/spatial_hash/add_remove_vs_move.py",
+        "doc/programming_guide/performance_tips.rst",
+        "tests/unit/spritelist/test_spatial_hash_moves.py"
+      ]
+    },
+    {
+      "id": "v14-ml",
+      "kind": "ML: preprocessing encoders, performance",
+      "pr_identity": "scikit-learn/scikit-learn#34386",
+      "url": "https://github.com/scikit-learn/scikit-learn/pull/34386",
+      "title": "ENH PERF Speed up unique counts for strings, thereby speeding up encoding",
+      "head_sha": "a14c8f0b439aa1189fee9f4862cfa0d8b0e9e4ff",
+      "base_sha": "fa7eddec61a9f336a27e1519161c23b357af138c",
+      "merged_at": "2026-07-03T10:03:06Z",
+      "files": [
+        "doc/whats_new/upcoming_changes/sklearn.preprocessing/34386.efficiency.rst",
+        "sklearn/utils/_encode.py",
+        "sklearn/utils/_missing.py",
+        "sklearn/utils/tests/test_encode.py"
+      ]
+    }
+  ]
+}

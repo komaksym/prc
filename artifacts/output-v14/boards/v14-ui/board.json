@@ -1,0 +1,401 @@
+{
+  "name": "v14-ui",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged NiceGUI pull request",
+      "say": [
+        "`ui.scene` shows a 3D view in the NiceGUI web framework.",
+        "A scene object holds one 3D item such as a box.",
+        "This change keeps objects that appear before first display."
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "tabs",
+          "title": "Tabs",
+          "sub": "two tabs before selection",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "t1",
+              "text": "one"
+            },
+            {
+              "id": "t2",
+              "text": "two"
+            }
+          ]
+        },
+        {
+          "id": "panel",
+          "title": "Panel two",
+          "sub": "hidden scene holds the box",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "box1",
+              "text": "box"
+            }
+          ]
+        },
+        {
+          "id": "client",
+          "title": "Client",
+          "sub": "empty view before first init",
+          "col": 2,
+          "row": true,
+          "items": [
+            {
+              "id": "slot1",
+              "kind": "slot",
+              "text": "box",
+              "label": "box position"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "tests/test_scene.py:499",
+          "match": "one"
+        },
+        {
+          "line": "tests/test_scene.py:500",
+          "match": "two"
+        },
+        {
+          "line": "tests/test_scene.py:506",
+          "match": "box"
+        },
+        {
+          "line": "tests/test_scene.py:510",
+          "match": "position.x"
+        }
+      ],
+      "say": [
+        "The test puts a box at 1, 2, 3 inside panel two.",
+        "The client starts empty without the box."
+      ],
+      "cues": [
+        {
+          "at": "panel two",
+          "do": "arrow",
+          "from": "box1",
+          "to": "slot1",
+          "label": "early call drops"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "mark",
+          "id": "slot1",
+          "text": "\u2717",
+          "tone": "bad"
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "tabs",
+          "title": "Tabs",
+          "sub": "two tabs after selection",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "t1",
+              "text": "one"
+            },
+            {
+              "id": "t2",
+              "text": "two"
+            }
+          ]
+        },
+        {
+          "id": "panel",
+          "title": "Panel two",
+          "sub": "scene inside selected panel",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "box1",
+              "text": "box"
+            }
+          ]
+        },
+        {
+          "id": "client",
+          "title": "Client",
+          "sub": "client view after init",
+          "col": 2,
+          "row": true,
+          "items": [
+            {
+              "id": "slot1",
+              "kind": "slot",
+              "text": "box",
+              "label": "box position"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "tests/test_scene.py:499",
+          "match": "one"
+        },
+        {
+          "line": "tests/test_scene.py:500",
+          "match": "two"
+        },
+        {
+          "line": "tests/test_scene.py:506",
+          "match": "box"
+        },
+        {
+          "line": "tests/test_scene.py:510",
+          "match": "position.x"
+        },
+        {
+          "line": "nicegui/elements/scene/scene_object3d.py:475",
+          "match": "dropped"
+        },
+        {
+          "line": "website/documentation/content/scene_documentation.py:414",
+          "match": "sends every object"
+        }
+      ],
+      "say": [
+        "Mount means the browser first shows the scene.",
+        "The init handler resends every object after mount.",
+        "The client shows the box at position 1 after selection."
+      ],
+      "cues": [
+        {
+          "at": "resends every object",
+          "do": "arrow",
+          "from": "box1",
+          "to": "slot1",
+          "label": "resends every object"
+        },
+        {
+          "at": [
+            2,
+            0.3
+          ],
+          "do": "fill",
+          "ids": [
+            "slot1"
+          ]
+        },
+        {
+          "at": [
+            2,
+            0.6
+          ],
+          "do": "mark",
+          "id": "slot1",
+          "text": "\u2713",
+          "tone": "good"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "nicegui/elements/scene/scene.py",
+      "label": "The init change, line for line",
+      "lines": [
+        "184",
+        "-185",
+        "185",
+        "189",
+        "190",
+        "191",
+        "192"
+      ],
+      "say": [
+        "The old guard runs the resend only on second init.",
+        "The new code resends every object on each init, parents first."
+      ],
+      "cues": [
+        {
+          "at": "each init",
+          "do": "step",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "nicegui/elements/scene/scene.py",
+      "label": "The early call guard, line for line",
+      "lines": [
+        "210",
+        "211",
+        "212",
+        "213",
+        "214"
+      ],
+      "say": [
+        "The method drops early calls before init.",
+        "It returns an empty response instead of sending the call."
+      ],
+      "cues": [
+        {
+          "at": "early calls",
+          "do": "step",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "big": "{tests_added}",
+      "label": "new tests",
+      "tone": "good",
+      "mark": "\u2713",
+      "code": false,
+      "items": [
+        {
+          "text": "test_objects_created_before_the_scene_is_mounted",
+          "cite": "tests/test_scene.py:492"
+        }
+      ],
+      "say": [
+        "The test builds a scene with a box inside a hidden tab.",
+        "It opens the page, selects the second tab, and checks the box position."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "l1": "Early scene objects now survive first display.",
+      "l2": "Start at the init handler in scene.py.",
+      "say": [
+        "Early scene objects now survive first display.",
+        "Start at the init handler in scene.py."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            0,
+            0.9
+          ],
+          "do": "cmd"
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "nicegui/elements/scene/scene.py::Scene._handle_init"
+      ],
+      "say": "The handler resends every scene object on each init, parents first."
+    },
+    {
+      "units": [
+        "nicegui/elements/scene/scene.py::Scene.run_method"
+      ],
+      "say": "The method drops calls before init and returns an empty response."
+    },
+    {
+      "units": [
+        "nicegui/elements/scene/scene_object3d.py::Object3D.run_method"
+      ],
+      "say": "The method notes that early calls drop and `self.args` must carry lasting state."
+    },
+    {
+      "units": [
+        "tests/test_scene.py::test_objects_created_before_the_scene_is_mounted",
+        "tests/test_scene.py::test_objects_created_before_the_scene_is_mounted.page"
+      ],
+      "say": [
+        "The test builds a scene with a box inside a hidden tab.",
+        "It opens the page, selects the second tab, and checks the box position."
+      ]
+    },
+    {
+      "units": [
+        "website/documentation/content/scene_documentation.py::materials_for_composite_objects"
+      ],
+      "say": "The guide states that NiceGUI sends every object at init and drops early calls."
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Hidden scene objects now appear",
+    "subtitle": "Resend full state at init",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Hidden box never shows",
+          "Early calls drop silently"
+        ]
+      },
+      {
+        "title": "CHANGE",
+        "tone": "change",
+        "lines": [
+          "Init resends every object",
+          "Parents resend before children"
+        ]
+      },
+      {
+        "title": "PARTS",
+        "tone": "part",
+        "lines": [
+          "Scene handler and run method",
+          "Docs note early drop"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "proof",
+        "lines": [
+          "Hidden tab test passes",
+          "Box shows at position 1"
+        ]
+      }
+    ],
+    "footer": [
+      "Start at scene.py init"
+    ]
+  }
+}
