@@ -69,6 +69,25 @@
         "tests/test_scene.py",
         "website/documentation/content/scene_documentation.py"
       ]
+    },
+    {
+      "id": "v15-history",
+      "kind": "front-end: pypi.org release history cards redesign",
+      "pr_identity": "pypi/warehouse#20329",
+      "url": "https://github.com/pypi/warehouse/pull/20329",
+      "title": "2026 UI update release history",
+      "head_sha": "535be40931a5be03f7002caa9aad7f4a8aaf010c",
+      "base_sha": "bc867eed162c4095005565cdd8bedf934fb9649a",
+      "merged_at": "2026-08-21T16:57:38Z",
+      "files": [
+        "tests/unit/packaging/test_views.py",
+        "warehouse/locale/messages.pot",
+        "warehouse/packaging/models.py",
+        "warehouse/static/sass/blocks/_release-timeline.scss",
+        "warehouse/static/sass/blocks/_release.scss",
+        "warehouse/templates/includes/packaging/project-release-history.html",
+        "warehouse/templates/packaging/detail.html"
+      ]
     }
   ]
 }

@@ -1,0 +1,504 @@
+{
+  "name": "v15-history",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged pull request",
+      "say": [
+        "This pull request redesigns the release history cards on pypi.org.",
+        "Each card now shows its state in a coloured header and links to its files."
+      ]
+    },
+    {
+      "type": "screens",
+      "images": [
+        {
+          "path": "shot-4.png",
+          "label": "Before, archived page"
+        },
+        {
+          "path": "shot-5.png",
+          "label": "After, PR screenshot"
+        }
+      ],
+      "caption": "The small pre-release badge becomes a blue header strip, and each card adds a file count.",
+      "source_url": "https://github.com/pypi/warehouse/pull/20329",
+      "say": [
+        "On the left, a pre-release shows a small badge next to its version.",
+        "On the right, the same state fills a header strip, and the card adds a file count."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show"
+        }
+      ],
+      "hold": 0.6
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "facts",
+          "title": "Release facts",
+          "sub": "what the template reads",
+          "col": 0,
+          "row": false,
+          "items": [
+            {
+              "id": "q",
+              "text": "quarantine-enter"
+            },
+            {
+              "id": "y",
+              "text": "hversion.yanked"
+            },
+            {
+              "id": "a",
+              "text": "archived"
+            },
+            {
+              "id": "p",
+              "text": "hversion.is_prerelease"
+            }
+          ]
+        },
+        {
+          "id": "head",
+          "title": "Card header",
+          "sub": "one strip, first match wins",
+          "col": 1,
+          "row": false,
+          "items": [
+            {
+              "id": "hq",
+              "text": "release--quarantined",
+              "tone": "bad"
+            },
+            {
+              "id": "hy",
+              "text": "release--yanked"
+            },
+            {
+              "id": "ha",
+              "text": "release--archived"
+            },
+            {
+              "id": "hp",
+              "text": "release--pre-release",
+              "tone": "blue"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:20",
+          "match": "quarantine-enter"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:21",
+          "match": "release--quarantined"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:22",
+          "match": "hversion.yanked"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:23",
+          "match": "release--yanked"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:24",
+          "match": "archived"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:25",
+          "match": "release--archived"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:26",
+          "match": "hversion.is_prerelease"
+        },
+        {
+          "line": "warehouse/templates/includes/packaging/project-release-history.html:27",
+          "match": "release--pre-release"
+        }
+      ],
+      "say": [
+        "The template picks one state class for each release card.",
+        "Quarantine wins first, then yanked, then archived, then pre-release."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show",
+          "ids": [
+            "facts"
+          ]
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "show",
+          "ids": [
+            "head"
+          ]
+        },
+        {
+          "at": [
+            1,
+            0.05
+          ],
+          "do": "arrow",
+          "from": "q",
+          "to": "hq"
+        },
+        {
+          "at": [
+            1,
+            0.3
+          ],
+          "do": "arrow",
+          "from": "y",
+          "to": "hy"
+        },
+        {
+          "at": [
+            1,
+            0.55
+          ],
+          "do": "arrow",
+          "from": "a",
+          "to": "ha"
+        },
+        {
+          "at": [
+            1,
+            0.8
+          ],
+          "do": "arrow",
+          "from": "p",
+          "to": "hp"
+        }
+      ],
+      "hold": 0.8
+    },
+    {
+      "type": "diff",
+      "file": "warehouse/templates/includes/packaging/project-release-history.html",
+      "label": "Badge out, header strip in",
+      "lines": [
+        "-45",
+        "-46",
+        "93",
+        "94",
+        "95",
+        "96"
+      ],
+      "say": [
+        "Before, a pre-release added a light badge after the version number.",
+        "Now the card opens with a header that links to the help page."
+      ],
+      "cues": [
+        {
+          "at": [
+            1,
+            0.05
+          ],
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "note",
+          "line": "94",
+          "text": "new header strip",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.8
+    },
+    {
+      "type": "diff",
+      "file": "warehouse/templates/includes/packaging/project-release-history.html",
+      "label": "The card body",
+      "lines": [
+        "-35",
+        "-36",
+        "48",
+        {
+          "ref": "100",
+          "step": 2
+        },
+        {
+          "ref": "105",
+          "step": 3
+        },
+        {
+          "ref": "106",
+          "step": 3
+        },
+        {
+          "ref": "112",
+          "step": 3
+        }
+      ],
+      "say": [
+        "The whole card was one link before, and now it is a plain block.",
+        "Only the version number links to the release.",
+        "A new meta row shows the date and links to the file list."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.3
+          ],
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 2
+        },
+        {
+          "at": [
+            2,
+            0.1
+          ],
+          "do": "step",
+          "n": 3
+        },
+        {
+          "at": [
+            2,
+            0.6
+          ],
+          "do": "note",
+          "line": "112",
+          "text": "file count link",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.8
+    },
+    {
+      "type": "diff",
+      "file": "warehouse/packaging/models.py",
+      "label": "Two more columns per release",
+      "lines": [
+        "555",
+        "556",
+        "557",
+        "558",
+        "559",
+        "560",
+        "561"
+      ],
+      "say": [
+        "The release query now also reads the yank date and the state change date.",
+        "The header tooltips show these dates."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "note",
+          "line": "558",
+          "text": "date for tooltip",
+          "tone": "good"
+        }
+      ],
+      "hold": 0.8
+    },
+    {
+      "type": "list",
+      "label": "style and page files",
+      "code": true,
+      "mark": "✓",
+      "tone": "good",
+      "items": [
+        {
+          "text": "&--quarantined",
+          "cite": "warehouse/static/sass/blocks/_release.scss:221"
+        },
+        {
+          "text": "&__card-header",
+          "cite": "warehouse/static/sass/blocks/_release.scss:107"
+        },
+        {
+          "text": ".release:first-child,",
+          "cite": "warehouse/static/sass/blocks/_release-timeline.scss:14"
+        },
+        {
+          "text": "project-security.html",
+          "cite": "warehouse/templates/packaging/detail.html:-39"
+        }
+      ],
+      "say": [
+        "The stylesheet colours each header by state.",
+        "The timeline stylesheet ends the line at the first and last card.",
+        "The detail page drops one commented-out include."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.4
+        }
+      ],
+      "hold": 1
+    },
+    {
+      "type": "outro",
+      "l1": "Release cards now show their state in a coloured header and link to their files.",
+      "l2": "Start at the state chain in `project-release-history.html`; no test checks the rendered headers.",
+      "say": [
+        "Release cards now show their state in a coloured header and link to their files.",
+        "Start at the state chain in `project-release-history.html`; no test checks the rendered headers."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            1,
+            0
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "cmd"
+        }
+      ],
+      "hold": 2
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "warehouse/templates/includes/packaging/project-release-history.html"
+      ],
+      "say": "The template picks one state class per card, draws a header strip for it, and adds a date and file count row."
+    },
+    {
+      "units": [
+        "warehouse/packaging/models.py::Project.all_versions"
+      ],
+      "say": "The query also returns `yanked_date` and `lifecycle_status_changed`, so the headers can show dates in tooltips."
+    },
+    {
+      "units": [
+        "warehouse/static/sass/blocks/_release.scss"
+      ],
+      "say": "The stylesheet adds the header, body and footer of a card and colours the header by state."
+    },
+    {
+      "units": [
+        "warehouse/static/sass/blocks/_release-timeline.scss"
+      ],
+      "say": "The timeline line now stops halfway at the first and last card, which replaces the latest and oldest classes."
+    },
+    {
+      "units": [
+        "warehouse/templates/packaging/detail.html"
+      ],
+      "say": "The detail page removes a commented-out include of the security section."
+    },
+    {
+      "units": [
+        "warehouse/locale/messages.pot"
+      ],
+      "say": "The translation catalog picks up the new header and tooltip strings."
+    },
+    {
+      "units": [
+        "tests/unit/packaging/test_views.py::TestReleaseDetail.test_detail_rendered"
+      ],
+      "say": "The view test expects the two new columns in each release row."
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Release cards show their state",
+    "subtitle": "pypi.org release history redesign",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Small badge beside version",
+          "Whole card is one link",
+          "No file count"
+        ]
+      },
+      {
+        "title": "STATE CHAIN",
+        "tone": "change",
+        "lines": [
+          "Quarantined, then yanked",
+          "Then archived, then pre-release",
+          "One header strip wins"
+        ]
+      },
+      {
+        "title": "NEW CARD",
+        "tone": "part",
+        "lines": [
+          "Coloured header links help",
+          "Version links to release",
+          "Date and file count row"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "proof",
+        "lines": [
+          "View test expects two dates",
+          "No test checks headers"
+        ]
+      }
+    ],
+    "footer": [
+      "Start at the state chain"
+    ]
+  }
+}

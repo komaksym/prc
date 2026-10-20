@@ -15,7 +15,7 @@ from pathlib import Path
 from prc.presentation.infographic import infobrief, write_brief_json
 
 R = Path(__file__).resolve().parent
-SIDS = ("v15-stepper", "v15-sparkline", "v15-oauth", "v15-notice")
+SIDS = ("v15-stepper", "v15-sparkline", "v15-oauth", "v15-notice", "v15-history")
 sel = {p["id"]: p for p in json.loads((R / "selection.json").read_text())["prs"]}
 
 
