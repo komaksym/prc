@@ -25,3 +25,6 @@ eval/runs/2026-10-08-release-candidate/
 .audit/reconciliation-remote.md
 .audit/reconciliation-status.md
 !tests/data/**/artifacts/
+eval/runs/*/logs/
+*.pyc
+.private/
