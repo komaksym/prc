@@ -14,12 +14,16 @@ import json
 import re
 import shutil
 import urllib.request
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 NOTICE = "This PR changes the UI. PRC did not run the app. See the PR on GitHub."
 
-UI_EXTS = frozenset({".html", ".css", ".svelte", ".tsx", ".jsx", ".vue"})
+UI_EXTS = frozenset({".html", ".css", ".scss", ".sass", ".less", ".svelte", ".tsx", ".jsx", ".vue"})
+
+# Folders that hold one screen each: web widgets, game states and scenes, desktop GUIs.
+UI_DIRS = ("widgets/", "elements/", "templates/", "states/", "screens/", "scenes/", "menus/", "ui/", "gui/")
 
 PREVIEW_HOSTS = ("hf.space", "vercel.app", "netlify.app", "readthedocs.build")
 
@@ -38,7 +42,7 @@ _TAG = re.compile(r"<[^>]+>")
 
 
 def is_ui_path(path: str) -> bool:
-    """A changed path that shows a screen: template, web file, snapshot image, widget."""
+    """A changed path that shows a screen: template, web or style file, snapshot image, widget, game state."""
     low = path.lower()
     if "template" in low:
         return True
@@ -47,7 +51,7 @@ def is_ui_path(path: str) -> bool:
         return True
     if ext in (".svg", ".png") and "snapshot" in low:
         return True
-    return "widgets/" in low or "elements/" in low or "templates/" in low
+    return any(f"/{d}" in f"/{low}" for d in UI_DIRS)
 
 
 def ui_reasons(files: list[dict[str, Any]]) -> list[str]:
@@ -286,7 +290,14 @@ def copy_shots(board: dict[str, Any], src_root: Path, out: Path) -> None:
 
     src_root is the prepared PR folder that holds evidence/ (or the evidence folder itself).
     A missing file is left unset so the render gate fails on the unloaded image.
+    A shot that evidence.json marks as not from the PR body keeps its own source link,
+    so the page never credits an archive copy to the PR description.
     """
+    shots: dict[str, dict[str, Any]] = {}
+    for ev_path in (src_root / "evidence.json", src_root.parent / "evidence.json"):
+        if ev_path.is_file():
+            shots = {str(sh.get("path")): sh for sh in json.loads(ev_path.read_text()).get("shots", []) if isinstance(sh, dict)}
+            break
     for s in board.get("scenes", []):
         if s.get("type") != "screens":
             continue
@@ -304,3 +315,21 @@ def copy_shots(board: dict[str, Any], src_root: Path, out: Path) -> None:
             if found.resolve() != dest.resolve():
                 shutil.copyfile(found, dest)
             img["src"] = f"evidence/{name}"
+            label = source_label(shots.get(img["path"], {}))
+            if label:
+                img["source_label"] = label
+                img["source_url"] = shots[img["path"]]["source_url"]
+
+
+def source_label(shot: dict[str, Any]) -> str | None:
+    """The link text for a shot that does not come from the PR description, else None."""
+    url = str(shot.get("source_url", ""))
+    if shot.get("source") == "archive":
+        stamp = re.search(r"/web/(\d{8})", url)
+        if stamp:
+            day = datetime.strptime(stamp.group(1), "%Y%m%d")
+            return f"Web archive copy, {day.day} {day:%b %Y}"
+        return "Web archive copy"
+    if shot.get("source") == "preview":
+        return "Preview link"
+    return None

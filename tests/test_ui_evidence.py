@@ -9,6 +9,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 # 1x1 PNG bytes (real image magic).
 PNG = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
@@ -140,6 +142,25 @@ def test_notice_set_for_ui_without_media(tmp_path: Path) -> None:
     assert ev["reasons"] == ["nicegui/elements/stepper.py"]
     assert ev["shots"] == []
     assert ev["notice"] == NOTICE
+
+
+def test_game_screens_and_stylesheets_count_as_ui() -> None:
+    """Tuxemon #3610 changed only tuxemon/states/input.py, its player name screen."""
+    from prc.explainer.evidence import is_ui_path
+
+    for path in (
+        "tuxemon/states/input.py",
+        "game/screens/title.py",
+        "app/scenes/battle.py",
+        "src/menus/pause.py",
+        "pkg/ui/panel.py",
+        "tool/gui/main_window.py",
+        "warehouse/static/sass/blocks/_footer.scss",
+        "site/theme.less",
+    ):
+        assert is_ui_path(path), path
+    for path in ("src/state.py", "pkg/build.py", "docs/guide.md", "tuxemon/event/actions/rename_player.py"):
+        assert not is_ui_path(path), path
 
 
 def test_check_rejects_unknown_screens_path_and_missing_screens() -> None:
@@ -301,3 +322,190 @@ def test_board_check_cli_reads_evidence_beside_the_map(tmp_path: Path, capsys: A
     (tmp_path / "evidence.json").write_text(json.dumps(evidence))
     assert main(args) == 2
     assert "screens" in capsys.readouterr().err
+
+
+def _solid_png(w: int, h: int) -> bytes:
+    """A real w x h PNG, so the layout sees the true aspect of a screenshot."""
+    import struct
+    import zlib
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+    raw = b"".join(b"\x00" + b"\x30\x60\x90" * w for _ in range(h))
+    ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
+    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b"")
+
+
+STAGE_BOX = """(sel) => {
+    const stage = document.querySelector('#scale') || document.querySelector('.escale');
+    const s = stage.getBoundingClientRect(), k = s.width / stage.offsetWidth;
+    return [...document.querySelectorAll(sel)].map(el => {
+        const r = el.getBoundingClientRect();
+        return {x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k,
+                bottom: (r.bottom - s.top) / k, right: (r.right - s.left) / k};
+    });
+}"""
+
+
+@pytest.mark.parametrize(("sizes", "look"), [([(720, 580)], "labsheet"), ([(1282, 758)], "dark"), ([(1282, 758), (1282, 758)], "labsheet")])
+def test_a_screenshot_fills_the_frame_without_white_bars(tmp_path: Path, sizes: list[tuple[int, int]], look: str) -> None:
+    """2026-10-21 review of textual #6171 and gradio #13767: each shot sat small inside a
+    1640 x 600 white box, with wide white bars on both sides."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from test_explainer_page import _change
+
+    m, board, _ = _change()
+    prepared = tmp_path / "prepared"
+    (prepared / "evidence").mkdir(parents=True)
+    shots = []
+    for i, (w, h) in enumerate(sizes):
+        (prepared / "evidence" / f"shot-{i}.png").write_bytes(_solid_png(w, h))
+        shots.append({"path": f"shot-{i}.png", "source": "pr-body", "source_url": f"https://example.com/{i}.png", "caption": "Shot."})
+    evidence = {"ui_change": True, "reasons": ["a.html"], "shots": shots, "notice": None}
+    board["scenes"].insert(1, {
+        "type": "screens",
+        "images": [{"path": s["path"], "label": ("Before", "After")[i] if len(sizes) == 2 else "The screen"} for i, s in enumerate(shots)],
+        "caption": "The screen changes after the fix.",
+        "source_url": "https://github.com/acme/shop/pull/12",
+        "say": ["The screen changes after the fix."],
+        "cues": [{"at": [0, 0.0], "do": "show"}],
+    })  # fmt: skip
+    out = tmp_path / "out"
+    facts = verify_board(board, m, evidence)
+    render(board, m, facts, out, NoneBackend(), None, keys_only=True, evidence_dir=prepared)
+    render_page(board, m, out, board["scenes"][-1]["end"], has_video=False, evidence_dir=prepared, look_name=look)
+    probe = "() => [...document.querySelectorAll('.screens img')].map(i => i.complete && i.naturalWidth)"
+    found = {}
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        pg = browser.new_page(viewport={"width": 1600, "height": 1000})
+        for name in ("player.html", "page.html"):
+            pg.goto((out / name).as_uri())
+            if name == "player.html":
+                pg.wait_for_function("window.ready === true")
+                pg.evaluate("window.seek(window.BOARD.scenes[1].end - 0.3)")
+            else:
+                pg.locator("#strip button").nth(1).click()
+            pg.wait_for_function(f"({probe})().length === {len(sizes)} && ({probe})().every(Boolean)")
+            pg.wait_for_timeout(1200)
+            found[name] = {k: pg.evaluate(STAGE_BOX, sel) for k, sel in (("img", ".screens img"), ("text", ".screens .scap, .screens .ssrc"))}
+        browser.close()
+    for name, boxes in found.items():
+        for (w, h), box in zip(sizes, boxes["img"], strict=True):
+            assert abs(box["w"] / box["h"] - w / h) < 0.02, f"{name}: the image box adds bars, {box}"
+            if len(sizes) == 1:
+                assert box["h"] >= 700 or box["w"] >= 1250, f"{name}: one shot uses only {box['w']:.0f} x {box['h']:.0f}"
+            else:
+                assert box["w"] >= 820, f"{name}: a before/after shot is only {box['w']:.0f} px wide"
+            assert box["right"] <= 1890 and box["x"] >= 30, f"{name}: the shot leaves the frame, {box}"
+        for box in boxes["img"] + boxes["text"]:
+            assert box["bottom"] <= 862, f"{name}: the screens block reaches {box['bottom']:.0f}, captions start at 862"
+
+
+def test_labsheet_group_titles_outrank_their_subtitles_and_fit_their_group(tmp_path: Path) -> None:
+    """2026-10-21 review of nicegui #6380: TABS, PANEL TWO and CLIENT sat in small grey
+    letters above a larger dark subtitle, so the titles looked out of place."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from test_explainer_page import _groups_change
+
+    m, board, _ = _groups_change()
+    board["scenes"][1]["groups"][0]["title"] = "Panel two with a long group title"
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["duration"], has_video=False, look_name="labsheet")
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        pg = browser.new_page(viewport={"width": 1920, "height": 1080})
+        pg.goto((tmp_path / "page.html").as_uri())
+        pg.locator("#strip button").nth(1).click()
+        pg.wait_for_timeout(1500)
+        groups = pg.evaluate(
+            """() => [...document.querySelectorAll('#scale .grp')].map(g => {
+                const t = g.querySelector('.gt'), s = g.querySelector('.gs');
+                const ts = getComputedStyle(t), ss = getComputedStyle(s);
+                const lum = c => { const [r, gg, b] = c.match(/\\d+/g).map(Number); return (0.2126 * r + 0.7152 * gg + 0.0722 * b) / 255; };
+                const range = document.createRange(); range.selectNodeContents(t);
+                const gr = g.getBoundingClientRect(), tr = range.getBoundingClientRect(), sr = s.getBoundingClientRect();
+                const first = [...document.querySelectorAll('#scale .pill')].map(p => p.getBoundingClientRect())
+                    .filter(p => p.left >= gr.left - 1 && p.right <= gr.right + 1 && p.top >= gr.top).sort((a, b) => a.top - b.top)[0];
+                const k = gr.width / g.offsetWidth;
+                return {title: t.textContent, tsize: parseFloat(ts.fontSize), ssize: parseFloat(ss.fontSize),
+                        tlum: lum(ts.color), spill: (tr.right - gr.right) / k, gap: first ? (first.top - sr.bottom) / k : null};
+            })"""
+        )
+        pg.screenshot(path=str(tmp_path / "groups.png"))
+        browser.close()
+    assert len(groups) == 2
+    for g in groups:
+        assert g["tsize"] >= 28, f"{g['title']}: title is {g['tsize']} px"
+        assert g["tsize"] >= g["ssize"], f"{g['title']}: subtitle {g['ssize']} px outranks title {g['tsize']} px"
+        assert g["tlum"] < 0.25, f"{g['title']}: title ink is too light ({g['tlum']:.2f})"
+        assert g["spill"] <= 0, f"{g['title']}: title runs {g['spill']:.0f} px past its group"
+        assert g["gap"] is not None and g["gap"] >= 8, f"{g['title']}: subtitle sits {g['gap']} px from the first box"
+
+
+def test_an_archived_before_shot_names_its_own_source(tmp_path: Path) -> None:
+    """2026-10-21 pypi/warehouse #20329: the PR shows only the new look, so the before shot is an
+    archive.org copy of pypi.org. The source line must name the archive, never only "PR description"."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+    from test_explainer_page import _change
+
+    m, board, _ = _change()
+    prepared = tmp_path / "prepared"
+    (prepared / "evidence").mkdir(parents=True)
+    archive = "https://web.archive.org/web/20260819110918/https://pypi.org/project/requests/"
+    shots = [
+        {"path": "shot-0.png", "source": "archive", "source_url": archive, "caption": "Before."},
+        {"path": "shot-1.png", "source": "pr-body", "source_url": "https://example.com/b.png", "caption": "After."},
+    ]
+    for s in shots:
+        (prepared / "evidence" / s["path"]).write_bytes(_solid_png(1090, 512))
+    evidence = {"ui_change": True, "reasons": ["a.html"], "shots": shots, "notice": None}
+    (prepared / "evidence.json").write_text(json.dumps(evidence))
+    pr = "https://github.com/acme/shop/pull/12"
+    board["scenes"].insert(1, {
+        "type": "screens",
+        "images": [{"path": "shot-0.png", "label": "Before"}, {"path": "shot-1.png", "label": "After"}],
+        "caption": "Each card now carries a state header.",
+        "source_url": pr,
+        "say": ["Each card now carries a state header."],
+        "cues": [{"at": [0, 0.0], "do": "show"}],
+    })  # fmt: skip
+    out = tmp_path / "out"
+    facts = verify_board(board, m, evidence)
+    render(board, m, facts, out, NoneBackend(), None, keys_only=True, evidence_dir=prepared)
+    render_page(board, m, out, board["scenes"][-1]["end"], has_video=False, evidence_dir=prepared)
+    links = "() => [...document.querySelectorAll('.screens .ssrc a')].map(a => [a.textContent, a.href])"
+    found = {}
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        pg = browser.new_page(viewport={"width": 1600, "height": 1000})
+        for name in ("player.html", "page.html"):
+            pg.goto((out / name).as_uri())
+            if name == "player.html":
+                pg.wait_for_function("window.ready === true")
+                pg.evaluate("window.seek(window.BOARD.scenes[1].end - 0.3)")
+            else:
+                pg.locator("#strip button").nth(1).click()
+            pg.wait_for_selector(".screens .ssrc a")
+            found[name] = pg.evaluate(links)
+        browser.close()
+    for name, got in found.items():
+        assert got == [["PR description", pr], ["Web archive copy, 19 Aug 2026", archive]], f"{name}: {got}"
+
