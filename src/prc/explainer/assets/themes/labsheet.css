@@ -45,12 +45,16 @@ body { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, 
 .brow .bl { color: #2A2520; font-family: "Avenir Next", "Helvetica Neue", system-ui, sans-serif; }
 .brow .bt { background: #EFE8D6; } .brow .bf { border-radius: 0; }
 
-.grp { border: 0; border-top: 1px solid #2A2520; border-radius: 0; background: transparent; box-shadow: none; }
-.grp .gt { color: #6E675C; } .grp .gs { color: #2A2520; } .grp .gs code { color: #8A4D00; }
+/* Group heads read like a figure plate: a bold ink title over a smaller serif caption. */
+.grp { border: 0; border-top: 2px solid #2A2520; border-radius: 0; background: transparent; box-shadow: none; }
+.grp .gt { margin-top: 18px; font: 700 30px "Avenir Next", "Helvetica Neue", system-ui, sans-serif; letter-spacing: 0.06em; color: #2A2520; }
+.grp .gs { margin-top: 6px; font: 28px "Iowan Old Style", Charter, Baskerville, Palatino, Georgia, serif; color: #5C554A; }
+.grp .gs code { color: #8A4D00; }
 .pill { border-width: 1px; border-color: #1F5FBF; border-radius: 0; background: #FFFFFF; color: #2A2520; box-shadow: none; }
 .pill.slot { border-style: dashed; border-color: #6E675C; border-width: 1px; background: transparent; }
 .pill.fly { box-shadow: none; background: #FFFFFF; }
 .gmark { border-radius: 0; background: #FEFCF5; }
+.plabel { background: #FEFCF5; }
 .gmark .ring { border-radius: 0; }
 .gnote, .galabel, .dnote { border: 0; border-top: 2px solid #2A2520; border-radius: 0; background: #FEFCF5; box-shadow: none; color: #2A2520; }
 .gnote code, .galabel code, .dnote code { color: #8A4D00; }

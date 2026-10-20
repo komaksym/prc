@@ -245,3 +245,41 @@ def test_a_mark_on_a_labelled_box_leaves_the_label_readable(tmp_path: Path, look
         )
         browser.close()
     assert overlap is None, f"the mark covers {overlap} px of the box label"
+
+
+@pytest.mark.parametrize("look", ["dark", "labsheet"])
+def test_a_box_label_never_sits_on_the_box_text(tmp_path: Path, look: str) -> None:
+    """2026-10-21 review, nicegui #6380 labsheet frame 02b: the red "BOX POSITION" tag sat on
+    the word "box" inside the filled CLIENT box."""
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, _ = _groups_change()
+    scene = board["scenes"][1]
+    scene["groups"][1]["items"][0]["label"] = "box position"
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["duration"], has_video=False, look_name=look)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1920, "height": 1080})
+        page.goto((tmp_path / "player.html").as_uri())
+        page.wait_for_function("window.ready === true")
+        overlap = page.evaluate(
+            """seek(window.BOARD.scenes[1].end - 0.4), (() => {
+                const lab = document.querySelector('.plabel');
+                const a = lab.getBoundingClientRect();
+                const r = document.createRange();
+                r.selectNodeContents(lab.parentElement.querySelector('.pt'));
+                const b = r.getBoundingClientRect();
+                const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+                const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+                return w > 0 && h > 0 ? [w, h] : null;
+            })()"""
+        )
+        browser.close()
+    assert overlap is None, f"the box label covers {overlap} px of the box text"

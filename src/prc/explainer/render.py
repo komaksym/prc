@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import math
 import re
@@ -319,6 +320,7 @@ def record(
     keys_only: bool = False,
 ) -> list[str]:
     """Write player.html in the look, check its DOM, take key frames and record video.mp4."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
     from playwright.sync_api import sync_playwright
 
     overlaps = overlapping_scenes(board)
@@ -381,6 +383,10 @@ def record(
             raise RenderError("DOM text mismatch:\n  " + "\n  ".join(dom_errs))
         screens_total = sum(len(s.get("images", [])) for s in board["scenes"] if s.get("type") == "screens")
         if screens_total:
+            # The engine sizes each shot to its own aspect once it loads; record only after that.
+            # A timeout falls through to the load check below, which names the unloaded image.
+            with contextlib.suppress(PlaywrightTimeout):
+                page.wait_for_function("[...document.querySelectorAll('.screens .sframe img')].every(i => i.dataset.fit)", timeout=15000)
             loaded = page.evaluate("() => [...document.querySelectorAll('.screens .sframe img')].map(function(i){return {src: i.getAttribute('src'), w: i.naturalWidth}})")
             bad = [e for e in loaded if not e.get("w")]
             if bad or len(loaded) != screens_total:

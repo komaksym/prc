@@ -278,7 +278,26 @@
   };
 
   const PAD = 24, IH = 90, GAP = 18;
-  const groupHead = (s, g) => s.head || (g.sub ? 124 : 82);
+  // Group title and subtitle fonts come from the look's CSS, so a look may size them freely.
+  // A hidden probe reads the computed font, spacing, side room and block height once per page.
+  let HF = null;
+  const headFonts = root => {
+    if (HF) return HF;
+    const p = D('grp', '<div class="gt">Xg</div><div class="gs">Xg</div>', root);
+    p.style.visibility = 'hidden';
+    const read = el => {
+      const c = getComputedStyle(el), n = v => parseFloat(v) || 0;
+      return { font: [c.fontStyle, c.fontWeight, c.fontSize, c.fontFamily].join(' '), ls: n(c.letterSpacing), upper: c.textTransform === 'uppercase',
+        side: n(c.marginLeft) + n(c.marginRight) + n(c.paddingLeft) + n(c.paddingRight),
+        h: el.offsetHeight + n(c.marginTop) + n(c.marginBottom) };
+    };
+    HF = { gt: read(p.children[0]), gs: read(p.children[1]) };
+    p.remove();
+    return HF;
+  };
+  const textW = (f, text) => measure(f.upper ? String(text || '').toUpperCase() : text, f.font) + String(text || '').length * f.ls + f.side + 6;
+  // The baseline heads (124 with a subtitle, 82 without) stay the floor, so the dark look keeps its layout.
+  const groupHead = (s, g) => s.head || Math.max(g.sub ? 124 : 82, HF ? Math.ceil(HF.gt.h + (g.sub ? HF.gs.h + 28 : 31)) : 0);
   const groupH = (s, g) => { const n = Math.max(1, g.items.filter(it => !it.outside).length); return g.row ? groupHead(s, g) + IH + PAD : groupHead(s, g) + n * (IH + GAP) - GAP + PAD; };
 
   // Groups without x/y are placed by column (`col`, default 0), stacked and centred, so a board never authors pixels.
@@ -289,7 +308,7 @@
       const iw = Math.max(g.row ? 150 : 220, ...g.items.map(it => Math.max(measure(it.text, '500 40px ui-monospace, Menlo, monospace') + (g.row ? 40 : 54),
         it.label ? measure(it.label.toUpperCase(), '700 17px system-ui') + it.label.length * 1.7 + 40 : 0)));
       g.w = g.w || Math.ceil(Math.max(g.row ? 2 * PAD + inside * iw + (inside - 1) * GAP : 2 * PAD + iw,
-        measure(g.title.toUpperCase(), '700 24px system-ui') + g.title.length * 24 * 0.16 + 2 * PAD + 6, measure(g.sub, '31px system-ui') + 2 * PAD + 6));
+        textW(HF.gt, g.title), g.sub ? textW(HF.gs, g.sub) : 0));
       const iwF = g.row ? (g.w - 2 * PAD - (inside - 1) * GAP) / inside : g.w - 2 * PAD;
       g.fw = g.w + (g.row && out ? 18 + out * (iwF + GAP) - GAP : 0);
       g.fh = groupH(s, g) + (!g.row && out ? 18 + out * (IH + GAP) - GAP : 0);
@@ -310,6 +329,7 @@
   MAKERS.groups = (s, root) => {
     const groups = {}, items = {}, flies = [], arrows = [], marks = [], notes = [];
     const tones = t => ({ bad: C.red, good: C.green, info: C.gold, blue: C.blue }[t] || C.blue);
+    headFonts(root);
     if (s.groups.some(g => g.x == null)) autoLayout(s);
 
     s.groups.forEach(g => {
@@ -529,19 +549,36 @@
   };
 
   MAKERS.screens = (s, root) => {
-    const wrap = D('screens', null, root);
     const n = (s.images || []).length;
+    // One shot sits beside its words at full height; a before/after pair sits side by side.
+    const single = n === 1;
+    const wrap = D('screens' + (single ? ' side' : ' pair'), null, root);
     const row = D('srow', null, wrap);
+    const maxW = single ? 1312 : 870, maxH = single ? 760 : 560;
+    // Size the image box to the shot's own aspect, so no bars pad it. Upscale at most 2x.
+    const fit = el => {
+      const go = () => {
+        const nw = el.naturalWidth, nh = el.naturalHeight;
+        if (!nw || !nh) return;
+        let w = Math.min(maxW, nw * 2), h = w * nh / nw;
+        if (h > maxH) { h = maxH; w = h * nw / nh; }
+        el.style.width = Math.round(w) + 'px';
+        el.style.height = Math.round(h) + 'px';
+        el.dataset.fit = '1';
+      };
+      if (el.complete && el.naturalWidth) go(); else el.addEventListener('load', go);
+    };
     const c = (s.cues || []).find(q => q.do === 'show'), step = (c && c.step) || 0.3;
     const base = c ? c.t : s.start + 0.3;
     const figs = (s.images || []).map((img, i) => {
-      const fig = D('sfig' + (n === 1 ? ' single' : ''), null, row);
-      D('slabel', esc(img.label || ''), fig);
+      const fig = D('sfig', null, row);
+      if (!single) D('slabel', esc(img.label || ''), fig);
       const frame = D('sframe', null, fig);
       const el = document.createElement('img');
       el.src = img.src || ('evidence/' + img.path);
       el.alt = img.caption || s.caption || '';
       el.loading = 'eager';
+      fit(el);
       // The page opens the full-size shot in a new tab; the video ignores the link.
       const full = document.createElement('a');
       full.href = el.getAttribute('src');
@@ -551,9 +588,18 @@
       frame.appendChild(full);
       return { fig, el, at: base + i * step };
     });
-    const cap = D('scap', fmt(s.caption || ''), wrap);
-    const src = D('ssrc', null, wrap);
-    src.innerHTML = 'Source: <a href="' + esc(s.source_url || '') + '" target="_blank" rel="noopener">PR description</a>';
+    const side = single ? D('sside', null, row) : wrap;
+    if (single) D('slabel', esc(s.images[0].label || ''), side);
+    const cap = D('scap', fmt(s.caption || ''), side);
+    const src = D('ssrc', null, side);
+    // Each shot credits its own origin; an archive copy is never filed under the PR description.
+    const origins = [];
+    (s.images || []).forEach(img => {
+      const o = img.source_label ? [img.source_label, img.source_url] : ['PR description', s.source_url];
+      if (!origins.some(x => x[0] === o[0])) origins.push(o);
+    });
+    origins.sort((a, b) => (a[0] === 'PR description' ? 0 : 1) - (b[0] === 'PR description' ? 0 : 1));
+    src.innerHTML = 'Source: ' + origins.map(o => '<a href="' + esc(o[1] || '') + '" target="_blank" rel="noopener">' + esc(o[0]) + '</a>').join(' · ');
     return t => {
       figs.forEach(f => { const k = prog(t, f.at, 0.5); f.fig.style.opacity = k; f.fig.style.transform = 'translateY(' + lerp(20, 0, k) + 'px)'; });
       cap.style.opacity = prog(t, s.start + 0.2, 0.5);
