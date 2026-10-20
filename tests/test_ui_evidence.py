@@ -216,12 +216,24 @@ def test_before_and_after_shots_load_on_the_page_and_in_the_video_player(tmp_pat
         pg.wait_for_function("window.ready === true")
         pg.evaluate("window.seek(window.BOARD.scenes[1].end - 0.3)")
         pg.wait_for_function(f"({probe})().length === 2 && ({probe})().every(Boolean)")
+        # 2026-10-20 v15 videos: the "Source: PR description" line sat on the narration caption.
+        # Two caption lines are the worst case, so the screens block must end above that height.
+        gap = pg.evaluate(
+            """() => {
+                const s = document.querySelector('.screens').getBoundingClientRect();
+                const c = document.querySelector('.ecap').getBoundingClientRect();
+                const line = parseFloat(getComputedStyle(document.querySelector('.ecap')).lineHeight);
+                const scale = c.width / 1640;
+                return (c.bottom - 2 * line * scale) - s.bottom;
+            }"""
+        )
         pg.goto((out / "page.html").as_uri())
         pg.locator("#strip button").nth(1).click()
         pg.wait_for_function(f"({probe})().length === 2 && ({probe})().every(Boolean)")
         labels = pg.locator("#scale .slabel").all_text_contents()
         browser.close()
     assert labels == ["Before", "After"]
+    assert gap > 0, f"screens block overlaps a two-line caption by {-gap:.0f}px"
 
 
 def test_board_check_cli_reads_evidence_beside_the_map(tmp_path: Path, capsys: Any) -> None:
