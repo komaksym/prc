@@ -17,6 +17,9 @@ def test_failed_release_runs_keep_separate_evidence(tmp_path: Path) -> None:
     (root / "scripts").mkdir(parents=True)
     script = root / "scripts/verify-release.sh"
     script.write_bytes((ROOT / "scripts/verify-release.sh").read_bytes())
+    (root / "scripts/check-hygiene.sh").write_bytes(
+        (ROOT / "scripts/check-hygiene.sh").read_bytes()
+    )
     test = root / "tests/test_card_receipts.py"
     test.parent.mkdir()
     test.write_text('"""Release regression sentinel."""\n')
