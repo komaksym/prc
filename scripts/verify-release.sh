@@ -6,6 +6,7 @@ proof_root="$root/artifacts/release/verify"
 mkdir -p "$proof_root"
 proof=$(mktemp -d "$proof_root/run-XXXXXX")
 checkout=$(mktemp -d "${TMPDIR:-/tmp}/prc-release-XXXXXX")
+bash "$root/scripts/check-hygiene.sh"
 printf '%s\n' "$proof" > "$proof_root/latest-attempt.txt"
 python3 - "$root" "$checkout" <<'PY'
 import shutil
