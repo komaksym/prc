@@ -230,6 +230,31 @@ def test_fly_between_equal_texts_is_a_copy_and_passes() -> None:
 
 
 @pytest.mark.parametrize(
+    ("ends", "bad"),
+    [(("code", "name"), "'code'"), (("tail", "logged"), "'logged'"), (("tail", "name"), None)],
+    ids=["source-far-end", "target-far-end", "nearest-ends"],
+)
+def test_arrow_between_row_groups_runs_between_the_nearest_boxes(
+    ends: tuple[str, str], bad: str | None
+) -> None:
+    """2026-10-20 textual #6171: an arrow from the first box of a row crossed boxes 2 and 3."""
+    m, board = tiny()
+    groups = board["scenes"][0]["groups"]
+    for g in groups:
+        g["row"] = True
+    groups[0]["items"].append({"id": "tail", "text": "404"})
+    cue(board, do="arrow", label="becomes the name", **dict(zip(("from", "to"), ends, strict=True)))
+
+    if bad is None:
+        verify_board(board, m)
+        return
+    with pytest.raises(SystemExit) as error:
+        verify_board(board, m)
+    assert f"arrow from {ends[0]!r} to {ends[1]!r} crosses" in str(error.value)
+    assert bad in str(error.value)
+
+
+@pytest.mark.parametrize(
     "ends", [("code", "name"), ("req", "res"), ("code", "res")], ids=["items", "groups", "mixed"]
 )
 def test_arrow_between_different_boxes_passes(ends: tuple[str, str]) -> None:

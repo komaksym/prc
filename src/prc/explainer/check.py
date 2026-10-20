@@ -651,6 +651,27 @@ class Checker:
         label = c.get("label", "")
         if not isinstance(label, str) or len(label) >= LABEL:
             self.fail(f"scene {i}: arrow label {label!r} needs text under {LABEL} characters")
+        self.arrow_ends(i, s, c)
+
+    def arrow_ends(self, i: int, s: dict[str, Any], c: dict[str, Any]) -> None:
+        """An arrow between two row groups leaves from, and lands on, the box nearest the other
+        group; any other end draws the line across the boxes between."""
+        home = {it["id"]: g for g in s["groups"] for it in g["items"]}
+        a, b = home.get(c["from"]), home.get(c["to"])
+        if a is None or b is None or a is b or a.get("col", 0) == b.get("col", 0):
+            return
+        rightward = a.get("col", 0) < b.get("col", 0)
+        for end, g, facing in ((c["from"], a, rightward), (c["to"], b, not rightward)):
+            if not g.get("row"):
+                continue
+            inside = [it["id"] for it in g["items"] if not it.get("outside")]
+            near = inside[-1] if facing else inside[0]
+            if end != near:
+                self.fail(
+                    f"scene {i}: arrow from {c['from']!r} to {c['to']!r} crosses the boxes of "
+                    f"row group {g['id']!r}; start or end it at {near!r}, the box nearest the "
+                    f"other group, instead of {end!r}"
+                )
 
     def touch(self, sid: str) -> None:
         if self.sym[sid]["status"] in CHANGED and self.kinds.get(self.sym[sid]["path"]) != "test":
