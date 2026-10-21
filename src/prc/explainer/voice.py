@@ -7,12 +7,15 @@ kokoro backend synthesizes. `none` measures nothing and imports nothing.
 from __future__ import annotations
 
 import array
+import importlib.util
 import os
 import subprocess
+import sys
 import wave
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 # Characters per second of Kokoro af_heart narration, measured from
 # prototypes/explainer/out/mdp12-baseline/ (680 caption characters over
@@ -20,6 +23,11 @@ from pathlib import Path
 NONE_CHARS_PER_SEC = 14.2
 
 SAY = "/usr/bin/say"
+KOKORO_INSTALL_HINT = (
+    "Review downloads before running `uv sync --extra video --extra voice` and "
+    "`.venv/bin/python -m spacy download en_core_web_sm`. "
+    "First synthesis may still download model weights."
+)
 
 
 class VoiceError(RuntimeError):
@@ -81,15 +89,24 @@ class KokoroBackend(Backend):
     def __init__(self, voice: str = "af_heart") -> None:
         super().__init__("kokoro", True)
         self.voice = voice
+        self._pipe: Any = None
+
+    def _pipeline(self) -> Any:
+        if self._pipe is None:
+            from kokoro import KPipeline  # type: ignore[import-not-found]
+
+            os.environ.setdefault("ESPEAK_DATA_PATH", "/opt/homebrew/share/espeak-ng-data")
+            os.environ.setdefault(
+                "PHONEMIZER_ESPEAK_LIBRARY", "/opt/homebrew/lib/libespeak-ng.dylib"
+            )
+            self._pipe = KPipeline(lang_code=self.voice[0], repo_id="hexgrad/Kokoro-82M")
+        return self._pipe
 
     def synth(self, text: str, wav: Path) -> float:
         import numpy as np
         import soundfile  # type: ignore[import-not-found]
-        from kokoro import KPipeline  # type: ignore[import-not-found]
 
-        os.environ.setdefault("ESPEAK_DATA_PATH", "/opt/homebrew/share/espeak-ng-data")
-        os.environ.setdefault("PHONEMIZER_ESPEAK_LIBRARY", "/opt/homebrew/lib/libespeak-ng.dylib")
-        pipe = KPipeline(lang_code=self.voice[0], repo_id="hexgrad/Kokoro-82M")
+        pipe = self._pipeline()
         raw = wav.with_suffix(".24k.wav")
         soundfile.write(
             raw, np.concatenate([r.audio.numpy() for r in pipe(text, voice=self.voice)]), 24000
@@ -130,11 +147,12 @@ class NoneBackend(Backend):
 def available(name: str) -> bool:
     if name == "kokoro":
         try:
-            import kokoro  # noqa: F401
-            import soundfile  # noqa: F401
-        except ImportError:
+            return all(
+                importlib.util.find_spec(module) is not None
+                for module in ("kokoro", "soundfile", "en_core_web_sm")
+            )
+        except (ImportError, ModuleNotFoundError, ValueError):
             return False
-        return True
     if name == "say":
         return Path(SAY).exists()
     if name == "none":
@@ -148,8 +166,7 @@ def select(name: str = "auto") -> Backend:
         if not available(name):
             if name == "kokoro":
                 raise VoiceError(
-                    "Kokoro is not installed. Run `uv sync --extra voice` "
-                    "(asks before downloading PyTorch, spaCy and the Kokoro weights)."
+                    f"Kokoro or its dependencies are unavailable. {KOKORO_INSTALL_HINT}"
                 )
             raise VoiceError(f"--voice {name} is not available on this machine.")
         makers: dict[str, Callable[[], Backend]] = {
@@ -160,5 +177,11 @@ def select(name: str = "auto") -> Backend:
         return makers[name]()
     for candidate in ("kokoro", "say", "none"):
         if available(candidate):
+            if candidate != "kokoro":
+                print(
+                    f"--voice auto selected {candidate} (Kokoro or its dependencies are "
+                    f"unavailable). {KOKORO_INSTALL_HINT}",
+                    file=sys.stderr,
+                )
             return select(candidate)
     raise VoiceError("no voice backend works, not even the silent estimate")

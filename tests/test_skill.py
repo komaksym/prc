@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import io
 import re
 import subprocess
@@ -146,6 +147,27 @@ def test_doctor_missing_tools_name_the_install_command(monkeypatch: pytest.Monke
 
     monkeypatch.setitem(sys.modules, "playwright.sync_api", None)
     assert "playwright install chromium" in doctor._chromium()
+
+
+def test_doctor_explains_missing_kokoro_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        importlib.util,
+        "find_spec",
+        lambda name: None if name == "en_core_web_sm" else object(),
+    )
+
+    line = doctor._voice()
+
+    assert "voice packages" in line
+    assert "spaCy" in line
+    assert "uv sync --extra video --extra voice" in line
+    assert "python -m spacy download en_core_web_sm" in line
+
+
+def test_doctor_reports_available_kokoro(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(importlib.util, "find_spec", lambda _name: object())
+
+    assert "kokoro ok" in doctor._voice()
 
 
 def test_doctor_never_prints_the_token(monkeypatch: pytest.MonkeyPatch) -> None:

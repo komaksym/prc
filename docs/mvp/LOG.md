@@ -100,3 +100,12 @@ Append one entry per stage or session. Newest at the bottom. Label every number 
 - Reused Playwright because Vercel agent-browser was unavailable in this session. No production dependency was added. Five recipes were seeded; this task does not prove every recipe or live GitHub acquisition.
 - Final independent recheck passed all four findings. Reports: `.audit/verification-skill-review.md` and `.audit/verification-skill-recheck.md`.
 - Release evaluation and final human comparison remain open. This skill does not establish release acceptance. No remote is configured; push and PR creation are skipped.
+
+## 2026-10-21. Voice source recovery
+
+- Recovered package-only Kokoro availability checks and reuse of a successfully initialized pipeline.
+- Auto selection reports its fallback. Both missing-Kokoro paths explain the separate spaCy model installation and possible weight downloads.
+- Nine focused voice tests pass. They cover import-free selection, missing dependencies, initialization retry, cached reuse, and fallback advice.
+- Pipeline tests use synthesis doubles. Real Kokoro synthesis remains UNVERIFIED because the voice dependencies are unavailable in this environment.
+- The original source and its exact patch remain in private recovery evidence outside this checkout.
+- The parent supplied the process image in `.codex-pr-infographics/source-recovery-r4/`. It explains recovery gates, not completed runtime or release acceptance.

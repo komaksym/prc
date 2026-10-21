@@ -36,11 +36,14 @@ def _chromium() -> str:
 
 
 def _voice() -> str:
-    from prc.explainer.voice import SAY, available
+    from prc.explainer.voice import KOKORO_INSTALL_HINT, SAY, available
 
     parts = []
     parts.append(
-        "kokoro ok" if available("kokoro") else "kokoro missing (extra `voice` not installed)"
+        "kokoro ok"
+        if available("kokoro")
+        else "kokoro missing (voice packages or spaCy `en_core_web_sm` unavailable). "
+        + KOKORO_INSTALL_HINT
     )
     parts.append("say ok" if available("say") else f"say missing ({SAY} not on this machine)")
     parts.append("none ok (silent estimate, always works)")

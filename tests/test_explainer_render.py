@@ -2,18 +2,22 @@
 
 from __future__ import annotations
 
+import builtins
+import importlib.util
 import json
 import shutil
+import subprocess
 import sys
+import types
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from prc.explainer import doctor, render
+from prc.explainer import doctor, render, voice
 from prc.explainer.check import find_phrase, spoken
 from prc.explainer.timing import at as cue_at
-from prc.explainer.voice import NoneBackend, available, estimate_seconds, select
+from prc.explainer.voice import KokoroBackend, NoneBackend, available, estimate_seconds, select
 from prc.model import PrRef
 from prc.pipeline import explain_slug
 
@@ -39,6 +43,117 @@ def test_default_voice_skips_missing_kokoro(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setitem(sys.modules, "soundfile", None)
 
     assert select("auto").name in ("say", "none")
+
+
+def test_kokoro_availability_checks_the_model_without_importing_packages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    found: list[str] = []
+    imported: list[str] = []
+
+    def find_spec(name: str, path: object = None, target: object = None) -> object:
+        found.append(name)
+        return object() if name != "en_core_web_sm" else None
+
+    def record_import(name: str, *args: object, **kwargs: object) -> Any:
+        imported.append(name)
+        raise AssertionError(f"availability imported {name}")
+
+    monkeypatch.setattr(importlib.util, "find_spec", find_spec)
+    monkeypatch.setattr(builtins, "__import__", record_import)
+
+    assert not available("kokoro")
+    assert found == ["kokoro", "soundfile", "en_core_web_sm"]
+    assert not {"kokoro", "soundfile", "en_core_web_sm"} & set(imported)
+
+
+def test_auto_selects_installed_kokoro_without_importing_packages(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(importlib.util, "find_spec", lambda name: object())
+
+    def reject_import(name: str, *args: object, **kwargs: object) -> Any:
+        raise AssertionError(f"selection imported {name}")
+
+    monkeypatch.setattr(builtins, "__import__", reject_import)
+
+    assert select("auto").name == "kokoro"
+    assert capsys.readouterr().err == ""
+
+
+@pytest.mark.parametrize("fail_first", [False, True])
+def test_kokoro_pipeline_is_built_once(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, fail_first: bool
+) -> None:
+    constructed: list[KokoroBackend] = []
+    calls: list[tuple[str, str]] = []
+
+    class Audio:
+        def numpy(self) -> list[float]:
+            return [0.25]
+
+    class Result:
+        audio = Audio()
+
+    class Pipeline:
+        def __init__(self, *, lang_code: str, repo_id: str) -> None:
+            assert (lang_code, repo_id) == ("a", "hexgrad/Kokoro-82M")
+            constructed.append(backend)
+            if fail_first and len(constructed) == 1:
+                raise RuntimeError("model initialization failed")
+
+        def __call__(self, text: str, *, voice: str) -> list[Result]:
+            calls.append((text, voice))
+            return [Result()]
+
+    kokoro = types.ModuleType("kokoro")
+    monkeypatch.setattr(kokoro, "KPipeline", Pipeline, raising=False)
+    numpy = types.ModuleType("numpy")
+    monkeypatch.setattr(numpy, "concatenate", lambda values: values, raising=False)
+    soundfile = types.ModuleType("soundfile")
+    monkeypatch.setattr(soundfile, "write", lambda *args: None, raising=False)
+    monkeypatch.setitem(sys.modules, "kokoro", kokoro)
+    monkeypatch.setitem(sys.modules, "numpy", numpy)
+    monkeypatch.setitem(sys.modules, "soundfile", soundfile)
+    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: None)
+    monkeypatch.setattr(voice, "probe_seconds", lambda path: 0.5)
+
+    backend = KokoroBackend()
+    if fail_first:
+        with pytest.raises(RuntimeError, match="model initialization failed"):
+            backend.synth("retry", tmp_path / "retry.wav")
+    assert backend.synth("first", tmp_path / "one.wav") == 0.5
+    assert backend.synth("second", tmp_path / "two.wav") == 0.5
+
+    assert len(constructed) == (2 if fail_first else 1)
+    assert calls == [("first", "af_heart"), ("second", "af_heart")]
+
+
+@pytest.mark.parametrize("fallback", ["say", "none"])
+def test_auto_fallback_says_why_and_how_to_install(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], fallback: str
+) -> None:
+    monkeypatch.setattr(voice, "available", lambda name: name == fallback)
+
+    assert select("auto").name == fallback
+
+    warning = capsys.readouterr().err
+    assert f"auto selected {fallback}" in warning
+    assert "Kokoro" in warning
+    assert "uv sync --extra video --extra voice" in warning
+    assert "python -m spacy download en_core_web_sm" in warning
+    assert "download model weights" in warning
+
+
+def test_explicit_missing_kokoro_explains_model_install(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(voice, "available", lambda name: False)
+
+    with pytest.raises(voice.VoiceError) as error:
+        select("kokoro")
+
+    assert "uv sync --extra video --extra voice" in str(error.value)
+    assert "python -m spacy download en_core_web_sm" in str(error.value)
+    assert "download model weights" in str(error.value)
 
 
 def test_missing_ffmpeg_names_the_binary(monkeypatch: pytest.MonkeyPatch) -> None:

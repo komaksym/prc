@@ -1,0 +1,9 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "codex-imagegen",
+  "image_sha256": "8e8e5a75f368b97eccf094e17e44b849dc62c4b5b1cf96171ecd0dc913eda712",
+  "prompt_sha256": "4912fb3abf397fda5d2f5806591f9b3181cb4fa466f8a08588d6810409feb011",
+  "purpose": "This image explains how local source recovery reaches verified integration while private evidence stays protected.",
+  "visual_note": "I saw Recover local work safely, Original work, Preserve source and useful Markdown, Private evidence, Isolated checkout, Tested remote PR, Review + green CI, Verified integration into main, Blocked units stay open, and Stop with 10% usage remaining. The source branches to private evidence and isolated checkout. Only the tested PR route reaches main. All labels fit inside the frame and are readable.",
+  "created_at": "2026-10-21T18:19:38.979269+00:00"
+}

@@ -155,13 +155,17 @@ That tour needs the video dependencies. It is separate from the board-based expl
 
 `--voice auto` selects an available backend in this order: Kokoro, macOS `say`, then `none`.
 Availability does not guarantee that synthesis succeeds.
+When auto falls back, it prints the selected backend and the install hint for Kokoro.
 Choose `--voice none` explicitly for silent output and estimated timing without Kokoro imports.
 `--voice say` uses `/usr/bin/say` on macOS and ffmpeg for audio conversion.
 
 Kokoro needs the optional `voice` extra and Python 3.12 with this package's Python requirement.
-Installing that extra brings PyTorch and spaCy. First use can download `en_core_web_sm` and Kokoro weights.
+Installing that extra brings PyTorch and spaCy, but not the `en_core_web_sm` model package.
+The availability check requires that model before it selects Kokoro.
 Review those downloads before choosing voice installation.
 To keep the video extra when installing voice, use `uv sync --extra video --extra voice`.
+Then install the model with `.venv/bin/python -m spacy download en_core_web_sm`.
+First synthesis can still download Kokoro weights. Installed packages do not prove the weight cache is complete.
 Kokoro also needs the eSpeak phonemizer runtime. The backend currently defaults to Homebrew paths on macOS.
 Set `ESPEAK_DATA_PATH` and `PHONEMIZER_ESPEAK_LIBRARY` for a different installation.
 
