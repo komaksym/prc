@@ -153,7 +153,7 @@ LAYOUT_REGISTRY: dict[str, dict[str, Any]] = {
             "- Right of the divider: {right}, stacked top to bottom, "
             "each with its labels as a short list.",
         ),
-        "strip": '- Under both columns: a full-width proof strip holding {strip}, '
+        "strip": "- Under both columns: a full-width proof strip holding {strip}, "
         "with its labels as a short list.",
         "close": "- Each area has a plain solid numbered header bar with its panel header, "
         "one simple icon with no letters, digits or digit-like shapes, "
@@ -178,8 +178,7 @@ LAYOUT_REGISTRY: dict[str, dict[str, Any]] = {
         "and its labels as a short list.",
         "arrows": "- Along the path: one bold arrow from each node to the next ({chain}). "
         "Put no words on the arrows.",
-        "rule": "Join each node to the next with one arrow along the path, "
-        "and put no words on it.",
+        "rule": "Join each node to the next with one arrow along the path, and put no words on it.",
     },
     "hub": {
         "layout": "hub-spoke",
@@ -266,9 +265,7 @@ def _panel_center(headers: list[str], tones: list[str]) -> int:
     return len(headers) // 2
 
 
-def _panel_relations(
-    headers: list[str], tones: list[str], layout: str
-) -> tuple[Relation, ...]:
+def _panel_relations(headers: list[str], tones: list[str], layout: str) -> tuple[Relation, ...]:
     """Arrows between authored panels, placed per the layout geometry."""
     if _layout_entry(layout).get("links") == "spokes":
         at = _panel_center(headers, tones)
@@ -289,16 +286,12 @@ def _panel_places(
 ) -> dict[str, str]:
     """Quoted panel names placed into the registry geometry for every layout."""
     quoted = [f'"{header}"' for header in headers]
-    strip_raw = (
-        headers[-1] if len(headers) >= 3 and tones and tones[-1] == "proof" else ""
-    )
+    strip_raw = headers[-1] if len(headers) >= 3 and tones and tones[-1] == "proof" else ""
     strip = f'"{strip_raw}"' if strip_raw else ""
     right_names = [header for header in headers[1:] if header != strip_raw]
     right = ", ".join(f'"{header}"' for header in right_names)
     at = _panel_center(headers, tones)
-    outer = ", ".join(
-        f'"{header}"' for i, header in enumerate(headers) if i != at
-    )
+    outer = ", ".join(f'"{header}"' for i, header in enumerate(headers) if i != at)
     return {
         "left": quoted[0],
         "right": right,
@@ -997,9 +990,7 @@ def brief_dict(br: InfographicBrief) -> dict[str, Any]:
         "mode": br.mode,
         "profile": profile,
         "prompt": prompt(br),
-        "prompt_rules": list(
-            _layout_geometry(br)[2] if br.mode == "panels" else PROMPT_RULES
-        ),
+        "prompt_rules": list(_layout_geometry(br)[2] if br.mode == "panels" else PROMPT_RULES),
         "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
         "title": br.title,
         "tones": list(br.tones),

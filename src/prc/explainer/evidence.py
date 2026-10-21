@@ -23,7 +23,17 @@ NOTICE = "This PR changes the UI. PRC did not run the app. See the PR on GitHub.
 UI_EXTS = frozenset({".html", ".css", ".scss", ".sass", ".less", ".svelte", ".tsx", ".jsx", ".vue"})
 
 # Folders that hold one screen each: web widgets, game states and scenes, desktop GUIs.
-UI_DIRS = ("widgets/", "elements/", "templates/", "states/", "screens/", "scenes/", "menus/", "ui/", "gui/")
+UI_DIRS = (
+    "widgets/",
+    "elements/",
+    "templates/",
+    "states/",
+    "screens/",
+    "scenes/",
+    "menus/",
+    "ui/",
+    "gui/",
+)
 
 PREVIEW_HOSTS = ("hf.space", "vercel.app", "netlify.app", "readthedocs.build")
 
@@ -296,7 +306,11 @@ def copy_shots(board: dict[str, Any], src_root: Path, out: Path) -> None:
     shots: dict[str, dict[str, Any]] = {}
     for ev_path in (src_root / "evidence.json", src_root.parent / "evidence.json"):
         if ev_path.is_file():
-            shots = {str(sh.get("path")): sh for sh in json.loads(ev_path.read_text()).get("shots", []) if isinstance(sh, dict)}
+            shots = {
+                str(sh.get("path")): sh
+                for sh in json.loads(ev_path.read_text()).get("shots", [])
+                if isinstance(sh, dict)
+            }
             break
     for s in board.get("scenes", []):
         if s.get("type") != "screens":

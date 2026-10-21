@@ -593,7 +593,9 @@ def run_explain(
                 work,
                 backend,
                 git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
-                evidence_dir=map_path.parent if evidence is not None and map_path is not None else None,
+                evidence_dir=map_path.parent
+                if evidence is not None and map_path is not None
+                else None,
             )
             board_out = out_dir / "board.json"
             (work / "board.json").write_text(json.dumps(board, indent=2, sort_keys=True))

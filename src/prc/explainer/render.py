@@ -381,13 +381,20 @@ def record(
         if dom_errs:
             browser.close()
             raise RenderError("DOM text mismatch:\n  " + "\n  ".join(dom_errs))
-        screens_total = sum(len(s.get("images", [])) for s in board["scenes"] if s.get("type") == "screens")
+        screens_total = sum(
+            len(s.get("images", [])) for s in board["scenes"] if s.get("type") == "screens"
+        )
         if screens_total:
             # The engine sizes each shot to its own aspect once it loads; record only after that.
             # A timeout falls through to the load check below, which names the unloaded image.
             with contextlib.suppress(PlaywrightTimeout):
-                page.wait_for_function("[...document.querySelectorAll('.screens .sframe img')].every(i => i.dataset.fit)", timeout=15000)
-            loaded = page.evaluate("() => [...document.querySelectorAll('.screens .sframe img')].map(function(i){return {src: i.getAttribute('src'), w: i.naturalWidth}})")
+                page.wait_for_function(
+                    "[...document.querySelectorAll('.screens .sframe img')].every(i => i.dataset.fit)",
+                    timeout=15000,
+                )
+            loaded = page.evaluate(
+                "() => [...document.querySelectorAll('.screens .sframe img')].map(function(i){return {src: i.getAttribute('src'), w: i.naturalWidth}})"
+            )
             bad = [e for e in loaded if not e.get("w")]
             if bad or len(loaded) != screens_total:
                 browser.close()
@@ -472,7 +479,12 @@ def render(
 
 
 def render_board(
-    board_path: Path, map_path: Path, out: Path, backend: Backend, git_dir: str | None = None, evidence_dir: Path | str | None = None
+    board_path: Path,
+    map_path: Path,
+    out: Path,
+    backend: Backend,
+    git_dir: str | None = None,
+    evidence_dir: Path | str | None = None,
 ) -> Rendered:
     """Check, fill and render a board file against a map file. Used by tests and the CLI."""
     board = json.loads(board_path.read_text())

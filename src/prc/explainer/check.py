@@ -27,9 +27,19 @@ MAX_SECONDS = 150
 # A group caption lives in sub, a slot names what fills it in label, and a
 # cue label that names a count must match the count-like boxes drawn.
 NUMBER_WORDS = {
-    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
-    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
-    "eleven": 11, "twelve": 12,
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
 }
 COUNT_LIKE = ("row", "matched", "unmatched", "inserted", "event", "fetch", "count")
 
@@ -66,10 +76,7 @@ def box_role_problems(i: int, s: dict[str, Any]) -> list[str]:
         for it in g.get("items", []):
             item_group[it.get("id")] = g
             if it.get("kind") == "slot" and not str(it.get("label", "") or "").strip():
-                problems.append(
-                    f"scene {i}: slot {it.get('id')!r} needs a label "
-                    "for what fills it"
-                )
+                problems.append(f"scene {i}: slot {it.get('id')!r} needs a label for what fills it")
     for c in s.get("cues", []):
         if c.get("do") != "arrow":
             continue
@@ -80,13 +87,19 @@ def box_role_problems(i: int, s: dict[str, Any]) -> list[str]:
         src = item_group.get(c.get("from"))
         if src is None:
             src = next((g for g in groups if g.get("id") == c.get("from")), None)
-        got = sum(1 for it in (src.get("items", []) if src else []) if _count_like(str(it.get("text", ""))))
+        got = sum(
+            1
+            for it in (src.get("items", []) if src else [])
+            if _count_like(str(it.get("text", "")))
+        )
         if got != want:
             problems.append(
                 f"scene {i}: arrow label {label!r} names {want} counts "
                 f"but the source draws {got}; draw all {want} or drop the number"
             )
     return problems
+
+
 CODE_EXT = frozenset(
     [
         ".py",
@@ -921,7 +934,9 @@ def _validate_shape(board: dict[str, Any]) -> None:
         raise SystemExit("receipts failed:\n" + "\n".join(problems))
 
 
-def verify_board(board: dict[str, Any], m: dict[str, Any], evidence: dict[str, Any] | None = None) -> dict[str, Any]:
+def verify_board(
+    board: dict[str, Any], m: dict[str, Any], evidence: dict[str, Any] | None = None
+) -> dict[str, Any]:
     _validate_shape(board)
     if evidence is None:
         inline = board.get("evidence")
@@ -1109,12 +1124,22 @@ def verify_board(board: dict[str, Any], m: dict[str, Any], evidence: dict[str, A
                 ck.fail(f"scene {i}: a screens scene shows 1 or 2 evidence images side by side")
             else:
                 for img in imgs:
-                    if not isinstance(img, dict) or not isinstance(img.get("path"), str) or not isinstance(img.get("label"), str):
+                    if (
+                        not isinstance(img, dict)
+                        or not isinstance(img.get("path"), str)
+                        or not isinstance(img.get("label"), str)
+                    ):
                         ck.fail(f"scene {i}: each screens image needs a path and a label")
                     elif evidence is not None:
-                        known = {sh.get("path") for sh in evidence.get("shots", []) if isinstance(sh, dict)}
+                        known = {
+                            sh.get("path")
+                            for sh in evidence.get("shots", [])
+                            if isinstance(sh, dict)
+                        }
                         if img.get("path") not in known:
-                            ck.fail(f"scene {i}: {img.get('path')!r} is not in evidence.json; a screens scene may cite only paths in evidence.json")
+                            ck.fail(
+                                f"scene {i}: {img.get('path')!r} is not in evidence.json; a screens scene may cite only paths in evidence.json"
+                            )
             if not isinstance(s.get("caption"), str) or not s.get("caption", "").strip():
                 ck.fail(f"scene {i}: a screens scene needs a caption saying what changed on screen")
             if not isinstance(s.get("source_url"), str) or not s.get("source_url", "").strip():
@@ -1127,9 +1152,13 @@ def verify_board(board: dict[str, Any], m: dict[str, Any], evidence: dict[str, A
         if has_shots and not has_screens:
             ck.fail('board needs one screens scene showing the evidence images (kind "screens")')
         if has_notice and has_screens:
-            ck.fail("board has a notice and must not contain screens; the notice says the PR was not run")
+            ck.fail(
+                "board has a notice and must not contain screens; the notice says the PR was not run"
+            )
         if has_notice and board.get("notice") != evidence.get("notice"):
-            ck.fail(f'board "notice" must be exactly {evidence.get("notice")!r}; the page shows it at the top')
+            ck.fail(
+                f'board "notice" must be exactly {evidence.get("notice")!r}; the page shows it at the top'
+            )
 
     for problem in join_preflight(board, m):
         ck.fail(problem)

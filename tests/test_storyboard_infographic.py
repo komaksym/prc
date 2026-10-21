@@ -281,7 +281,12 @@ def test_panels_prompt_asks_for_a_baoyu_blueprint_with_only_the_lines() -> None:
     prompt = payload["prompt"]
 
     layout = payload["profile"]["layout"]
-    assert layout in ("binary-comparison", "linear-progression", "hub-spoke", "structural-breakdown")
+    assert layout in (
+        "binary-comparison",
+        "linear-progression",
+        "hub-spoke",
+        "structural-breakdown",
+    )
     for want in (
         "baoyu-infographic",
         "technical-schematic",
@@ -443,7 +448,7 @@ def test_panels_arrow_rules_match_layout_geometry() -> None:
     for layout in LAYOUT_GEOMETRY_CUES:
         forced = replace(base, layout=layout)
         text = infographic_prompt(forced)
-        rules = text[text.index("Rules:"):]
+        rules = text[text.index("Rules:") :]
         sections[layout] = rules.lower()
     assert "spoke" in sections["hub-spoke"]
     assert "divider" in sections["binary-comparison"] or "strip" in sections["binary-comparison"]

@@ -159,7 +159,12 @@ def test_game_screens_and_stylesheets_count_as_ui() -> None:
         "site/theme.less",
     ):
         assert is_ui_path(path), path
-    for path in ("src/state.py", "pkg/build.py", "docs/guide.md", "tuxemon/event/actions/rename_player.py"):
+    for path in (
+        "src/state.py",
+        "pkg/build.py",
+        "docs/guide.md",
+        "tuxemon/event/actions/rename_player.py",
+    ):
         assert not is_ui_path(path), path
 
 
@@ -330,11 +335,18 @@ def _solid_png(w: int, h: int) -> bytes:
     import zlib
 
     def chunk(kind: bytes, data: bytes) -> bytes:
-        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+        return (
+            struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+        )
 
     raw = b"".join(b"\x00" + b"\x30\x60\x90" * w for _ in range(h))
     ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
-    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", zlib.compress(raw)) + chunk(b"IEND", b"")
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", ihdr)
+        + chunk(b"IDAT", zlib.compress(raw))
+        + chunk(b"IEND", b"")
+    )
 
 
 STAGE_BOX = """(sel) => {
@@ -348,8 +360,13 @@ STAGE_BOX = """(sel) => {
 }"""
 
 
-@pytest.mark.parametrize(("sizes", "look"), [([(720, 580)], "labsheet"), ([(1282, 758)], "dark"), ([(1282, 758), (1282, 758)], "labsheet")])
-def test_a_screenshot_fills_the_frame_without_white_bars(tmp_path: Path, sizes: list[tuple[int, int]], look: str) -> None:
+@pytest.mark.parametrize(
+    ("sizes", "look"),
+    [([(720, 580)], "labsheet"), ([(1282, 758)], "dark"), ([(1282, 758), (1282, 758)], "labsheet")],
+)
+def test_a_screenshot_fills_the_frame_without_white_bars(
+    tmp_path: Path, sizes: list[tuple[int, int]], look: str
+) -> None:
     """2026-10-21 review of textual #6171 and gradio #13767: each shot sat small inside a
     1640 x 600 white box, with wide white bars on both sides."""
     from playwright.sync_api import sync_playwright
@@ -366,7 +383,14 @@ def test_a_screenshot_fills_the_frame_without_white_bars(tmp_path: Path, sizes: 
     shots = []
     for i, (w, h) in enumerate(sizes):
         (prepared / "evidence" / f"shot-{i}.png").write_bytes(_solid_png(w, h))
-        shots.append({"path": f"shot-{i}.png", "source": "pr-body", "source_url": f"https://example.com/{i}.png", "caption": "Shot."})
+        shots.append(
+            {
+                "path": f"shot-{i}.png",
+                "source": "pr-body",
+                "source_url": f"https://example.com/{i}.png",
+                "caption": "Shot.",
+            }
+        )
     evidence = {"ui_change": True, "reasons": ["a.html"], "shots": shots, "notice": None}
     board["scenes"].insert(1, {
         "type": "screens",
@@ -379,7 +403,15 @@ def test_a_screenshot_fills_the_frame_without_white_bars(tmp_path: Path, sizes: 
     out = tmp_path / "out"
     facts = verify_board(board, m, evidence)
     render(board, m, facts, out, NoneBackend(), None, keys_only=True, evidence_dir=prepared)
-    render_page(board, m, out, board["scenes"][-1]["end"], has_video=False, evidence_dir=prepared, look_name=look)
+    render_page(
+        board,
+        m,
+        out,
+        board["scenes"][-1]["end"],
+        has_video=False,
+        evidence_dir=prepared,
+        look_name=look,
+    )
     probe = "() => [...document.querySelectorAll('.screens img')].map(i => i.complete && i.naturalWidth)"
     found = {}
     with sync_playwright() as pw:
@@ -392,20 +424,35 @@ def test_a_screenshot_fills_the_frame_without_white_bars(tmp_path: Path, sizes: 
                 pg.evaluate("window.seek(window.BOARD.scenes[1].end - 0.3)")
             else:
                 pg.locator("#strip button").nth(1).click()
-            pg.wait_for_function(f"({probe})().length === {len(sizes)} && ({probe})().every(Boolean)")
+            pg.wait_for_function(
+                f"({probe})().length === {len(sizes)} && ({probe})().every(Boolean)"
+            )
             pg.wait_for_timeout(1200)
-            found[name] = {k: pg.evaluate(STAGE_BOX, sel) for k, sel in (("img", ".screens img"), ("text", ".screens .scap, .screens .ssrc"))}
+            found[name] = {
+                k: pg.evaluate(STAGE_BOX, sel)
+                for k, sel in (("img", ".screens img"), ("text", ".screens .scap, .screens .ssrc"))
+            }
         browser.close()
     for name, boxes in found.items():
         for (w, h), box in zip(sizes, boxes["img"], strict=True):
-            assert abs(box["w"] / box["h"] - w / h) < 0.02, f"{name}: the image box adds bars, {box}"
+            assert abs(box["w"] / box["h"] - w / h) < 0.02, (
+                f"{name}: the image box adds bars, {box}"
+            )
             if len(sizes) == 1:
-                assert box["h"] >= 700 or box["w"] >= 1250, f"{name}: one shot uses only {box['w']:.0f} x {box['h']:.0f}"
+                assert box["h"] >= 700 or box["w"] >= 1250, (
+                    f"{name}: one shot uses only {box['w']:.0f} x {box['h']:.0f}"
+                )
             else:
-                assert box["w"] >= 820, f"{name}: a before/after shot is only {box['w']:.0f} px wide"
-            assert box["right"] <= 1890 and box["x"] >= 30, f"{name}: the shot leaves the frame, {box}"
+                assert box["w"] >= 820, (
+                    f"{name}: a before/after shot is only {box['w']:.0f} px wide"
+                )
+            assert box["right"] <= 1890 and box["x"] >= 30, (
+                f"{name}: the shot leaves the frame, {box}"
+            )
         for box in boxes["img"] + boxes["text"]:
-            assert box["bottom"] <= 862, f"{name}: the screens block reaches {box['bottom']:.0f}, captions start at 862"
+            assert box["bottom"] <= 862, (
+                f"{name}: the screens block reaches {box['bottom']:.0f}, captions start at 862"
+            )
 
 
 def test_labsheet_group_titles_outrank_their_subtitles_and_fit_their_group(tmp_path: Path) -> None:
@@ -449,10 +496,14 @@ def test_labsheet_group_titles_outrank_their_subtitles_and_fit_their_group(tmp_p
     assert len(groups) == 2
     for g in groups:
         assert g["tsize"] >= 28, f"{g['title']}: title is {g['tsize']} px"
-        assert g["tsize"] >= g["ssize"], f"{g['title']}: subtitle {g['ssize']} px outranks title {g['tsize']} px"
+        assert g["tsize"] >= g["ssize"], (
+            f"{g['title']}: subtitle {g['ssize']} px outranks title {g['tsize']} px"
+        )
         assert g["tlum"] < 0.25, f"{g['title']}: title ink is too light ({g['tlum']:.2f})"
         assert g["spill"] <= 0, f"{g['title']}: title runs {g['spill']:.0f} px past its group"
-        assert g["gap"] is not None and g["gap"] >= 8, f"{g['title']}: subtitle sits {g['gap']} px from the first box"
+        assert g["gap"] is not None and g["gap"] >= 8, (
+            f"{g['title']}: subtitle sits {g['gap']} px from the first box"
+        )
 
 
 def test_an_archived_before_shot_names_its_own_source(tmp_path: Path) -> None:
@@ -472,7 +523,12 @@ def test_an_archived_before_shot_names_its_own_source(tmp_path: Path) -> None:
     archive = "https://web.archive.org/web/20260819110918/https://pypi.org/project/requests/"
     shots = [
         {"path": "shot-0.png", "source": "archive", "source_url": archive, "caption": "Before."},
-        {"path": "shot-1.png", "source": "pr-body", "source_url": "https://example.com/b.png", "caption": "After."},
+        {
+            "path": "shot-1.png",
+            "source": "pr-body",
+            "source_url": "https://example.com/b.png",
+            "caption": "After.",
+        },
     ]
     for s in shots:
         (prepared / "evidence" / s["path"]).write_bytes(_solid_png(1090, 512))
@@ -491,7 +547,9 @@ def test_an_archived_before_shot_names_its_own_source(tmp_path: Path) -> None:
     facts = verify_board(board, m, evidence)
     render(board, m, facts, out, NoneBackend(), None, keys_only=True, evidence_dir=prepared)
     render_page(board, m, out, board["scenes"][-1]["end"], has_video=False, evidence_dir=prepared)
-    links = "() => [...document.querySelectorAll('.screens .ssrc a')].map(a => [a.textContent, a.href])"
+    links = (
+        "() => [...document.querySelectorAll('.screens .ssrc a')].map(a => [a.textContent, a.href])"
+    )
     found = {}
     with sync_playwright() as pw:
         browser = pw.chromium.launch()
@@ -507,5 +565,6 @@ def test_an_archived_before_shot_names_its_own_source(tmp_path: Path) -> None:
             found[name] = pg.evaluate(links)
         browser.close()
     for name, got in found.items():
-        assert got == [["PR description", pr], ["Web archive copy, 19 Aug 2026", archive]], f"{name}: {got}"
-
+        assert got == [["PR description", pr], ["Web archive copy, 19 Aug 2026", archive]], (
+            f"{name}: {got}"
+        )

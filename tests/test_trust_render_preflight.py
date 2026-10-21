@@ -308,7 +308,9 @@ def test_card_and_video_outro_render_code_names() -> None:
         page.wait_for_function("window.ready === true")
         page.evaluate("window.seek(window.BOARD.scenes.at(-1).end - 0.5)")
         page.screenshot(path=str(proof / "video-outro.png"))
-        outro = page.locator(".outro .l1, .outro .l2 .tbody").evaluate_all(f"els => els.map({read})")
+        outro = page.locator(".outro .l1, .outro .l2 .tbody").evaluate_all(
+            f"els => els.map({read})"
+        )
         page.set_viewport_size({"width": 1200, "height": 630})
         cards = []
         for name in ("outro", "spoken"):
