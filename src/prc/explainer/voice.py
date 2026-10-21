@@ -7,12 +7,15 @@ kokoro backend synthesizes. `none` measures nothing and imports nothing.
 from __future__ import annotations
 
 import array
+import importlib.util
 import os
 import subprocess
+import sys
 import wave
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 # Characters per second of Kokoro af_heart narration, measured from
 # prototypes/explainer/out/mdp12-baseline/ (680 caption characters over
@@ -81,15 +84,25 @@ class KokoroBackend(Backend):
     def __init__(self, voice: str = "af_heart") -> None:
         super().__init__("kokoro", True)
         self.voice = voice
+        self._pipe: Any = None
+
+    def _pipeline(self) -> Any:
+        """Build the Kokoro pipeline once and reuse it for later synthesis."""
+        if self._pipe is None:
+            from kokoro import KPipeline  # type: ignore[import-not-found]
+
+            os.environ.setdefault("ESPEAK_DATA_PATH", "/opt/homebrew/share/espeak-ng-data")
+            os.environ.setdefault(
+                "PHONEMIZER_ESPEAK_LIBRARY", "/opt/homebrew/lib/libespeak-ng.dylib"
+            )
+            self._pipe = KPipeline(lang_code=self.voice[0], repo_id="hexgrad/Kokoro-82M")
+        return self._pipe
 
     def synth(self, text: str, wav: Path) -> float:
         import numpy as np
         import soundfile  # type: ignore[import-not-found]
-        from kokoro import KPipeline  # type: ignore[import-not-found]
 
-        os.environ.setdefault("ESPEAK_DATA_PATH", "/opt/homebrew/share/espeak-ng-data")
-        os.environ.setdefault("PHONEMIZER_ESPEAK_LIBRARY", "/opt/homebrew/lib/libespeak-ng.dylib")
-        pipe = KPipeline(lang_code=self.voice[0], repo_id="hexgrad/Kokoro-82M")
+        pipe = self._pipeline()
         raw = wav.with_suffix(".24k.wav")
         soundfile.write(
             raw, np.concatenate([r.audio.numpy() for r in pipe(text, voice=self.voice)]), 24000
@@ -129,12 +142,15 @@ class NoneBackend(Backend):
 
 def available(name: str) -> bool:
     if name == "kokoro":
+        # Probe installed packages and the spaCy model without importing torch
+        # or spaCy. This does not prove that the Kokoro weight cache is complete.
         try:
-            import kokoro  # noqa: F401
-            import soundfile  # noqa: F401
-        except ImportError:
+            return all(
+                importlib.util.find_spec(module) is not None
+                for module in ("kokoro", "soundfile", "en_core_web_sm")
+            )
+        except (ImportError, ModuleNotFoundError, ValueError):
             return False
-        return True
     if name == "say":
         return Path(SAY).exists()
     if name == "none":
@@ -160,5 +176,12 @@ def select(name: str = "auto") -> Backend:
         return makers[name]()
     for candidate in ("kokoro", "say", "none"):
         if available(candidate):
+            if candidate != "kokoro":
+                print(
+                    f"--voice auto selected {candidate} (Kokoro dependencies are unavailable, "
+                    "including `en_core_web_sm`); run `uv sync --extra voice`; first synthesis "
+                    "may still download model weights.",
+                    file=sys.stderr,
+                )
             return select(candidate)
     raise VoiceError("no voice backend works, not even the silent estimate")

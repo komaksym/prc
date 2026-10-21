@@ -155,6 +155,7 @@ That tour needs the video dependencies. It is separate from the board-based expl
 
 `--voice auto` selects an available backend in this order: Kokoro, macOS `say`, then `none`.
 Availability does not guarantee that synthesis succeeds.
+When auto falls back, it prints the selected backend and the install hint for Kokoro.
 Choose `--voice none` explicitly for silent output and estimated timing without Kokoro imports.
 `--voice say` uses `/usr/bin/say` on macOS and ffmpeg for audio conversion.
 
