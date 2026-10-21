@@ -117,6 +117,7 @@ class Browser:
             raise Fail(f"timed out waiting for {what} (page at {now!r})") from error
 
     def click_box(self, selector: str) -> None:
+        self.run("scrollintoview", selector)
         box = self.js(
             "(function () { var r = document.querySelector("
             + json.dumps(selector)

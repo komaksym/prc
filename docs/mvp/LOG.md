@@ -231,3 +231,18 @@ The full release check and exact-artifact browser, click, vision and listening c
 Their records are collected under `/private/tmp/prc-battle-proof/` and the release verification directory.
 The final local output is `artifacts/game-review/light/Tuxemon-2370/labsheet/`.
 Existing study outputs and application code remain unchanged. Publication still requires the user's approval.
+
+The exact-page browser pass found a callout intercepting a code-line click.
+The renderer now lets clicks pass through decorative callouts. A browser regression test fails before this fix and passes after it.
+The page verifier scrolls each target into view before clicking it.
+The full test suite passes 1126 tests. Source lint and the package build pass.
+The repository typecheck still reports 16 existing errors in test_explainer_v6.py and test_transitions.py.
+The isolated release check stops on existing lint errors in tracked artifact scripts.
+
+Independent reviewer Leibniz inspected all 17 page shots and the native baoyu infographic.
+The parent found three video scenes with delayed added-code reveals and moved those reveals into the first sentence.
+Socrates checked the six changed cue anchors against the source board and reran the receipt check.
+The rebuilt 102.3-second labsheet video reuses the original narration.
+Final click and visual records are under `/private/tmp/prc-battle-proof/final-click/` and `/private/tmp/prc-battle-proof/final-vision/`.
+The Prove It Works principle required checking the generated page and video directly.
+The Fix Root Causes principle put the click fix in decorative callout hit testing and the timing fix in the source board.

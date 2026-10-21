@@ -890,3 +890,31 @@ def test_tabs_start_with_a_capital_and_count_scenes_name_what_they_count() -> No
         "Most added lines sit in the grid index",
         "New tests cover moved sprites",
     ]
+
+
+def test_code_line_under_a_callout_opens_its_hunk(tmp_path: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    from prc.explainer.check import verify_board
+    from prc.explainer.page import render_page
+    from prc.explainer.render import render
+    from prc.explainer.voice import NoneBackend
+
+    m, board, line = _change()
+    board["scenes"][1]["cues"].append(
+        {"at": [0, 0.0], "do": "note", "line": str(line["new"]), "text": "shared helper"}
+    )
+    facts = verify_board(board, m)
+    render(board, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
+    render_page(board, m, tmp_path, board["scenes"][-1]["end"], has_video=False)
+
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1440, "height": 900})
+        page.goto((tmp_path / "page.html").as_uri())
+        page.locator("#strip button").nth(1).click()
+        page.locator("#scale .pg-hit").click(timeout=2000)
+        assert page.locator("#panel").is_visible()
+        assert page.locator("#panel-diff .hk-hit").count() == 1
+        page.screenshot(path=str(tmp_path / "callout-hunk.png"))
+        browser.close()

@@ -143,8 +143,8 @@ body.video .emount { width: 1920px; height: 1080px; }
 .drow .strike { position: absolute; left: 0; top: 50%; height: 3px; margin-top: -1px; width: 0; background: #D55E00; }
 .drow .k { color: #56B4E9; } .drow .s { color: #E3B866; } .drow .n { color: #E69F00; }
 .drow .c { color: #5B6475; font-style: italic; } .drow .f { color: #B7C6FF; }
-.dleader { position: absolute; height: 3px; border-radius: 2px; opacity: 0; z-index: 3; }
-.dnote { position: absolute; transform: translateY(-50%); padding: 6px 16px; border: 2.5px solid; border-radius: 12px; background: #0E1320; font: 600 26px system-ui; white-space: nowrap; opacity: 0; z-index: 3; }
+.dleader { position: absolute; height: 3px; border-radius: 2px; opacity: 0; z-index: 3; pointer-events: none; }
+.dnote { position: absolute; transform: translateY(-50%); padding: 6px 16px; border: 2.5px solid; border-radius: 12px; background: #0E1320; font: 600 26px system-ui; white-space: nowrap; opacity: 0; z-index: 3; pointer-events: none; }
 
 /* Screens: real UI evidence, never a fake screen. 1 or 2 images side by side,
    each scaled to fit with aspect kept and no cropping. */

@@ -10,7 +10,7 @@ Keep existing reviews unchanged. Keep all work local under START-HERE.md's publi
 
 - [x] Validate the pinned map and both source images.
 - [x] Author and check one storyboard with every changed unit in its reading path.
-- [ ] Generate a baoyu infographic, narrated video and labsheet page.
+- [x] Generate a baoyu infographic, narrated video and labsheet page.
 - [ ] Verify links, screen layout, video transitions and narration on the exact outputs.
 - [ ] Commit the task files and record the local delivery state.
 
