@@ -11,8 +11,19 @@ Keep existing reviews unchanged. Keep all work local under START-HERE.md's publi
 - [x] Validate the pinned map and both source images.
 - [x] Author and check one storyboard with every changed unit in its reading path.
 - [x] Generate a baoyu infographic, narrated video and labsheet page.
-- [ ] Verify links, screen layout, video transitions and narration on the exact outputs.
-- [ ] Commit the task files and record the local delivery state.
+- [x] Verify links, screen layout, video transitions and narration on the exact outputs.
+- [x] Commit the task files and record the local delivery state.
+
+## Local review checkpoint
+
+The page, video and infographic are generated. Exact-output checks cover the screenshot pair,
+all nine scenes, code drawers, links, transitions and narration. The current narration check is
+`/private/tmp/prc-battle-proof/listen-current.log`. The final handoff checks are collected in
+`/private/tmp/prc-battle-proof/handoff-current/`.
+
+The full test suite passes 1126 tests. Source lint and package build pass.
+Repository typecheck and isolated release lint still have preexisting failures.
+This is a local review checkpoint, not a clean release or a published change.
 
 ## Throughput checkpoint
 

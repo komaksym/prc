@@ -246,3 +246,9 @@ The rebuilt 102.3-second labsheet video reuses the original narration.
 Final click and visual records are under `/private/tmp/prc-battle-proof/final-click/` and `/private/tmp/prc-battle-proof/final-vision/`.
 The Prove It Works principle required checking the generated page and video directly.
 The Fix Root Causes principle put the click fix in decorative callout hit testing and the timing fix in the source board.
+
+On 2026-10-22, the parent resumed the exact-output handoff check without changing the generated artifacts.
+The live page still answers at its existing local URL. Its screenshot pair remains readable.
+The rebuilt video's Parakeet check passes with no lost words or identifier gaps.
+The final proof set is `/private/tmp/prc-battle-proof/handoff-current/`.
+The game example remains a local checkpoint. The existing repository typecheck and release-lint failures remain open.
