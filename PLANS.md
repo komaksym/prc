@@ -1,3 +1,11 @@
+# Game screen review
+
+## Summary
+
+Add one light-mode review of Tuxemon #2370 with its source before-and-after screenshots.
+Follow the milestones in [.audit/game-review-plan.md](.audit/game-review-plan.md).
+Keep the existing study output unchanged. Publication requires approval under START-HERE.md.
+
 # Study v3: three PRC artifacts and a study on the operator's own PRs, 2026-10-14
 
 ## Summary

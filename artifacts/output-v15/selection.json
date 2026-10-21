@@ -88,6 +88,22 @@
         "warehouse/templates/includes/packaging/project-release-history.html",
         "warehouse/templates/packaging/detail.html"
       ]
+    },
+    {
+      "id": "v17-battle",
+      "kind": "game UI: two-on-two battle layout and animations",
+      "pr_identity": "Tuxemon/Tuxemon#2370",
+      "url": "https://github.com/Tuxemon/Tuxemon/pull/2370",
+      "title": "combat animation 2",
+      "head_sha": "4dc3b4fb0dd61dde22e89e18d1db7215eb929a65",
+      "base_sha": "e3317587bcb3a48dae551a52ae3b6022e28e5131",
+      "merged_at": "2024-08-30T13:48:30Z",
+      "files": [
+        "tuxemon/combat.py",
+        "tuxemon/prepare.py",
+        "tuxemon/states/combat/combat.py",
+        "tuxemon/states/combat/combat_animations.py"
+      ]
     }
   ]
 }

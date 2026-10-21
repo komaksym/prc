@@ -1,0 +1,448 @@
+{
+  "name": "v17-battle",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged pull request",
+      "say": [
+        "This pull request separates monsters in double battles.",
+        "It adds paired positions and refactors battle helpers."
+      ]
+    },
+    {
+      "type": "screens",
+      "images": [
+        {
+          "path": "shot-0.png",
+          "label": "Before"
+        },
+        {
+          "path": "shot-1.png",
+          "label": "After"
+        }
+      ],
+      "caption": "Author screenshots show overlapping monsters before and separate pairs after. PRC did not run the game.",
+      "source_url": "https://github.com/Tuxemon/Tuxemon/pull/2370",
+      "say": [
+        "The author supplies these before and after screenshots.",
+        "PRC did not run the game.",
+        "The before shot shows overlapping monster sprites on each side.",
+        "The after shot shows each pair in separate positions."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "show"
+        }
+      ],
+      "hold": 1.5
+    },
+    {
+      "type": "diff",
+      "file": "tuxemon/prepare.py",
+      "label": "Paired home spots",
+      "lines": [
+        "282",
+        "284",
+        "286",
+        "298",
+        "300",
+        "302"
+      ],
+      "say": [
+        "The layout adds paired home spots for each side.",
+        "Each side keeps its single spot and gains two ordered spots."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "284",
+          "text": "paired spots",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 1
+    },
+    {
+      "type": "diff",
+      "file": "tuxemon/combat.py",
+      "label": "Choose available monsters",
+      "lines": [
+        "165",
+        "171",
+        "172",
+        "173",
+        "175",
+        "176",
+        "178",
+        "185"
+      ],
+      "say": [
+        "The helper yields awake monsters outside the current field.",
+        "A single awake monster returns directly, otherwise turn and method decide."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "172",
+          "text": "single returns",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 1
+    },
+    {
+      "type": "diff",
+      "file": "tuxemon/combat.py",
+      "label": "Select by level or health",
+      "lines": [
+        "595",
+        "596",
+        "606",
+        "613",
+        "614",
+        "616",
+        "617"
+      ],
+      "say": [
+        "The picker replaces long branches with one lookup table.",
+        "Unknown methods fall back to a random choice."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "595",
+          "text": "lookup table",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 1
+    },
+    {
+      "type": "diff",
+      "file": "tuxemon/states/combat/combat.py",
+      "label": "Register before animation",
+      "lines": [
+        "602",
+        "603",
+        "-605",
+        "605",
+        "606",
+        "607"
+      ],
+      "say": [
+        "The state records the monster before it plays the release animation.",
+        "The animation then reads the new list for spot choice."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "605",
+          "text": "record first",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 1
+    },
+    {
+      "type": "diff",
+      "file": "tuxemon/states/combat/combat_animations.py",
+      "label": "Choose each monster's position",
+      "lines": [
+        "138",
+        "139",
+        "144",
+        "866",
+        "867",
+        "868"
+      ],
+      "say": [
+        "The release animation picks a paired spot by play order.",
+        "The updater loops over active monsters and builds each panel."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "867",
+          "text": "each panel",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 1.2
+    },
+    {
+      "type": "diff",
+      "file": "tuxemon/states/combat/combat_animations.py",
+      "label": "Build status panels with shared code",
+      "lines": [
+        "444",
+        "446",
+        "447",
+        "451",
+        "452"
+      ],
+      "say": [
+        "One shared helper builds HUD panels for both sides.",
+        "The side check routes each panel through the same helper."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.2
+          ],
+          "do": "note",
+          "line": "447",
+          "text": "shared helper",
+          "tone": "good"
+        },
+        {
+          "at": [
+            1,
+            0.1
+          ],
+          "do": "step",
+          "n": 1
+        }
+      ],
+      "hold": 1.2
+    },
+    {
+      "type": "outro",
+      "l1": "Double battles place paired monsters on separate spots.",
+      "l2": "Review the spot index and HUD loop. This PR adds no tests.",
+      "say": [
+        "Double battles place paired monsters on separate spots.",
+        "Review the spot index and HUD loop.",
+        "This PR adds no tests."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            1,
+            0
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "cmd"
+        }
+      ],
+      "hold": 2
+    }
+  ],
+  "reading": [
+    {
+      "units": [
+        "tuxemon/states/combat/combat.py::CombatState.add_monster_into_play"
+      ],
+      "say": "The state records the monster in play before it runs the release animation."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.animate_monster_release"
+      ],
+      "say": "The animation places each monster on its paired spot by play order."
+    },
+    {
+      "units": [
+        "tuxemon/prepare.py"
+      ],
+      "say": "The layout adds paired home spots for both sides of a double battle."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.update_hud"
+      ],
+      "say": "The updater loops over active monsters and builds each HUD in turn."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.build_hud"
+      ],
+      "say": "The builder takes a HUD position and animates the panel into place."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.build_hud.build_hud_sprite"
+      ],
+      "say": "The new helper builds one HUD panel for either side from shared code."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.build_hud.build_left_hud"
+      ],
+      "say": "The pull request removes the old left builder and reuses the shared helper."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.build_hud.build_right_hud"
+      ],
+      "say": "The pull request removes the old right builder and reuses the shared helper."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations._load_sprite"
+      ],
+      "say": "The helper loads any sprite type through one call."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.animate_party_hud_in"
+      ],
+      "say": "The entry delegates to one side helper and skips wild opponents with no tray."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.animate_party_hud_left"
+      ],
+      "say": "The left helper shows the opponent tray for trainer battles and sets ball positions."
+    },
+    {
+      "units": [
+        "tuxemon/states/combat/combat_animations.py::CombatAnimations.animate_party_hud_right"
+      ],
+      "say": "The right helper shows the player tray and sets ball positions."
+    },
+    {
+      "units": [
+        "tuxemon/combat.py::get_awake_monsters"
+      ],
+      "say": "The helper yields awake monsters not yet on the field, using turn and method to narrow the choice."
+    },
+    {
+      "units": [
+        "tuxemon/combat.py::alive_party"
+      ],
+      "say": "The helper returns every monster in the party that has not fainted."
+    },
+    {
+      "units": [
+        "tuxemon/combat.py::retrieve_from_party"
+      ],
+      "say": "The picker looks up each method in a table and picks a random monster for unknown methods."
+    },
+    {
+      "units": [
+        "tuxemon/combat.py::random_from_party"
+      ],
+      "say": "The pull request deletes the separate random helper and calls the random choice directly."
+    }
+  ],
+  "infographic": {
+    "mode": "panels",
+    "headline": "Double battle layout lands",
+    "subtitle": "Paired spots and cleaner helpers",
+    "panels": [
+      {
+        "title": "BEFORE",
+        "tone": "problem",
+        "lines": [
+          "Single home spot only",
+          "Monsters share one position"
+        ]
+      },
+      {
+        "title": "CHANGE",
+        "tone": "change",
+        "lines": [
+          "Add paired home spots",
+          "Pick spot by order"
+        ]
+      },
+      {
+        "title": "HELPERS",
+        "tone": "part",
+        "lines": [
+          "Unify HUD builder path",
+          "Split party tray sides"
+        ]
+      },
+      {
+        "title": "PROOF",
+        "tone": "context",
+        "lines": [
+          "Author screenshots show battle",
+          "Game not run by PRC"
+        ]
+      }
+    ],
+    "footer": [
+      "Author screenshots. Game not run by PRC."
+    ]
+  }
+}

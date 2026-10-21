@@ -215,3 +215,19 @@ This runtime cannot receive audio input. s2e3, onComplete and ErrNotExist have e
 The goal stays open for direct listening. Human acceptance, public release, push and PR creation remain gated.
 
 Next step. Review the complete three-case package and record the listening and usefulness judgments.
+
+## Game battle review, 2026-10-21
+
+Added Tuxemon/Tuxemon #2370 as one light-mode review with actual before-and-after game screenshots.
+The author supplied the screenshots. PRC did not install or run Tuxemon.
+The comparison shows overlapping monster sprites before and separate pairs afterward.
+Nine storyboard scenes cover representative lines from all four changed Python files.
+Sixteen reading entries explain every changed code unit, including supporting combat refactors.
+
+The board passes its receipt check. The focused renderer, transition and UI-evidence checks passed 122 tests.
+Independent factual review found a screenshot-description error, which the parent corrected before the final render.
+The second native baoyu infographic candidate passed the unchanged text gate.
+The full release check and exact-artifact browser, click, vision and listening checks remain required before handoff.
+Their records are collected under `/private/tmp/prc-battle-proof/` and the release verification directory.
+The final local output is `artifacts/game-review/light/Tuxemon-2370/labsheet/`.
+Existing study outputs and application code remain unchanged. Publication still requires the user's approval.
