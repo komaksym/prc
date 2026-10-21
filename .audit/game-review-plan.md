@@ -22,8 +22,11 @@ all nine scenes, code drawers, links, transitions and narration. The current nar
 `/private/tmp/prc-battle-proof/handoff-current/`.
 
 The full test suite passes 1126 tests. Source lint and package build pass.
-Repository typecheck and isolated release lint still have preexisting failures.
-This is a local review checkpoint, not a clean release or a published change.
+The verification cleanup adds strict test annotations and applies existing Ruff formatting.
+The disposable release copy initializes Git so Ruff applies the source checkout's ignore rules.
+A regression checks both ignored experiments and real source failures.
+Final acceptance uses `bash scripts/verify-release.sh --offline`, including the installed wheel smoke test.
+Release evidence is saved under `artifacts/release/verify/`. Publication still requires user approval.
 
 ## Throughput checkpoint
 

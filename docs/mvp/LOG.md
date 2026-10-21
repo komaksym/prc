@@ -2,6 +2,15 @@
 
 Append one entry per stage or session. Newest at the bottom. Label every number measured or estimated.
 
+## 2026-10-22. Verification cleanup
+
+Added annotations to the explainer test helpers. Strict mypy now reports no issues in 120 files.
+Applied existing Ruff formatting without changing assertions or runtime behavior.
+The release copy now initializes Git before validation, so Ruff preserves the source ignore rules.
+The new regression failed on the old script and passes with ignored experiments and failing source cases.
+Final acceptance runs the isolated release command after the cleanup commit.
+Its evidence remains under `artifacts/release/verify/`, with the latest passing run in `latest-success.txt`.
+
 ## 2026-10-06 01:00 CEST. Handoff (Opus)
 
 - Moved the project from `~/dev/Codex/2026-10-04/pr-comprehension-implementation` to `~/dev/prc`. The old path is a symlink to the new one, so old absolute paths still work. Repaired the git worktrees.
