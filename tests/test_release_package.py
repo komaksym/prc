@@ -5,7 +5,52 @@ import sys
 import tarfile
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.mark.parametrize("source, expected", [("value = 1\n", 17), ("import missing\n", 18)])
+def test_release_copy_preserves_lint_scope(tmp_path: Path, source: str, expected: int) -> None:
+    import os
+    import shutil
+
+    ruff = shutil.which("ruff")
+    assert ruff is not None
+    root = tmp_path / "project"
+    (root / "scripts").mkdir(parents=True)
+    script = root / "scripts/verify-release.sh"
+    script.write_bytes((ROOT / "scripts/verify-release.sh").read_bytes())
+    (root / ".gitignore").write_text("artifacts/\n")
+    (root / "source.py").write_text(source)
+    (root / "artifacts").mkdir()
+    (root / "artifacts/experiment.py").write_text("import unused\n")
+    subprocess.run(["git", "init", "--quiet", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "add", "--force", "."], check=True)
+    commands = tmp_path / "bin"
+    commands.mkdir()
+    uv = commands / "uv"
+    uv.write_text(
+        f"#!{sys.executable}\n"
+        "import subprocess, sys\n"
+        f"result = subprocess.run([{ruff!r}, 'check', '.'])\n"
+        "sys.exit(17 if result.returncode == 0 else 18)\n"
+    )
+    uv.chmod(0o755)
+    result = subprocess.run(
+        ["bash", str(script)],
+        env={**os.environ, "PATH": f"{commands}:{os.environ['PATH']}"},
+        capture_output=True,
+        text=True,
+    )
+    proof = root / "artifacts/release/verify"
+    log = next(proof.glob("run-*/sync.log"))
+    assert result.returncode == expected, log.read_text()
+    if expected == 17:
+        assert "All checks passed" in log.read_text()
+    else:
+        assert "source.py" in log.read_text()
+    assert "experiment.py" not in log.read_text()
 
 
 def test_failed_release_runs_keep_separate_evidence(tmp_path: Path) -> None:
