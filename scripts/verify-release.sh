@@ -50,6 +50,7 @@ for name in ['eval/runs/2026-10-06-full', 'docs/media']:
 PY
 printf '%s\n' "$checkout" > "$proof/checkout.txt"
 cd "$checkout"
+git init --quiet
 uv sync --frozen --extra voice $UV_OFFLINE > "$proof/sync.log" 2>&1
 uv run $UV_OFFLINE ruff check . > "$proof/lint.log" 2>&1
 uv run $UV_OFFLINE ruff format --check . > "$proof/format.log" 2>&1
