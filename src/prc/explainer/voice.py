@@ -23,6 +23,11 @@ from typing import Any
 NONE_CHARS_PER_SEC = 14.2
 
 SAY = "/usr/bin/say"
+KOKORO_INSTALL_HINT = (
+    "Review downloads before running `uv sync --extra video --extra voice` and "
+    "`.venv/bin/python -m spacy download en_core_web_sm`. "
+    "First synthesis may still download model weights."
+)
 
 
 class VoiceError(RuntimeError):
@@ -87,7 +92,6 @@ class KokoroBackend(Backend):
         self._pipe: Any = None
 
     def _pipeline(self) -> Any:
-        """Build the Kokoro pipeline once and reuse it for later synthesis."""
         if self._pipe is None:
             from kokoro import KPipeline  # type: ignore[import-not-found]
 
@@ -142,8 +146,6 @@ class NoneBackend(Backend):
 
 def available(name: str) -> bool:
     if name == "kokoro":
-        # Probe installed packages and the spaCy model without importing torch
-        # or spaCy. This does not prove that the Kokoro weight cache is complete.
         try:
             return all(
                 importlib.util.find_spec(module) is not None
@@ -164,8 +166,7 @@ def select(name: str = "auto") -> Backend:
         if not available(name):
             if name == "kokoro":
                 raise VoiceError(
-                    "Kokoro is not installed. Run `uv sync --extra voice` "
-                    "(asks before downloading PyTorch, spaCy and the Kokoro weights)."
+                    f"Kokoro or its dependencies are unavailable. {KOKORO_INSTALL_HINT}"
                 )
             raise VoiceError(f"--voice {name} is not available on this machine.")
         makers: dict[str, Callable[[], Backend]] = {
@@ -178,9 +179,8 @@ def select(name: str = "auto") -> Backend:
         if available(candidate):
             if candidate != "kokoro":
                 print(
-                    f"--voice auto selected {candidate} (Kokoro dependencies are unavailable, "
-                    "including `en_core_web_sm`); run `uv sync --extra voice`; first synthesis "
-                    "may still download model weights.",
+                    f"--voice auto selected {candidate} (Kokoro or its dependencies are "
+                    f"unavailable). {KOKORO_INSTALL_HINT}",
                     file=sys.stderr,
                 )
             return select(candidate)
