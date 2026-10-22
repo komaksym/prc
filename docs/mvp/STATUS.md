@@ -2,7 +2,7 @@
 
 Summary. PRC's implemented package produces local review outputs. Product acceptance is incomplete. Repository reconciliation preserves earlier work and gives local main one baseline.
 
-Updated 2026-10-08. This file is the current status entry point. Historical plans and scoreboards retain their original results.
+Updated 2026-10-22. This file is the current status entry point. Historical plans and scoreboards retain their original results.
 
 ## Repository baseline
 
@@ -12,7 +12,9 @@ Historical worktrees and their ignored caches remain intact. The branch reconcil
 
 Before reconciliation, every branch ref was saved in `artifacts/reconciliation/2026-10-08/branches-before.bundle`. All 2,290 pending file identities and contents were saved beside it. Unrelated analyzer, queue, and provider experiments were moved into its `unrelated-experiments` directory with matching hashes. These archives stay local.
 
-No GitHub remote is configured. Read-only discovery found no intended PRC repository among the authenticated account's accessible repositories. An existing URL or a new repository decision is required before sync. No GitHub main was changed.
+The public origin is [komaksym/prc](https://github.com/komaksym/prc), with `main` as the default branch. At this update, the remote and checkout resolved `main` at `99362409a24cee6d6cb2a1254e786b1e72908582`. The GitHub Actions workflow in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) runs the isolated release verification on pushes to `main`, pull requests, and manual dispatches.
+
+GitHub reports no repository license. The README and [decision D21](DECISIONS.md) leave the license, package publication, and promotional publication to the user. The repository contains operator instructions and drafts for those actions; it contains no record of a PyPI upload or promotional post. A public GitHub origin does not establish any of those decisions.
 
 ## Implemented and checked behavior
 
@@ -22,15 +24,15 @@ Stored-map reconstruction now supplies one reconciled dictionary to board checks
 
 The regression invokes the real explain CLI with an older map classifying an E2E test as production code. Its checked facts and published outputs agree after reconstruction. Browser screenshots and media remain under `artifacts/e2e/explain/stored-reclassified`.
 
-The full check is `bash scripts/verify-release.sh` with the existing Chromium cache. The final proof is `artifacts/release/verify/run-MZ8PLD`. It passed 572 tests and all required checks. Lint, formatting, strict types, tests, build, clean-wheel installation, browser screenshots, and five output files are required.
+The repository check is `bash scripts/verify-release.sh` with the existing Chromium cache. It requires hygiene, lint, formatting, strict types, tests, build, clean-wheel installation, browser screenshots, and five output files. The 2026-10-08 receipt at `artifacts/release/verify/run-MZ8PLD` reported 572 tests and all required checks. That ignored receipt is historical and absent from a fresh checkout. A later STATUS proposal also pointed to `run-UULFOm`, but neither that receipt nor evidence for a current 572-test count is retained. Run the command again at the final commit; use only its fresh proof path for the current result.
 
 ## Verification skill
 
 [The project verify skill](../../.agents/skills/verify/SKILL.md) is committed and discovered by Codex. Its five feature recipes cover maps, explainers, board tools, review decisions, and installation.
 
-Its executable map driver uses the real CLI and background Chromium. It verifies symbol inspection, Escape, offline loading, captured screenshots, and scratch cleanup. Failed attempts retain diagnostics. The current reconciliation run passed at `artifacts/verification/map-yhisxmlz`.
+Its executable map driver uses the real CLI and background Chromium. It verifies symbol inspection, Escape, offline loading, captured screenshots, and scratch cleanup. Failed attempts retain diagnostics. The 2026-10-08 reconciliation recorded a passing run at `artifacts/verification/map-yhisxmlz`; that ignored artifact is historical, not a fresh proof for this update.
 
-The skill seeds manual recipes for the remaining paths. It does not establish complete product acceptance. This session used existing Playwright because Vercel agent-browser was unavailable.
+The skill seeds manual recipes for the remaining paths. It does not establish complete product acceptance. The historical session used existing Playwright because Vercel agent-browser was unavailable.
 
 ## Acceptance evidence
 
@@ -62,7 +64,7 @@ The timing archive contains 48 successful samples, including twelve warmups and 
 4. Capture correctly scoped current-source measurements.
 5. Refresh the human comparison and its audible samples to the accepted output generation.
 6. Obtain actual human usefulness, grader agreement, grounding checks, and release approval.
-7. Establish the intended GitHub URL, content and history review, license, and publication decisions.
+7. Review current content and history for later republication, choose a license, and decide any package or promotional publication under D21.
 
 The [human comparison sheet](../../eval/human/2026-10-08-comparison.md) covers three captured PRs. Responses remain blank. It compares PRC with the plain diff, CodeRabbit, and available Coldtea PR Lens material. Historical third-party results cannot count as current-head coverage.
 
