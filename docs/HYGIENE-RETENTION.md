@@ -4,7 +4,7 @@ Tracked evaluation and review evidence stays available for inspection. A path in
 
 ## Frozen evaluation packet images
 
-The 243 tracked PNG files under `eval/runs/2026-10-08-release-check/packets/**/*.png` are frozen reader-capture evidence. They match the `eval/runs/*/packets/**/*.png` ignore rule because that rule keeps new or regenerated packet media out of ordinary changes. This curated set is tracked on purpose and stays published as historical evaluation evidence.
+The 243 tracked PNG files under `eval/runs/2026-10-08-release-check/packets/**/*.png` are frozen reader-capture evidence. They match the `eval/runs/*/packets/**/*.png` ignore rule because that rule keeps newly generated, untracked packet media out of ordinary changes. Git continues to show edits to these 243 tracked files in the diff. This curated set is tracked on purpose and stays published as historical evaluation evidence.
 
 The exception applies to this frozen evidence set. Evaluation outputs and private evidence are not generally allowed. A new packet image needs a named evaluation purpose and review before it enters Git.
 
@@ -22,7 +22,9 @@ Three tracked files under `.codex-pr-infographics/source-recovery-r4/` are retai
 - `prompts/infographic.md` records its source prompt.
 - `provenance.json` binds the image and prompt to their hashes and purpose.
 
-Keep the three files together. They support PR review and provenance; they are not runtime inputs or a cache. New agent-generated visual assets need a review purpose and provenance. Ephemeral outputs stay ignored and uncommitted, and a PR body uses a GitHub-hosted URL for an attached image.
+Keep the three files together. They support PR review and provenance; they are not runtime inputs or a cache. Write ephemeral outputs under `artifacts/`, which `.gitignore` already ignores. Keep a curated agent-generated visual under `.codex-pr-infographics/` only when it includes the rendered visual, its prompt, and provenance. A PR body uses a GitHub-hosted URL for an attached image.
+
+The `artifacts/` placement keeps temporary files out of Git through an existing ignore rule. A blanket ignore for `.codex-pr-infographics/` would hide new curated assets from ordinary untracked-file discovery until someone stages them explicitly.
 
 ## Existing cleanups and the hygiene guard
 
