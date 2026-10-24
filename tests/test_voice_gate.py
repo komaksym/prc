@@ -9,7 +9,7 @@ import pytest
 
 from prc.explainer.voice import available, select
 
-INSTALL_HINT = "uv sync --extra voice"
+INSTALL_HINT = "uv sync --extra video --extra voice"
 SHOP_BOARD = Path(__file__).resolve().parent / "data" / "boards" / "shop.json"
 
 

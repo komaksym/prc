@@ -79,7 +79,7 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
 
     assert completed.returncode == 2, completed.stderr
     assert "no gated infographic published" in completed.stderr
-    outs = list((tmp_path / "out").glob("*"))
+    outs = list((tmp_path / "artifacts" / "explain").glob("*"))
     assert outs, "failed build still publishes its evidence folder"
     assert (outs[0] / "infographic" / "brief.json").exists()
     out = outs[0]
@@ -89,8 +89,8 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
     assert run["voice"] == "none"
     assert run["map_source"] == ("stored" if stored else "live")
     assert run["live_head_sha"] == (None if stored else run["stored_head_sha"])
-    assert Path(run["comment"]).exists()
-    assert Path(run["card"]).exists()
+    assert (tmp_path / run["comment"]).exists()
+    assert (tmp_path / run["card"]).exists()
 
     info = probe(out / "video.mp4")
     stream = info["streams"][0]

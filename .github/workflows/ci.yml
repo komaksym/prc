@@ -23,8 +23,8 @@ jobs:
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v5
-      - name: Install media and OCR tools
-        run: brew install ffmpeg tesseract
+      - name: Install media, OCR and speech tools
+        run: brew install ffmpeg tesseract espeak-ng
       - name: Sync dependencies with video extra
         run: uv sync --frozen --extra video
       - name: Install Playwright Chromium

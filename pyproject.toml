@@ -72,3 +72,6 @@ exclude = ["tests/data/"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 norecursedirs = ["data"]
+markers = [
+    "needs_recognizer: needs a local speech recognizer (Muesli or openai-whisper) to transcribe",
+]

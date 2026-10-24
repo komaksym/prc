@@ -5,15 +5,11 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-MAIN_AGENTS = Path("/Users/koval/dev/prc/AGENTS.md")
 HUB_MARKERS = ("button-level end-to-end", "verify_paired_hub")
 
 
 def _agents_text() -> str:
-    local = REPO / "AGENTS.md"
-    if local.is_file():
-        return local.read_text(encoding="utf-8")
-    return MAIN_AGENTS.read_text(encoding="utf-8")
+    return (REPO / "AGENTS.md").read_text(encoding="utf-8")
 
 
 def test_close_dispatch_row_is_present() -> None:

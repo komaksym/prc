@@ -260,6 +260,24 @@ def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
     return payload
 
 
+def brief_without_infographic(cwd: Path, board: Path) -> Path:
+    """Explain once with no candidate: the loud failure still writes the artist brief."""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")
+    done = subprocess.run(
+        [sys.executable, "-m", "prc.cli", "explain", "--source", "fixture:shop",
+         "--board", str(board), "--voice", "none", "--store", str(cwd / "store"),
+         "--out", str(cwd / "out")],
+        capture_output=True, text=True, cwd=cwd, check=False, env=env,
+    )  # fmt: skip
+    assert done.returncode == 2, done.stderr
+    assert "no gated infographic published" in done.stderr
+    (folder,) = [
+        path for path in (cwd / "out").iterdir() if (path / "infographic" / "brief.json").is_file()
+    ]
+    return folder
+
+
 def test_gate_real_tesseract_images(tmp_path: Path) -> None:
     PROOF.mkdir(parents=True, exist_ok=True)
     brief = page_brief(LINES)
@@ -344,19 +362,7 @@ def test_explain_records_binary_tesseract_failure(
 
 
 def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
-    first = run_cli(
-        tmp_path,
-        "explain",
-        "--source",
-        "fixture:shop",
-        "--voice",
-        "none",
-        "--store",
-        str(tmp_path / "store"),
-        "--out",
-        str(tmp_path / "out"),
-    )
-    seed = tmp_path / first["out"]
+    seed = brief_without_infographic(tmp_path, BOARD)
     lines = brief_texts(seed)
     payload = json.loads((seed / "infographic" / "brief.json").read_text())
     assert payload["relations"], "the shop brief should give the artist calls to draw"

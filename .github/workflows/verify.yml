@@ -17,7 +17,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: false
-      - run: brew install ffmpeg tesseract
+      - run: brew install ffmpeg tesseract espeak-ng
       - run: uv sync --frozen
       - run: uv run playwright install chromium
       - run: |
