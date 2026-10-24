@@ -227,10 +227,13 @@ def test_gate_needs_a_drawn_line_between_related_boxes(scene: str, tmp_path: Pat
 
 
 def test_gate_rejects_arrowhead_that_merges_with_label(tmp_path: Path) -> None:
+    # The head covers the first glyph of the target label. A head that only touches the label
+    # (ending near x=840) reads differently per OCR build and font raster: pass on CI, an
+    # invented token locally. From x=860 every read loses "apply".
     body = (
         node(SOURCE, 100, 300, cls="")
         + node(TARGET, 800, 300, cls="")
-        + wire([(440, 355), (840, 355)])
+        + wire([(440, 355), (870, 355)])
     )
     png = render_html_png(body, tmp_path / "overlap.png")
     PROOF.mkdir(parents=True, exist_ok=True)
