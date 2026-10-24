@@ -1,13 +1,13 @@
 {
   "skill": "baoyu-infographic",
   "backend": "codex-imagegen",
-  "layout": "structural-breakdown",
-  "style": "technical-schematic",
+  "layout": "structural-breakdown (exploded)",
+  "style": "technical-schematic (isometric)",
   "aspect": "16:9",
   "language": "en",
-  "image_sha256": "51b87d9c9eb9bf55f6bb9a22bc6261f473658cb64183a8512a3008737bc70104",
-  "prompt_sha256": "61c4d9ebc8a99ff4171105bac6b81ac687022f217eeb4adb85ad9aabe6158f62",
-  "purpose": "Shows how the System View flight test turns swarm-deploy #116 into a parts board, video and page with no code lines.",
-  "visual_note": "Viewed: title \"System View: explain a PR as parts, not lines\", stations \"PR map\", \"Arena: 3 layouts\", \"System View board\", \"Video and page\", note \"Open gap: infographic gate needs a system brief\".",
-  "created_at": "2026-10-24T22:44:09Z"
+  "image_sha256": "536f29abcb87aa6526f03db3590e338b5a0595147c3fb1601478f6ae1d54d6a4",
+  "prompt_sha256": "7b30a259bc1f36076191066de21fac98302ffe7d0ade5af2ba8b0dd794cc48dc",
+  "purpose": "Shows swarm-deploy #116 exploded into its five system parts, with how the System View was built and what is still open.",
+  "visual_note": "Viewed: title \"System View: one PR, five parts\", blocks \"COMPOSE LOADER\" and \"SHARED/FAULTS\", arrow \"returns one type\", callouts \"1129 tests pass\" and \"Open: bent arrows\".",
+  "created_at": "2026-10-24T23:49:57Z"
 }
