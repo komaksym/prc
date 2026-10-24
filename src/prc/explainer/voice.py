@@ -92,6 +92,7 @@ class KokoroBackend(Backend):
         self._pipe: Any = None
 
     def _pipeline(self) -> Any:
+        """The shared KPipeline, built once on first synthesis."""
         if self._pipe is None:
             from kokoro import KPipeline  # type: ignore[import-not-found]
 
@@ -146,6 +147,9 @@ class NoneBackend(Backend):
 
 def available(name: str) -> bool:
     if name == "kokoro":
+        # Kokoro synthesizes offline only when its modules and its spaCy model
+        # package are installed: without the model its text front end downloads
+        # it on first use. find_spec answers without importing torch or spaCy.
         try:
             return all(
                 importlib.util.find_spec(module) is not None

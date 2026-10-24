@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from prc.evaluation.analysis import PairOutcome
-from prc.evaluation.protocol import Condition
+from prc.evaluation.protocol import Condition, Protocol
 from prc.evaluation.scoring import OutcomeState, SnapshotResult
 
 
@@ -39,3 +39,13 @@ def load_pairs(path: Path) -> list[PairOutcome]:
         )
         for entry in raw["pairs"]
     ]
+
+
+def load_pairs_with_protocol(path: Path) -> tuple[list[PairOutcome], Protocol | None]:
+    """Load pair outcomes; new results carry an explicit sealed protocol block."""
+
+    raw = json.loads(path.read_text())
+    protocol_block = raw.get("protocol")
+    protocol = Protocol(**protocol_block) if protocol_block else None
+
+    return load_pairs(path), protocol

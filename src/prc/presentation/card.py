@@ -9,30 +9,59 @@ changed symbol outside test files with no incoming edge from a test symbol.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from importlib.resources import files as _files
 from pathlib import Path
 from typing import Any
 from xml.sax.saxutils import escape as _escape
 
-CHANGED = ("added", "modified", "deleted")
+from prc.captions import shown, shown_html
+from prc.facts import (
+    CHANGED as CHANGED,
+)
+from prc.facts import (
+    TEST_NOTE,
+    compute_facts,
+    test_paths,
+)
+from prc.facts import (
+    CardStats as CardStats,
+)
+from prc.facts import (
+    UntestedEntry as UntestedEntry,
+)
+from prc.facts import (
+    brief_of as _brief_of,
+)
+from prc.facts import (
+    compute_stats as compute_stats,
+)
+from prc.facts import (
+    untested as untested,
+)
+
 TEMPLATE = _files("prc.presentation") / "assets" / "card.html"
+LOOK_LIMIT = 3
+RISK_LIMIT = 3
+
+_FIT = """() => {
+  const bottom = document.querySelector('.cols').getBoundingClientRect().bottom + 0.5;
+  const over = (list) => [...document.querySelectorAll(list + ' li')]
+    .some((item) => item.getBoundingClientRect().bottom > bottom);
+  const block = document.querySelector('.untested');
+  const footer = document.querySelector('footer').getBoundingClientRect();
+  return {
+    look: over('#look-first'),
+    risky: over('#risky'),
+    evidence: block.scrollHeight > block.clientHeight + 1
+      || block.getBoundingClientRect().bottom > footer.top + 0.5,
+  };
+}"""
 
 
 class CardError(RuntimeError):
     """A missing tool or a failed capture, worded for the person running the CLI."""
-
-
-@dataclass(frozen=True, slots=True)
-class CardStats:
-    files: int
-    symbols_changed: int
-    call_sites: int
-    tests_touched: int
-    ci_passed: int
-    ci_total: int
-    ci_text: str
-    untested_total: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,54 +78,12 @@ class RiskEntry:
     reason: str
 
 
-@dataclass(frozen=True, slots=True)
-class UntestedEntry:
-    id: str
-    name: str
-    path: str
-
-
-def _brief_dict(brief: Any) -> dict[str, Any]:
-    """The brief as a plain map.json dict, from a dict or a prc.brief.Brief."""
-    if brief is None or isinstance(brief, dict):
-        return brief if brief is not None else {}
-    return {
-        "files": [{"path": f.path, "kind": f.kind, "sensitive": f.sensitive} for f in brief.files],
-        "checks": [{"name": c.name, "state": c.state} for c in brief.checks],
-    }
-
-
-def _brief_of(m: dict[str, Any], brief: Any) -> dict[str, Any]:
-    if brief is not None:
-        return _brief_dict(brief)
-    raw = m.get("brief")
-    return _brief_dict(raw) if not isinstance(raw, dict) else raw
-
-
 def _test_paths(brief: dict[str, Any]) -> set[str]:
-    return {f["path"] for f in brief.get("files", []) if f.get("kind") == "test"}
+    return test_paths({}, brief)
 
 
 def _changed(m: dict[str, Any]) -> list[dict[str, Any]]:
     return [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
-
-
-def compute_stats(m: dict[str, Any], brief: Any = None) -> CardStats:
-    """Shared stat code: the card shows these, and EVAL gate 6 recomputes them."""
-    b = _brief_of(m, brief)
-    changed = _changed(m)
-    checks = b.get("checks", [])
-    passed = sum(1 for c in checks if c.get("state") == "passed")
-    return CardStats(
-        files=len(b.get("files", [])),
-        symbols_changed=len(changed),
-        call_sites=sum(s.get("call_sites", 0) for s in changed),
-        tests_touched=sum(1 for f in b.get("files", []) if f.get("kind") == "test"),
-        ci_passed=passed,
-        ci_total=len(checks),
-        ci_text=f"{passed}/{len(checks)}" if checks else "no CI",
-        untested_total=len(untested(m, b)),
-    )
 
 
 def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
@@ -107,7 +94,7 @@ def headline(m: dict[str, Any], board: dict[str, Any] | None = None) -> str:
                 return str(scene["l1"])
         for scene in board.get("scenes", []):
             if scene.get("type") == "title" and scene.get("say"):
-                return str(scene["say"][0])
+                return shown(scene["say"][0])
     return str(m.get("title", ""))
 
 
@@ -181,13 +168,19 @@ def look_first(
     changed lines, then coverage, then callers. Quoted lines outside changed symbols
     get a file-level entry. Unquoted symbols keep the coverage-first order.
     """
-    tests = _test_paths(_brief_of(m, brief))
+    tests = test_paths(m, brief)
     callers: dict[str, int] = {}
     for e in m.get("edges", []):
         callers[e.get("source", "")] = callers.get(e.get("source", ""), 0) + 1
         callers[e.get("target", "")] = callers.get(e.get("target", ""), 0) + 1
     test_symbols = {s["id"] for s in m.get("symbols", []) if s.get("path") in tests}
-    covered = {e["target"] for e in m.get("edges", []) if e.get("source") in test_symbols}
+    covered = {
+        e["target"]
+        for e in m.get("edges", [])
+        if e.get("source") in test_symbols
+        and e.get("status") != "removed"
+        and e.get("resolution") == "exact"
+    }
     cands = [
         sym
         for sym in m.get("symbols", [])
@@ -264,7 +257,7 @@ def _file_fallbacks(
     status = {f.get("path"): f.get("status") for f in m.get("files", []) if isinstance(f, dict)}
     return [
         LookEntry(
-            f"file:{f['path']}", "top-level change", f["path"], status.get(f["path"]) or "modified"
+            f"file:{f['path']}", "file-level change", f["path"], status.get(f["path"]) or "modified"
         )
         for f in _brief_of(m, brief).get("files", [])
         if f.get("kind") == "code"
@@ -289,24 +282,6 @@ def risky(m: dict[str, Any], brief: Any = None) -> tuple[RiskEntry, ...]:
     return tuple(ordered)
 
 
-def untested(m: dict[str, Any], brief: Any = None) -> tuple[UntestedEntry, ...]:
-    """Changed symbols outside test files with no incoming edge from a test symbol."""
-    b = _brief_of(m, brief)
-    tests = _test_paths(b)
-    test_symbols = {s["id"] for s in m.get("symbols", []) if s.get("path") in tests}
-    covered = {e["target"] for e in m.get("edges", []) if e.get("source") in test_symbols}
-    return tuple(
-        sorted(
-            (
-                UntestedEntry(s["id"], s["qualname"], s["path"])
-                for s in _changed(m)
-                if s.get("path") not in tests and s["id"] not in covered
-            ),
-            key=lambda u: u.id,
-        )
-    )
-
-
 def _stat(value: object, label: str, tone: str = "") -> str:
     return (
         f'<div class="stat{tone}"><div class="stat-value">{_escape(str(value))}</div>'
@@ -314,71 +289,99 @@ def _stat(value: object, label: str, tone: str = "") -> str:
     )
 
 
+def _label(count: int, one: str, many: str) -> str:
+    return one if count == 1 else many
+
+
+def _breakable(value: str) -> str:
+    return re.sub(r"(::|[./])", r"\1<wbr>", _escape(value))
+
+
 def build_card_html(
-    m: dict[str, Any], brief: Any = None, board: dict[str, Any] | None = None
+    m: dict[str, Any],
+    brief: Any = None,
+    board: dict[str, Any] | None = None,
+    look_shown: int = LOOK_LIMIT,
+    risk_shown: int = RISK_LIMIT,
 ) -> str:
-    """Render the card.html template. Every PR-controlled string is HTML-escaped."""
-    stats = compute_stats(m, brief)
-    entries = look_first(m, brief, 3, board)
+    facts = compute_facts(m, brief)
+    stats = facts.stats
+    entries = look_first(m, brief, LOOK_LIMIT, board)
     surfaces = risky(m, brief)
-    missing = untested(m, brief)
+    missing = facts.no_direct_test
     repo = str(m.get("pr", ""))
     sha = str(m.get("head_sha", ""))
 
     stats_html = "".join(
         [
-            _stat(stats.files, "files"),
-            _stat(stats.symbols_changed, "symbols changed"),
-            _stat(stats.call_sites, "call sites"),
-            _stat(stats.tests_touched, "tests touched"),
+            _stat(stats.files, _label(stats.files, "file", "files")),
+            _stat(
+                stats.symbols_changed,
+                _label(stats.symbols_changed, "parsed symbol changed", "parsed symbols changed"),
+            ),
+            _stat(
+                stats.call_sites,
+                _label(stats.call_sites, "resolved call site", "resolved call sites"),
+            ),
+            _stat(
+                stats.tests_touched,
+                _label(stats.tests_touched, "test file touched", "test files touched"),
+            ),
             _stat(
                 stats.ci_text,
-                "CI passed",
-                "" if stats.ci_total == 0 or stats.ci_passed == stats.ci_total else " bad",
+                "no CI" if facts.ci_state == "none" else f"CI {facts.ci_state}",
+                {"failed": " bad", "pending": " warn"}.get(facts.ci_state, ""),
             ),
             _stat(
                 stats.untested_total,
-                "no direct test",
+                "parsed code without test evidence",
                 "" if stats.untested_total == 0 else " warn",
             ),
         ]
     )
     look_html = (
         "".join(
-            f'<li class="st-{_escape(e.status)}"><span class="name">{_escape(e.name)}</span><br>'
-            f'<span class="path">{_escape(e.path)}</span></li>'
-            for e in entries
+            f'<li class="st-{_escape(e.status)}"><span class="name">{_breakable(e.name)}</span>'
+            f'<br><span class="path">{_breakable(e.path)}</span></li>'
+            for e in entries[:look_shown]
         )
-        or '<li><span class="reason">Nothing stands out.</span></li>'
+        if entries
+        else '<li><span class="reason">Nothing stands out.</span></li>'
     )
+    if len(entries) > look_shown:
+        look_html += f'<li><span class="reason">+{len(entries) - look_shown} more</span></li>'
     risky_html = (
         "".join(
-            f'<li class="st-modified"><span class="name">{_escape(r.path)}</span><br>'
+            f'<li class="st-modified"><span class="name">{_breakable(r.path)}</span><br>'
             f'<span class="reason">{_escape(r.reason)}</span></li>'
-            for r in surfaces[:3]
+            for r in surfaces[:risk_shown]
         )
-        or '<li><span class="reason">None.</span></li>'
+        if surfaces
+        else '<li><span class="reason">None.</span></li>'
     )
-    if len(surfaces) > 3:
-        shown_reasons = {r.reason for r in surfaces[:3]}
-        hidden = sorted({r.reason for r in surfaces[3:] if r.reason not in shown_reasons})
+    if len(surfaces) > risk_shown:
+        shown_reasons = {r.reason for r in surfaces[:risk_shown]}
+        hidden = sorted({r.reason for r in surfaces[risk_shown:] if r.reason not in shown_reasons})
         suffix = _escape(f": {', '.join(hidden)}") if hidden else ""
-        risky_html += f'<li><span class="reason">+{len(surfaces) - 3} more{suffix}</span></li>'
-    if not _changed(m):
-        untested_html = "<strong>No code symbols changed.</strong>"
-    elif all(s.get("path") in _test_paths(_brief_of(m, brief)) for s in _changed(m)):
-        untested_html = "No production symbols changed."
-    elif missing:
+        more = len(surfaces) - risk_shown
+        risky_html += f'<li><span class="reason">+{more} more{suffix}</span></li>'
+    lines = []
+    lead = facts.limits_lead
+    if lead:
+        listed = ", ".join(f"{entry.path} ({entry.reason})" for entry in facts.limits)
+        lines.append(f"<strong>{_escape(lead)}</strong> {_escape(listed)}")
+    lines.append(_escape(facts.test_verdict))
+    if missing:
         shown = ", ".join(f'<span class="mono">{_escape(u.name)}</span>' for u in missing[:3])
         rest = f" +{len(missing) - 3} more" if len(missing) > 3 else ""
-        untested_html = f"<strong>No direct test:</strong> {shown}{_escape(rest)}"
-    else:
-        untested_html = "Every changed symbol has a direct test."
+        lines.append(f"{shown}{_escape(rest)}")
+    lines.append(_escape(TEST_NOTE))
+    untested_html = "<br>".join(lines)
 
     page = TEMPLATE.read_text()
     for token, value in (
         ("EYEBROW", f"PR card · {repo}"),
-        ("HEADLINE", headline(m, board)),
+        ("HEADLINE", shown_html(headline(m, board))),
         ("STATS", stats_html),
         ("LOOK_FIRST", look_html),
         ("RISKY", risky_html),
@@ -387,13 +390,18 @@ def build_card_html(
     ):
         page = page.replace(
             "{{" + token + "}}",
-            _escape(value) if token in ("EYEBROW", "HEADLINE", "FOOTER") else value,
+            _escape(value) if token in ("EYEBROW", "FOOTER") else value,
         )
     return page
 
 
-def render_card_png(html_path: Path, out_path: Path) -> Path:
-    """Screenshot card.html at 1200x630, scale 2, with the map_video Chromium pattern."""
+def render_card(
+    m: dict[str, Any],
+    brief: Any,
+    board: dict[str, Any] | None,
+    html_path: Path,
+    out_path: Path,
+) -> Path:
     from prc.presentation.map_video import CARD_SCALE, CARD_VIEWPORT
 
     try:
@@ -420,8 +428,22 @@ def render_card_png(html_path: Path, out_path: Path) -> Path:
                 color_scheme="dark",
             )
             page = context.new_page()
-            page.goto(html_path.resolve().as_uri())
-            page.evaluate("document.fonts.ready.then(() => true)")
+            look_shown, risk_shown = LOOK_LIMIT, RISK_LIMIT
+            while True:
+                html_path.write_text(build_card_html(m, brief, board, look_shown, risk_shown))
+                page.goto(html_path.resolve().as_uri())
+                page.evaluate("document.fonts.ready.then(() => true)")
+                over = page.evaluate(_FIT)
+                if over["evidence"]:
+                    raise CardError("The PR card cannot fit its test-evidence lines in 1200x630.")
+                if over["look"] and look_shown > 0:
+                    look_shown -= 1
+                elif over["risky"] and risk_shown > 0:
+                    risk_shown -= 1
+                elif over["look"] or over["risky"]:
+                    raise CardError("The PR card cannot fit its lists in 1200x630.")
+                else:
+                    break
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_bytes(page.screenshot(type="png"))
         finally:

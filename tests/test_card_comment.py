@@ -11,6 +11,7 @@ import json
 import re
 import shutil
 import subprocess
+from html import unescape
 from pathlib import Path
 from typing import Any
 
@@ -135,6 +136,52 @@ def test_mermaid_edges_match_shop_map() -> None:
 # --- Mermaid labels survive hostile input ---
 
 
+@pytest.mark.parametrize(
+    ("qualname", "label"),
+    [
+        ('command["nested.run"]', 'command["nested.run"]'),
+        ('command["a::b"]', 'command["a::b"]'),
+        ('command["nested.exec"].run', "run"),
+        ("a" * 41 + '.command["a-b"]', 'command["a-b"]'),
+        ("a" * 41 + '::command["a::b"]', 'command["a::b"]'),
+        ("LinkedInMDPClient._get_paged", "_get_paged"),
+    ],
+)
+def test_comment_keeps_bracket_property_identity(qualname: str, label: str) -> None:
+    m = large_dict(1)
+    m["symbols"][0]["qualname"] = qualname
+    block = comment.mermaid_block(m)
+    expected = label.replace('"', "#quot;")
+    assert f'["{expected}"]' in block
+    assert comment.check_mermaid(block) == []
+
+
+@pytest.mark.parametrize("special", ['"', "#", "<", ">"])
+def test_comment_truncates_long_labels_at_complete_entities(special: str) -> None:
+    proof = ROOT / "artifacts/e2e/long-mermaid-labels"
+    proof.mkdir(parents=True, exist_ok=True)
+    samples: list[dict[str, Any]] = []
+    for length in range(45, 65):
+        qualname = "x" * length + special + "y" * 50
+        m = large_dict(1)
+        m["symbols"][0]["qualname"] = qualname
+        text = comment.render_comment(m)
+        block = comment.mermaid_block(m)
+        label = comment.mermaid_label(qualname)
+        samples.append(
+            {
+                "qualname": qualname,
+                "label": label,
+                "comment": text,
+                "errors": comment.check_mermaid(block),
+            }
+        )
+    (proof / f"labels-{ord(special)}.json").write_text(json.dumps(samples, indent=2))
+    assert all(not sample["errors"] for sample in samples), samples
+    assert all(len(sample["label"]) <= comment.LABEL_LIMIT for sample in samples)
+    assert all(sample["label"].endswith("…") for sample in samples)
+
+
 def test_mermaid_label_fuzz() -> None:
     hostile = '" `backtick` <angle> [sq] (par) {brace} |pipe| #hash ;semi;\nnewline\x00\x07'
     label = comment.mermaid_label(hostile)
@@ -185,7 +232,11 @@ def recompute(m: dict[str, Any]) -> dict[str, object]:
     changed = [s for s in m["symbols"] if s["status"] in ("added", "modified", "deleted")]
     test_paths = {f["path"] for f in brief["files"] if f["kind"] == "test"}
     test_symbols = {s["id"] for s in m["symbols"] if s["path"] in test_paths}
-    callers = {e["target"] for e in m["edges"] if e["source"] in test_symbols}
+    callers = {
+        e["target"]
+        for e in m["edges"]
+        if e["source"] in test_symbols and e["status"] != "removed" and e["resolution"] == "exact"
+    }
     checks = brief.get("checks", [])
     passed = sum(1 for c in checks if c["state"] == "passed")
     return {
@@ -195,7 +246,9 @@ def recompute(m: dict[str, Any]) -> dict[str, object]:
         "tests": sum(1 for f in brief["files"] if f["kind"] == "test"),
         "ci": "no CI" if not checks else f"{passed}/{len(checks)}",
         "untested": sorted(
-            s["id"] for s in changed if s["path"] not in test_paths and s["id"] not in callers
+            s["id"]
+            for s in changed
+            if s["status"] != "deleted" and s["path"] not in test_paths and s["id"] not in callers
         ),
     }
 
@@ -258,11 +311,38 @@ def test_card_part_order_and_headline() -> None:
     assert positions == sorted(positions), positions
 
 
+def headline_parts(page: str) -> tuple[str, list[str]]:
+    found = re.search(r'<h1 class="headline">(.*?)</h1>', page, re.S)
+    assert found, "card has a headline"
+    inner = found.group(1)
+    return unescape(re.sub(r"<[^>]+>", "", inner)), re.findall(r"<code>([^<]*)</code>", inner)
+
+
+def test_headline_uses_the_shown_text_of_a_spoken_caption() -> None:
+    m = shop_dict()
+    spoken = {"show": "The AI step is new.", "speak": "The A.I. step is new."}
+    board = {"scenes": [{"type": "title", "say": [spoken]}]}
+    assert headline_parts(card.build_card_html(m, m["brief"], board)) == ("The AI step is new.", [])
+    first = comment.render_comment(m, m["brief"], board).splitlines()[0]
+    assert first == "# `The AI step is new.`"
+
+
+def test_card_headline_sets_backticked_names_as_code() -> None:
+    m = shop_dict()
+    say = ['`select_next_episode` now skips <gaps> & "holes"; an unpaired ` stays.']
+    page = card.build_card_html(m, m["brief"], {"scenes": [{"type": "title", "say": say}]})
+    assert headline_parts(page) == (
+        'select_next_episode now skips <gaps> & "holes"; an unpaired ` stays.',
+        ["select_next_episode"],
+    )
+    assert "<gaps>" not in page
+
+
 def test_card_look_first_shows_three_tour_symbols_with_files() -> None:
     m = shop_dict()
     entries = card.look_first(m)
     assert len(entries) == 3
-    html = card.build_card_html(m, m["brief"], None)
+    html = card.build_card_html(m, m["brief"], None).replace("<wbr>", "")
     for entry in entries:
         assert entry.name in html
         assert entry.path in html
@@ -290,8 +370,8 @@ def test_test_only_symbols_do_not_claim_production_test_coverage() -> None:
     text = comment.render_comment(m)
     assert "Every changed symbol has a direct test." not in html
     assert "Every changed symbol has a direct test." not in text
-    assert "No production symbols changed." in html
-    assert "No production symbols changed." in text
+    assert "No live production symbols changed." in html
+    assert "No live production symbols changed." in text
 
 
 def test_look_first_prefers_board_quoted_files() -> None:
@@ -515,7 +595,7 @@ def test_comment_part_order_and_span() -> None:
         "```mermaid",
         "Look here first",
         "Risky",
-        "Not covered by tests",
+        "Direct test-call evidence",
         m["head_sha"][:12],
     ]
     positions = [text.find(part) for part in order]
@@ -546,7 +626,7 @@ def test_docs_only_pr_gives_valid_card_and_comment() -> None:
     assert "No code symbols changed" in text
     block = comment.mermaid_block(DOCS_ONLY)
     assert comment.check_mermaid(block) == []
-    assert "```mermaid" in text
+    assert "```mermaid" not in text
 
 
 # --- The picture: OCR at 800 px finds every stat and name ---
@@ -582,12 +662,19 @@ def assert_readable(blob: str, expected: str, limit: int = 2) -> None:
 
 
 def _ocr_text(png: Path) -> str:
+    """Sparse-text mode: the card is separate tiles and columns, not one page of prose.
+
+    The default page mode joins the six tile labels into one line and misreads them.
+    """
     small = png.with_name("card-800.png")
     subprocess.run(
         ["sips", "-Z", "800", str(png), "--out", str(small)], check=True, capture_output=True
     )
     out = subprocess.run(
-        ["tesseract", str(small), "stdout"], capture_output=True, text=True, check=True
+        ["tesseract", str(small), "stdout", "--psm", "11"],
+        capture_output=True,
+        text=True,
+        check=True,
     )
     return out.stdout
 
@@ -606,32 +693,34 @@ def test_card_png_renders_and_ocr_finds_stats_and_names(tmp_path: Path) -> None:
 
     m = shop_dict()
     html_path = tmp_path / "card.html"
-    html_path.write_text(card.build_card_html(m, m["brief"], None))
-    png = card.render_card_png(html_path, tmp_path / "card.png")
+    png = card.render_card(m, m["brief"], None, html_path, tmp_path / "card.png")
     header = png.read_bytes()[:24]
     assert header[:8] == b"\x89PNG\r\n\x1a\n"
     import struct
 
     assert struct.unpack(">II", header[16:24]) == (2400, 1260)
 
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1200, "height": 630})
+        page.goto(html_path.as_uri())
+        page.screenshot(path=str(tmp_path / "card-labels.png"))
+        clipped = page.locator(".stat-label").evaluate_all(
+            "labels => labels.filter(el => el.scrollWidth > el.clientWidth || "
+            "el.getBoundingClientRect().bottom > el.parentElement.getBoundingClientRect().bottom)"
+            ".map(el => el.textContent)"
+        )
+        browser.close()
+    assert not clipped, f"card statistic labels are clipped: {clipped}"
+
     raw = _ocr_text(png)
     found = re.sub(r"[^a-z0-9]", "", raw.lower())
     stats = card.compute_stats(m)
-    labels = ["files", "symbols", "callsites", "tests", "ci", "directtest"]
-    for token in [
-        *(
-            str(v)
-            for v in (
-                stats.files,
-                stats.symbols_changed,
-                stats.call_sites,
-                stats.tests_touched,
-            )
-        ),
-        *labels,
-    ]:
-        assert re.sub(r"[^a-z0-9]", "", token.lower()) in found, token
-    assert stats.ci_text in raw or re.sub(r"[^a-z0-9]", "", stats.ci_text) in found
+    for value in (stats.files, stats.symbols_changed, stats.call_sites, stats.tests_touched):
+        assert str(value) in found, value
+    labels = ["files", "parsed symbols", "resolved call sites", "test file", "CI", "direct test"]
+    for label in [*labels, stats.ci_text]:
+        assert_readable(found, label)
     names = [e.name for e in card.look_first(m)]
     names += [r.path for r in card.risky(m)]
     names += [u.name for u in card.untested(m)[:3]]
@@ -690,3 +779,177 @@ def test_card_keeps_long_risky_paths_visible(tmp_path: Path) -> None:
         )
         browser.close()
     assert clipped == [], f"Risk paths are clipped: {clipped}"
+
+
+PATCH = ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch"
+
+
+def crowded_card_map() -> dict[str, Any]:
+    rows = [
+        ("noteCommand.multicursor.onComplete", "src/commands/note.ts", "added"),
+        ("openCommandCenterCommand.exec", "src/commands/openCommandCenter.ts", "modified"),
+        ("CommandCenter", "src/components/CommandCenter/CommandCenter.tsx", "modified"),
+    ]
+    symbols = [
+        {
+            "id": f"{path}::{name}",
+            "qualname": name,
+            "path": path,
+            "kind": "function",
+            "status": status,
+            "span": [1, 9],
+            "base_span": [1, 9],
+            "added": 3,
+            "removed": 0,
+            "hunks": [],
+            "call_sites": 0,
+        }
+        for name, path, status in rows
+    ]
+    code = [
+        {"path": path, "kind": "code", "added": 3, "removed": 0, "named": True, "sensitive": None}
+        for _, path, _ in rows
+    ]
+    return {
+        "pr": "cybersemics/em#5756",
+        "url": None,
+        "title": "Note closes the Command Center on touch.",
+        "author": "Copilot",
+        "base_sha": "9e2db12" + "0" * 33,
+        "head_sha": "3755cd396c00" + "0" * 28,
+        "brief": {
+            "files": [
+                {
+                    "path": PATCH,
+                    "kind": "code",
+                    "added": 18,
+                    "removed": 0,
+                    "named": False,
+                    "sensitive": "dependency patch",
+                },
+                {
+                    "path": "yarn.lock",
+                    "kind": "opaque",
+                    "added": 9,
+                    "removed": 0,
+                    "named": False,
+                    "sensitive": "dependency lockfile",
+                },
+                *code,
+            ],
+            "checks": [{"name": "Test", "state": "passed"}],
+            "mismatches": [],
+            "look_first": [],
+        },
+        "files": [
+            {"path": PATCH, "language": None, "kind": "code"},
+            *({"path": path, "language": "typescript", "kind": "code"} for _, path, _ in rows),
+        ],
+        "symbols": symbols,
+        "edges": [],
+        "tour": [],
+    }
+
+
+CARD_LAYOUT = """() => {
+  const cols = document.querySelector('.cols').getBoundingClientRect();
+  const block = document.querySelector('.untested');
+  const evidence = block.getBoundingClientRect();
+  const footer = document.querySelector('footer').getBoundingClientRect();
+  const problems = [];
+  for (const item of document.querySelectorAll('#look-first li, #risky li')) {
+    const box = item.getBoundingClientRect();
+    if (box.bottom > cols.bottom + 0.5) problems.push('below its column: ' + item.textContent);
+    if (box.bottom > evidence.top + 0.5) problems.push('over the evidence: ' + item.textContent);
+  }
+  if (block.scrollHeight > block.clientHeight + 1) problems.push('evidence block is clipped');
+  if (evidence.bottom > footer.top + 0.5) problems.push('evidence block runs into the footer');
+  return problems;
+}"""
+
+
+def test_crowded_card_keeps_every_block_visible(tmp_path: Path) -> None:
+    pytest.importorskip("playwright.sync_api")
+    from playwright.sync_api import sync_playwright
+
+    try:
+        with sync_playwright() as driver:
+            driver.chromium.launch().close()
+    except Exception as error:  # noqa: BLE001
+        pytest.skip(f"Chromium cannot launch here: {str(error).splitlines()[0]}")
+
+    m = crowded_card_map()
+    html_path = tmp_path / "card.html"
+    card.render_card(m, m["brief"], None, html_path, tmp_path / "card.png")
+    proof = ROOT / "artifacts" / "e2e" / "card-crowded"
+    proof.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(tmp_path / "card.png", proof / "card.png")
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        page = browser.new_page(viewport={"width": 1200, "height": 630})
+        page.goto(html_path.as_uri())
+        problems = page.evaluate(CARD_LAYOUT)
+        shown = page.locator("#look-first li .name").count()
+        notes = page.locator("#look-first li .reason").all_text_contents()
+        browser.close()
+    assert problems == []
+    more = [re.fullmatch(r"\+(\d+) more", note) for note in notes]
+    hidden = sum(int(match.group(1)) for match in more if match)
+    assert shown >= 1
+    assert shown + hidden == len(card.look_first(m, m["brief"], 3, None))
+
+
+def test_analysis_limits_keep_the_evidence_sentence_and_every_path() -> None:
+    m = crowded_card_map()
+    paths = [
+        f"internal/compose/structured/errors/package_{i}_with_a_long_name.go" for i in range(6)
+    ]
+    m["files"] += [{"path": path, "language": None, "kind": "code"} for path in paths]
+    m["brief"]["files"] += [
+        {"path": path, "kind": "code", "added": 1, "removed": 0, "named": False, "sensitive": None}
+        for path in paths
+    ]
+    text = comment.render_comment(m)
+    html = card.build_card_html(m, m["brief"], None)
+    lead = "No direct test evidence in this map for any live changed production symbol."
+    section = text.split("## Direct test-call evidence", 1)[1]
+    assert lead in section and lead in html
+    assert "incomplete for 7 files" in section and "incomplete for 7 files" in html
+    for path in [PATCH, *paths]:
+        assert f"`{path}`" in section, path
+    assert "…" not in section
+
+
+@pytest.mark.parametrize(
+    ("states", "value", "label"),
+    [
+        ([], "no CI", "no CI"),
+        (["failed", "passed"], "1/2", "CI failed"),
+        (["pending"], "0/1", "CI pending"),
+        (["passed"], "1/1", "CI passed"),
+    ],
+)
+def test_card_ci_label_follows_check_state(states: list[str], value: str, label: str) -> None:
+    m = shop_dict()
+    m["brief"]["checks"] = [{"name": f"c{i}", "state": state} for i, state in enumerate(states)]
+    html = card.build_card_html(m)
+    pairs = re.findall(
+        r'<div class="stat-value">([^<]*)</div><div class="stat-label">([^<]*)</div>', html
+    )
+    assert (value, label) in pairs
+    assert "CI no CI" not in comment.render_comment(m)
+
+
+def test_card_counts_of_one_read_singular() -> None:
+    m = shop_dict()
+    m["brief"]["files"] = [f for f in m["brief"]["files"] if f["kind"] == "test"][:1]
+    for symbol in m["symbols"]:
+        symbol["call_sites"] = 1 if symbol["qualname"] == "checkout" else 0
+    stats = card.compute_stats(m)
+    assert (stats.files, stats.call_sites, stats.tests_touched) == (1, 1, 1)
+    html = card.build_card_html(m)
+    pairs = re.findall(
+        r'<div class="stat-value">([^<]*)</div><div class="stat-label">([^<]*)</div>', html
+    )
+    for pair in (("1", "file"), ("1", "resolved call site"), ("1", "test file touched")):
+        assert pair in pairs, pairs

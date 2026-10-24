@@ -1,164 +1,83 @@
 (() => {
   "use strict";
-
-  const MAP = JSON.parse(document.getElementById("map-data").textContent);
-  const SVGNS = "http://www.w3.org/2000/svg";
-  const STATUSES = new Set(["added", "modified", "deleted", "context"]);
-  const EDGE_STATUSES = new Set(["added", "removed", "kept"]);
-  const GLYPH = { function: "f", method: "m", class: "C" };
-  const PILL = { added: "new", modified: "modified", deleted: "deleted" };
-  const LANE_LABEL = {
-    files: "Other changed files",
-    folders: "Folders",
-    callers: "Callers",
-    changed: "Changed code",
-    callees: "Callees",
-    tests: "Tests",
-  };
+  const BLOCK = JSON.parse(document.getElementById("map-data").textContent);
+  const MAP = BLOCK.map;
+  const GRAPH = BLOCK.graph;
+  const PSTEPS = BLOCK.steps;
+  const GROUPS = MAP.groups;
+  const FACTS = MAP.summary;
+  const STATS = FACTS.stats;
   const MINUS = "\u2212";
   const DOT = " \u00b7 ";
-  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6, folder: 3.2 };
+  const STEP_SECONDS = { overview: 4, risky_file: 3.4, entry: 3.8, callee: 3.4, test: 3.2, summary: 4.6 };
   const MAX_TOUR = 60;
   const MIN_STEP = 1.6;
   const MOVE = 1.0;
-  const DIM_NODE = 0.13;
-  const DIM_EDGE = 0.05;
-  const BEHIND_SUMMARY = 0.35;
   const LEGIBLE = 0.55;
-  const NO_TEST = "no direct test";
+  const NO_TEST = "no direct test evidence";
   const GITHUB_PR = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/pull\/[0-9]+$/;
-
+  const PILL = { added: "new", modified: "modified", deleted: "deleted" };
+  const EDGE_TAG = { added: "new call", removed: "removed call", kept: "call" };
   const $ = (id) => document.getElementById(id);
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
-  const status = (s) => (STATUSES.has(s) ? s : "context");
-  const edgeStatus = (s) => (EDGE_STATUSES.has(s) ? s : "kept");
-  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const round = (v) => Math.round(v * 10) / 10;
+  const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
   const basename = (path) => path.slice(path.lastIndexOf("/") + 1) || path;
-
   function el(tag, cls, text) {
     const node = document.createElement(tag);
     if (cls) node.className = cls;
     if (text !== undefined && text !== null) node.textContent = String(text);
     return node;
   }
-
-  function add(parent, ...children) {
-    for (const child of children) if (child) parent.appendChild(child);
+  function add(parent) {
+    for (let i = 1; i < arguments.length; i++) if (arguments[i]) parent.appendChild(arguments[i]);
     return parent;
   }
-
-  function svg(tag, cls) {
-    const node = document.createElementNS(SVGNS, tag);
-    if (cls) node.setAttribute("class", cls);
-    return node;
-  }
-
-  /* Model */
-
-  const nodes = [];
-  const symbolNode = new Map();
-  const fileNode = new Map();
+  const symById = new Map(MAP.symbols.map((s) => [s.id, s]));
+  const symIndex = new Map(MAP.symbols.map((s, i) => [s.id, i]));
   const fileByPath = new Map(MAP.files.map((f) => [f.path, f]));
+  const fileIndex = new Map(MAP.files.map((f, i) => [f.path, i]));
   const briefFile = new Map(MAP.brief.files.map((f) => [f.path, f]));
-
-  MAP.symbols.forEach((sym, i) => {
-    const box = LAYOUT.symbols[i];
-    if (!box || symbolNode.has(sym.id)) return;
-    const node = {
-      key: `s${i}`, kind: "symbol", sym, status: status(sym.status), name: sym.qualname,
-      path: sym.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
-      out: [], in: [], near: new Set(),
-    };
-    nodes.push(node);
-    symbolNode.set(sym.id, node);
-  });
-
-  MAP.files.forEach((file, i) => {
-    const box = LAYOUT.files[i];
-    if (!box || fileNode.has(file.path)) return;
-    const node = {
-      key: `f${i}`, kind: "file", file, status: file.status === "modified" ? "modified" : status(file.status),
-      name: basename(file.path), path: file.path, lane: box[0], x: box[1], y: box[2], w: box[3], h: box[4],
-      out: [], in: [], near: new Set(),
-    };
-    nodes.push(node);
-    fileNode.set(file.path, node);
-  });
-
-  const edges = [];
-
-  const folderNodes = [];
-  const folderByIndex = new Map();
-
-  for (let i = 0; i < (LAYOUT.folders || []).length; i++) {
-    const box = LAYOUT.folders[i];
-    const info = (LAYOUT.folderInfo || [])[i];
-    if (!box || !info) continue;
-    const members = (info.members || [])
-      .map((si) => symbolNode.get((MAP.symbols[si] || {}).id))
-      .filter(Boolean);
-    const folder = {
-      key: `g${i}`, index: i, info, members,
-      x: box[1], y: box[2], w: box[3], h: box[4],
-    };
-    folderNodes.push(folder);
-    folderByIndex.set(i, folder);
+  const testIds = new Set(FACTS.test_symbol_ids);
+  const missingIds = new Set(FACTS.no_direct_test.map((entry) => entry.id));
+  const graphById = new Map();
+  if (GRAPH) for (const node of GRAPH.nodes) graphById.set(node.id, node);
+  const mapIdOfGraph = new Map();
+  const graphIdOfMap = new Map();
+  if (GRAPH) {
+    for (const node of GRAPH.nodes) {
+      if (node.id.charAt(0) === "s") {
+        const sym = MAP.symbols[Number(node.id.slice(1))];
+        if (sym) {
+          mapIdOfGraph.set(node.id, sym.id);
+          graphIdOfMap.set(sym.id, node.id);
+        }
+      }
+    }
   }
-
-  const grouped = folderNodes.length > 0;
-
-  MAP.edges.forEach((edge, i) => {
-    const src = symbolNode.get(edge.source);
-    const dst = symbolNode.get(edge.target);
-    const route = LAYOUT.edges[i];
-    if (!src || !dst || typeof route !== "string") return;
-    const item = { key: `e${i}`, src, dst, route, status: edgeStatus(edge.status), byName: edge.resolution === "name" };
-    edges.push(item);
-    src.out.push(item);
-    dst.in.push(item);
-    src.near.add(dst);
-    dst.near.add(src);
-  });
-
-  const isTest = (node) => node.lane === "tests";
-  const live = (edge) => edge.status !== "removed";
-
-  for (const node of nodes) {
-    node.untested =
-      node.lane === "changed" && node.status !== "deleted" && !node.in.some((e) => isTest(e.src) && live(e));
-  }
-
-  const changed = nodes.filter((n) => n.kind === "symbol" && n.status !== "context");
-  const changedCode = changed.filter((n) => n.lane === "changed");
-  const testsTouched = changed.filter(isTest);
-  const untested = changedCode.filter((n) => n.untested);
-  const callSites = changedCode.reduce((sum, n) => sum + (n.sym.call_sites || 0), 0);
-  const added = edges.filter((e) => e.status === "added").length;
-  const removed = edges.filter((e) => e.status === "removed").length;
+  const isTestId = (id) => testIds.has(id);
+  const changed = MAP.symbols.filter((s) => s.status !== "context");
+  const changedCode = changed.filter((s) => !testIds.has(s.id));
+  const untested = FACTS.no_direct_test;
+  const callSites = STATS.call_sites;
+  const added = FACTS.edges_added;
+  const removed = FACTS.edges_removed;
   const risky = MAP.brief.files.filter((f) => f.sensitive);
-
-  function ciState() {
-    const checks = MAP.brief.checks;
-    const failed = checks.filter((c) => c.state === "failed");
-    if (!checks.length) return { cls: "none", label: "no CI", word: "none" };
-    if (failed.length) return { cls: "bad", label: "CI failed", word: "failed", failed };
-    if (checks.some((c) => c.state === "pending")) return { cls: "warn", label: "CI pending", word: "pending" };
-    return { cls: "good", label: "CI passed", word: "passed" };
-  }
-
-  const ci = ciState();
-
-  /* Header */
-
-  document.title = `${MAP.title} \u00b7 PR map`;
+  const ci = {
+    cls: { none: "none", failed: "bad", pending: "warn", passed: "good" }[FACTS.ci_state],
+    label: FACTS.ci_state === "none" ? "no CI" : "CI " + FACTS.ci_state,
+    word: STATS.ci_text,
+    failed: MAP.brief.checks.filter((c) => c.state === "failed"),
+  };
+  document.title = MAP.title + " \u00b7 PR map";
   $("title").textContent = MAP.title;
-
   (() => {
     const meta = $("meta");
     const sep = () => el("span", "sep", "\u00b7");
-    add(meta, sep(), el("span", "", MAP.pr), sep(), el("span", "", `by ${MAP.author}`), sep(),
-      el("span", "mono", `${MAP.base_sha.slice(0, 7)} \u2192 ${MAP.head_sha.slice(0, 7)}`));
+    add(meta, sep(), el("span", "who", MAP.pr), sep(), el("span", "who", "by " + MAP.author), sep(),
+      el("span", "mono", MAP.base_sha.slice(0, 7) + " \u2192 " + MAP.head_sha.slice(0, 7)));
     if (typeof MAP.url === "string" && GITHUB_PR.test(MAP.url)) {
       const link = el("a", "", "Open on GitHub");
       link.setAttribute("href", MAP.url);
@@ -166,369 +85,199 @@
       link.setAttribute("target", "_blank");
       add(meta, sep(), link);
     }
-
     const stats = $("stats");
     const stat = (value, label, cls, dot) => {
-      const box = el("div", `stat ${cls || ""}`);
+      const box = el("div", "stat " + (cls || ""));
       const val = el("div", "stat-value");
       if (dot) val.appendChild(el("span", "dot"));
       val.appendChild(el("span", "", value));
       return add(box, val, el("div", "stat-label", label));
     };
     add(stats,
-      stat(MAP.files.length, MAP.files.length === 1 ? "file" : "files"),
-      stat(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
-      stat(callSites, "call sites affected"),
-      stat(testsTouched.length, testsTouched.length === 1 ? "test touched" : "tests touched",
-        testsTouched.length ? "" : "warn"),
-      stat(ci.word, "CI on head", ci.cls, true),
+      stat(STATS.files, STATS.files === 1 ? "file" : "files"),
+      stat(STATS.symbols_changed, STATS.symbols_changed === 1 ? "parsed symbol changed" : "parsed symbols changed"),
+      stat(callSites, callSites === 1 ? "resolved call site" : "resolved call sites"),
+      stat(STATS.tests_touched, STATS.tests_touched === 1 ? "test file touched" : "test files touched",
+        STATS.tests_touched ? "" : "warn"),
+      stat(ci.word, ci.label, ci.cls, true),
       stat(risky.length, risky.length === 1 ? "risky surface" : "risky surfaces", risky.length ? "warn" : ""));
+    if (FACTS.limits.length) {
+      const limit = stat(FACTS.limits.length,
+        FACTS.limits.length === 1 ? "file without symbol analysis" : "files without symbol analysis", "warn");
+      limit.setAttribute("title", FACTS.limits.map((entry) => entry.path + ": " + entry.reason).join("\n"));
+      stats.appendChild(limit);
+    }
   })();
-
-  /* Canvas */
-
   const viewport = $("viewport");
   const world = $("world");
-  world.style.width = `${LAYOUT.w}px`;
-  world.style.height = `${LAYOUT.h}px`;
-
-  if (LAYOUT.dense) world.classList.add("dense");
-  if (grouped) world.classList.add("grouped");
-
-  for (const band of LAYOUT.bands) {
-    const box = el("div", "band");
-    box.style.left = `${band[1]}px`;
-    box.style.top = `${band[2]}px`;
-    box.style.width = `${band[3]}px`;
-    box.style.height = `${band[4]}px`;
-    box.appendChild(el("div", "band-label", LANE_LABEL[band[0]] || ""));
-    world.appendChild(box);
-  }
-
-  for (const group of LAYOUT.groups) {
-    const sym = MAP.symbols[group[5]];
-    if (!sym) continue;
-    const label = add(el("div", "group"), el("span", "", sym.path));
-    label.style.left = `${group[1]}px`;
-    label.style.top = `${group[2]}px`;
-    label.style.width = `${group[3]}px`;
-    label.style.height = `${group[4]}px`;
-    label.setAttribute("title", sym.path);
-    world.appendChild(label);
-  }
-
-  if (!MAP.symbols.length) {
-    viewport.appendChild(el("div", "empty", "No function or class changed in a parsed file."));
-  }
-
-  const edgeLayer = svg("svg", "edges");
-  edgeLayer.setAttribute("width", String(LAYOUT.w));
-  edgeLayer.setAttribute("height", String(LAYOUT.h));
-  edgeLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
-  const defs = svg("defs");
-
-  for (const kind of EDGE_STATUSES) {
-    const marker = svg("marker");
-    marker.setAttribute("id", `arrow-${kind}`);
-    marker.setAttribute("viewBox", "0 0 10 10");
-    marker.setAttribute("refX", "9");
-    marker.setAttribute("refY", "5");
-    marker.setAttribute("markerWidth", "8");
-    marker.setAttribute("markerHeight", "8");
-    marker.setAttribute("markerUnits", "userSpaceOnUse");
-    marker.setAttribute("orient", "auto");
-    const tip = svg("path", `arrow-${kind}`);
-    tip.setAttribute("d", "M1 1L9 5L1 9z");
-    marker.appendChild(tip);
-    defs.appendChild(marker);
-  }
-
-  edgeLayer.appendChild(defs);
-  world.appendChild(edgeLayer);
-
-  function folderPath(p, q, across) {
-    const bend = across ? Math.max(24, Math.abs(q[0] - p[0]) / 2) : 0;
-    const drop = across ? 0 : Math.max(24, Math.abs(q[1] - p[1]) / 2);
-    const r = (v) => Math.round(v * 10) / 10;
-    return `M${r(p[0])} ${r(p[1])}C${r(p[0] + bend)} ${r(p[1] + drop)} ` +
-      `${r(q[0] - bend)} ${r(q[1] - drop)} ${r(q[0])} ${r(q[1])}`;
-  }
-
-  function folderPorts(a, b) {
-    if (a.x + a.w <= b.x) return [[a.x + a.w, a.y + a.h / 2], [b.x, b.y + b.h / 2], true];
-    if (b.x + b.w <= a.x) return [[a.x, a.y + a.h / 2], [b.x + b.w, b.y + b.h / 2], true];
-    if (a.y + a.h <= b.y) return [[a.x + a.w / 2, a.y + a.h], [b.x + b.w / 2, b.y], false];
-    if (b.y + b.h <= a.y) return [[a.x + a.w / 2, a.y], [b.x + b.w / 2, b.y + b.h], false];
-    return [[a.x + a.w / 2, a.y + a.h / 2], [b.x + b.w / 2, b.y + b.h / 2], true];
-  }
-
-  if (grouped) {
-    const folderLayer = svg("svg", "fedges");
-    folderLayer.setAttribute("width", String(LAYOUT.w));
-    folderLayer.setAttribute("height", String(LAYOUT.h));
-    folderLayer.setAttribute("viewBox", `0 0 ${LAYOUT.w} ${LAYOUT.h}`);
-    world.appendChild(folderLayer);
-
-    for (const [a, b, count, raw] of (LAYOUT.folderEdges || [])) {
-      const from = folderByIndex.get(a);
-      const to = folderByIndex.get(b);
-      if (!from || !to) continue;
-      const st = edgeStatus(raw);
-      const [p, q, across] = folderPorts(from, to);
-      const line = svg("path", `ge ge-${st}`);
-      line.setAttribute("d", folderPath(p, q, across));
-      line.setAttribute("marker-end", `url(#arrow-${st})`);
-      line.setAttribute("data-folder-edge", `${from.key}-${to.key}`);
-      line.setAttribute("data-count", String(count));
-      line.setAttribute("stroke-width", String(Math.min(10, Math.round((1.5 + 2 * Math.sqrt(count)) * 10) / 10)));
-      folderLayer.appendChild(line);
+  const drawer = $("drawer");
+  const drawerOpen = () => drawer.getAttribute("aria-hidden") === "false";
+  let diagramW = 960;
+  let diagramH = 420;
+  let atlas = { lanes: {}, nodes: {}, edges: {}, messages: {} };
+  let renderFailed = false;
+  if (!GRAPH || !GRAPH.nodes.length) {
+    if (BLOCK.layoutError || MAP.files.length || changed.length) {
+      renderFailed = true;
+      viewport.appendChild(el("div", "fallback", "Diagram unavailable" + DOT + "all changed files remain below."));
+    } else {
+      viewport.appendChild(el("div", "empty", "No changed files or parsed symbols in this capture."));
+    }
+  } else {
+    const theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches
+      ? "light"
+      : "dark";
+    try {
+      const out = prcLens.render(GRAPH, { lens: "architecture", theme: theme });
+      diagramW = out.width;
+      diagramH = out.height;
+      atlas = out.atlas;
+      const img = document.createElement("img");
+      img.setAttribute("alt", "");
+      img.setAttribute("width", String(out.width));
+      img.setAttribute("height", String(out.height));
+      img.setAttribute("src", "data:image/svg+xml;charset=utf-8," + encodeURIComponent(out.svg));
+      img.className = "diagram";
+      img.setAttribute("draggable", "false");
+      world.appendChild(img);
+    } catch (err) {
+      renderFailed = true;
+      viewport.appendChild(el("div", "fallback", "Diagram unavailable" + DOT + "the drawer still lists every change."));
     }
   }
-
-  const round = (v) => Math.round(v * 10) / 10;
-
-  const drawOrder = { kept: 0, removed: 1, added: 2 };
-
-  for (const edge of [...edges].sort((p, q) => drawOrder[p.status] - drawOrder[q.status])) {
-    const path = svg("path", `e e-${edge.status}${edge.byName ? " e-name" : ""}`);
-    path.setAttribute("d", edge.route);
-    path.setAttribute("marker-end", `url(#arrow-${edge.status})`);
-    path.setAttribute("data-edge", edge.key);
-    edge.el = path;
-    edgeLayer.appendChild(path);
-  }
-
-  function pathLine(path) {
-    const box = el("div", "path");
-    box.appendChild(el("span", "", path));
-    return box;
-  }
-
-  function rowCard(node) {
-    add(node.el, el("div", "bar"), el("span", "glyph", GLYPH[node.sym.kind] || "f"), el("span", "name", node.name));
-    if (PILL[node.status]) node.el.appendChild(el("span", "pill", PILL[node.status]));
-    if (node.untested) node.el.appendChild(el("span", "flag", "!"));
-    node.el.setAttribute("title", node.untested ? `${node.name} · ${NO_TEST}` : node.name);
-  }
-
-  function symbolCard(node) {
-    if (LAYOUT.dense) return rowCard(node);
-    const sym = node.sym;
-    const card = node.el;
-    const head = el("div", "n-row");
-    add(head, el("span", "glyph", GLYPH[sym.kind] || "f"), el("span", "name", node.name));
-    if (PILL[node.status]) head.appendChild(el("span", "pill", PILL[node.status]));
-    if (node.status === "context") {
-      const sub = add(el("div", "n-row"), pathLine(node.path));
-      if (sym.call_sites) sub.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
-      add(card, el("div", "bar"), head, sub);
-      return;
+  const files = el("details", "changed-files");
+  files.id = "changed-files";
+  files.open = renderFailed;
+  files.appendChild(el("summary", "", "Changed files (" + MAP.files.length + ")"));
+  const fileLinks = el("div", "file-links");
+  MAP.files.forEach((file, i) => {
+    const link = el("button", "flink", file.path);
+    link.setAttribute("type", "button");
+    link.addEventListener("click", () => openNode("f" + i, false));
+    fileLinks.appendChild(link);
+  });
+  files.appendChild(fileLinks);
+  viewport.appendChild(files);
+  const dropped = BLOCK.dropped;
+  const omittedTour = Math.max(0, MAP.tour.length - PSTEPS.length);
+  const coverage = dropped.symbols || dropped.edges || omittedTour
+    ? "Diagram shows " + (MAP.symbols.length - dropped.symbols) + " of " + MAP.symbols.length
+      + " individual symbols, " + (MAP.edges.length - dropped.edges) + " of " + MAP.edges.length
+      + " call arrows. Tour uses " + PSTEPS.length + " of " + MAP.tour.length + " steps."
+    : "";
+  $("graph-coverage").textContent = coverage;
+  world.style.width = diagramW + "px";
+  world.style.height = diagramH + "px";
+  const ringLayer = el("div", "rings");
+  world.appendChild(ringLayer);
+  function labelOf(id) {
+    const node = graphById.get(id);
+    if (!node) return id;
+    if (id.charAt(0) === "s") {
+      const sym = MAP.symbols[Number(id.slice(1))];
+      return sym ? sym.qualname : node.label;
     }
-    add(card, el("div", "bar"), head, pathLine(node.path));
-    const foot = el("div", "n-foot");
-    const delta = el("span", "delta");
-    add(delta, el("span", "plus", `+${sym.added}`), document.createTextNode(" "), el("span", "minus", `${MINUS}${sym.removed}`));
-    add(foot, delta);
-    if (node.status !== "deleted" && !isTest(node)) foot.appendChild(el("span", "sites", plural(sym.call_sites, "call site", "call sites")));
-    if (node.untested) foot.appendChild(el("span", "badge", NO_TEST));
-    card.appendChild(foot);
-  }
-
-  function fileCard(node) {
-    const card = node.el;
-    add(card, el("div", "bar"), el("span", "name", node.name));
-    if (node.file.sensitive) card.appendChild(el("span", "risk", node.file.sensitive));
-    card.setAttribute("title", node.path);
-  }
-
-  const expanded = new Set();
-  const memberFolder = new Map();
-
-  for (const folder of folderNodes) {
-    for (const member of folder.members) memberFolder.set(member, folder.index);
-  }
-
-  function countsLine(info) {
-    return `${info.added} added${DOT}${info.modified} modified${DOT}` +
-      `${info.deleted} deleted${DOT}${info.tests} tests`;
-  }
-
-  function folderBounds() {
-    return bounds(folderNodes);
-  }
-
-  function applyConceal() {
-    for (const [member, fi] of memberFolder) {
-      member.el.classList.toggle("concealed", !expanded.has(fi));
+    if (id.charAt(0) === "f") {
+      const file = MAP.files[Number(id.slice(1))];
+      return file ? file.path : node.label;
     }
-    for (const folder of folderNodes) {
-      const open = expanded.has(folder.index);
-      folder.el.classList.toggle("open", open);
-      folder.el.setAttribute("aria-expanded", open ? "true" : "false");
-    }
+    const group = GROUPS[Number(id.slice(1))];
+    return group ? group.label : node.label;
   }
-
-  function toggleFolder(folder) {
-    if (touring) exitTour();
-    if (expanded.has(folder.index)) expanded.delete(folder.index);
-    else expanded.add(folder.index);
-    applyConceal();
-    flyTo(fitTo(
-      expanded.has(folder.index) ? bounds([...folder.members, ...folderNodes]) : folderBounds(),
-      viewArea(),
-      1.25,
-    ));
-  }
-
-  function collapseAll() {
-    expanded.clear();
-    applyConceal();
-    userMoved = false;
-    flyTo(fitTo(folderBounds(), viewArea(), 1.1));
-  }
-
-  for (const folder of folderNodes) {
-    const card = el("button", "fcard");
-    card.setAttribute("data-folder", folder.key);
-    card.setAttribute("type", "button");
-    card.setAttribute("aria-expanded", "false");
-    card.setAttribute("title", folder.info.label);
-    card.style.left = `${folder.x}px`;
-    card.style.top = `${folder.y}px`;
-    card.style.width = `${folder.w}px`;
-    card.style.height = `${folder.h}px`;
-    add(card, el("div", "f-name", folder.info.label), el("div", "f-counts", countsLine(folder.info)));
-    const list = el("div", "flist");
-    for (const member of folder.members) {
-      const row = el("button", `fmem st-${member.status}`);
-      row.setAttribute("type", "button");
-      add(row, el("span", "fmem-name", member.name), el("span", "fmem-tag", member.status));
-      row.addEventListener("click", (event) => {
+  if (!renderFailed && GRAPH && GRAPH.nodes.length) {
+    for (const id of Object.keys(atlas.nodes)) {
+      if (!graphById.has(id)) continue;
+      const box = atlas.nodes[id];
+      const hit = el("button", "hit");
+      hit.setAttribute("type", "button");
+      hit.setAttribute("data-node", id);
+      hit.setAttribute("aria-label", labelOf(id));
+      hit.style.left = box.x + "px";
+      hit.style.top = box.y + "px";
+      hit.style.width = box.width + "px";
+      hit.style.height = box.height + "px";
+      hit.addEventListener("click", (event) => {
         event.stopPropagation();
-        select(member, true);
+        if (dragged) return;
+        openNode(id, true);
       });
-      list.appendChild(row);
+      world.appendChild(hit);
     }
-    card.appendChild(list);
-    card.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (!dragged) toggleFolder(folder);
-    });
-    card.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter") return;
-      event.stopPropagation();
-      toggleFolder(folder);
-    });
-    folder.el = card;
-    world.appendChild(card);
   }
-
-  for (const node of nodes) {
-    const card = el("div", `node ${node.kind === "file" ? "chip" : "sym"} st-${node.status}`);
-    card.setAttribute("data-node", node.key);
-    card.setAttribute("tabindex", "0");
-    card.setAttribute("role", "button");
-    card.style.left = `${node.x}px`;
-    card.style.top = `${node.y}px`;
-    card.style.width = `${node.w}px`;
-    card.style.height = `${node.h}px`;
-    node.el = card;
-    if (node.kind === "symbol") symbolCard(node);
-    else fileCard(node);
-    world.appendChild(card);
-  }
-
-  if (grouped) applyConceal();
-
-  /* Camera */
-
   const cam = { x: 0, y: 0, k: 1 };
-  const all = { x: 0, y: 0, w: LAYOUT.w, h: LAYOUT.h };
+  const all = { x: 0, y: 0, w: diagramW, h: diagramH };
   let userMoved = false;
-
   function applyCamera() {
-    world.style.transform = `translate(${round(cam.x)}px, ${round(cam.y)}px) scale(${cam.k.toFixed(4)})`;
-    viewport.style.backgroundPosition = `${round(cam.x)}px ${round(cam.y)}px`;
-    viewport.style.backgroundSize = `${round(24 * cam.k)}px ${round(24 * cam.k)}px`;
-    world.classList.toggle("far", cam.k < 0.55);
+    world.style.transform = "translate(" + round(cam.x) + "px, " + round(cam.y) + "px) scale(" + cam.k.toFixed(4) + ")";
+    viewport.style.backgroundPosition = round(cam.x) + "px " + round(cam.y) + "px";
+    viewport.style.backgroundSize = round(24 * cam.k) + "px " + round(24 * cam.k) + "px";
   }
-
-  function bounds(list) {
-    if (!list.length) return all;
-    const x = Math.min(...list.map((n) => n.x));
-    const y = Math.min(...list.map((n) => n.y));
-    return { x, y, w: Math.max(...list.map((n) => n.x + n.w)) - x, h: Math.max(...list.map((n) => n.y + n.h)) - y };
+  function boundsOf(ids) {
+    const boxes = ids.map((id) => atlas.nodes[id]).filter(Boolean);
+    if (!boxes.length) return all;
+    const x = Math.min.apply(null, boxes.map((b) => b.x));
+    const y = Math.min.apply(null, boxes.map((b) => b.y));
+    return { x: x, y: y, w: Math.max.apply(null, boxes.map((b) => b.x + b.width)) - x, h: Math.max.apply(null, boxes.map((b) => b.y + b.height)) - y };
   }
-
   function fitTo(box, area, maxK) {
     const pad = 32;
     const k = clamp(Math.min(area.w / (box.w + 2 * pad), area.h / (box.h + 2 * pad)), 0.12, maxK);
     return {
-      k,
+      k: k,
       x: area.x + area.w / 2 - (box.x + box.w / 2) * k,
       y: area.y + area.h / 2 - (box.y + box.h / 2) * k,
     };
   }
-
   function viewArea() {
     const w = viewport.clientWidth;
     const h = viewport.clientHeight;
-    const drawer = drawerOpen() ? Math.min(520, w * 0.92) : 0;
-    return { x: 16, y: 16, w: Math.max(200, w - 32 - drawer), h: Math.max(200, h - 88) };
+    const taken = drawerOpen() ? Math.min(520, w * 0.92) : 0;
+    return { x: 16, y: 16, w: Math.max(200, w - 32 - taken), h: Math.max(200, h - 88) };
   }
-
   function fit() {
-    Object.assign(cam, fitTo(all, viewArea(), 1.1));
+    const next = fitTo(all, viewArea(), 1.1);
+    cam.x = next.x;
+    cam.y = next.y;
+    cam.k = next.k;
     applyCamera();
   }
-
   function open() {
-    if (grouped) {
-      Object.assign(cam, fitTo(folderBounds(), viewArea(), 1.1));
-      applyCamera();
-      return;
-    }
     const area = viewArea();
     const whole = fitTo(all, area, 1.1);
-    const band = LAYOUT.bands.find((b) => b[0] === "changed");
-    if (whole.k >= LEGIBLE || !band) {
-      Object.assign(cam, whole);
+    if (whole.k >= LEGIBLE) {
+      cam.x = whole.x;
+      cam.y = whole.y;
+      cam.k = whole.k;
     } else {
-      const box = { x: band[1], y: band[2], w: band[3], h: band[4] };
-      const lane = fitTo(box, area, 1.1);
-      if (lane.k >= LEGIBLE) Object.assign(cam, lane);
-      else Object.assign(cam, {
-        k: LEGIBLE,
-        x: box.w * LEGIBLE <= area.w ? area.x + area.w / 2 - (box.x + box.w / 2) * LEGIBLE : area.x - box.x * LEGIBLE,
-        y: area.y - box.y * LEGIBLE,
-      });
+      cam.k = LEGIBLE;
+      cam.x = all.w * LEGIBLE <= area.w ? area.x + area.w / 2 - (all.x + all.w / 2) * LEGIBLE : area.x - all.x * LEGIBLE;
+      cam.y = area.y - all.y * LEGIBLE;
     }
     applyCamera();
   }
-
   let flight = 0;
-
   function flyTo(target) {
-    const from = { ...cam };
+    const from = { x: cam.x, y: cam.y, k: cam.k };
     const start = performance.now();
     const id = ++flight;
+    const cx = (c) => (viewport.clientWidth / 2 - c.x) / c.k;
+    const cy = (c) => (viewport.clientHeight / 2 - c.y) / c.k;
+    const fx = cx(from);
+    const fy = cy(from);
+    const tx = cx(target);
+    const ty = cy(target);
     const step = (now) => {
       if (id !== flight) return;
       const p = ease(clamp((now - start) / 420, 0, 1));
       const k = from.k * Math.pow(target.k / from.k, p);
-      const cx = lerp(centreX(from), centreX(target), p);
-      const cy = lerp(centreY(from), centreY(target), p);
-      Object.assign(cam, { k, x: viewport.clientWidth / 2 - cx * k, y: viewport.clientHeight / 2 - cy * k });
+      cam.k = k;
+      cam.x = viewport.clientWidth / 2 - lerp(fx, tx, p) * k;
+      cam.y = viewport.clientHeight / 2 - lerp(fy, ty, p) * k;
       applyCamera();
       if (p < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
   }
-
-  const lerp = (a, b, p) => a + (b - a) * p;
-  const centreX = (c) => (viewport.clientWidth / 2 - c.x) / c.k;
-  const centreY = (c) => (viewport.clientHeight / 2 - c.y) / c.k;
-
   function zoomAt(factor, sx, sy) {
     const k = clamp(cam.k * factor, 0.12, 2.5);
     cam.x = sx - ((sx - cam.x) * k) / cam.k;
@@ -537,16 +286,13 @@
     userMoved = true;
     applyCamera();
   }
-
   let drag = null;
   let dragged = false;
-
   viewport.addEventListener("pointerdown", (event) => {
     if (event.button !== 0 || $("drawer").contains(event.target) || event.target.closest(".zoom")) return;
     drag = { id: event.pointerId, x: event.clientX, y: event.clientY, cx: cam.x, cy: cam.y, captured: false };
     dragged = false;
   });
-
   viewport.addEventListener("pointermove", (event) => {
     if (!drag || drag.id !== event.pointerId) return;
     const dx = event.clientX - drag.x;
@@ -565,14 +311,12 @@
     userMoved = true;
     applyCamera();
   });
-
   const endDrag = () => {
     drag = null;
     viewport.classList.remove("dragging");
   };
   viewport.addEventListener("pointerup", endDrag);
   viewport.addEventListener("pointercancel", endDrag);
-
   viewport.addEventListener("wheel", (event) => {
     if ($("drawer").contains(event.target)) return;
     event.preventDefault();
@@ -588,337 +332,249 @@
       applyCamera();
     }
   }, { passive: false });
-
   viewport.addEventListener("click", (event) => {
     if (dragged || touring) return;
-    if (event.target === viewport || event.target === world || event.target.classList.contains("band")) {
-      select(null);
-    }
+    if (event.target === viewport || event.target === world || event.target.className === "diagram") openNode(null);
   });
-
   $("zoom-in").addEventListener("click", () => zoomAt(1.25, viewport.clientWidth / 2, viewport.clientHeight / 2));
   $("zoom-out").addEventListener("click", () => zoomAt(0.8, viewport.clientWidth / 2, viewport.clientHeight / 2));
   $("zoom-fit").addEventListener("click", () => {
     userMoved = false;
     fit();
   });
-
-  /* Hover and selection */
-
   let selected = null;
-
-  function light(node) {
-    world.classList.toggle("hovering", Boolean(node));
-    for (const n of nodes) n.el.classList.toggle("lit", Boolean(node) && (n === node || node.near.has(n)));
-    for (const e of edges) e.el.classList.toggle("lit", Boolean(node) && (e.src === node || e.dst === node));
-  }
-
-  for (const node of nodes) {
-    node.el.addEventListener("pointerenter", () => {
-      if (!touring && !drag) light(node);
-    });
-    node.el.addEventListener("pointerleave", () => {
-      if (!touring) light(selected);
-    });
-    node.el.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter") return;
-      event.stopPropagation();
-      select(node);
-    });
-    node.el.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (dragged) return;
-      select(node);
-    });
-  }
-
-  const drawer = $("drawer");
-  const drawerOpen = () => drawer.getAttribute("aria-hidden") === "false";
-
-  function select(node, centre) {
+  function openNode(id, centre) {
     if (touring) exitTour();
-    if (selected) selected.el.classList.remove("selected");
-    selected = node;
-    light(node);
-    if (!node) {
+    selected = id;
+    if (!id) {
       drawer.setAttribute("aria-hidden", "true");
       return;
     }
-    node.el.classList.add("selected");
-    fillDrawer(node);
+    fillDrawer(id);
     drawer.setAttribute("aria-hidden", "false");
-    if (centre) {
+    if (centre && atlas.nodes[id]) {
+      const box = atlas.nodes[id];
       const area = viewArea();
       const k = Math.max(cam.k, 0.8);
-      flyTo({ k, x: area.x + area.w / 2 - (node.x + node.w / 2) * k, y: area.y + area.h / 2 - (node.y + node.h / 2) * k });
+      flyTo({ k: k, x: area.x + area.w / 2 - (box.x + box.width / 2) * k, y: area.y + area.h / 2 - (box.y + box.height / 2) * k });
     }
   }
-
   function section(title, body) {
     return add(el("section", "d-section"), el("h3", "d-title", title), body);
   }
-
   function diffView(hunks) {
     if (!hunks.length) return el("div", "d-empty", "No line changes recorded for this item.");
     const box = el("div", "diff");
     const rows = el("div", "diff-rows");
     for (const hunk of hunks) {
-      rows.appendChild(el("div", "hunk-head", `@@ ${MINUS}${hunk.old_start} +${hunk.new_start} @@`));
+      rows.appendChild(el("div", "hunk-head", "@@ " + MINUS + hunk.old_start + " +" + hunk.new_start + " @@"));
       for (const line of hunk.lines) {
         const kind = line.op === "+" ? "add" : line.op === "-" ? "del" : "ctx";
-        add(rows, add(el("div", `dl ${kind}`),
-          el("span", "ln", line.old === null ? "" : line.old),
-          el("span", "ln", line.new === null ? "" : line.new),
+        add(rows, add(el("div", "dl " + kind),
+          el("span", "ln", line.old === null || line.old === undefined ? "" : line.old),
+          el("span", "ln", line.new === null || line.new === undefined ? "" : line.new),
           el("span", "sg", kind === "add" ? "+" : kind === "del" ? MINUS : ""),
           el("span", "code", line.text)));
       }
     }
     return add(box, rows);
   }
-
-  const EDGE_TAG = { added: "new call", removed: "removed call", kept: "call" };
-
-  function linkList(items, empty) {
-    if (!items.length) return el("div", "d-empty", empty);
+  function edgeTag(edge) {
+    return EDGE_TAG[edge.status] + (edge.resolution === "name" ? " " + DOT + "by name" : "");
+  }
+  function symbolRow(id) {
+    const sym = symById.get(id);
+    if (!sym) return null;
+    const row = el("button", "link st-" + sym.status);
+    row.setAttribute("type", "button");
+    const text = el("span", "link-text");
+    add(text, el("span", "link-name", sym.qualname), el("span", "link-path", sym.path));
+    add(row, el("span", "bar"), text);
+    row.addEventListener("click", () => openSymbol(symIndex.get(id)));
+    return row;
+  }
+  function linkList(ids, empty) {
+    if (!ids.length) return el("div", "d-empty", empty);
     const list = el("div", "links");
-    for (const { node, tag, tagClass } of items) {
-      const row = el("button", `link st-${node.status}`);
-      row.setAttribute("type", "button");
-      const text = el("span", "link-text");
-      add(text, el("span", "link-name", node.name), el("span", "link-path", node.path));
-      add(row, el("span", "bar"), text, tag ? el("span", `etag ${tagClass || ""}`, tag) : null);
-      row.addEventListener("click", () => select(node, true));
-      list.appendChild(row);
+    for (const id of ids) {
+      const row = symbolRow(id);
+      if (row) list.appendChild(row);
     }
     return list;
   }
-
-  const edgeItem = (edge, other) => ({
-    node: other,
-    tag: `${EDGE_TAG[edge.status]}${edge.byName ? " \u00b7 by name" : ""}`,
-    tagClass: edge.status,
-  });
-
-  function fillDrawer(node) {
-    drawer.replaceChildren();
-    drawer.className = `drawer st-${node.status}`;
+  function openSymbol(mapIdx) {
+    openNode("s" + mapIdx, true);
+  }
+  function drawerHead(kindLabel, title, path) {
     const head = el("div", "d-head");
-    const tags = el("div", "d-tags");
-    if (PILL[node.status]) tags.appendChild(el("span", "pill", PILL[node.status]));
-    tags.appendChild(el("span", "d-kind", node.kind === "file" ? `${node.file.kind} file` : node.sym.kind));
     const close = el("button", "d-close", "\u00d7");
     close.setAttribute("type", "button");
     close.setAttribute("aria-label", "Close");
-    close.addEventListener("click", () => select(null));
-    add(head, el("div", "bar"), tags, el("div", "d-name", node.kind === "file" ? node.path : node.name),
-      node.kind === "file" ? null : el("div", "d-path", node.path), close);
-
+    close.addEventListener("click", () => openNode(null));
+    add(head, el("div", "bar"), el("div", "d-kind", kindLabel), el("div", "d-name", title),
+      path ? el("div", "d-path", path) : null, close);
+    return head;
+  }
+  function fillDrawer(id) {
+    const kind = id.charAt(0);
+    if (kind === "g") return fillGroup(Number(id.slice(1)));
+    if (kind === "f") return fillFile(Number(id.slice(1)));
+    return fillSymbol(Number(id.slice(1)));
+  }
+  function fillSymbol(mapIdx) {
+    const sym = MAP.symbols[mapIdx];
+    if (!sym) return;
+    drawer.replaceChildren();
+    drawer.className = "drawer st-" + sym.status;
     const facts = el("div", "d-facts");
     const body = el("div", "d-body");
-
-    if (node.kind === "file") {
-      const file = node.file;
-      add(facts, el("span", "fact", `+${file.added} ${MINUS}${file.removed}`));
-      if (file.sensitive) facts.appendChild(el("span", "fact bad", file.sensitive));
-      const brief = briefFile.get(file.path);
-      if (file.sensitive && brief && !brief.named) facts.appendChild(el("span", "fact warn", "not mentioned in the description"));
-      if (file.language === null && file.kind === "code") facts.appendChild(el("span", "fact", "not parsed"));
-      add(body, section("Diff", diffView(file.hunks)));
-      const inside = file.symbols.map((id) => symbolNode.get(id)).filter(Boolean);
-      if (inside.length) body.appendChild(section("Symbols", linkList(inside.map((n) => ({ node: n })), "")));
-    } else {
-      const sym = node.sym;
-      if (node.status !== "context") add(facts, el("span", "fact", `+${sym.added} ${MINUS}${sym.removed}`));
-      facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
-      if (sym.span) facts.appendChild(el("span", "fact", `lines ${sym.span[0]}\u2013${sym.span[1]}`));
-      else if (sym.base_span) facts.appendChild(el("span", "fact", `was lines ${sym.base_span[0]}\u2013${sym.base_span[1]}`));
-      if (node.untested) facts.appendChild(el("span", "fact warn", `${NO_TEST}: no test in this map calls it`));
-      const callers = node.in.filter((e) => !isTest(e.src));
-      const tests = node.in.filter((e) => isTest(e.src));
-      add(body,
-        section("Diff", node.status === "context" ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.") : diffView(sym.hunks)),
-        section("Callers", linkList(callers.map((e) => edgeItem(e, e.src)), "No caller in the map.")),
-        section("Callees", linkList(node.out.map((e) => edgeItem(e, e.dst)), "Calls nothing in the map.")),
-        isTest(node) ? null : section("Tests", linkList(tests.map((e) => edgeItem(e, e.src)), "No test calls this directly.")));
+    if (sym.status !== "context") add(facts, el("span", "fact", "+" + sym.added + " " + MINUS + sym.removed));
+    facts.appendChild(el("span", "fact", plural(sym.call_sites, "call site", "call sites")));
+    if (sym.span) facts.appendChild(el("span", "fact", "lines " + sym.span[0] + "\u2013" + sym.span[1]));
+    else if (sym.base_span) facts.appendChild(el("span", "fact", "was lines " + sym.base_span[0] + "\u2013" + sym.base_span[1]));
+    if (missingIds.has(sym.id)) facts.appendChild(el("span", "fact warn", NO_TEST + ": no exact live test call appears in this map"));
+    const callers = MAP.edges.filter((e) => e.target === sym.id && !isTestId(e.source));
+    const tests = MAP.edges.filter((e) => e.target === sym.id && isTestId(e.source));
+    const callees = MAP.edges.filter((e) => e.source === sym.id);
+    const callerList = el("div", "links");
+    for (const e of callers) {
+      const src = symById.get(e.source);
+      if (!src) continue;
+      const row = el("button", "link st-" + src.status);
+      row.setAttribute("type", "button");
+      add(row, el("span", "bar"), add(el("span", "link-text"), el("span", "link-name", src.qualname), el("span", "link-path", src.path)),
+        el("span", "etag " + e.status, edgeTag(e)));
+      row.addEventListener("click", () => openSymbol(symIndex.get(e.source)));
+      callerList.appendChild(row);
     }
-
+    const calleeList = el("div", "links");
+    for (const e of callees) {
+      const dst = symById.get(e.target);
+      if (!dst) continue;
+      const row = el("button", "link st-" + dst.status);
+      row.setAttribute("type", "button");
+      add(row, el("span", "bar"), add(el("span", "link-text"), el("span", "link-name", dst.qualname), el("span", "link-path", dst.path)),
+        el("span", "etag " + e.status, edgeTag(e)));
+      row.addEventListener("click", () => openSymbol(symIndex.get(e.target)));
+      calleeList.appendChild(row);
+    }
+    const testList = el("div", "links");
+    for (const e of tests) {
+      const src = symById.get(e.source);
+      if (!src) continue;
+      const row = el("button", "link st-" + src.status);
+      row.setAttribute("type", "button");
+      add(row, el("span", "bar"), add(el("span", "link-text"), el("span", "link-name", src.qualname), el("span", "link-path", src.path)),
+        el("span", "etag " + e.status, edgeTag(e)));
+      row.addEventListener("click", () => openSymbol(symIndex.get(e.source)));
+      testList.appendChild(row);
+    }
+    if (!callerList.childNodes.length) callerList.appendChild(el("div", "d-empty", "No caller in the map."));
+    if (!calleeList.childNodes.length) calleeList.appendChild(el("div", "d-empty", "Calls nothing in the map."));
+    if (!testList.childNodes.length) testList.appendChild(el("div", "d-empty", "No test call appears in this map. This does not establish missing tests."));
+    const head = drawerHead(sym.kind, sym.qualname, sym.path);
+    if (PILL[sym.status]) head.appendChild(el("span", "pill", PILL[sym.status]));
     head.appendChild(facts);
+    add(body,
+      section("Diff", sym.status === "context"
+        ? el("div", "d-empty", "Unchanged. Shown because it calls or is called by changed code.")
+        : diffView(sym.hunks)),
+      section("Callers", callerList),
+      section("Callees", calleeList),
+      isTestId(sym.id) ? null : section("Tests", testList));
     add(drawer, head, body);
   }
-
-  /* Tour */
-
-  const names = (list) => {
-    const shown = list.slice(0, 2).map((n) => n.name);
-    return list.length > 2 ? `${shown.join(", ")} +${list.length - 2} more` : shown.join(" and ");
-  };
-
-  function focusNodes(ids) {
-    const found = [];
-    for (const id of ids) {
-      const node = symbolNode.get(id) || fileNode.get(id);
-      if (node) found.push(node);
-      else if (fileByPath.has(id)) {
-        for (const sid of fileByPath.get(id).symbols) if (symbolNode.has(sid)) found.push(symbolNode.get(sid));
-      }
-    }
-    return found;
+  function fillFile(mapIdx) {
+    const file = MAP.files[mapIdx];
+    if (!file) return;
+    drawer.replaceChildren();
+    drawer.className = "drawer st-" + file.status;
+    const facts = el("div", "d-facts");
+    add(facts, el("span", "fact", "+" + file.added + " " + MINUS + file.removed));
+    if (file.sensitive) facts.appendChild(el("span", "fact bad", file.sensitive));
+    const brief = briefFile.get(file.path);
+    if (file.sensitive && brief && !brief.named) facts.appendChild(el("span", "fact warn", "not mentioned in the description"));
+    if (file.language === null && file.kind === "code") facts.appendChild(el("span", "fact", "not parsed"));
+    const head = drawerHead(file.kind + " file", file.path, null);
+    head.appendChild(facts);
+    const body = el("div", "d-body");
+    add(body, section("Diff", diffView(file.hunks)));
+    const inside = (file.symbols || []).filter((id) => symById.has(id));
+    if (inside.length) body.appendChild(section("Symbols", linkList(inside, "")));
+    add(drawer, head, body);
   }
-
-  function symbolFacts(node) {
-    const sym = node.sym;
-    const parts = [node.path, `+${sym.added} ${MINUS}${sym.removed}`];
-    if (node.status !== "deleted" && !isTest(node)) parts.push(plural(sym.call_sites, "call site", "call sites"));
-    if (node.untested) parts.push(NO_TEST);
-    return parts.join(DOT);
+  function fillGroup(groupIdx) {
+    const group = GROUPS[groupIdx];
+    if (!group) return;
+    drawer.replaceChildren();
+    drawer.className = "drawer";
+    const total = group.added + group.modified + group.deleted;
+    const sub = total + " changed: " + group.added + " added, " + group.modified + " modified, " + group.deleted + " deleted";
+    const head = drawerHead(group.is_dir ? "folder" : "file", group.label, sub);
+    add(drawer, head);
+    const body = el("div", "d-body");
+    const list = el("div", "links");
+    for (const id of group.members) {
+      const sym = symById.get(id);
+      if (!sym) continue;
+      const row = el("button", "link st-" + sym.status);
+      row.setAttribute("type", "button");
+      const lines = sym.span ? "lines " + sym.span[0] + "\u2013" + sym.span[1]
+        : sym.base_span ? "was lines " + sym.base_span[0] + "\u2013" + sym.base_span[1] : "";
+      add(row, el("span", "bar"),
+        add(el("span", "link-text"), el("span", "link-name", sym.qualname), el("span", "link-path", sym.path)),
+        el("span", "fact", "+" + sym.added + " " + MINUS + sym.removed + (lines ? DOT + lines : "")));
+      row.addEventListener("click", () => openSymbol(symIndex.get(id)));
+      list.appendChild(row);
+    }
+    body.appendChild(section("Members", list));
+    drawer.appendChild(body);
   }
-
-  function describe(step, index, total) {
-    const count = `${index + 1} / ${total}`;
-    const focus = focusNodes(step.focus);
-    const node = focus[0];
-    const via = step.via ? symbolNode.get(step.via) : null;
-
-    if (step.kind === "overview") {
-      return {
-        kicker: "Overview", count, main: MAP.title,
-        sub: [plural(MAP.files.length, "file", "files"), plural(changed.length, "symbol changed", "symbols changed"),
-          plural(added, "call added", "calls added"), `${removed} removed`].join(DOT),
-      };
-    }
-
-    if (step.kind === "risky_file") {
-      const path = step.focus[0] || "";
-      const file = fileByPath.get(path);
-      const brief = briefFile.get(path);
-      const reason = (file && file.sensitive) || (brief && brief.sensitive) || "Sensitive file";
-      const unnamed = brief && !brief.named ? `${DOT}not mentioned in the description` : "";
-      return { kicker: "Risky surface", count, main: `${reason} changed${unnamed}`, sub: path };
-    }
-
-    if (step.kind === "summary") return { kicker: "Summary", count, main: "", sub: "" };
-
-    if (step.kind === "folder") {
-      const folder = folderByIndex.get(step.folder);
-      const info = folder ? folder.info : { added: 0, modified: 0, deleted: 0, tests: 0 };
-      return {
-        kicker: "Group", count, main: folder ? folder.info.label : "",
-        sub: [plural(focus.length, "symbol", "symbols"),
-          `${info.added} added`, `${info.modified} modified`,
-          `${info.deleted} deleted`, `${info.tests} tests`].join(DOT),
-      };
-    }
-
-    if (!node || node.kind !== "symbol") return { kicker: step.kind, count, main: step.focus.join(", "), sub: "" };
-
-    const word = node.sym.kind;
-    const name = node.name;
-
-    if (step.kind === "test") {
-      const targets = node.out.filter(live).map((e) => e.dst);
-      const covers = targets.length ? `${DOT}covers ${names(targets)}` : "";
-      const main = node.status === "added" ? `New test ${name}${covers}`
-        : node.status === "deleted" ? `Deleted test ${name}` : `Test ${name} changed${covers}`;
-      return { kicker: "Test", count, main, sub: symbolFacts(node) };
-    }
-
-    if (step.kind === "callee" && via) {
-      const link = node.in.find((e) => e.src === via);
-      let main;
-      if (node.status === "deleted") main = `Deleted ${name}${DOT}${via.name} no longer calls it`;
-      else if (node.status === "added") main = `New ${word} ${name}${DOT}called by ${via.name}`;
-      else if (link && link.status === "added") main = `${via.name} now calls ${name}`;
-      else if (link && link.status === "removed") main = `${via.name} no longer calls ${name}`;
-      else main = `${name} changed${DOT}called by ${via.name}`;
-      return { kicker: `Called from ${via.name}`, count, main, sub: symbolFacts(node) };
-    }
-
-    const callers = node.in.filter((e) => live(e) && !isTest(e.src)).map((e) => e.src);
-    let main;
-    if (node.status === "deleted") {
-      const former = node.in.filter((e) => !isTest(e.src)).map((e) => e.src);
-      main = `Deleted ${name}${former.length ? `${DOT}${names(former)} no longer ${former.length === 1 ? "calls" : "call"} it` : ""}`;
-    } else if (node.status === "added") {
-      main = `New ${word} ${name}${callers.length ? `${DOT}called by ${names(callers)}` : `${DOT}nothing calls it yet`}`;
-    } else {
-      main = `${name} changed${callers.length ? `${DOT}called by ${names(callers)}` : ""}`;
-    }
-    return { kicker: step.kind === "entry" ? "Entry point" : "Changed", count, main, sub: symbolFacts(node) };
-  }
-
+  const GW = GRAPH && GRAPH.walkthrough ? GRAPH.walkthrough.steps : [];
+  const KICKER = { overview: "Overview", risky_file: "Risky surface", entry: "Entry point", callee: "Callee", test: "Test", summary: "Summary" };
   const timeline = (() => {
-    const plan = grouped && MAP.tour.length >= 2 ? [
-      MAP.tour[0],
-      ...folderNodes.map((folder) => ({
-        kind: "folder",
-        folder: folder.index,
-        focus: folder.members.map((member) => member.sym.id),
-        via: null,
-      })),
-      ...MAP.tour.slice(1),
-    ] : MAP.tour;
-    const base = plan.map((s) => STEP_SECONDS[s.kind] || 3);
-    const fixed = plan.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
+    const base = PSTEPS.map((s) => STEP_SECONDS[s.kind] || 3);
+    const fixed = PSTEPS.reduce((sum, s, i) => sum + (s.kind === "overview" || s.kind === "summary" ? base[i] : 0), 0);
     const middle = base.reduce((sum, v) => sum + v, 0) - fixed;
     const scale = middle > 0 && fixed + middle > MAX_TOUR ? Math.max((MAX_TOUR - fixed) / middle, 0) : 1;
     let start = 0;
-    return plan.map((step, i) => {
+    return PSTEPS.map((step, i) => {
+      const gw = GW[i] || { heading: step.kind, body: "", focus: { kind: "all" } };
       const plain = step.kind === "overview" || step.kind === "summary";
       const duration = Math.round((plain ? base[i] : Math.max(base[i] * scale, MIN_STEP)) * 1000) / 1000;
-      const focus = focusNodes(step.focus);
-      const via = step.via ? symbolNode.get(step.via) : null;
-      const lit = new Set(focus);
-      if (via) lit.add(via);
-      if (step.kind !== "risky_file" && step.kind !== "folder") for (const n of focus) for (const m of n.near) lit.add(m);
+      const focus = gw.focus && gw.focus.kind === "selection" ? (gw.focus.nodes || []).filter((id) => graphById.has(id)) : [];
+      const via = step.via ? graphIdOfMap.get(step.via) || null : null;
       const item = {
-        kind: step.kind, focus: step.focus, via: step.via, folder: step.folder ?? null,
-        start: Math.round(start * 1000) / 1000, duration,
-        caption: describe(step, i, plan.length), nodes: focus, viaNode: via, lit, plain: plain || !focus.length,
+        kind: step.kind, via: step.via, start: Math.round(start * 1000) / 1000, duration: duration,
+        focus: focus, viaNode: via, plain: plain || !focus.length,
+        caption: { kicker: KICKER[step.kind] || step.kind, count: (i + 1) + " / " + PSTEPS.length, main: gw.heading, sub: gw.body },
       };
       start += duration;
       return item;
     });
   })();
-
   const duration = Math.round(timeline.reduce((sum, s) => sum + s.duration, 0) * 1000) / 1000;
-
   function tourCamera(step) {
     const w = viewport.clientWidth;
     const h = viewport.clientHeight;
     const area = { x: 48, y: 32, w: Math.max(200, w - 96), h: Math.max(160, h - 32 - 176) };
-    if (step.folder !== undefined && step.folder !== null) {
-      const folder = folderByIndex.get(step.folder);
-      const box = folder
-        ? { x: folder.x - 16, y: folder.y - 16, w: folder.w + 32, h: folder.h + 32 }
-        : all;
-      return fitTo(box, area, 1.25);
+    if (step.plain) {
+      if (step.kind === "summary") return fitTo({ x: 16, y: 16, w: w - 32, h: h - 32 }, { x: 16, y: 16, w: w - 32, h: h - 32 }, 1.1);
+      return fitTo(all, area, 1.1);
     }
-    if (step.plain) return fitTo(all, step.kind === "summary" ? { x: 16, y: 16, w: w - 32, h: h - 32 } : area, 1.1);
-    const core = step.viaNode ? [...step.nodes, step.viaNode] : step.nodes;
-    const wide = fitTo(bounds([...step.lit]), area, 1.25);
-    return wide.k >= 0.62 ? wide : fitTo(bounds(core), area, 1.25);
+    const core = step.viaNode ? step.focus.concat([step.viaNode]) : step.focus;
+    const wide = fitTo(boundsOf(step.focus.concat(step.viaNode ? [step.viaNode] : [])), area, 1.25);
+    return wide.k >= 0.62 ? wide : fitTo(boundsOf(core), area, 1.25);
   }
-
   let cameras = null;
-
   function camerasFor() {
-    const size = `${viewport.clientWidth}x${viewport.clientHeight}`;
-    if (!cameras || cameras.size !== size) cameras = { size, list: timeline.map(tourCamera) };
+    const size = viewport.clientWidth + "x" + viewport.clientHeight;
+    if (!cameras || cameras.size !== size) cameras = { size: size, list: timeline.map(tourCamera) };
     return cameras.list;
   }
-
-  const plainLevel = (step) => (step.kind === "summary" ? BEHIND_SUMMARY : 1);
-  const nodeLevel = (step, node) => (step.plain ? plainLevel(step) : step.lit.has(node) ? 1 : DIM_NODE);
-  const hidden = LAYOUT.dense ? 0 : DIM_EDGE;
-  const edgeLevel = (step, edge) => {
-    if (step.plain) return LAYOUT.dense ? 0 : plainLevel(step);
-    return step.nodes.includes(edge.src) || step.nodes.includes(edge.dst) ? 1 : hidden;
-  };
-
   const caption = $("caption");
   const summary = $("summary");
   let captionFor = -1;
-
   function fillCaption(index) {
     if (captionFor === index) return;
     captionFor = index;
@@ -926,65 +582,76 @@
     const kicker = add(el("div", "cap-kicker"), el("span", "", text.kicker), el("span", "cap-count", text.count));
     caption.replaceChildren(kicker, el("div", "cap-main", text.main), el("div", "cap-sub", text.sub));
   }
-
   function fillSummary() {
     summary.replaceChildren();
-    const cell = (num, label, cls) => add(el("div", `sum-cell ${cls || ""}`), el("div", "sum-num", num), el("div", "sum-label", label));
+    const cell = (num, label, cls) => add(el("div", "sum-cell " + (cls || "")), el("div", "sum-num", num), el("div", "sum-label", label));
     const grid = add(el("div", "sum-grid"),
-      cell(changed.length, changed.length === 1 ? "symbol changed" : "symbols changed"),
-      cell(added ? `+${added}` : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
-      cell(removed ? `${MINUS}${removed}` : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
-      cell(callSites, "call sites affected"),
-      cell(untested.length, `changed ${untested.length === 1 ? "symbol" : "symbols"} with ${NO_TEST}`, untested.length ? "warn" : "good"),
-      cell(ci.word, ci.failed ? `CI failed: ${ci.failed.map((c) => c.name).join(", ")}` : "CI on the head commit", ci.cls));
-    const toured = new Set(MAP.tour.flatMap((step) => step.focus));
-    const skipped = changedCode.filter((n) => !toured.has(n.sym.id)).length;
-    const note = skipped ? el("div", "sum-note", `${plural(skipped, "more changed symbol", "more changed symbols")} on the map, not in this tour`) : null;
+      cell(STATS.symbols_changed, STATS.symbols_changed === 1 ? "parsed symbol changed" : "parsed symbols changed"),
+      cell(added ? "+" + added : "0", added === 1 ? "call added" : "calls added", added ? "good" : ""),
+      cell(removed ? MINUS + removed : "0", removed === 1 ? "call removed" : "calls removed", removed ? "bad" : ""),
+      cell(callSites, callSites === 1 ? "resolved call site" : "resolved call sites"),
+      cell(untested.length, "changed " + (untested.length === 1 ? "symbol" : "symbols") + " with " + NO_TEST, untested.length ? "warn" : "good"),
+      cell(ci.word, ci.failed.length ? "CI failed: " + ci.failed.map((c) => c.name).join(", ") : ci.label + " on the head commit", ci.cls));
+    const toured = new Set(GW.flatMap((step) => step.focus.kind === "selection" ? step.focus.nodes || [] : [])
+      .map((id) => mapIdOfGraph.get(id)).filter(Boolean));
+    const skipped = changedCode.filter((n) => !toured.has(n.id)).length;
+    const note = skipped ? el("div", "sum-note", plural(skipped, "changed symbol", "changed symbols") + " not individually highlighted in this tour") : null;
+    const limits = FACTS.limits.map((entry) => entry.path + ": " + entry.reason).join("; ");
+    add(summary, el("div", "sum-note", FACTS.test_note),
+      coverage ? el("div", "sum-note", coverage) : null,
+      limits ? el("div", "sum-note", "Symbol analysis limits: " + limits) : null);
     add(summary, el("div", "sum-kicker", "What this PR rewired"), el("div", "sum-title", MAP.title), grid, note,
       el("div", "sum-brand", "PR map \u00b7 computed from the code, no AI drew this"));
   }
-
   fillSummary();
-
   let touring = false;
-
   function enterTour() {
     if (touring) return;
-    select(null);
-    light(null);
+    openNode(null);
     touring = true;
     document.body.classList.add("touring");
   }
-
   function exitTour() {
     pause();
     if (!touring) return;
     touring = false;
     document.body.classList.remove("touring");
-    for (const n of nodes) {
-      n.el.style.opacity = "";
-      n.el.classList.remove("focus");
-    }
-    for (const e of edges) {
-      e.el.style.opacity = "";
-      e.el.style.strokeDashoffset = "";
-    }
+    ringLayer.replaceChildren();
     captionFor = -1;
   }
-
   function stepAt(t) {
     let index = 0;
     while (index + 1 < timeline.length && timeline[index + 1].start <= t) index++;
     return index;
   }
-
+  function drawRings(step) {
+    ringLayer.replaceChildren();
+    for (const id of step.focus) {
+      const box = atlas.nodes[id];
+      if (!box) continue;
+      const ring = el("div", "ring");
+      ring.style.left = box.x + "px";
+      ring.style.top = box.y + "px";
+      ring.style.width = box.width + "px";
+      ring.style.height = box.height + "px";
+      ringLayer.appendChild(ring);
+    }
+    if (step.viaNode && atlas.nodes[step.viaNode]) {
+      const box = atlas.nodes[step.viaNode];
+      const ring = el("div", "via");
+      ring.style.left = box.x + "px";
+      ring.style.top = box.y + "px";
+      ring.style.width = box.width + "px";
+      ring.style.height = box.height + "px";
+      ringLayer.appendChild(ring);
+    }
+  }
   function seek(time) {
     if (!timeline.length) return;
     const t = clamp(Number(time) || 0, 0, duration);
     enterTour();
     const index = stepAt(t);
     const step = timeline[index];
-    const prev = timeline[Math.max(index - 1, 0)];
     const u = t - step.start;
     const p = index === 0 ? 1 : ease(clamp(u / MOVE, 0, 1));
     const cams = camerasFor();
@@ -995,38 +662,25 @@
     const vh = viewport.clientHeight / 2;
     const cx = lerp((vw - from.x) / from.k, (vw - to.x) / to.k, p);
     const cy = lerp((vh - from.y) / from.k, (vh - to.y) / to.k, p);
-    Object.assign(cam, { k, x: vw - cx * k, y: vh - cy * k });
+    cam.k = k;
+    cam.x = vw - cx * k;
+    cam.y = vh - cy * k;
     applyCamera();
-
-    for (const n of nodes) {
-      n.el.style.opacity = String(round(lerp(nodeLevel(prev, n), nodeLevel(step, n), p) * 100) / 100);
-      n.el.classList.toggle("focus", !step.plain && step.nodes.includes(n));
-    }
-    const offset = String(-round((t * 28) % 28));
-    for (const e of edges) {
-      e.el.style.opacity = String(round(lerp(edgeLevel(prev, e), edgeLevel(step, e), p) * 100) / 100);
-      if (e.status === "added") e.el.style.strokeDashoffset = offset;
-    }
-
+    if (captionFor !== index) drawRings(step);
     const last = index === timeline.length - 1;
     const fadeIn = clamp((u - 0.25) / 0.45, 0, 1);
     const fadeOut = last ? 1 : clamp((step.duration - u) / 0.35, 0, 1);
     fillCaption(index);
     caption.style.opacity = step.kind === "summary" ? "0" : String(round(Math.min(fadeIn, fadeOut) * 100) / 100);
     summary.style.opacity = step.kind === "summary" ? String(round(clamp((u - 0.3) / 0.6, 0, 1) * 100) / 100) : "0";
-    $("progress-bar").style.width = `${round((t / duration) * 1000) / 10}%`;
+    $("progress-bar").style.width = String(round((t / duration) * 1000) / 10) + "%";
   }
-
-  /* Playback */
-
   const player = { t: 0, playing: false, until: null, last: 0 };
-
   function setPlaying(on) {
     player.playing = on;
     document.body.classList.toggle("playing", on);
     $("play-label").textContent = on ? "Pause" : player.t >= duration && touring ? "Replay" : "Play tour";
   }
-
   function frame(now) {
     if (!player.playing) return;
     player.t = Math.min(duration, player.t + (now - player.last) / 1000);
@@ -1036,7 +690,6 @@
     if (player.t >= duration || (player.until !== null && player.t >= player.until)) setPlaying(false);
     else requestAnimationFrame(frame);
   }
-
   function run(from, until) {
     flight++;
     player.t = from;
@@ -1046,39 +699,32 @@
     setPlaying(true);
     requestAnimationFrame(frame);
   }
-
   function pause() {
     if (player.playing) setPlaying(false);
   }
-
   function goto(index) {
     const i = clamp(index, 0, timeline.length - 1);
     const step = timeline[i];
     run(step.start, step.start + Math.min(step.duration - 0.4, MOVE + 0.6));
   }
-
   function next() {
     if (!touring) return goto(0);
     goto(stepAt(player.t) + 1);
   }
-
   function prev() {
     if (!touring) return goto(0);
     goto(stepAt(player.t) - 1);
   }
-
   $("play").addEventListener("click", () => {
     if (player.playing) return pause();
     const from = touring && player.t < duration ? player.t : 0;
     run(from, null);
   });
-
   document.addEventListener("keydown", (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     const key = event.key;
     if (key === "Escape") {
-      if (drawerOpen()) select(null);
-      else if (grouped && expanded.size) collapseAll();
+      if (drawerOpen()) openNode(null);
       else if (touring) exitTour();
     } else if (key === "ArrowRight" || key === " " || key === "PageDown") {
       next();
@@ -1097,19 +743,16 @@
     }
     event.preventDefault();
   });
-
   window.addEventListener("resize", () => {
     if (touring) seek(player.t);
     else if (!userMoved) open();
   });
-
   open();
-
   window.prcTour = Object.freeze({
-    duration,
+    duration: duration,
     steps: timeline.map((s) => Object.freeze({
-      kind: s.kind, focus: [...s.focus], via: s.via, start: s.start, duration: s.duration,
-      caption: Object.freeze({ ...s.caption }),
+      kind: s.kind, focus: s.focus.slice(), via: s.via, start: s.start, duration: s.duration,
+      caption: Object.freeze({ kicker: s.caption.kicker, count: s.caption.count, main: s.caption.main, sub: s.caption.sub }),
     })),
     seek: (t) => {
       pause();

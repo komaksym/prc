@@ -77,32 +77,20 @@ def test_explain_shop_none(chromium: None, tmp_path: Path, stored: bool) -> None
         check=False,
     )  # fmt: skip
 
-    assert completed.returncode == 0, completed.stderr
-
-    printed = json.loads(completed.stdout)
-    assert printed["check_passed"] is True
-
-    out = tmp_path / printed["out"]
-    for name in (
-        "map.json",
-        "map.html",
-        "board.json",
-        "video.mp4",
-        "doc.html",
-        "run.json",
-        "card.html",
-        "card.png",
-        "comment.md",
-    ):
-        assert (out / name).exists(), name
+    assert completed.returncode == 2, completed.stderr
+    assert "no gated infographic published" in completed.stderr
+    outs = list((tmp_path / "out").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    assert (outs[0] / "infographic" / "brief.json").exists()
+    out = outs[0]
 
     run = json.loads((out / "run.json").read_text())
     assert run["check"]["passed"] is True
     assert run["voice"] == "none"
     assert run["map_source"] == ("stored" if stored else "live")
     assert run["live_head_sha"] == (None if stored else run["stored_head_sha"])
-    assert (tmp_path / run["comment"]).exists()
-    assert (tmp_path / run["card"]).exists()
+    assert Path(run["comment"]).exists()
+    assert Path(run["card"]).exists()
 
     info = probe(out / "video.mp4")
     stream = info["streams"][0]
@@ -316,15 +304,18 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
          "--out", str(tmp_path / "out")],
         capture_output=True, text=True, cwd=ROOT, check=False,
     )  # fmt: skip
-    assert completed.returncode == 0, completed.stderr
-    out = Path(json.loads(completed.stdout)["out"])
+    assert completed.returncode == 2, completed.stderr
+    assert "no gated infographic published" in completed.stderr
+    outs = list((tmp_path / "out").glob("*"))
+    assert outs, "failed build still publishes its evidence folder"
+    out = outs[0]
     rebuilt = json.loads((out / "map.json").read_text())
     facts = verify_board(json.loads((out / "board.json").read_text()), rebuilt)
     run = json.loads((out / "run.json").read_text())
     assert (facts["changed"], facts["tests_added"]) == (0, 1)
     assert (run["check"]["changed"], run["check"]["tests_added"]) == (0, 1)
     for name in ("card.html", "comment.md"):
-        assert "No production symbols changed" in (out / name).read_text()
+        assert "No live production symbols changed" in (out / name).read_text()
     assert "def test_probe" in (out / "doc.html").read_text()
     artifact = ARTIFACT / "stored-reclassified"
     shutil.rmtree(artifact, ignore_errors=True)
@@ -344,3 +335,40 @@ def test_stored_map_check_and_outputs_share_reclassified_facts(
                 page.screenshot(path=str(artifact / f"{name}.png"), full_page=True)
         finally:
             browser.close()
+
+
+def test_explain_card_failure_omits_png_reference(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from prc import pipeline
+    from prc.fixture_source import FixtureSource
+    from prc.model import PrRef
+    from prc.presentation.card import CardError
+    from prc.verification import EligibilityPolicy
+
+    stored = json.loads((ROOT / "tests" / "data" / "explainer" / "maps" / "pr12.json").read_text())
+    stored_path = tmp_path / "stored.json"
+    stored_path.write_text(json.dumps(stored))
+
+    def _fail(*args: Any, **kwargs: Any) -> None:
+        raise CardError("The PR card cannot fit its test-evidence lines in 1200x630.")
+
+    monkeypatch.setattr(pipeline, "render_pr_card", _fail)
+
+    result = pipeline.run_explain(
+        FixtureSource(repo=tmp_path, resources={}),
+        PrRef("acme", "shop", 1),
+        lambda: 0.0,
+        EligibilityPolicy(),
+        tmp_path / "out",
+        board_path=None,
+        map_path=stored_path,
+        voice="auto",
+    )
+    assert result.card_png is None
+    assert (result.out_dir / "card.html").exists()
+    assert not (result.out_dir / "card.png").exists()
+    run = json.loads((result.out_dir / "run.json").read_text())
+    assert run["card"] is None
+    text = (result.out_dir / "comment.md").read_text()
+    assert "card.png" not in text

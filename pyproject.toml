@@ -22,6 +22,11 @@ video = [
 ]
 voice = [
     "kokoro==0.9.4; python_version < '3.13'",
+    # Kokoro leaves transformers unpinned. Without this floor the lock picks
+    # transformers 4.12.2, whose tokenizers has no Python 3.12 wheel.
+    "transformers>=4.40,<5; python_version < '3.13'",
+    # Kokoro's text front end downloads this spaCy model on first use unless it is installed.
+    "en-core-web-sm==3.8.0; python_version < '3.13'",
     "soundfile==0.14.0",
 ]
 
@@ -42,6 +47,9 @@ packages = ["src/prc"]
 
 [tool.hatch.build.targets.sdist]
 only-include = ["src/prc", "pyproject.toml", "README.md", "uv.lock", ".python-version"]
+
+[tool.uv.sources]
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
 
 [tool.ruff]
 line-length = 100

@@ -16,6 +16,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError
 
 from prc.identity import sha256_hex
 from prc.model import PrRef
@@ -26,6 +27,27 @@ _NAME = re.compile(r"^[A-Za-z0-9_.-]+$")
 _NEXT = re.compile(r'<([^>]+)>;\s*rel="next"')
 
 Transport = Callable[[str], tuple[Any, str | None]]
+
+
+def _http(error: HTTPError) -> SourceError:
+    remaining = error.headers.get("x-ratelimit-remaining") if error.headers is not None else None
+    if error.code == 429 or (error.code == 403 and remaining == "0"):
+        detail = "API rate limit exceeded. Wait for the rate limit to reset before retrying."
+    elif error.code == 404:
+        detail = (
+            "pull request or resource is missing or inaccessible. "
+            "Check the repository, PR number, and access permissions."
+        )
+    elif error.code == 401:
+        detail = (
+            "authentication was rejected. Check GITHUB_TOKEN credentials and repository access."
+        )
+    elif error.code == 403:
+        detail = "request forbidden. Check GITHUB_TOKEN credentials and repository permissions."
+    else:
+        detail = "request failed. Check the request and retry if the failure is temporary."
+
+    return SourceError(f"GitHub HTTP {error.code}: {detail}")
 
 
 def urllib_transport(url: str) -> tuple[Any, str | None]:
@@ -45,8 +67,13 @@ def urllib_transport(url: str) -> tuple[Any, str | None]:
             match = _NEXT.search(response.headers.get("Link", ""))
 
             return json.load(response), (match.group(1) if match else None)
+    except HTTPError as error:
+        raise _http(error) from error
     except OSError as error:
-        raise SourceError(f"GitHub request failed: {type(error).__name__}") from error
+        raise SourceError(
+            f"GitHub network request failed: {type(error).__name__}. "
+            "Check your network connection and retry."
+        ) from error
 
 
 def git_fetch(ref: PrRef, cache: Path, base_sha: str) -> None:

@@ -1,0 +1,420 @@
+{
+  "edges": [
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "hero",
+      "files": [],
+      "from": "s25",
+      "id": "e12",
+      "kind": "call",
+      "to": "s27"
+    }
+  ],
+  "flows": [],
+  "kind": "graph",
+  "lanes": [
+    {
+      "id": "files",
+      "label": "Changed files"
+    },
+    {
+      "id": "changed",
+      "label": "Changed code"
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "files",
+      "changed"
+    ]
+  },
+  "lenses": [
+    "architecture"
+  ],
+  "nodes": [
+    {
+      "badges": [
+        "+120 / -60"
+      ],
+      "delta": "modified",
+      "files": [],
+      "id": "g0",
+      "kind": "module",
+      "label": "src/pkg",
+      "lane": "files",
+      "subtitle": "60 changed: 12 added, 36 modified, 12 deleted"
+    },
+    {
+      "badges": [
+        "+8 / -0",
+        "8 tests"
+      ],
+      "delta": "added",
+      "files": [],
+      "id": "g1",
+      "kind": "module",
+      "label": "tests",
+      "lane": "files",
+      "subtitle": "8 changed: 8 added, 0 modified, 0 deleted"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "src/pkg/mod00.py",
+          "revision": "head"
+        }
+      ],
+      "id": "s24",
+      "kind": "function",
+      "label": "func_000",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 123,
+          "path": "src/pkg/mod00.py",
+          "revision": "head",
+          "startLine": 120
+        }
+      ],
+      "id": "s25",
+      "kind": "function",
+      "label": "func_012",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 243,
+          "path": "src/pkg/mod00.py",
+          "revision": "head",
+          "startLine": 240
+        }
+      ],
+      "id": "s26",
+      "kind": "function",
+      "label": "func_024",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 363,
+          "path": "src/pkg/mod00.py",
+          "revision": "head",
+          "startLine": 360
+        }
+      ],
+      "id": "s27",
+      "kind": "function",
+      "label": "func_036",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "removed",
+      "files": [
+        {
+          "endLine": 482,
+          "path": "src/pkg/mod00.py",
+          "revision": "base",
+          "startLine": 480
+        }
+      ],
+      "id": "s28",
+      "kind": "function",
+      "label": "func_048",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 13,
+          "path": "src/pkg/mod01.py",
+          "revision": "head",
+          "startLine": 10
+        }
+      ],
+      "id": "s29",
+      "kind": "function",
+      "label": "func_001",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "removed",
+      "files": [
+        {
+          "endLine": 132,
+          "path": "src/pkg/mod01.py",
+          "revision": "base",
+          "startLine": 130
+        }
+      ],
+      "id": "s30",
+      "kind": "function",
+      "label": "func_013",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+2 / -1"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 253,
+          "path": "src/pkg/mod01.py",
+          "revision": "head",
+          "startLine": 250
+        }
+      ],
+      "id": "s31",
+      "kind": "function",
+      "label": "func_025",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "CI workflow"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": ".github/workflows/ci.yml",
+          "revision": "head"
+        }
+      ],
+      "id": "f20",
+      "kind": "config",
+      "label": ".github/workflows/ci.yml",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "dependency manifest"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "pyproject.toml",
+          "revision": "head"
+        }
+      ],
+      "id": "f21",
+      "kind": "config",
+      "label": "pyproject.toml",
+      "lane": "files"
+    },
+    {
+      "badges": [],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "docs/guide.md",
+          "revision": "head"
+        }
+      ],
+      "id": "f22",
+      "kind": "other",
+      "label": "docs/guide.md",
+      "lane": "files"
+    }
+  ],
+  "provenance": {
+    "base": {
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "generator": {
+      "name": "prc"
+    },
+    "head": {
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "pullRequest": {
+      "number": 99,
+      "title": "Refactor the pipeline into staged modules",
+      "url": "https://github.com/acme/big/pull/99"
+    },
+    "repo": {
+      "name": "big",
+      "owner": "acme"
+    }
+  },
+  "schemaVersion": "0.2.0",
+  "title": "Refactor the pipeline into staged modules",
+  "views": [],
+  "walkthrough": {
+    "steps": [
+      {
+        "body": "Refactor the pipeline into staged modules - 23 files, 68 symbols, 29 calls added, 23 removed.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "What changed",
+        "id": "w0"
+      },
+      {
+        "body": "CI workflow: .github/workflows/ci.yml",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "f20"
+          ]
+        },
+        "heading": "Risky: ci.yml",
+        "id": "w1"
+      },
+      {
+        "body": "Changed +2 -1; src/pkg/mod00.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s24"
+          ]
+        },
+        "heading": "func_000",
+        "id": "w2"
+      },
+      {
+        "body": "Changed +2 -1; src/pkg/mod00.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s25"
+          ]
+        },
+        "heading": "func_012",
+        "id": "w3"
+      },
+      {
+        "body": "Changed +2 -1; src/pkg/mod00.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s26"
+          ]
+        },
+        "heading": "func_024",
+        "id": "w4"
+      },
+      {
+        "body": "New +2 -1; src/pkg/mod00.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s27"
+          ]
+        },
+        "heading": "func_036",
+        "id": "w5"
+      },
+      {
+        "body": "Deleted +2 -1; src/pkg/mod00.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s28"
+          ]
+        },
+        "heading": "func_048",
+        "id": "w6"
+      },
+      {
+        "body": "New +2 -1; src/pkg/mod01.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s29"
+          ]
+        },
+        "heading": "func_001",
+        "id": "w7"
+      },
+      {
+        "body": "Deleted +2 -1; src/pkg/mod01.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s30"
+          ]
+        },
+        "heading": "func_013",
+        "id": "w8"
+      },
+      {
+        "body": "Changed +2 -1; src/pkg/mod01.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s31"
+          ]
+        },
+        "heading": "func_025",
+        "id": "w9"
+      },
+      {
+        "body": "No direct test evidence in this map for some live changed production symbols.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "Summary",
+        "id": "w10"
+      }
+    ]
+  }
+}

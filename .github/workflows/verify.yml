@@ -1,0 +1,25 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  release-check:
+    runs-on: macos-latest
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/prc-browser-cache
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+      - run: brew install ffmpeg tesseract
+      - run: uv sync --frozen
+      - run: uv run playwright install chromium
+      - run: |
+          export UV_CACHE_DIR="$(mktemp -d)"
+          bash scripts/verify-release.sh
