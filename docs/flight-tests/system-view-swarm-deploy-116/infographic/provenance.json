@@ -1,0 +1,13 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "codex-imagegen",
+  "layout": "structural-breakdown",
+  "style": "technical-schematic",
+  "aspect": "16:9",
+  "language": "en",
+  "image_sha256": "51b87d9c9eb9bf55f6bb9a22bc6261f473658cb64183a8512a3008737bc70104",
+  "prompt_sha256": "61c4d9ebc8a99ff4171105bac6b81ac687022f217eeb4adb85ad9aabe6158f62",
+  "purpose": "Shows how the System View flight test turns swarm-deploy #116 into a parts board, video and page with no code lines.",
+  "visual_note": "Viewed: title \"System View: explain a PR as parts, not lines\", stations \"PR map\", \"Arena: 3 layouts\", \"System View board\", \"Video and page\", note \"Open gap: infographic gate needs a system brief\".",
+  "created_at": "2026-10-24T22:44:09Z"
+}
