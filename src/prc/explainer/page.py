@@ -24,7 +24,7 @@ from typing import Any
 
 from prc.explainer.evidence import copy_shots
 from prc.explainer.highlight import _git_reader, paint_map
-from prc.explainer.preflight import line_coverage
+from prc.explainer.preflight import cited_refs, line_coverage
 from prc.explainer.themes import look
 from prc.explainer.units import Unit, units
 from prc.explainer.units import key as unit_key
@@ -599,6 +599,30 @@ def reading_html(board: dict[str, Any], m: dict[str, Any], git_dir: str | None =
     )
 
 
+def _system_view_coverage(
+    board: dict[str, Any], m: dict[str, Any], owner_repo: str, number: str
+) -> str:
+    """A System View shows no code lines by design, so it reports the changed files it cites."""
+    changed = [str(f["path"]) for f in m.get("files", []) if "path" in f]
+    cited = {path for path, _ in cited_refs(board)}
+    uncited = [p for p in changed if p not in cited]
+    summary = (
+        f"System view: no code lines on screen. Scenes cite {len(changed) - len(uncited)} "
+        f"of {len(changed)} changed files."
+    )
+    if not uncited:
+        return f"<p id='not-covered' class='pg-nc'>{html.escape(summary)}</p>"
+    rows = [
+        f"<li><a href='{html.escape(files_url(owner_repo, number, path))}' target='_blank' "
+        f"rel='noopener'><code>{html.escape(path)}</code></a> not cited</li>"
+        for path in uncited
+    ]
+    return (
+        "<details id='not-covered' class='pg-nc'>"
+        f"<summary>{html.escape(summary)}</summary><ul>{''.join(rows)}</ul></details>"
+    )
+
+
 def not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
     """One summary line; opening it lists a count per file, never raw line links."""
     reading = board.get("reading")
@@ -609,12 +633,14 @@ def not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
                 "<p id='not-covered' class='pg-nc'>Every changed unit has an entry in "
                 "<a href='#reading'>the reading path</a>.</p>"
             )
+    owner_repo, number = str(m["pr"]).split("#")
+    if not any(s.get("type") == "diff" for s in board.get("scenes", [])):
+        return _system_view_coverage(board, m, owner_repo, number)
     cov = line_coverage(board, m)
     total = int(cov["total"])
     hidden = max(0, total - int(cov["shown"]))
     if hidden == 0:
         return "<p id='not-covered' class='pg-nc'>Everything changed is on screen.</p>"
-    owner_repo, number = str(m["pr"]).split("#")
     per_file = Counter(ref.rsplit(":", 1)[0] for ref in cov["missing"])
     rows = [
         f"<li><a href='{html.escape(files_url(owner_repo, number, path))}' target='_blank' "
