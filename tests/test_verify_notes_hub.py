@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -126,9 +127,18 @@ def test_live_pass_puts_operator_verdict_back_when_a_check_fails(
     assert spec and spec.loader
     drv = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(drv)
-    source = REPO / "artifacts" / "output-v5" / "notes"
-    for name in ("roster.json", "prepared_root", "spotcheck.json"):
+    source = REPO / "tests" / "data" / "notes-hub"
+    for name in ("roster.json", "spotcheck.json"):
         shutil.copy(source / name, tmp_path / name)
+    (tmp_path / "prepared_root").write_text("prepared", encoding="utf-8")
+    for pr in json.loads((source / "roster.json").read_text(encoding="utf-8")):
+        out = tmp_path / "outputs" / pr["id"]
+        out.mkdir(parents=True)
+        for artifact in ("infographic.png", "video.mp4", "page.html"):
+            (out / artifact).write_bytes(b"")
+        identity = tmp_path / "prepared" / pr["id"] / "render-identity.json"
+        identity.parent.mkdir(parents=True)
+        identity.write_text(json.dumps({"output": str(out)}), encoding="utf-8")
     httpd, url = notes_mod.serve(tmp_path)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     try:
