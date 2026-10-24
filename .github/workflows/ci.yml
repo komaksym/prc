@@ -18,13 +18,15 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
+      # verify-release.sh reuses this Chromium cache and refuses to download browsers.
+      - run: echo "PLAYWRIGHT_BROWSERS_PATH=$RUNNER_TEMP/prc-browser-cache" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v5
-      - name: Install media and OCR tools
-        run: brew install ffmpeg tesseract
+      - name: Install media, OCR and speech tools
+        run: brew install ffmpeg tesseract espeak-ng
       - name: Sync dependencies with video extra
         run: uv sync --frozen --extra video
       - name: Install Playwright Chromium

@@ -92,8 +92,9 @@ class KokoroBackend(Backend):
         self._pipe: Any = None
 
     def _pipeline(self) -> Any:
+        """The shared KPipeline, built once on first synthesis."""
         if self._pipe is None:
-            from kokoro import KPipeline  # type: ignore[import-not-found]
+            from kokoro import KPipeline  # type: ignore
 
             os.environ.setdefault("ESPEAK_DATA_PATH", "/opt/homebrew/share/espeak-ng-data")
             os.environ.setdefault(
@@ -104,7 +105,7 @@ class KokoroBackend(Backend):
 
     def synth(self, text: str, wav: Path) -> float:
         import numpy as np
-        import soundfile  # type: ignore[import-not-found]
+        import soundfile  # type: ignore
 
         pipe = self._pipeline()
         raw = wav.with_suffix(".24k.wav")
@@ -146,6 +147,9 @@ class NoneBackend(Backend):
 
 def available(name: str) -> bool:
     if name == "kokoro":
+        # Kokoro synthesizes offline only when its modules and its spaCy model
+        # package are installed: without the model its text front end downloads
+        # it on first use. find_spec answers without importing torch or spaCy.
         try:
             return all(
                 importlib.util.find_spec(module) is not None

@@ -1,0 +1,26 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  release-check:
+    runs-on: macos-latest
+    steps:
+      # The runner context is not available in job-level env, so set the path from a step.
+      - run: echo "PLAYWRIGHT_BROWSERS_PATH=$RUNNER_TEMP/prc-browser-cache" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+      - run: brew install ffmpeg tesseract espeak-ng
+      - run: uv sync --frozen
+      - run: uv run playwright install chromium
+      - run: |
+          UV_CACHE_DIR="$(mktemp -d)"
+          export UV_CACHE_DIR
+          bash scripts/verify-release.sh

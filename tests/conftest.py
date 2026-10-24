@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from itertools import count
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -29,5 +31,19 @@ def clock() -> FakeClock:
 def make_source(tmp_path: Path) -> Callable[[str], tuple[FixtureSource, PrRef]]:
     def make(name: str) -> tuple[FixtureSource, PrRef]:
         return SCENARIOS[name](tmp_path)
+
+    return make
+
+
+@pytest.fixture
+def make_paired(tmp_path: Path) -> Callable[..., Any]:
+    """Build valid paired-eval manifests with artifact trees under tmp_path."""
+
+    from paired_builder import build_manifest
+
+    counter = count(1)
+
+    def make(pairs: int = 1) -> Any:
+        return build_manifest(tmp_path / f"paired-{pairs}-{next(counter)}", pairs=pairs)
 
     return make

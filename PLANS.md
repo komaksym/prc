@@ -1,3 +1,166 @@
+# Study v3: three PRC artifacts and a study on the operator's own PRs, 2026-10-14
+
+## Summary
+
+The first v2 reading showed four product defects and one study defect. The walkthrough repeats GitHub's header and once said 5/5 CI where GitHub showed 4/5. The interactive map copies PR Lens, which is the baseline aid. No study build attempted an infographic (run.json: status missing, attempts []), yet the aid still published. The HTML page only replays the video. The questions asked for line-level code detail in unfamiliar repos and languages.
+v3 ships PRC as three artifacts made from one storyboard: the infographic (high level: what changed in the system and why), the narrated video, and a clickable page that steps through the same scenes and opens each file and hunk. The walkthrough and map are removed. A build without a gated infographic fails.
+The study uses the operator's own repos (komaksym), Python only, agent PRs from the last month. The operator read none of them, so familiarity is equal. Pairs come from one repo with similar size; a coin picks the PRC side. Questions ask what the agent actually did, what could break, and whether to merge. Answer keys cite diff lines or later commits. The v2 study is archived with its data.
+No push, PR or publication without explicit approval (D21).
+
+- [ ] A1. Remove the walkthrough and the map from PRC output, the study aid and docs.
+- [ ] A2. One storyboard drives the video and the clickable page; each scene links to its file and hunk.
+- [ ] A3. Infographic required: the build fails without a gated, published infographic; proven on one real PR with a baoyu-infographic image.
+- [ ] B1. Candidate pool: komaksym Python agent PRs from the last month with genuine Lens comments at the pinned head; 3 pairs plus 1 practice pair, same repo, similar size.
+- [ ] B2. Frozen questions and answer keys, 3 per PR, review level, checked by a second model.
+- [ ] B3. Archive v2, prebuild Lens and PRC outputs at pinned revisions, seal, draw coins.
+- [ ] B4. Button-level end-to-end pass on a copy of the sealed study, supervised handoff of the live hub, browser screenshots.
+
+Throughput checkpoint:
+- Blocking first steps: A3 and B1 are independent; B3 waits for A1 to A3.
+- Independent workstreams: worker A owns src/prc/presentation, src/prc/explainer, pipeline.py, evaluation/assets.py and the PRC skill; worker B owns study selection, questions, kit and session code and artifacts/paired-study.
+- Shared mutable state: separate worktrees and branches; the parent merges A into B before B3.
+- Smallest safe decomposition: A1, A2, A3 as one branch; B1, B2 first, then B3, B4 after the merge.
+
+# Step 1b: Real infographics with a structure brief and a geometric gate, 2026-10-11
+
+## Summary
+
+The published step 1 infographics are stacks of text boxes. Baoyu drew real diagrams, but the OCR gate rejected them. Icon shapes read as letters ("Q", "J", "EN"), one of four reads saw "42" where the image says "12", and the page-level read order mixed wrapped lines from neighboring columns. My prompts then banned icons, arrows and columns, and SKILL.md told agents to "use simple panels".
+This step gives the artist real structure to draw and makes the gate judge position-aware evidence.
+Measured on the 10 existing candidates: pixel measures of "is this a diagram" (edge density, saturation, thin strokes, connected objects) did not separate text cards from diagrams. A connector between two named boxes did: text cards scored 0 to 0.03. So the diagram check tests arrows between related brief lines, which PRC knows from the code.
+No push, PR or publication without explicit approval (D21).
+
+- [x] M1. Structure brief. `infobrief` adds node lines and relations. Calls come from map.json edges added or removed by the PR (production source to target, plus a "N new tests" node). Go call-to-error mappings require the complete pinned head source, with comments and strings excluded. Changed Python docstring summaries parsed from complete pinned base/head files give a before/after pair explicitly labeled as documentation. Board text cannot create relationships. Chips shrink to make room inside MAX_WORDS. brief.json records relations and layout rules. Done: the Look rows go before the headline is cut, and a brief that mixes calls with other arrows uses the legend "Arrows into code names show new calls".
+- [x] M2. Gate geometry. OcrWord keeps its box. Brief lines may be covered inside one spatial region (words grouped into text lines, text lines into stacked blocks), as well as in the page stream. An unknown token is a misread when most other reads see an allowed token at the same place. Unknown non-digit tokens of one or two characters need three reads at one place. Unplaced or digit tokens stay strict. Done: on the 10 old candidates the gate now passes the 8 that are drawn correctly and fails the 2 real misspellings ("pnc" for "prc", "onCComplete"). One letter alone on its line, or much taller than its neighbors, counts as an icon. Words every read sees at one place still fail. 3 of the 5 stored session images pass; the other 2 miss lines that no read finds.
+- [x] M3. Diagram check. For each relation, PRC finds both line boxes and needs a continuous drawn line across the gap between them, with plain canvas on both sides. A brief with relations fails as "flat" when no relation is drawn. Thresholds are calibrated on rendered test images and on new candidates. Done: pixels come from ffmpeg. Ink is dark or strongly colored pixels outside confident words, with gaps up to about 8 px closed. A relation is drawn when one ink component touches both node boxes and either runs at least 1.5 text heights across the gap along the joining axis, or crosses the center segment twice. This proves visible connecting ink only. It does not prove arrow direction, arrowheads, or correct endpoints; a crossed-path reviewer probe passed. Human image inspection remains required. Calibration: 9 rendered scenes (straight, vertical, elbow, bare text pass; one panel, no arrow, flat panels, touching border, bordered rows fail), the shop diagram and its flat twin, and 19 real pairs from the old candidates all give the expected answer. Border bands measure 4 to 16 px; real connectors measure 108 px or more, or cross twice. Pairs that join only through a central picture do not count.
+- [x] M4. Prompt rules and SKILL.md. Remove the "simple panels" fallback. Ask for nodes in separate boxes joined by straight arrows, icons allowed without letters or digits.
+- [x] M5. Regenerate the three acceptance infographics with baoyu-infographic, gate them through prc explain, and view every candidate. Seven saved-prompt candidates were generated and viewed directly. The final installed wheel publishes librarysync-98 candidate-03, em-5756 candidate-02 and swarm-116 candidate-02 from acceptance/infographic-final-v3. Their exact phrase, numeric and connecting-ink checks pass. The librarysync before/after pair quotes documentation. Icons remain allowed globally; these candidates use labels and solid arrows. Arrow directions and endpoints were inspected directly.
+- [x] M6. Rebuild the acceptance outputs and verify the current hub, walkthroughs, local comment previews and videos in a real browser with screenshots. run-RY6ccP verifies fb4d2c5: lint, format, typecheck, 989 tests with zero skips, wheel/sdist build and installed-wheel smoke passed. The package cache started empty; Chromium and Kokoro weights were reused. All three packets use that wheel, preserve their original revisions and pass infographic and calibrated Parakeet listening gates. Current output hashes match browser-check.json; acceptance/verification.json verifies Git lines, briefs, published image bytes and outputs. Agent-browser hub evidence is acceptance/hub-browser-fb4d2c5. Comments were previewed locally; nothing was posted to GitHub. See .audit/step1b-completion.md for scope and limits.
+
+# Step 1: Kokoro voice, gated infographic and PR Lens map, 2026-10-10
+
+## Summary
+
+Make the acceptance explanations sound and look like the intended product before any study seal.
+Kokoro narrates every video, and release checks fail without it.
+Each PR gets one AI-drawn infographic. PRC writes its words, and an OCR gate decides whether it is published.
+The map is rebuilt on the MIT PR Lens renderer. PRC keeps its player, drawer and hooks.
+The three acceptance PRs are rebuilt, checked in a real browser and checked by listening to each video.
+Design: .audit/step1-design.md. Push, PR, license, package name and publication stay unapproved.
+
+- [x] S1. Voice lock and release gate. Commits 38174a4 and 972756e. Baseline 815 passed, 0 skipped, at 972756e.
+- [x] S2. Design by architect arena and synthesis. Candidate 3 base with three grafts.
+- [x] S3. Infographic step: brief, OCR gate, records, embedding, CLI flag and skill loop. The gate needed seven measured changes; see the reconciliation in .audit/step1-design.md.
+- [x] S4. Map on PR Lens: converter, vendored bundle and lock, player and deletions. Integrated suite 816 passed, 0 skipped.
+- [x] S5. Integrate. Run the full checks, deslop, no-comments and an independent review. Run verify-release.sh from an empty cache.
+  - Final run-NYgULN at be2e7fa passed 855 tests with no skips, static checks, build and the installed-wheel browser/Kokoro smoke. The uv package cache started empty. Chromium and Kokoro weights were reused. The checkout matches 281 code and metadata paths. The archive matches 75 included inputs.
+  - run-Mu5RiG at 458b4ae passed 853 tests before the independent reviewer found binary Tesseract output. Two CLI failures landed at 03d198a before the fix at be2e7fa. Both now produce tool records and keep the card.
+  - [x] Close review defects with regression evidence. Require all OCR readings, remove foreign-word exemptions, check immutable PNG bytes, fit the brief budget, and size the inline image.
+  - [x] Keep all changed files navigable, cap graphs without hangs, state graph omissions and failures, and verify bundle pins when vendoring and rendering.
+  - Final-code.md confirms all 13 accepted defects. closure.md records the added binary-output correction and comment judgments. Early reviewers that hit HTTP 429 supplied no verdict. Replacement model review and comment passes are complete.
+- [x] S6. Rebuild the three acceptance PRs with Kokoro, the new map and a gated infographic inline on the review page.
+- [x] S7. Verify in a real browser with screenshots. Listen to each video: audio stream, transcript against the board narration and run.json voice.
+  - [x] Actual browser rendering, drawer, tour, inline infographic, phone sizing and video playback for all three cases. All 41 local hub links passed.
+  - [x] Visual inspection of 44 inventory images and 39 active-caption samples. Hash and pixel bindings match. Truncated card warnings, small embedded text and faint tertiary text are recorded.
+  - [x] Actual audio streams, full transcripts and first-line waveform comparisons favor Kokoro. The source and installed wheel match be2e7fa.
+  - [x] Machine listening replaces direct listening, per the user on 2026-10-11. S9 closed it: all three rebuilt videos pass the Parakeet gate, and Whisper base agrees. Evidence: acceptance/listening/results.md.
+- [x] S8. Docs, decisions, trail and local commits. Human acceptance stays with the user. .audit/step1-requirement-audit.md keeps direct listening open.
+- [x] S9. Spoken-text normalization with a pronunciation gate. Added to the goal by the user on 2026-10-11.
+  - [x] Before Kokoro runs, PRC rewrites code tokens into speakable words. Examples: s2e3 becomes "S 2 E 3", ErrNotExist becomes "error not exist", next_episode.py becomes "next episode dot P Y", and camelCase and snake_case split into words. Captions keep the code. Commits 6736af2 and ea3d1da.
+  - [x] `prc listen` transcribes the narration and checks that every code token is heard as many times as it is said. It writes listening.json with the engine, model and version.
+  - [x] The gate checks itself on each run. Planted good and bad versions of the same tokens, in the same voice, must pass and fail.
+  - [x] Use the best recognizer available. Parakeet through Muesli's muesli-cli comes first, at the user's preference. Whisper base is the fallback. Clips are resampled to 16 kHz mono for Parakeet (a864203).
+  - [x] verify-release.sh fails when any code token is lost or the controls fail (012649e). Run artifacts/release/verify/run-Zi9CUJ passed from an empty cache: 878 tests, 0 skipped, Parakeet listening passed.
+  - [x] Rebuild the three acceptance videos and pass the gate. The first rebuild lost find_next_episode ("fine next episode") and ReadComposeError ("red compose error"). dae9737 pauses after the first word of a code name and respells read as "reed"; the gate still expects the written words. run-Bkni85 at dae9737 passed verify-release.sh from an empty cache: 884 tests, 0 skipped. Its wheel rebuilt all three videos, and each passed `prc listen` with Parakeet (16 of 16 code-name mentions, controls passed). Whisper base also heard all 16.
+  - [x] Update acceptance.md, index.html, listening/results.md and verification.json with the gate verdicts. agent-browser rechecked the hub, inline infographics, video playback, walkthroughs, map drawers and tours: acceptance/hub-browser-dae9737. Only audio and timings changed; map, card, comment and infographic files are byte-identical to the be2e7fa build.
+  - Known limit: the E2E listening test skips without Muesli or openai-whisper, and the release run rejects skips. A release machine therefore needs Muesli (or openai-whisper) installed.
+
+Done predicate. All tests pass with 0 skipped, and verify-release.sh passes from an empty cache.
+Each acceptance PR shows a gated infographic or a recorded fallback, and the PR Lens map with a working drawer and tour.
+Each acceptance PR has a Kokoro video whose narration matches its board. Automatic transcripts alone cannot prove that match.
+The listening requirement is met when S9 passes on all three acceptance videos and in verify-release.sh. Met at dae9737.
+
+# Trustworthy PR explanations, 2026-10-09
+
+## Summary
+
+Make facts consistent, coverage literal, rendering reliable and installation verifiable with an empty package cache.
+Use the assessment's D1 to D17 as regression cases. Prepare three real PRs for the user's acceptance review.
+The user is the only human reviewer. Outside reviewers are optional. Publication, license and package-name decisions stay separate.
+Final source is 548d8ab. The clean-cache suite and complete acceptance artifact inspection pass.
+Human acceptance remains pending. The final record closes the machine work in T7.
+
+- [x] T1. Ground the fact and render paths; save design contracts and failing regression evidence.
+- [x] T2. Fix parsing, classification, line counts, shared output statistics, GitHub errors and large-map readability.
+- [x] T3. Fix line coverage, board preflight, layout, duration, preview commands and installed instructions.
+- [x] T4. Prove clean-cache installation and verification; run full lint, typecheck, tests and build.
+  Evidence: artifacts/release/verify/run-uVHho9 at 548d8ab. 812 tests passed with 0 failures, errors or skips from an empty uv cache.
+  Ruff, formatting, mypy and build passed. The installed wheel produced all five outputs outside source with no browser errors.
+- [x] T5. Preserve three original PR diffs and PRC outputs at matching base and head commits for acceptance.
+  Evidence: artifacts/trustworthiness/2026-10-09/acceptance, rebuilt with the 548d8ab wheel and checked in Chromium.
+  Each original diff matches its pinned revisions. All five outputs and actual MP4 playback passed.
+  Vercel agent-browser clicked all 35 local links and saved screenshots. All 35 passed.
+  Proof is acceptance/hub-browser-548d8ab/checks.json. The background session is closed.
+- [x] T6. Complete independent model review, inspect browser and video artifacts, document results and commit locally.
+  Evidence: .audit/trust-milestone-trail-final-review.md. DeepSeek found no high or medium trail issues.
+  Minor evidence gaps were corrected or disclosed. The final documentation and audit reports form one local commit.
+
+Historical review at 6dbb336 reopened T4 and T5. Its regressions passed at b880513.
+The later inspection added D18 to D24. Their tests landed at cadf6f9 before fixes at 548d8ab.
+The independent final GLM recheck found no correctness findings. No push or PR is authorized.
+
+- [x] T7. Finish the final inspection and rebuild the human acceptance package.
+  All 15 regressions pass. The shared caption rule preserves display and speech selection.
+  The 548d8ab clean-cache wheel rebuilt all three cases. Input and output hashes match their pinned revisions.
+  Direct inspection covers three cards, 21 full-walkthrough segments and 19 decoded video scenes.
+  Pixel checks bind every scene to its final MP4 and cover each complete walkthrough screenshot.
+  All 35 local links passed in background agent-browser with retained screenshots.
+  Corrected earlier evidence claims and retained independent correctness and comment reviews.
+  The focused test, lint, formatting, mypy and diff checks pass after the two test comment removals.
+  The final record is ready for its local commit. Human acceptance remains open.
+
+Done predicate. Each assessment defect has a passing regression result or a tested and explicit supported limit.
+All output formats must use consistent facts and explicit coverage limits.
+Board checks must reject render-invalid input before encoding. Browser and video checks must save screenshots.
+An installed wheel must produce the offline example outside the source checkout with a fresh package cache.
+Each acceptance case binds its original diff and PRC output to the same base and head commits.
+Human acceptance remains open until the user supplies it. The milestone does not authorize publication.
+
+Throughput checkpoint. The parent owns contracts, shared facts, integration, live captures and acceptance artifacts.
+Workers own rendering and packaging in separate worktrees. Workers write tests before implementation. Final probes reopened join parity, reveal timing, literal path counts, object calls and verification isolation.
+Each unit ends in its narrow check. Full package checks follow integration.
+Reuse the installed Chromium cache and run browsers headless. No production dependency is planned.
+
+Regression ownership. The parent owns D1 to D6, D8, D15 and D17.
+The rendering worker owns D7 and D9 to D13. The packaging worker owns D14 and D16.
+
+# Matched PR evaluation, 2026-10-11
+
+## Summary
+
+Build a usable solo evaluation. Each test has two similar distinct unseen PRs.
+One PR uses GitHub plus genuine Coldtea PR Lens CI output. The other uses GitHub plus PRC.
+Each PR is read once. Default to three pairs, six PRs, with three frozen questions per PR.
+This is an exploratory pilot, not proof of general review speed or accuracy.
+Prebuild both tools; record preparation separately from the 20-minute reading deadline.
+Keep exposed acceptance packets out. Preserve source revisions, keys, matching rationale,
+and tool provenance. Refuse to start with missing Lens output or mismatched revisions.
+
+- [x] Ground existing protocol, scoring, CLI, artifact paths and authentic Lens capture.
+- [x] Compare design sketches; select a small typed study/session boundary.
+- [x] Write failing end-to-end and failure-case tests before implementation.
+- [x] Implement paired kit preparation, randomized sessions, response export and blinded grading.
+- [ ] Prepare real unseen matched PR material and independent frozen questions and adjudication.
+- [x] Verify the CLI and the actual browser session with screenshots, resume and export.
+- [ ] Independent review; fix findings; lint, types, full tests, clean package build and install.
+- [ ] Integrate locally, preserve separate push/publication gates, report actual ready state.
+
+Throughput checkpoint:
+- Blocking first steps: observe current pairing/scoring contracts and genuine Lens evidence before choosing a kit format.
+- Independent workstreams: read-only code and source-material explorers; one exclusive owner for coupled implementation; parent owns kit assembly and integration.
+- Shared mutable state: dedicated feature checkout and private study folders; no edits to routing or exposed packets.
+- Smallest safe decomposition: keep session state, sealing and response export with one code owner. Source collection and independent instrument preparation produce separate files.
+
 # Repository reconciliation, 2026-10-08
 
 ## Summary
@@ -426,6 +589,35 @@ evaluation/  protocol.py (assignment, roster seal) → scoring.py → analysis.p
 - [x] M7 Evaluation engine: assignment, three-item instrument scoring, fallback, PCG64 bootstrap, adverse/favorable scenarios, decision rule. Acceptance examples from the protocol as tests. (Delegated to a subagent; reviewed by me.)
 - [x] M8 CLI + E2E: `prc review|decide|status|eval-analyze`; E2E test through CLI ending in `artifacts/e2e/` repeatable artifact.
 - [x] M9 Independent validation by a fresh-context agent (finite: one pass, fix confirmed defects), docs (README), final verify: ruff, mypy --strict, pytest, build.
+
+## Review hub methods, 2026-10-11
+
+Summary: separate artifact acceptance from the matched PR evaluation. The three exposed
+packets support quality acceptance only. Each scored PR must be unseen and read once.
+Keep the existing light theme and packet bytes. The study size and comparison arms need
+reconciliation before a scored run; this change does not select or start that run.
+
+- [x] Reproduce the same-PR usefulness instructions through the real hub builder.
+- [x] Separate acceptance and matched evaluation in the builder, worksheet and launch notes.
+- [x] Preserve existing human worksheet entries across rebuilds; exclude the three exposed cases.
+- [x] Rebuild the current local hub; verify both sections and local navigation in a real browser.
+- [x] Run lint, types, tests and build; retain screenshot and regression evidence.
+
+Verification is retained in `artifacts/verification/review-hub-method` in the readiness checkout.
+The full suite passed 992 tests with zero failures, errors, or skips. Lint, formatting, strict types,
+wheel, and source distribution passed. Thirteen agent-browser screenshots cover desktop and mobile
+instructions, links, the worksheet, inspection evidence, map, walkthrough, and three muted videos.
+All 1,573 packet files and 47 original links are preserved. A second live rebuild is byte-identical.
+The independent source review found one stale scoring sentence in the launch notes; it is corrected.
+The reviewer found no other actionable defect. The scored study remains unprepared.
+
+Throughput checkpoint:
+- Blocking first steps: inspect the generator and existing worksheet before changing instructions.
+- Independent workstreams: one writer owns the linked generator and worksheet; parent owns integration proof.
+- Shared mutable state: isolated feature worktree, separate from routing and the live acceptance folder.
+- Smallest safe decomposition: one worker keeps instructions consistent across generated and saved content.
+
+Model routing is handled separately. Existing publication and human acceptance gates remain in force.
 
 ## Verify command
 

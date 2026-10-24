@@ -184,6 +184,7 @@ def test_top_level_displayed_line_gets_fallback_with_changed_neighbors(ref: str)
                 "type": "diff",
                 "file": path,
                 "lines": [ref],
+                "say": ["Quote the selected diff line."],
                 "cues": [{"at": 0, "do": "step", "n": 1}],
             }
         ]
@@ -253,6 +254,7 @@ def test_diff_context_cites_follow_displayed_lines_across_scenes() -> None:
                 "type": "diff",
                 "file": path,
                 "lines": ["30"],
+                "say": ["Quote the selected diff line."],
                 "cite": [{"line": f"{path}:10", "match": "change"}],
                 "cues": [{"at": 0, "do": "step", "n": 1}],
             },
@@ -260,6 +262,7 @@ def test_diff_context_cites_follow_displayed_lines_across_scenes() -> None:
                 "type": "diff",
                 "file": path,
                 "lines": [{"ref": "50", "step": 1}],
+                "say": ["Quote the selected diff line."],
                 "cues": [{"at": 0, "do": "step", "n": 1}],
             },
         ]

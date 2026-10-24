@@ -1,0 +1,1717 @@
+{
+  "duration": 75.65,
+  "header": "<b>librarySync #98</b> \u00b7 Copilot",
+  "name": "librarysync-98",
+  "scenes": [
+    {
+      "end": 9.575,
+      "fade": [
+        9.225,
+        0.35
+      ],
+      "footer": "base e3742c1  \u2192  head d24bcde",
+      "i": 0,
+      "kicker": "Merged pull request",
+      "meta": "<span class=\"add\">+72</span> <span class=\"del\">\u22127</span> \u00b7 2 files \u00b7 willtho89/librarySync#98",
+      "say": [
+        "This pull request changes which episode up next suggests for a show.",
+        "The dashboard and history routes use this lookup."
+      ],
+      "sentences": [
+        {
+          "dur": 4.7,
+          "off": 4.195,
+          "on": 0.31,
+          "start": 0.45,
+          "text": "This pull request changes which episode up next suggests for a show."
+        },
+        {
+          "dur": 3.225,
+          "off": 2.755,
+          "on": 0.295,
+          "start": 5.45,
+          "text": "The dashboard and history routes use this lookup."
+        }
+      ],
+      "start": 0.0,
+      "title": "Fix up-next episode selection for season progression",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "backend/tests/test_next_episode.py:41",
+          "match": "_episode(\"s1e1\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:42",
+          "match": "_episode(\"s1e2\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:43",
+          "match": "_episode(\"s1e3\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:44",
+          "match": "_episode(\"s2e1\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:45",
+          "match": "_episode(\"s2e2\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:46",
+          "match": "_episode(\"s2e3\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:48",
+          "match": "{\"s2e2\"}"
+        },
+        {
+          "line": "backend/src/librarysync/core/next_episode.py:-21",
+          "match": "Return the first episode not in"
+        }
+      ],
+      "cues": [
+        {
+          "arc": 120,
+          "at": "s1e1",
+          "do": "fly",
+          "from": "s1e1",
+          "t": 16.915,
+          "to": "next"
+        },
+        {
+          "at": [
+            1,
+            0.95
+          ],
+          "do": "tone",
+          "id": "next",
+          "t": 18.316249999999997,
+          "tone": "bad"
+        }
+      ],
+      "end": 20.224999999999994,
+      "fade": [
+        19.874999999999993,
+        0.35
+      ],
+      "footer": "receipts   test_next_episode.py:41  \u00b7  test_next_episode.py:42  \u00b7  test_next_episode.py:43  \u00b7  test_next_episode.py:44",
+      "groups": [
+        {
+          "col": 0,
+          "id": "s1",
+          "items": [
+            {
+              "id": "s1e1",
+              "text": "s1e1"
+            },
+            {
+              "id": "s1e2",
+              "text": "s1e2"
+            },
+            {
+              "id": "s1e3",
+              "text": "s1e3"
+            }
+          ],
+          "row": true,
+          "sub": "not watched",
+          "title": "Season 1"
+        },
+        {
+          "col": 1,
+          "id": "s2",
+          "items": [
+            {
+              "id": "s2e1",
+              "text": "s2e1"
+            },
+            {
+              "id": "s2e2",
+              "label": "watched",
+              "text": "s2e2",
+              "tone": "info"
+            },
+            {
+              "id": "s2e3",
+              "text": "s2e3"
+            }
+          ],
+          "row": true,
+          "sub": "s2e2 watched",
+          "title": "Season 2"
+        },
+        {
+          "col": 2,
+          "id": "up",
+          "items": [
+            {
+              "id": "next",
+              "kind": "slot",
+              "text": "s1e1"
+            }
+          ],
+          "row": true,
+          "title": "Up next"
+        }
+      ],
+      "hold": 0.8,
+      "i": 1,
+      "say": [
+        "A user has watched only s2e2 of six episodes.",
+        "Up next used to pick the first unwatched one, s1e1."
+      ],
+      "sentences": [
+        {
+          "dur": 4.025,
+          "off": 3.535,
+          "on": 0.32,
+          "start": 10.024999999999999,
+          "text": "A user has watched only s2e2 of six episodes."
+        },
+        {
+          "dur": 4.175,
+          "off": 3.665,
+          "on": 0.3,
+          "start": 14.349999999999998,
+          "text": "Up next used to pick the first unwatched one, s1e1."
+        }
+      ],
+      "start": 9.575,
+      "type": "groups"
+    },
+    {
+      "cite": [
+        {
+          "line": "backend/tests/test_next_episode.py:41",
+          "match": "_episode(\"s1e1\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:42",
+          "match": "_episode(\"s1e2\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:43",
+          "match": "_episode(\"s1e3\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:44",
+          "match": "_episode(\"s2e1\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:45",
+          "match": "_episode(\"s2e2\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:46",
+          "match": "_episode(\"s2e3\""
+        },
+        {
+          "line": "backend/tests/test_next_episode.py:48",
+          "match": "select_next_episode(episodes, {\"s2e2\"}) is episodes[5]"
+        }
+      ],
+      "cues": [
+        {
+          "at": "are skipped",
+          "do": "tone",
+          "ids": [
+            "s1e1",
+            "s1e2",
+            "s1e3",
+            "s2e1"
+          ],
+          "t": 26.294999999999995,
+          "tone": "bad"
+        },
+        {
+          "arc": 120,
+          "at": "gets s2e3",
+          "do": "fly",
+          "from": "s2e3",
+          "t": 27.689999999999994,
+          "to": "next"
+        },
+        {
+          "at": [
+            1,
+            0.95
+          ],
+          "do": "tone",
+          "id": "next",
+          "t": 29.082499999999992,
+          "tone": "good"
+        }
+      ],
+      "end": 31.02499999999999,
+      "fade": [
+        30.67499999999999,
+        0.35
+      ],
+      "footer": "receipts   test_next_episode.py:41  \u00b7  test_next_episode.py:42  \u00b7  test_next_episode.py:43  \u00b7  test_next_episode.py:44",
+      "groups": [
+        {
+          "col": 0,
+          "id": "s1",
+          "items": [
+            {
+              "id": "s1e1",
+              "text": "s1e1"
+            },
+            {
+              "id": "s1e2",
+              "text": "s1e2"
+            },
+            {
+              "id": "s1e3",
+              "text": "s1e3"
+            }
+          ],
+          "row": true,
+          "sub": "not watched",
+          "title": "Season 1"
+        },
+        {
+          "col": 1,
+          "id": "s2",
+          "items": [
+            {
+              "id": "s2e1",
+              "text": "s2e1"
+            },
+            {
+              "id": "s2e2",
+              "label": "watched",
+              "text": "s2e2",
+              "tone": "info"
+            },
+            {
+              "id": "s2e3",
+              "text": "s2e3"
+            }
+          ],
+          "row": true,
+          "sub": "s2e2 watched",
+          "title": "Season 2"
+        },
+        {
+          "col": 2,
+          "id": "up",
+          "items": [
+            {
+              "id": "next",
+              "kind": "slot",
+              "text": "s2e3"
+            }
+          ],
+          "row": true,
+          "title": "Up next"
+        }
+      ],
+      "hold": 0.8,
+      "i": 2,
+      "say": [
+        "Now up next starts after the furthest watched episode.",
+        "Earlier unwatched episodes are skipped, and the user gets s2e3."
+      ],
+      "sentences": [
+        {
+          "dur": 3.5,
+          "off": 3.015,
+          "on": 0.33,
+          "start": 20.674999999999994,
+          "text": "Now up next starts after the furthest watched episode."
+        },
+        {
+          "dur": 4.85,
+          "off": 4.355,
+          "on": 0.34500000000000003,
+          "start": 24.474999999999994,
+          "text": "Earlier unwatched episodes are skipped, and the user gets s2e3."
+        }
+      ],
+      "start": 20.224999999999994,
+      "type": "groups"
+    },
+    {
+      "cues": [
+        {
+          "at": "finds the last watched episode",
+          "do": "step",
+          "n": 1,
+          "t": 33.599999999999994
+        },
+        {
+          "at": "skips everything",
+          "do": "step",
+          "n": 2,
+          "t": 37.654999999999994
+        }
+      ],
+      "cut": 4,
+      "end": 42.599999999999994,
+      "fade": [
+        42.24999999999999,
+        0.35
+      ],
+      "file": "backend/src/librarysync/core/next_episode.py",
+      "footer": "receipts   10 lines quoted verbatim from the diff of next_episode.py",
+      "gutter": 3,
+      "i": 3,
+      "label": "How the helper picks now",
+      "lang": "py",
+      "layout": {
+        "bottom": 862,
+        "font": 31,
+        "height": 744,
+        "row_height": 54,
+        "top": 118
+      },
+      "lines": [
+        {
+          "ref": "-25",
+          "step": 2
+        },
+        "32",
+        "33",
+        "34",
+        {
+          "ref": "43",
+          "step": 2
+        },
+        {
+          "ref": "44",
+          "step": 2
+        },
+        {
+          "ref": "45",
+          "step": 2
+        },
+        {
+          "ref": "46",
+          "step": 2
+        },
+        "47",
+        "48"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              31.27499999999999,
+              0.4
+            ],
+            "reveal": [
+              37.654999999999994,
+              0.45
+            ]
+          },
+          "num": 25,
+          "op": "-",
+          "ref": "-25",
+          "step": 2,
+          "text": "for episode in released_episodes:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "released_episodes"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "gap": true,
+          "motion": {
+            "enter": [
+              31.30999999999999,
+              0.4
+            ],
+            "reveal": [
+              31.02499999999999,
+              0.45
+            ]
+          }
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              31.34499999999999,
+              0.4
+            ],
+            "reveal": [
+              33.599999999999994,
+              0.45
+            ]
+          },
+          "num": 32,
+          "op": "+",
+          "ref": "32",
+          "step": 1,
+          "text": "for episode in ordered_episodes:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "ordered_episodes"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              31.379999999999992,
+              0.4
+            ],
+            "reveal": [
+              33.599999999999994,
+              0.45
+            ]
+          },
+          "num": 33,
+          "op": "+",
+          "ref": "33",
+          "step": 1,
+          "text": "    if episode.id in watched_episode_ids:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "id"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "watched_episode_ids"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "motion": {
+            "enter": [
+              31.414999999999992,
+              0.4
+            ],
+            "reveal": [
+              33.599999999999994,
+              0.45
+            ]
+          },
+          "num": 34,
+          "op": "+",
+          "ref": "34",
+          "step": 1,
+          "text": "        last_watched = episode",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "",
+              "text": "last_watched"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            }
+          ]
+        },
+        {
+          "gap": true,
+          "motion": {
+            "enter": [
+              31.449999999999992,
+              0.4
+            ],
+            "reveal": [
+              31.02499999999999,
+              0.45
+            ]
+          }
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              31.484999999999992,
+              0.4
+            ],
+            "reveal": [
+              38.20499999999999,
+              0.45
+            ]
+          },
+          "num": 43,
+          "op": "+",
+          "ref": "43",
+          "step": 2,
+          "text": "for episode in ordered_episodes:",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "ordered_episodes"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              31.519999999999992,
+              0.4
+            ],
+            "reveal": [
+              38.20499999999999,
+              0.45
+            ]
+          },
+          "num": 44,
+          "op": "+",
+          "ref": "44",
+          "step": 2,
+          "text": "    episode_key = (episode.season_number, episode.episode_number)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "episode_key"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "season_number"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "episode_number"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              31.554999999999993,
+              0.4
+            ],
+            "reveal": [
+              38.20499999999999,
+              0.45
+            ]
+          },
+          "num": 45,
+          "op": "+",
+          "ref": "45",
+          "step": 2,
+          "text": "    if episode_key <= last_key:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode_key"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "<"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "last_key"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "motion": {
+            "enter": [
+              31.589999999999993,
+              0.4
+            ],
+            "reveal": [
+              38.20499999999999,
+              0.45
+            ]
+          },
+          "num": 46,
+          "op": "+",
+          "ref": "46",
+          "step": 2,
+          "text": "        continue",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "k",
+              "text": "continue"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              31.624999999999993,
+              0.4
+            ],
+            "reveal": [
+              31.02499999999999,
+              0.45
+            ]
+          },
+          "num": 47,
+          "op": " ",
+          "ref": "47",
+          "step": 0,
+          "text": "    if episode.id not in watched_episode_ids:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "id"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "not"
+            },
+            {
+              "cls": "k",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "watched_episode_ids"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "motion": {
+            "enter": [
+              31.659999999999993,
+              0.4
+            ],
+            "reveal": [
+              31.02499999999999,
+              0.45
+            ]
+          },
+          "num": 48,
+          "op": " ",
+          "ref": "48",
+          "step": 0,
+          "text": "        return episode",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "k",
+              "text": "return"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "`select_next_episode` now finds the last watched episode in the list.",
+        "Then it skips everything up to that episode and returns the next unwatched one."
+      ],
+      "sentences": [
+        {
+          "dur": 4.975,
+          "off": 4.5200000000000005,
+          "on": 0.295,
+          "start": 31.47499999999999,
+          "text": "`select_next_episode` now finds the last watched episode in the list."
+        },
+        {
+          "dur": 4.95,
+          "off": 4.44,
+          "on": 0.325,
+          "start": 36.74999999999999,
+          "text": "Then it skips everything up to that episode and returns the next unwatched one."
+        }
+      ],
+      "start": 31.02499999999999,
+      "type": "diff"
+    },
+    {
+      "cues": [
+        {
+          "at": "calls select_next_episode",
+          "do": "step",
+          "n": 1,
+          "t": 47.365
+        }
+      ],
+      "cut": 4,
+      "end": 50.825,
+      "fade": [
+        50.475,
+        0.35
+      ],
+      "file": "backend/src/librarysync/core/next_episode.py",
+      "footer": "receipts   8 lines quoted verbatim from the diff of next_episode.py",
+      "gutter": 3,
+      "i": 4,
+      "label": "The bulk lookup now uses the helper",
+      "lang": "py",
+      "layout": {
+        "bottom": 860,
+        "font": 36,
+        "height": 741,
+        "row_height": 63,
+        "top": 119
+      },
+      "lines": [
+        "-110",
+        "-111",
+        "-112",
+        "-113",
+        "-114",
+        "132",
+        "134",
+        "135"
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              42.849999999999994,
+              0.4
+            ],
+            "reveal": [
+              47.365,
+              0.45
+            ]
+          },
+          "num": 110,
+          "op": "-",
+          "ref": "-110",
+          "step": 1,
+          "text": "    if episode.show_media_item_id in next_episodes:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "show_media_item_id"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "next_episodes"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "motion": {
+            "enter": [
+              42.88499999999999,
+              0.4
+            ],
+            "reveal": [
+              47.365,
+              0.45
+            ]
+          },
+          "num": 111,
+          "op": "-",
+          "ref": "-111",
+          "step": 1,
+          "text": "        continue",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "k",
+              "text": "continue"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              42.919999999999995,
+              0.4
+            ],
+            "reveal": [
+              47.365,
+              0.45
+            ]
+          },
+          "num": 112,
+          "op": "-",
+          "ref": "-112",
+          "step": 1,
+          "text": "    if episode.id in watched_ids:",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "id"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "watched_ids"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 12,
+          "motion": {
+            "enter": [
+              42.95499999999999,
+              0.4
+            ],
+            "reveal": [
+              47.365,
+              0.45
+            ]
+          },
+          "num": 113,
+          "op": "-",
+          "ref": "-113",
+          "step": 1,
+          "text": "        continue",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "        "
+            },
+            {
+              "cls": "k",
+              "text": "continue"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              42.989999999999995,
+              0.4
+            ],
+            "reveal": [
+              47.365,
+              0.45
+            ]
+          },
+          "num": 114,
+          "op": "-",
+          "pair": "132",
+          "ref": "-114",
+          "step": 1,
+          "text": "    next_episodes[episode.show_media_item_id] = episode",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "next_episodes"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "show_media_item_id"
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "chg": true,
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            }
+          ]
+        },
+        {
+          "breaks": [
+            14
+          ],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              43.02499999999999,
+              0.4
+            ],
+            "reveal": [
+              47.915,
+              0.45
+            ]
+          },
+          "num": 132,
+          "op": "+",
+          "pair": "-114",
+          "ref": "132",
+          "step": 1,
+          "text": "    per_show_episodes.setdefault(episode.show_media_item_id, []).append(episode)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "per_show_episodes"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "."
+            },
+            {
+              "chg": true,
+              "cls": "f",
+              "text": "setdefault"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "show_media_item_id"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": ","
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": " "
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "["
+            },
+            {
+              "cls": "",
+              "text": "]"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "."
+            },
+            {
+              "chg": true,
+              "cls": "f",
+              "text": "append"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "episode"
+            },
+            {
+              "chg": true,
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "gap": true,
+          "motion": {
+            "enter": [
+              43.059999999999995,
+              0.4
+            ],
+            "reveal": [
+              42.599999999999994,
+              0.45
+            ]
+          }
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              43.09499999999999,
+              0.4
+            ],
+            "reveal": [
+              47.915,
+              0.45
+            ]
+          },
+          "num": 134,
+          "op": "+",
+          "ref": "134",
+          "step": 1,
+          "text": "for show_id, episodes in per_show_episodes.items():",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "for"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "show_id"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "episodes"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "in"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "per_show_episodes"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "f",
+              "text": "items"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              43.129999999999995,
+              0.4
+            ],
+            "reveal": [
+              47.915,
+              0.45
+            ]
+          },
+          "num": 135,
+          "op": "+",
+          "ref": "135",
+          "step": 1,
+          "text": "    next_episode = select_next_episode(episodes, watched_ids)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "",
+              "text": "next_episode"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "f",
+              "text": "select_next_episode"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "episodes"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "watched_ids"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "The bulk lookup had its own loop with the old rule.",
+        "Now it calls `select_next_episode` for each show."
+      ],
+      "sentences": [
+        {
+          "dur": 3.15,
+          "off": 2.665,
+          "on": 0.3,
+          "start": 43.05,
+          "text": "The bulk lookup had its own loop with the old rule."
+        },
+        {
+          "dur": 3.425,
+          "off": 2.92,
+          "on": 0.31,
+          "start": 46.5,
+          "text": "Now it calls `select_next_episode` for each show."
+        }
+      ],
+      "start": 42.599999999999994,
+      "type": "diff"
+    },
+    {
+      "big": "3",
+      "code": true,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.3,
+          "t": 51.830000000000005
+        }
+      ],
+      "end": 63.57500000000001,
+      "fade": [
+        63.22500000000001,
+        0.35
+      ],
+      "footer": "",
+      "i": 5,
+      "items": [
+        {
+          "cite": "backend/tests/test_next_episode.py:39",
+          "text": "test_uses_latest_watched_episode_instead_of_earliest_unwatched"
+        },
+        {
+          "cite": "backend/tests/test_next_episode.py:54",
+          "text": "test_does_not_return_earlier_gaps_after_the_last_released_episode"
+        },
+        {
+          "cite": "backend/tests/test_next_episode.py:272",
+          "text": "test_find_next_episode_uses_last_watched_episode_across_seasons"
+        }
+      ],
+      "label": "new tests",
+      "mark": "\u2713",
+      "more": null,
+      "say": [
+        "The tests check the s2e2 case in the helper and through `find_next_episode`.",
+        "If the newest episode is watched, nothing is suggested, even with earlier gaps."
+      ],
+      "sentences": [
+        {
+          "dur": 5.55,
+          "off": 5.065,
+          "on": 0.3,
+          "start": 51.275000000000006,
+          "text": "The tests check the s2e2 case in the helper and through `find_next_episode`."
+        },
+        {
+          "dur": 5.55,
+          "off": 5.11,
+          "on": 0.315,
+          "start": 57.12500000000001,
+          "text": "If the newest episode is watched, nothing is suggested, even with earlier gaps."
+        }
+      ],
+      "start": 50.825,
+      "tone": "good",
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1",
+          "t": 64.025
+        },
+        {
+          "at": [
+            1,
+            0
+          ],
+          "do": "l2",
+          "t": 67.75
+        },
+        {
+          "at": [
+            1,
+            0.9
+          ],
+          "do": "cmd",
+          "t": 72.16
+        }
+      ],
+      "end": 75.65,
+      "fade": [
+        75.30000000000001,
+        0.35
+      ],
+      "fine": "Not shown: the fallback when nothing is watched.",
+      "footer": "",
+      "hold": 1.5,
+      "i": 6,
+      "l1": "Up next is now the first unwatched episode after the furthest watched one.",
+      "l2": "Start at select_next_episode in next_episode.py; it now skips earlier unwatched gaps.",
+      "nocap": true,
+      "say": [
+        "Up next now follows the furthest watched episode.",
+        "Start review at `select_next_episode` in next_episode.py."
+      ],
+      "sentences": [
+        {
+          "dur": 3.425,
+          "off": 2.94,
+          "on": 0.32,
+          "start": 64.025,
+          "text": "Up next now follows the furthest watched episode."
+        },
+        {
+          "dur": 4.9,
+          "off": 4.405,
+          "on": 0.28500000000000003,
+          "start": 67.75,
+          "text": "Start review at `select_next_episode` in next_episode.py."
+        }
+      ],
+      "start": 63.57500000000001,
+      "type": "outro",
+      "url": "github.com/willtho89/librarySync/pull/98"
+    }
+  ]
+}
