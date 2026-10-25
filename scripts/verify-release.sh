@@ -32,7 +32,8 @@ uv sync --frozen --offline > "$proof/sync.log" 2>&1
 uv run --offline ruff check . > "$proof/lint.log" 2>&1
 uv run --offline ruff format --check . > "$proof/format.log" 2>&1
 uv run --offline mypy > "$proof/typecheck.log" 2>&1
-uv run --offline pytest -q --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
+uv run --offline coverage run -m pytest -q --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
+uv run --offline coverage xml -o "$proof/coverage.xml"
 python3 - "$proof/tests.xml" <<'PY'
 import sys
 import xml.etree.ElementTree as ET

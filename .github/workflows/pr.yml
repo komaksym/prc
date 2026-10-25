@@ -28,9 +28,11 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
@@ -52,6 +54,13 @@ jobs:
           uv pip install --python "$RUNNER_TEMP/prc-ci-cache/bin/python" --constraint "$RUNNER_TEMP/prc-ci-constraints.txt" "${wheel[0]}[video]"
       - name: Run isolated release verification
         run: bash scripts/verify-release.sh
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac
+        with:
+          use_oidc: true
+          files: artifacts/release/verify/run-*/coverage.xml
+          disable_search: true
+          fail_ci_if_error: true
       - name: Upload verify evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -67,6 +76,6 @@ jobs:
     timeout-minutes: 5
     permissions: {}
     steps:
-      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
         run: exit 1
       - run: echo gate passed

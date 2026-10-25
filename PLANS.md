@@ -470,3 +470,22 @@ Implement reliable PR continuous integration per user policy: public repositorie
 Throughput checkpoint. This worker owns only its isolated clone. No subagent fan-out: one small sequential change owns one checkout, so parallel writers would share mutable state. Parent owns rulesets, integration, visual, push, and PR.
 
 Independent review found two runner prerequisites. The existing zero-skip release verifier needs macOS sips and tesseract for OCR. Frozen sync also needs an online constrained wheel installation to populate offline resolution metadata. Use the macOS runner and prepare that cache before the unchanged release verifier. New regression tests cover both prerequisites. Restrict push runs to main and cancel superseded PR runs.
+# Codecov enforcement, 2026-10-25
+
+## Summary
+
+Collect coverage from the existing isolated release test run. Upload its XML report with GitHub OIDC. Require 80% coverage of changed executable lines through Codecov after a real status appears. Keep overall coverage informational.
+
+## Milestones
+
+- [x] Add failing regression checks for report generation, upload wiring, and policy.
+- [x] Add the development coverage dependency, report settings, upload, and operator documentation.
+- [ ] Verify the report through the real release verifier and open an exact-head PR.
+- [ ] Confirm Codecov processing and its GitHub status before requiring `codecov/patch` in the live ruleset.
+
+## Throughput checkpoint
+
+- Blocking first steps. Inspect current workflows, the existing music-saver coverage PR, and rulesets before edits.
+- Independent workstreams. PRC reporting and shared ruleset support use separate writing worktrees. The parent investigates music-saver and owns live ruleset writes.
+- Shared mutable state. Each writer owns one checkout. The parent applies remote settings after integration.
+- Smallest safe decomposition. Reuse PRC's existing release test run. Do not add a second full test suite.
