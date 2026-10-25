@@ -1,0 +1,14 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "agent-drawn-chrome-headless",
+  "source": "/Users/koval/.codex/visualizations/2026/10/24/01a16f7c-3af9-7772-82c8-2b926cf5b501/infographic/pr-gate-reuse/infographic.html",
+  "user_approval": "A delivery answer (done/ready claim or artifact handed over as ready) renders one inspected baoyu-infographic image inline",
+  "image_sha256": "8ce5a22650d2c4568bd32b9ae2eec9c54b6e4ef808a9f760055151eee7292545",
+  "prompt_sha256": "d20a82b14aea1d4516ad3f1a81e905bfe6ee449c3396f8cc3beee0668e4fff7a",
+  "purpose": "How the shared pr-gate check and ruleset plug into any repository",
+  "visual_note": "Viewed the PNG: 'One required check: gate', 'blocks merge', 'Adopt in 3 steps', 'Run apply-ruleset.sh OWNER/REPO'.",
+  "layout": "structural-breakdown",
+  "style": "technical-schematic",
+  "fallback_reason": "codex-imagegen returned 429 usage_limit_reached",
+  "created_at": "2026-10-25T01:13:30.306892+00:00"
+}
