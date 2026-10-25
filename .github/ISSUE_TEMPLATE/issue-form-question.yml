@@ -1,0 +1,26 @@
+name: Question
+description: Ask about setup, behavior, or intended use
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: State the question and the result you need.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Include the command, version, relevant output, and what you already tried.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I read the README and removed secrets from this question.
+          required: true
