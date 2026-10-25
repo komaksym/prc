@@ -1,0 +1,90 @@
+name: Bug report
+description: Report reproducible incorrect behavior in prc
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Remove tokens, private URLs, and proprietary code before posting.
+  - type: input
+    id: summary
+    attributes:
+      label: What is broken?
+      description: State the incorrect result in one sentence.
+      placeholder: The map omits a changed function.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Include the exact command, source, board, and relevant file paths.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should prc produce instead?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the error text or a description of the wrong output.
+    validations:
+      required: true
+  - type: dropdown
+    id: command
+    attributes:
+      label: Command area
+      options:
+        - explain
+        - map
+        - board check or board coverage
+        - skill install
+        - doctor
+        - other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Paste the prc version or the first 12 characters of the commit SHA.
+      placeholder: 0.1.0 or 3b83ae942a9b
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the operating system, Python version, and available media tools.
+      value: |
+        - OS:
+        - Python:
+        - ffmpeg / ffprobe:
+        - Chromium:
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or evidence
+      description: Paste redacted output. Never include a GitHub token or other secret.
+      render: shell
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched existing issues and removed secrets from this report.
+          required: true

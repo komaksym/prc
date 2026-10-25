@@ -1,5 +1,10 @@
 # prc explain
 
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![GitHub issues](https://img.shields.io/github/issues/komaksym/prc)](https://github.com/komaksym/prc/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/komaksym/prc)](https://github.com/komaksym/prc/pulls)
+[![GitHub stars](https://img.shields.io/github/stars/komaksym/prc)](https://github.com/komaksym/prc/stargazers)
+
 [Product and repository status](docs/mvp/STATUS.md) records verified behavior and unfinished release gates.
 
 `prc explain` turns a pull request and an agent-authored board into a local video, written walkthrough, map, card, and comment draft.

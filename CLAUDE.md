@@ -4,6 +4,8 @@ Current work is the end-to-end MVP. Read `START-HERE.md` first, then continue fr
 
 ## Agent skills
 
+Read `AGENTS.md` for repository commands, boundaries, and evidence rules.
+
 ### Issue tracker
 
 Issues live as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
