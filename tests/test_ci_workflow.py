@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
+WORKFLOW = ROOT / ".github" / "workflows" / "pr.yml"
 
 
 def read_workflow() -> str:
@@ -19,8 +19,16 @@ def test_ci_workflow_file_exists() -> None:
 
 def test_ci_workflow_has_stable_names() -> None:
     text = read_workflow()
-    assert "name: ci" in text, "workflow name must stay 'ci' for the ruleset check"
-    assert "\n  ci:" in text, "job name must stay 'ci' for the ruleset check"
+    assert "\n  ci:" in text, "the release verification job must stay named 'ci'"
+    assert "\n  gate:" in text, "job name must stay 'gate' for the ruleset check"
+
+
+def test_gate_fails_when_ci_fails_or_is_cancelled() -> None:
+    gate = read_workflow().split("\n  gate:", 1)[1]
+    assert "if: always()" in gate, "a skipped gate counts as passing, so gate must always run"
+    assert "needs: [checks, ci]" in gate, "gate must wait for the shared checks and ci"
+    assert "contains(needs.*.result, 'failure')" in gate
+    assert "contains(needs.*.result, 'cancelled')" in gate
 
 
 def test_ci_workflow_triggers_always() -> None:

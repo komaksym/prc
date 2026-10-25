@@ -30,7 +30,7 @@ Historical worktrees and their ignored caches remain intact. The branch reconcil
 
 Before reconciliation, every branch ref was saved in `artifacts/reconciliation/2026-10-08/branches-before.bundle`. All 2,290 pending file identities and contents were saved beside it. Unrelated analyzer, queue, and provider experiments were moved into its `unrelated-experiments` directory with matching hashes. These archives stay local.
 
-The public origin is [komaksym/prc](https://github.com/komaksym/prc), with `main` as the default branch. At this update, the remote and checkout resolved `main` at `99362409a24cee6d6cb2a1254e786b1e72908582`. The GitHub Actions workflow in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) runs the isolated release verification on pushes to `main`, pull requests, and manual dispatches.
+The public origin is [komaksym/prc](https://github.com/komaksym/prc), with `main` as the default branch. At this update, the remote and checkout resolved `main` at `99362409a24cee6d6cb2a1254e786b1e72908582`. The GitHub Actions workflow in [`.github/workflows/pr.yml`](../../.github/workflows/pr.yml) runs the isolated release verification on pushes to `main`, pull requests, and manual dispatches. Its `gate` job is the only check the `pr-gate` ruleset requires.
 
 GitHub reports no repository license. The README and [decision D21](DECISIONS.md) leave the license, package publication, and promotional publication to the user. The repository contains operator instructions and drafts for those actions; it contains no record of a PyPI upload or promotional post. A public GitHub origin does not establish any of those decisions.
 
