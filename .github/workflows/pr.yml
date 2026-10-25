@@ -2,7 +2,8 @@ name: pr
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+    # No "edited": a description edit would restart the macOS run. After a title fix, re-run the title job.
+    types: [opened, synchronize, reopened]
   push:
     branches: [main]
   workflow_dispatch:
