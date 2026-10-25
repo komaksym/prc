@@ -1,0 +1,17 @@
+{
+  "title": "Up next is now the first unwatched episode after the furthest watched one.",
+  "lines": [
+    "Up next is now the first unwatched episode after the furthest watched one.",
+    "find_next_episodes_bulk",
+    "select_next_episode",
+    "2 new test calls",
+    "Before: Up next s1e1",
+    "After: Up next s2e3",
+    "Arrows into code names show new calls",
+    "2 files",
+    "6 parsed symbols changed",
+    "CI 10/10 passed",
+    "Direct test-call evidence found for all live changed production symbols in this map.",
+    "Infographic drawn by AI. Words from prc."
+  ]
+}

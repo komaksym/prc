@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import shutil
+from collections.abc import Callable
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ import pytest
 from prc.explainer import render
 from prc.explainer.check import verify_board
 from prc.explainer.jointest import run as join_run
+from prc.explainer.preflight import line_coverage
 from prc.explainer.voice import NoneBackend
 
 DATA = Path(__file__).resolve().parent / "data" / "explainer"
@@ -31,10 +33,47 @@ def need_doc() -> Any:
     return pytest.importorskip("prc.explainer.doc")
 
 
+@pytest.mark.parametrize("width", [1280, 390])
+def test_doc_infographic_fits_the_content_column(tmp_path: Path, width: int) -> None:
+    from playwright.sync_api import sync_playwright
+
+    proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/infographic"
+    proof.mkdir(parents=True, exist_ok=True)
+    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path)
+    with sync_playwright() as driver:
+        browser = driver.chromium.launch()
+        try:
+            page = browser.new_page(viewport={"width": 2048, "height": 512})
+            page.set_content(
+                '<body style="background:white;color:black;font:48px Georgia">Infographic test</body>'
+            )
+            image = page.screenshot(path=str(proof / "wide-fixture.png"))
+            need_doc().render_doc(board, m, tmp_path, cursor, has_video=False, infographic=image)
+            page.set_viewport_size({"width": width, "height": 844})
+            page.goto((tmp_path / "doc.html").as_uri())
+            page.wait_for_function("window.docReady === true")
+            page.screenshot(path=str(proof / f"doc-scaling-{width}.png"))
+            fit = page.locator("figure.infographic img").evaluate(
+                "img => { const image = img.getBoundingClientRect(); "
+                "const figure = img.parentElement.getBoundingClientRect(); "
+                "return {decoded: img.complete && img.naturalWidth > 1000, "
+                "inside: image.left >= figure.left && image.right <= figure.right + 1, "
+                "pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1}; }"
+            )
+            assert fit == {"decoded": True, "inside": True, "pageFits": True}
+        finally:
+            browser.close()
+
+
 def filled(
-    board_name: str, map_name: str, tmp_path: Path
+    board_name: str,
+    map_name: str,
+    tmp_path: Path,
+    edit: Callable[[dict[str, Any]], None] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any], float]:
     board = json.loads((DATA / "boards" / board_name).read_text())
+    if edit:
+        edit(board)
     m = json.loads((DATA / "maps" / map_name).read_text())
     facts = verify_board(board, m)
     render.fill(board, m, facts, None)
@@ -51,6 +90,16 @@ def filled(
 
 def captions(scene: dict[str, Any]) -> list[str]:
     return [s if isinstance(s, str) else s["show"] for s in scene["say"]]
+
+
+def code_first_word(board: dict[str, Any]) -> None:
+    word, rest = board["scenes"][0]["say"][0].split(" ", 1)
+    board["scenes"][0]["say"][0] = f"`{word}` {rest}"
+
+
+def fixture_captions(board_name: str) -> list[str]:
+    board = json.loads((DATA / "boards" / board_name).read_text())
+    return [line for s in board["scenes"] for line in captions(s)]
 
 
 class Doc(HTMLParser):
@@ -192,22 +241,79 @@ def uncovered_rule(board: dict[str, Any], m: dict[str, Any]) -> tuple[set[str], 
 
 def test_prose_is_board_sentences(tmp_path: Path) -> None:
     docmod = need_doc()
-    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path)
+    board, m, cursor = filled("mdp17b.json", "pr17.json", tmp_path, edit=code_first_word)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
     flat = [p for section in doc.prose for p in section]
-    want = [line for s in board["scenes"] for line in captions(s)]
-    assert flat == want
+    assert flat == fixture_captions("mdp17b.json")
+    assert '<p class="prose"><code>This</code> pull request changes' in html
+
+
+def _prose_section_html(docmod: Any, say: list[str]) -> Any:
+    m = {"pr": "o/r#1", "head_sha": "h" * 40, "base_sha": "b" * 40}
+    board: dict[str, Any] = {
+        "name": "t",
+        "scenes": [{"type": "title", "kicker": "Open pull request", "say": say}],
+    }
+    return docmod._scene_section(board, 0, board["scenes"][0], m)
+
+
+def test_prose_renders_backticked_names_as_code() -> None:
+    docmod = need_doc()
+    html = _prose_section_html(
+        docmod,
+        [
+            "`select_next_episode` now finds the last watched episode.",
+            "An unpaired ` stays literal.",
+            'Hostile `name` with <script> and "quotes" stays escaped.',
+        ],
+    )
+    assert "<code>select_next_episode</code>" in html
+    assert "<code>name</code>" in html
+    assert "<script>" not in html
+    assert "&lt;script&gt;" in html
+    doc = parse(html)
+    flat = [p for section in doc.prose for p in section]
+    assert flat[0] == "select_next_episode now finds the last watched episode."
+    assert "`" not in flat[0]
+    assert flat[1] == "An unpaired ` stays literal."
+    assert flat[2] == 'Hostile name with <script> and "quotes" stays escaped.'
+
+
+def test_removed_receipt_labels_name_their_side() -> None:
+    docmod = need_doc()
+    head, base = "h" * 40, "b" * 40
+    m = {"pr": "o/r#1", "head_sha": head, "base_sha": base}
+    scene: dict[str, Any] = {
+        "type": "diff",
+        "file": "internal/compose/file.go",
+        "say": ["Change the value."],
+        "rows": [
+            {"num": 77, "op": " ", "text": "x = 1"},
+            {"num": 77, "op": "-", "text": "x = 0"},
+        ],
+    }
+    board: dict[str, Any] = {"name": "t", "scenes": [scene]}
+    html = docmod._scene_section(board, 0, scene, m)
+    receipts = re.findall(r'<a class="receipt" href="([^"]+)">([^<]+)</a>', html)
+    assert len(receipts) == 2
+    by_label = {label: href for href, label in receipts}
+    assert "internal/compose/file.go#L77" in by_label
+    assert "internal/compose/file.go#L77 (removed)" in by_label
+    assert by_label["internal/compose/file.go#L77"] == (
+        f"https://github.com/o/r/blob/{head}/internal/compose/file.go#L77"
+    )
+    assert by_label["internal/compose/file.go#L77 (removed)"] == (
+        f"https://github.com/o/r/blob/{base}/internal/compose/file.go#L77"
+    )
 
 
 def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
-    """Every doc string is a board sentence, a fixed template, or map-verbatim."""
     docmod = need_doc()
-    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
+    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path, edit=code_first_word)
     html = docmod.render_doc(board, m, tmp_path, cursor, has_video=True)
     doc = parse(html)
-    sentences = {line for s in board["scenes"] for line in captions(s)}
-    # Fixed template strings: the only chrome the doc may add.
+    sentences = set(fixture_captions("mdp12.json"))
     templates = set(docmod.TEMPLATE_STRINGS)
     blob = json.dumps(board) + json.dumps(m)
     joined_prose = "\n".join(p for section in doc.prose for p in section)
@@ -221,6 +327,8 @@ def test_doc_adds_no_new_claims(tmp_path: Path) -> None:
         if text in joined_prose:
             continue
         if re.fullmatch(r"Scene \d+ of \d+ · \w+", text):
+            continue
+        if re.fullmatch(r"\d+ of \d+ changed lines are on screen\.", text):
             continue
         assert text in blob, f"doc says {text!r}, which is in neither board, map nor templates"
 
@@ -251,14 +359,18 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
     for s in board["scenes"]:
         for c in s.get("cite", []):
             path, n = c["line"].rsplit(":", 1)
-            want[f"{path}#L{abs(int(n))}"] = (
+            label = f"{path}#L{abs(int(n))} (removed)" if int(n) < 0 else f"{path}#L{abs(int(n))}"
+            want[label] = (
                 m["base_sha"] if int(n) < 0 else m["head_sha"],
                 abs(int(n)),
             )
         for it in s.get("items", []):
             if "cite" in it:
                 path, n = it["cite"].rsplit(":", 1)
-                want[f"{path}#L{abs(int(n))}"] = (
+                label = (
+                    f"{path}#L{abs(int(n))} (removed)" if int(n) < 0 else f"{path}#L{abs(int(n))}"
+                )
+                want[label] = (
                     m["base_sha"] if int(n) < 0 else m["head_sha"],
                     abs(int(n)),
                 )
@@ -266,7 +378,12 @@ def test_receipt_links_point_at_the_diff(tmp_path: Path) -> None:
             for r in s["rows"]:
                 if "text" not in r:
                     continue
-                want[f"{s['file']}#L{r['num']}"] = (
+                label = (
+                    f"{s['file']}#L{r['num']} (removed)"
+                    if r["op"] == "-"
+                    else f"{s['file']}#L{r['num']}"
+                )
+                want[label] = (
                     m["base_sha"] if r["op"] == "-" else m["head_sha"],
                     r["num"],
                 )
@@ -358,6 +475,27 @@ def test_not_covered_matches_map(tmp_path: Path) -> None:
         assert f"<code>{path}</code>" not in html.split("Not covered", 1)[1], path
 
 
+def test_doc_states_changed_line_coverage(tmp_path: Path) -> None:
+    docmod = need_doc()
+    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
+    html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
+    cov = line_coverage(board, m)
+    assert cov["shown"] < cov["total"], "mdp12 must leave lines out for this test to mean anything"
+    assert f"{cov['shown']} of {cov['total']} changed lines are on screen." in html
+
+
+def test_leftout_line_labels_are_distinct(tmp_path: Path) -> None:
+    docmod = need_doc()
+    board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
+    html = docmod.render_doc(board, m, tmp_path, cursor, has_video=False)
+    links = re.findall(r'<a class="leftout" href="([^"]+)">([^<]+)</a>', html)
+    labels = [label for _, label in links]
+    removed = [label for href, label in links if f"/blob/{m['base_sha']}/" in href]
+    assert removed, "mdp12 must leave removed lines out for this test to mean anything"
+    assert len(labels) == len(set(labels))
+    assert all(label.endswith("(removed)") for label in removed), removed
+
+
 def test_csp_matches_map_style(tmp_path: Path) -> None:
     docmod = need_doc()
     board, m, cursor = filled("mdp12.json", "pr12.json", tmp_path)
@@ -410,6 +548,7 @@ def test_hostile_text_cannot_break_doc(tmp_path: Path) -> None:
                 "type": "outro",
                 "l1": "First line with </script> in it.",
                 "l2": "Second line.",
+                "fine": "Small print with </script> in it.",
                 "say": ["Closing out."],
                 "cues": [
                     {"at": [0, 0.0], "do": "l1"},

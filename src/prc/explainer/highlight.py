@@ -90,9 +90,20 @@ def classes_pyg(path: str, data: bytes) -> list[str]:
         (Name.Builtin, "f"),
         (Name.Function, "f"),
     ]
-    out = []
+    lexed: list[str] = []
     for tok, val in lexer.get_tokens(data.decode()):
-        out += [next((c for t, c in m if tok in t), "")] * len(val.encode())
+        lexed += [next((c for t, c in m if tok in t), "")] * len(val.encode())
+    if b"\r\n" not in data:
+        return lexed
+    # Pygments rewrites CRLF as LF before lexing; give each CR no class and keep byte offsets.
+    out: list[str] = []
+    j = 0
+    for i, byte in enumerate(data):
+        if byte == 0x0D and data[i + 1 : i + 2] == b"\n":
+            out.append("")
+        else:
+            out.append(lexed[j] if j < len(lexed) else "")
+            j += 1
     return out
 
 
@@ -234,8 +245,16 @@ def attach_tokens(
                     for line in h["lines"]
                     if line["op"] != "+"
                 ]
-            lines = file_runs(path, "\n".join(t for _, t in sel).encode())
-            by_num = {n: lines[i] for i, (n, _) in enumerate(sel)}
+            joined = "\n".join(t for _, t in sel)
+            lines = file_runs(path, joined.encode())
+            flat = ["".join(t for t, _ in runs) for runs in lines]
+            if len(lines) == len(sel) and all(f == t for f, (_, t) in zip(flat, sel, strict=True)):
+                by_num = {n: lines[i] for i, (n, _) in enumerate(sel)}
+            else:
+                by_num = {}
+                for n, t in sel:
+                    one = file_runs(path, t.encode())
+                    by_num[n] = one[0] if one else []
         cache[side] = by_num
         return by_num
 

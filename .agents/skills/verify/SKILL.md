@@ -49,6 +49,8 @@ The driver runs the real `map --source fixture:shop` entry point with its own st
 It opens generated HTML in headless Chromium, clicks checkout, and presses Escape.
 Require `PASS` and inspect the printed proof directory.
 For other paths, use [the feature map](features/README.md). Every browser check must save a screenshot.
+For paired session hub changes, run `.venv/bin/python scripts/verify_paired_hub.py` instead of API-only checks. Require PASS, every button screenshot, refusal recovery text, and cited proof from [paired hub](features/paired.md).
+Before any operator-facing handoff of the hub URL, run .venv/bin/python scripts/handoff_study_hub.py against the exact handed-off server and require its handoff record. Require the printed exact URL, the supervised pidfile, and the handoff record JSON under artifacts/handoff/ with url, port, pid, pidfile, screenshot, and checks. Do not hand off a hub URL without that record; the script refuses to print a URL when any check fails.
 The scripted driver uses the repo's Playwright harness. If Vercel agent-browser is required and available, use the same visible controls.
 Record a driver limitation if unavailable. DOM-only checks do not establish GUI behavior.
 
@@ -65,6 +67,18 @@ The driver rejects browser HTTP requests. This proves the captured page loads of
 It does not establish network isolation for every CLI command. Live GitHub acquisition requires separate evidence.
 Keep fixture checks local. Avoid external link navigation, public writes, and global skill installs.
 Report tested and untested entry points. One mapped feature does not prove the whole product or release acceptance.
+
+For infographics, compare `infographic/brief.json` with the captured code evidence.
+Calls must be exact added or removed production calls.
+The test-call node counts distinct test callers with added exact calls to a displayed symbol.
+Python `Before docs:` and `After docs:` lines are source docstring excerpts, not inferred board behavior.
+Go call-to-typed-error mappings require full pinned head source that matches the captured head diff rows.
+OCR matching permits only explicit glyph confusions, with no generic edit-distance tolerance.
+Require `flat` after passing word checks when no relations exist.
+The geometric gate proves connecting ink only. Inspect direction, arrowheads, endpoints, dashes, and extra connectors in the screenshot.
+Icons can appear elsewhere on the canvas, away from numerical fact lines and other lines that contain numbers.
+Read recognizer and planted-control verdicts from the current output's `listening.json`.
+Keep human pacing, tone, and acceptance pending until the user supplies evidence.
 
 ## Cleanup
 

@@ -1,0 +1,445 @@
+{
+  "name": "em-5756-note-touch",
+  "scenes": [
+    {
+      "type": "title",
+      "kicker": "Merged pull request",
+      "say": [
+        "Note now closes the Command Center on touch."
+      ],
+      "cite": [
+        {
+          "line": "src/commands/note.ts:24",
+          "match": "if (isTouch) dispatch(toggleDropdown({ dropDownType: 'commandCenter', value: false }))"
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "sel",
+          "title": "Selection",
+          "sub": "highlighted bullets",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "a",
+              "text": "a",
+              "tone": "blue"
+            }
+          ]
+        },
+        {
+          "id": "bar",
+          "title": "Toolbar",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "note",
+              "text": "Note"
+            }
+          ]
+        },
+        {
+          "id": "cc",
+          "title": "Command Center",
+          "sub": "kept open by the selection",
+          "col": 1,
+          "row": true,
+          "ground": "commandCenter",
+          "items": [
+            {
+              "id": "sheet",
+              "text": "sheet"
+            }
+          ]
+        },
+        {
+          "id": "kb",
+          "title": "Note editor",
+          "sub": "has the keyboard",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "keyboard",
+              "text": "keyboard"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:201",
+          "match": "clickThought('a')"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:203",
+          "match": "gesture(openCommandCenterCommand)"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:206",
+          "match": "clickToolbar('Note')"
+        },
+        {
+          "line": "src/commands/note.ts:22",
+          "match": "the sheet would cover the keyboard"
+        },
+        {
+          "line": "src/commands/openCommandCenter.ts:63",
+          "match": "dropDownType: 'commandCenter', value: true"
+        }
+      ],
+      "say": [
+        "A new test clicks thought a and opens the Command Center.",
+        "Before, clicking Note left the sheet open over the keyboard."
+      ],
+      "cues": [
+        {
+          "at": "clicks thought a",
+          "do": "show",
+          "ids": [
+            "sel"
+          ]
+        },
+        {
+          "at": "opens the Command Center",
+          "do": "show",
+          "ids": [
+            "cc"
+          ]
+        },
+        {
+          "at": "clicking Note",
+          "do": "show",
+          "ids": [
+            "bar"
+          ]
+        },
+        {
+          "at": "left the sheet open",
+          "do": "note",
+          "id": "cc",
+          "text": "covers the keyboard",
+          "tone": "bad",
+          "side": "right"
+        },
+        {
+          "at": "over the keyboard",
+          "do": "show",
+          "ids": [
+            "kb"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "groups",
+      "groups": [
+        {
+          "id": "sel",
+          "title": "Selection",
+          "sub": "highlighted bullets",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "a",
+              "text": "a",
+              "tone": "blue"
+            }
+          ]
+        },
+        {
+          "id": "bar",
+          "title": "Toolbar",
+          "col": 0,
+          "row": true,
+          "items": [
+            {
+              "id": "note",
+              "text": "Note"
+            }
+          ]
+        },
+        {
+          "id": "cc",
+          "title": "Command Center",
+          "sub": "kept open by the selection",
+          "col": 1,
+          "row": true,
+          "ground": "commandCenter",
+          "items": [
+            {
+              "id": "sheet",
+              "text": "sheet"
+            }
+          ]
+        },
+        {
+          "id": "kb",
+          "title": "Note editor",
+          "sub": "has the keyboard",
+          "col": 1,
+          "row": true,
+          "items": [
+            {
+              "id": "keyboard",
+              "text": "keyboard"
+            }
+          ]
+        }
+      ],
+      "cite": [
+        {
+          "line": "src/commands/note.ts:22",
+          "match": "Close it, which clears the selection"
+        },
+        {
+          "line": "src/commands/note.ts:24",
+          "match": "if (isTouch) dispatch(toggleDropdown({ dropDownType: 'commandCenter', value: false }))"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:201",
+          "match": "clickThought('a')"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:206",
+          "match": "clickToolbar('Note')"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:210",
+          "match": "the thought is no longer selected and the sheet is dismissed"
+        }
+      ],
+      "say": [
+        "Now, on touch, Note closes the sheet, so thought a is no longer selected."
+      ],
+      "hold": 0.8,
+      "cues": [
+        {
+          "at": "closes the sheet",
+          "do": "strike",
+          "id": "sheet"
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "note",
+          "id": "cc",
+          "text": "closed on touch",
+          "tone": "good",
+          "side": "above"
+        },
+        {
+          "at": "no longer selected",
+          "do": "strike",
+          "id": "a"
+        },
+        {
+          "at": [
+            0,
+            0.95
+          ],
+          "do": "note",
+          "id": "sel",
+          "text": "no bullet highlighted",
+          "tone": "good",
+          "side": "above"
+        }
+      ]
+    },
+    {
+      "type": "diff",
+      "file": "src/commands/note.ts",
+      "label": "An onComplete callback in Note",
+      "lines": [
+        "19",
+        "23",
+        "24",
+        "25",
+        "26"
+      ],
+      "cite": [
+        {
+          "line": "src/commands/note.ts:19",
+          "match": "multicursor: {"
+        },
+        {
+          "line": "src/commands/note.ts:22",
+          "match": "This runs after the multicursors have been restored"
+        }
+      ],
+      "say": [
+        "Note's multicursor settings gain an onComplete callback.",
+        "It runs after multicursors are restored, so they cannot reopen the sheet."
+      ],
+      "cues": [
+        {
+          "at": "onComplete callback",
+          "do": "step",
+          "n": 1
+        },
+        {
+          "at": "cannot reopen",
+          "do": "note",
+          "line": "24",
+          "text": "touch devices only",
+          "tone": "good"
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "label": "Keyboard handling",
+      "code": true,
+      "mark": "\u2022",
+      "tone": "info",
+      "items": [
+        {
+          "text": "state.noteFocus ? dismissKeyboard() : null",
+          "cite": "src/commands/openCommandCenter.ts:61"
+        },
+        {
+          "text": "avoidKeyboard={isOpen}",
+          "cite": "src/components/CommandCenter/CommandCenter.tsx:196"
+        },
+        {
+          "text": "{ ...applyStyles(styles.scroller, isUnstyled) }",
+          "cite": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch:58"
+        }
+      ],
+      "cite": [
+        {
+          "line": "src/commands/openCommandCenter.ts:58",
+          "match": "A note keeps the caret"
+        },
+        {
+          "line": "src/commands/openCommandCenter.ts:59",
+          "match": "so that the keyboard closes"
+        },
+        {
+          "line": "src/components/CommandCenter/CommandCenter.tsx:195",
+          "match": "Lifts the sheet above the keyboard only while it is open"
+        },
+        {
+          "line": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch:60",
+          "match": "scrollStyle.paddingBottom"
+        }
+      ],
+      "say": [
+        "From a note, opening the Command Center now dismisses the keyboard.",
+        "The sheet lifts above the keyboard only while open.",
+        "A library patch copies the scroll style before padding it."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.05
+          ],
+          "do": "items",
+          "step": 5.0
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "big": "{tests_added}",
+      "label": "new tests",
+      "tone": "good",
+      "code": false,
+      "items": [
+        {
+          "text": "closes when the Note command enters edit mode",
+          "cite": "src/e2e/puppeteer/__tests__/commandCenter.ts:199"
+        },
+        {
+          "text": "does not make room for the keyboard while it closes for the Note command",
+          "cite": "src/e2e/puppeteer/__tests__/commandCenter.ts:216"
+        },
+        {
+          "text": "dismisses the keyboard when it is opened from a note",
+          "cite": "src/e2e/puppeteer/__tests__/commandCenter.ts:245"
+        }
+      ],
+      "cite": [
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:223",
+          "match": "Headless Chrome has no virtual keyboard"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:224",
+          "match": "whether the sheet pads its content"
+        },
+        {
+          "line": "src/e2e/puppeteer/__tests__/commandCenter.ts:241",
+          "match": "expect(await closingPaddingBottom).toBe('')"
+        }
+      ],
+      "say": [
+        "They cover closing the sheet, its padding, and opening from a note.",
+        "Headless Chrome has no virtual keyboard, so one test checks padding instead."
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.4
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "l1": "Note closes the Command Center on touch.",
+      "l2": "Start at onComplete in note.ts.",
+      "fine": "Then openCommandCenter.ts, CommandCenter.tsx and the react-modal-sheet patch.",
+      "nocap": true,
+      "say": [
+        "Note closes the Command Center on touch.",
+        "Start at onComplete in note.ts."
+      ],
+      "cite": [
+        {
+          "line": "src/commands/note.ts:23",
+          "match": "onComplete"
+        },
+        {
+          "line": "src/commands/note.ts:24",
+          "match": "if (isTouch) dispatch"
+        }
+      ],
+      "cues": [
+        {
+          "at": [
+            0,
+            0.0
+          ],
+          "do": "l1"
+        },
+        {
+          "at": [
+            1,
+            0.0
+          ],
+          "do": "l2"
+        },
+        {
+          "at": [
+            1,
+            0.8
+          ],
+          "do": "cmd"
+        }
+      ]
+    }
+  ]
+}

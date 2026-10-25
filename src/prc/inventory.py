@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from prc.gitutil import TreeChange, blob_size, read_blob, tree_delta, unified_diff
+from prc.gitutil import GitError, TreeChange, blob_size, read_blob, run_git, tree_delta
 from prc.identity import InventoryId, content_id
 
 MAX_INSPECTABLE_BYTES = 64 * 1024
@@ -74,16 +74,33 @@ def _classify(repo: Path, change: TreeChange) -> tuple[Surface, str]:
     return "text", ""
 
 
-def _line_counts(repo: Path, change: TreeChange, surface: Surface) -> tuple[int, int]:
-    if surface not in ("text", "symlink"):
+def _line_counts(
+    repo: Path, change: TreeChange, surface: Surface, base: str, head: str
+) -> tuple[int, int]:
+    if surface not in ("text", "symlink", "oversize"):
         return 0, 0
 
-    diff = unified_diff(repo, change.old_oid, change.new_oid)
-    lines = diff.splitlines()
-    added = sum(1 for line in lines if line.startswith("+") and not line.startswith("+++"))
-    removed = sum(1 for line in lines if line.startswith("-") and not line.startswith("---"))
-
-    return added, removed
+    raw = run_git(
+        repo,
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--text",
+        "--numstat",
+        "-z",
+        base,
+        head,
+        "--",
+        f":(literal){change.path}",
+    )
+    records = [record for record in raw.split(b"\x00") if record]
+    if len(records) != 1:
+        raise GitError(f"numstat expected one record for {change.path!r}, got {len(records)}")
+    added, removed, path = records[0].split(b"\t", 2)
+    if path.decode("utf-8", errors="surrogateescape") != change.path:
+        raise GitError(f"numstat path mismatch for {change.path!r}")
+    return int(added), int(removed)
 
 
 def build_inventory(repo: Path, base_commit: str, head_commit: str) -> ChangeSurfaceInventory:
@@ -93,7 +110,7 @@ def build_inventory(repo: Path, base_commit: str, head_commit: str) -> ChangeSur
 
     for change in sorted(tree_delta(repo, base_commit, head_commit), key=lambda entry: entry.path):
         surface, note = _classify(repo, change)
-        added, removed = _line_counts(repo, change, surface)
+        added, removed = _line_counts(repo, change, surface, base_commit, head_commit)
         fields = (
             change.path,
             change.status,

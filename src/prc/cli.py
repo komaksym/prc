@@ -11,12 +11,15 @@ import time
 from pathlib import Path
 
 from prc.controller import fixture_suite
+from prc.evaluation.kit import KitError as PairedKitError
+from prc.evaluation.protocol import PROTOCOL
 from prc.fixture_source import FIXTURE_EPOCH
 from prc.github_source import GitHubSource
 from prc.identity import to_jsonable
 from prc.model import PrRef
 from prc.pipeline import (
     ExplainCheckError,
+    InfographicMissingError,
     run_brief,
     run_decide,
     run_explain,
@@ -24,9 +27,9 @@ from prc.pipeline import (
     run_review,
     run_status,
 )
-from prc.presentation import map_video
+from prc.presentation import infographic, map_video
 from prc.scenarios import SCENARIOS, add_mutation, load_fixture
-from prc.source import PullRequestSource
+from prc.source import PullRequestSource, SourceError
 from prc.store import StaleExpectation, Store
 from prc.verification import EligibilityPolicy
 
@@ -139,12 +142,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="narration backend; auto is the first one that works",
     )
     explain.add_argument("--out", type=Path, default=Path("artifacts/explain"))
+    explain.add_argument(
+        "--infographic",
+        type=Path,
+        action="append",
+        default=[],
+        help="candidate infographic PNG to gate (repeatable; first pass wins)",
+    )
 
     board = sub.add_parser("board", help="board tools for the story a video tells")
     board_sub = board.add_subparsers(dest="board_command", required=True)
     board_sub.add_parser("guide", help="print the board-writing guide")
     board_cmds = {}
-    for name in ("show", "find", "coverage", "check"):
+    for name in ("show", "find", "coverage", "check", "preview"):
         cmd = board_sub.add_parser(name)
         cmd.add_argument("--source", default=None)
         cmd.add_argument("--map", type=Path, default=None)
@@ -159,6 +169,16 @@ def build_parser() -> argparse.ArgumentParser:
     board_cmds["find"].add_argument("--path", default=None, help="only files with this in the path")
     board_cmds["coverage"].add_argument("board", type=Path)
     board_cmds["check"].add_argument("board", type=Path)
+    board_cmds["preview"].add_argument("board", type=Path)
+    board_cmds["preview"].add_argument(
+        "--out", type=Path, default=Path("artifacts/preview"), help="stills output folder"
+    )
+    board_cmds["preview"].add_argument(
+        "--git-dir",
+        type=Path,
+        default=None,
+        help="git dir for exact highlight colors (default: from --source, else hunk text)",
+    )
 
     skill = sub.add_parser("skill", help="install the board-writer skill for your agent")
     skill_sub = skill.add_subparsers(dest="skill_command", required=True)
@@ -174,13 +194,47 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("doctor", help="check the tools explain needs")
 
+    hear = sub.add_parser(
+        "listen", help="check that a speech recognizer hears every code name in a video"
+    )
+    hear.add_argument("folder", type=Path, help="an explain output folder")
+    hear.add_argument("--engine", default="auto", choices=["auto", "parakeet", "whisper"])
+
     analyze = sub.add_parser("eval-analyze", help="analyze recorded pilot pair outcomes")
     analyze.add_argument("results", type=Path)
+
+    paired = sub.add_parser("eval-prepare", help="validate, seal, and assign a paired study")
+    paired.add_argument("manifest", type=Path)
+    paired.add_argument("--out", type=Path, required=True)
+
+    session = sub.add_parser("eval-session", help="serve a paired study reading session")
+    session.add_argument("study", type=Path)
+    session.add_argument("--port", type=int, default=0)
+
+    export = sub.add_parser(
+        "eval-export", help="export the blinded grading sheet from a closed study"
+    )
+    export.add_argument("study", type=Path)
+    export.add_argument("--out", type=Path, required=True)
+
+    grade = sub.add_parser("eval-grade", help="apply blinded scores and build results.json")
+    grade.add_argument("study", type=Path)
+    grade.add_argument("scores", type=Path)
+    grade.add_argument("--out", type=Path, required=True)
 
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except (SourceError, PairedKitError) as error:
+        print(f"prc: {error}", file=sys.stderr)
+
+        return 1
+
+
+def _main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     policy = EligibilityPolicy()
 
@@ -191,11 +245,71 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "eval-analyze":
         from prc.evaluation.analysis import analyze
-        from prc.evaluation.io import load_pairs
+        from prc.evaluation.io import load_pairs_with_protocol
 
-        print(json.dumps(_report_json(analyze(load_pairs(args.results))), indent=2, default=str))
+        pairs, protocol = load_pairs_with_protocol(args.results)
+
+        analyzed = dict(dataclasses.asdict(analyze(pairs, protocol or PROTOCOL)))
+        recorded = json.loads(args.results.read_text())
+        for field in ("study_digest", "interpretation", "deviations"):
+            if field in recorded:
+                analyzed[field] = recorded[field]
+        print(json.dumps(analyzed, indent=2, default=str))
 
         return 0
+
+    if args.command == "eval-prepare":
+        from prc.evaluation.kit import prepare_study
+
+        print(json.dumps(prepare_study(args.manifest, args.out)))
+
+        return 0
+
+    if args.command == "eval-export":
+        from prc.evaluation.kit import export_blinded
+
+        print(json.dumps(export_blinded(args.study, args.out)))
+
+        return 0
+
+    if args.command == "eval-grade":
+        from prc.evaluation.kit import apply_scores
+
+        print(json.dumps(apply_scores(args.study, args.scores, args.out)))
+
+        return 0
+
+    if args.command == "eval-session":
+        from prc.evaluation.session import serve
+
+        httpd, url = serve(args.study, args.port)
+        print(f"paired-eval session: {url}", flush=True)
+
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            httpd.server_close()
+
+        return 0
+
+    if args.command == "listen":
+        from prc.explainer.listen import ListenError, listen
+
+        try:
+            checked = listen(args.folder, args.engine)
+        except ListenError as error:
+            print(f"prc: {error}", file=sys.stderr)
+            return 2
+        if not checked["calibration"]["passed"]:
+            print("prc: the recognizer failed its planted controls", file=sys.stderr)
+        for token in checked["lost"]:
+            print(f"prc: the narration loses {token}", file=sys.stderr)
+        summary = {k: checked[k] for k in ("engine", "lost", "passed")}
+        print(json.dumps(summary | {"report": str(args.folder / "listening.json")}, indent=2))
+
+        return 0 if checked["passed"] else 1
 
     required = getattr(args, "required_check", None)
     has_source = getattr(args, "source", None)
@@ -280,6 +394,15 @@ def main(argv: list[str] | None = None) -> int:
         from prc.explainer.voice import VoiceError
 
         source, ref = _resolve(args.source, args.store)
+        cands: list[Path] = []
+        for cand in args.infographic:
+            if not cand.is_file():
+                raise SystemExit(f"prc explain: no such --infographic file: {cand}")
+            try:
+                infographic.read_png(cand)
+            except ValueError as error:
+                raise SystemExit(f"prc explain: --{error}") from error
+            cands.append(cand)
 
         try:
             explained = run_explain(
@@ -292,8 +415,13 @@ def main(argv: list[str] | None = None) -> int:
                 map_path=args.map,
                 voice=args.voice,
                 git_dir=str(args.git_dir) if args.git_dir else None,
+                infographics=cands,
             )
         except ExplainCheckError as error:
+            print(str(error), file=sys.stderr)
+
+            return 2
+        except InfographicMissingError as error:
             print(str(error), file=sys.stderr)
 
             return 2
@@ -311,6 +439,7 @@ def main(argv: list[str] | None = None) -> int:
                     "doc": str(explained.doc_html) if explained.doc_html else None,
                     "card": str(explained.card_png) if explained.card_png else None,
                     "comment": str(explained.comment_md),
+                    "infographic": (str(explained.infographic) if explained.infographic else None),
                     "duration": explained.duration,
                     "estimate": explained.estimate,
                     "check_passed": explained.check_passed,
@@ -330,11 +459,12 @@ def main(argv: list[str] | None = None) -> int:
 
             return 0
 
+        repo: Path | None = None
         if args.map is not None:
             used = json.loads(args.map.read_text())
         elif args.source:
             source, ref = _resolve(args.source, args.store)
-            used, _, _, _ = load_map_dict(
+            used, _, _, repo = load_map_dict(
                 source, ref, _clock(args.source, args.clock_offset), policy, None
             )
         else:
@@ -367,6 +497,39 @@ def main(argv: list[str] | None = None) -> int:
             return 2
 
         print(f"{facts['receipts']} receipts verified")
+
+        print(
+            f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s"
+        )
+        print(facts["coverage_summary"])
+        for risk in facts["note_risks"]:
+            print(f"warning: {risk}")
+
+        if args.board_command == "preview":
+            from prc.explainer import render as explain_render
+            from prc.explainer.voice import NoneBackend
+
+            out_dir = args.out / args.board.stem
+            git_dir: str | None
+            if args.git_dir is not None:
+                git_dir = str(args.git_dir)
+            else:
+                git_dir = str(repo) if repo is not None and repo.exists() else None
+            try:
+                rendered = explain_render.render(
+                    board_doc,
+                    used,
+                    facts,
+                    out_dir,
+                    NoneBackend(),
+                    git_dir,
+                    keys_only=True,
+                )
+            except explain_render.RenderError as error:
+                raise SystemExit(f"prc board preview: {error}") from error
+            print(f"{len(board_doc['scenes']) * 2} stills in {out_dir / 'keys'}")
+            for warning in rendered.layout_warnings:
+                print(f"warning: {warning}")
 
         return 0
 

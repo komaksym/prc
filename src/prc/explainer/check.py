@@ -3,10 +3,20 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import sys
 from pathlib import Path
 from typing import Any
+
+from prc.explainer.preflight import (
+    coverage_summary,
+    join_preflight,
+    line_coverage,
+    note_risks,
+    silent_estimate,
+)
+from prc.explainer.speech import speakable
 
 CHANGED = ("added", "modified")
 ROWS = 12
@@ -26,16 +36,21 @@ VERBS: dict[str, set[str]] = {
 NEEDS = {"list": "items", "receipt": "rows"}
 
 
-def spoken(scene: dict[str, Any]) -> list[str]:
+def scripted(scene: dict[str, Any]) -> list[str]:
+    """What each sentence gives the voice, before code names are rewritten."""
     return [
         (s if isinstance(s, str) else s.get("speak", s["show"])).replace("`", "")
         for s in scene["say"]
     ]
 
 
+def spoken(scene: dict[str, Any]) -> list[str]:
+    return [speakable(text) for text in scripted(scene)]
+
+
 def find_phrase(scene: dict[str, Any], phrase: str) -> list[tuple[int, int]]:
     """Every place the narration says `phrase`, as (sentence, character offset)."""
-    pattern = re.compile(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", re.IGNORECASE)
+    pattern = re.compile(r"(?<!\w)" + re.escape(speakable(phrase)) + r"(?!\w)", re.IGNORECASE)
     return [
         (k, hit.start()) for k, text in enumerate(spoken(scene)) for hit in pattern.finditer(text)
     ]
@@ -114,9 +129,23 @@ class Checker:
                     )
                 )
         elif isinstance(spec, list):
-            if not (len(spec) == 2 and 0 <= spec[0] < len(s["say"]) and 0 <= spec[1] <= 1):
+            if not (
+                len(spec) == 2
+                and isinstance(spec[0], int)
+                and not isinstance(spec[0], bool)
+                and 0 <= spec[0] < len(s["say"])
+                and isinstance(spec[1], (int, float))
+                and not isinstance(spec[1], bool)
+                and math.isfinite(spec[1])
+                and 0 <= spec[1] <= 1
+            ):
                 self.fail(f"scene {i}: cue time {spec} is not [sentence, fraction] of this scene")
-        elif not isinstance(spec, (int, float)) or spec < 0:
+        elif (
+            not isinstance(spec, (int, float))
+            or isinstance(spec, bool)
+            or not math.isfinite(spec)
+            or spec < 0
+        ):
             self.fail(
                 f"scene {i}: cue time {spec!r} is not seconds, [sentence, fraction] or a phrase"
             )
@@ -161,7 +190,13 @@ class Checker:
             rows.append({"ref": ref, "op": op, "num": num, "text": line["text"], "step": step})
         if len(rows) > ROWS:
             self.fail(f"scene {i}: {len(rows)} rows, but the screen fits {ROWS} (gap rows count)")
-        cued = {c.get("n") for c in s.get("cues", []) if c.get("do") == "step"}
+        cued = {
+            c["n"]
+            for c in s.get("cues", [])
+            if c.get("do") == "step"
+            and isinstance(c.get("n"), int)
+            and not isinstance(c["n"], bool)
+        }
         for k in sorted(steps - cued):
             self.fail(f"scene {i}: lines wait for step {k}, but no cue says when")
         for k in sorted(cued - steps, key=str):
@@ -248,10 +283,86 @@ def tests_added(m: dict[str, Any]) -> int:
     )
 
 
+def _validate_shape(board: dict[str, Any]) -> None:
+    if (
+        not isinstance(board, dict)
+        or not isinstance(board.get("scenes"), list)
+        or not board["scenes"]
+    ):
+        raise SystemExit("receipts failed:\nboard needs a nonempty scenes list")
+    problems: list[str] = []
+    collections = {
+        "graph": "nodes",
+        "groups": "groups",
+        "bars": "bars",
+        "timeline": "rows",
+        "diff": "lines",
+        "list": "items",
+        "stats": "cards",
+        "receipt": "rows",
+    }
+    for i, scene in enumerate(board["scenes"]):
+        if not isinstance(scene, dict):
+            problems.append(f"scene {i}: needs an object")
+            continue
+        kind = scene.get("type")
+        if not isinstance(kind, str) or kind not in VERBS:
+            problems.append(f"scene {i}: needs a known scene type")
+            continue
+        hold = scene.get("hold", 0)
+        if (
+            not isinstance(hold, (int, float))
+            or isinstance(hold, bool)
+            or not math.isfinite(hold)
+            or hold < 0
+        ):
+            problems.append(f"scene {i}: hold needs finite nonnegative seconds")
+        field = collections.get(kind)
+        if field:
+            items = scene.get(field)
+            if not isinstance(items, list):
+                problems.append(f"scene {i}: {field} needs a list")
+            elif kind not in ("graph", "diff") and any(
+                not isinstance(item, dict) for item in items
+            ):
+                problems.append(f"scene {i}: {field} needs a list of objects")
+        if kind == "diff" and not isinstance(scene.get("file"), str):
+            problems.append(f"scene {i}: diff needs a file path")
+        if kind == "outro":
+            for field in ("l1", "l2"):
+                if not isinstance(scene.get(field), str):
+                    problems.append(f"scene {i}: outro needs {field} text")
+        say = scene.get("say", [])
+        if not isinstance(say, list) or any(
+            not isinstance(text, str)
+            and not (
+                isinstance(text, dict)
+                and isinstance(text.get("show"), str)
+                and isinstance(text.get("speak", text["show"]), str)
+            )
+            for text in say
+        ):
+            problems.append(f"scene {i}: say needs a list of narration text")
+            say = []
+        cues = scene.get("cues", [])
+        if not isinstance(cues, list) or any(not isinstance(cue, dict) for cue in cues):
+            problems.append(f"scene {i}: cues needs a list of objects")
+            continue
+        if not say and any(isinstance(cue.get("at"), (str, list)) for cue in cues):
+            problems.append(f"scene {i}: cue time needs narration in say")
+    if problems:
+        raise SystemExit("receipts failed:\n" + "\n".join(problems))
+
+
 def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
+    _validate_shape(board)
     verdicts: dict[int, tuple[str, str]] = {}
     bar_facts: dict[str, Any] = {}
     ck = Checker(m)
+
+    from prc.explainer.timing import scene_windows
+
+    windows = scene_windows(board)
 
     for i, s in enumerate(board["scenes"]):
         if s["type"] not in VERBS:
@@ -277,11 +388,24 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             for verb in ("l1", "l2", "cmd"):
                 if verb not in shown:
                     ck.fail(f"scene {i}: outro needs a {verb!r} cue")
+            s.setdefault("fine", "")
         for c in s.get("cues", []):
             verb = c.get("do", "claim" if "claim" in c else None)
             if verb not in VERBS[s["type"]]:
                 ck.fail(f"scene {i}: unknown cue {verb!r} for a {s['type']} scene")
+            if verb == "step" and (
+                not isinstance(c.get("n"), int) or isinstance(c["n"], bool) or c["n"] <= 0
+            ):
+                ck.fail(f"scene {i}: step cue needs a positive integer n")
             ck.when(i, s, c.get("at"))
+            at = c.get("at")
+            if not isinstance(at, bool) and isinstance(at, (int, float)):
+                start, end = windows[i]
+                if float(at) > end - start + 1e-6:
+                    ck.fail(
+                        f"scene {i}: cue {verb!r} at {at}s is after this scene "
+                        f"ends (~{end - start:.1f}s); the reveal would never show"
+                    )
             if "until" in c:
                 ck.when(i, s, c["until"])
             named = [c[k] for k in ("id", "from", "to", "line") if k in c] + [
@@ -401,6 +525,19 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             else:
                 verdicts[i] = ("NOT FOUND IN THE CODE", "bad")
 
+    for problem in join_preflight(board, m):
+        ck.fail(problem)
+    if ck.failures:
+        sys.exit("receipts failed:\n  " + "\n  ".join(ck.failures))
+    if not ck.failures:
+        from prc.explainer.timing import check_stamped_cues, estimated_scene
+
+        estimated = {
+            "scenes": [estimated_scene(s, *windows[i]) for i, s in enumerate(board["scenes"])]
+        }
+        for problem in check_stamped_cues(estimated):
+            ck.fail(problem)
+
     changed = {
         s["id"]
         for s in m["symbols"]
@@ -422,6 +559,16 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
         "receipts": ck.receipts,
     }
 
+    cov = line_coverage(board, m)
+    facts["estimate_none_seconds"] = silent_estimate(board)
+    facts["changed_total"] = cov["total"]
+    facts["changed_shown"] = cov["shown"]
+    facts["changed_missing"] = cov["missing"]
+    facts["changed_known"] = cov["known"]
+    facts["changed_unavailable"] = cov["unavailable"]
+    facts["coverage_summary"] = coverage_summary(cov)
+    facts["note_risks"] = note_risks(board, m)
+
     for s in board["scenes"]:
         for a in s.get("assert", []):
             want = facts[a["equals_fact"]] if "equals_fact" in a else a["equals"]
@@ -439,6 +586,11 @@ def main(argv: list[str]) -> int:
     m = json.loads(Path(argv[1]).read_text())
     facts = verify_board(board, m)
     print(f"{facts['receipts']} receipts verified")
+
+    print(f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s")
+    print(facts["coverage_summary"])
+    for risk in facts["note_risks"]:
+        print(f"warning: {risk}")
 
     return 0
 

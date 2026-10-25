@@ -1,0 +1,1612 @@
+{
+  "author": "Copilot",
+  "base_sha": "9e2db120d3ea98e1e37fe939972ef364ab4508a9",
+  "brief": {
+    "checks": [
+      {
+        "name": "Agent Scripts",
+        "state": "passed"
+      },
+      {
+        "name": "BrowserStack",
+        "state": "passed"
+      },
+      {
+        "name": "BrowserStack Android",
+        "state": "passed"
+      },
+      {
+        "name": "Cancel in-flight runs",
+        "state": "passed"
+      },
+      {
+        "name": "Deploy Preview",
+        "state": "passed"
+      },
+      {
+        "name": "Detect changed tests",
+        "state": "passed"
+      },
+      {
+        "name": "Lint",
+        "state": "passed"
+      },
+      {
+        "name": "Puppeteer",
+        "state": "passed"
+      },
+      {
+        "name": "Scan conflicting Copilot PRs",
+        "state": "passed"
+      },
+      {
+        "name": "TDD",
+        "state": "passed"
+      },
+      {
+        "name": "TDD \u2014 Puppeteer tests",
+        "state": "passed"
+      },
+      {
+        "name": "TDD \u2014 Unit tests",
+        "state": "passed"
+      },
+      {
+        "name": "TDD \u2014 iOS tests",
+        "state": "passed"
+      },
+      {
+        "name": "Tauri Check",
+        "state": "passed"
+      },
+      {
+        "name": "Test",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 18,
+        "kind": "code",
+        "named": false,
+        "path": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch",
+        "removed": 0,
+        "sensitive": "dependency patch"
+      },
+      {
+        "added": 5,
+        "kind": "opaque",
+        "named": true,
+        "path": "docs/commands.md",
+        "removed": 1,
+        "sensitive": null
+      },
+      {
+        "added": 6,
+        "kind": "code",
+        "named": true,
+        "path": "src/commands/note.ts",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 4,
+        "kind": "code",
+        "named": true,
+        "path": "src/commands/openCommandCenter.ts",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 2,
+        "kind": "code",
+        "named": true,
+        "path": "src/components/CommandCenter/CommandCenter.tsx",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 72,
+        "kind": "test",
+        "named": true,
+        "path": "src/e2e/puppeteer/__tests__/commandCenter.ts",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 2,
+        "kind": "opaque",
+        "named": false,
+        "path": "yarn.lock",
+        "removed": 2,
+        "sensitive": "dependency lockfile"
+      }
+    ],
+    "head_sha": "3755cd396c0075e29d3ea6638e0fd2e572f3ed3b",
+    "look_first": [
+      {
+        "lines": [],
+        "path": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch",
+        "reason": "dependency patch; its path is not in the description"
+      },
+      {
+        "lines": [],
+        "path": "yarn.lock",
+        "reason": "dependency lockfile; its path is not in the description"
+      },
+      {
+        "lines": [],
+        "path": "src/commands/note.ts",
+        "reason": "largest code change (+6 \u22120)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "cybersemics/em#5756",
+    "title": "Close the Command Center when Note enters edit mode on touch"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "src/commands/note.ts::noteCommand.multicursor.onComplete",
+      "status": "added",
+      "target": "src/actions/toggleDropdown.ts::toggleDropdownActionCreator"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/commands/openCommandCenter.ts::openCommandCenterCommand.exec",
+      "status": "added",
+      "target": "src/actions/dismissKeyboard.ts::dismissKeyboardActionCreator"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/commands/openCommandCenter.ts::openCommandCenterCommand.exec",
+      "status": "kept",
+      "target": "src/actions/toggleDropdown.ts::toggleDropdownActionCreator"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/components/AppComponent.tsx::AppComponent",
+      "status": "kept",
+      "target": "src/components/CommandCenter/CommandCenter.tsx::CommandCenter"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/components/CommandCenter/CommandCenter.tsx::CommandCenter",
+      "status": "kept",
+      "target": "src/actions/toggleDropdown.ts::toggleDropdownActionCreator"
+    }
+  ],
+  "files": [
+    {
+      "added": 18,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 50,
+              "old": 50,
+              "op": " ",
+              "text": "         onCloseEnd == null ? void 0 : onCloseEnd();"
+            },
+            {
+              "new": 51,
+              "old": 51,
+              "op": " ",
+              "text": "       }"
+            },
+            {
+              "new": 52,
+              "old": 52,
+              "op": " ",
+              "text": "     });"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "@@ -1447,7 +1463,7 @@ var SheetContent = React.forwardRef("
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "       ...applyStyles(styles.content, isUnstyled),"
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "       ...styleProp"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "     };"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "-    const scrollStyle = applyStyles(styles.scroller, isUnstyled);"
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "+    const scrollStyle = { ...applyStyles(styles.scroller, isUnstyled) };"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "     if (sheetContext.avoidKeyboard) {"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "       scrollStyle.paddingBottom = isHTTPS() ? \"env(keyboard-inset-height, var(--keyboard-inset-height, 0px))\" : \"var(--keyboard-inset-height, 0px)\";"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "     }"
+            },
+            {
+              "new": 62,
+              "old": 53,
+              "op": " ",
+              "text": "diff --git a/dist/index.mjs b/dist/index.mjs"
+            },
+            {
+              "new": 63,
+              "old": 54,
+              "op": " ",
+              "text": "index cc8c3ebd67e6cdf1d8e0313a0bd036dfd82f172a..0486a0a919ed4abc4e5ca317797a35859662d77b 100644"
+            },
+            {
+              "new": 64,
+              "old": 55,
+              "op": " ",
+              "text": "--- a/dist/index.mjs"
+            }
+          ],
+          "new_start": 50,
+          "old_start": 50
+        },
+        {
+          "lines": [
+            {
+              "new": 111,
+              "old": 102,
+              "op": " ",
+              "text": "         onCloseEnd == null ? void 0 : onCloseEnd();"
+            },
+            {
+              "new": 112,
+              "old": 103,
+              "op": " ",
+              "text": "       }"
+            },
+            {
+              "new": 113,
+              "old": 104,
+              "op": " ",
+              "text": "     });"
+            },
+            {
+              "new": 114,
+              "old": null,
+              "op": "+",
+              "text": "@@ -1440,7 +1456,7 @@ var SheetContent = forwardRef("
+            },
+            {
+              "new": 115,
+              "old": null,
+              "op": "+",
+              "text": "       ...applyStyles(styles.content, isUnstyled),"
+            },
+            {
+              "new": 116,
+              "old": null,
+              "op": "+",
+              "text": "       ...styleProp"
+            },
+            {
+              "new": 117,
+              "old": null,
+              "op": "+",
+              "text": "     };"
+            },
+            {
+              "new": 118,
+              "old": null,
+              "op": "+",
+              "text": "-    const scrollStyle = applyStyles(styles.scroller, isUnstyled);"
+            },
+            {
+              "new": 119,
+              "old": null,
+              "op": "+",
+              "text": "+    const scrollStyle = { ...applyStyles(styles.scroller, isUnstyled) };"
+            },
+            {
+              "new": 120,
+              "old": null,
+              "op": "+",
+              "text": "     if (sheetContext.avoidKeyboard) {"
+            },
+            {
+              "new": 121,
+              "old": null,
+              "op": "+",
+              "text": "       scrollStyle.paddingBottom = isHTTPS() ? \"env(keyboard-inset-height, var(--keyboard-inset-height, 0px))\" : \"var(--keyboard-inset-height, 0px)\";"
+            },
+            {
+              "new": 122,
+              "old": null,
+              "op": "+",
+              "text": "     }"
+            }
+          ],
+          "new_start": 111,
+          "old_start": 102
+        }
+      ],
+      "kind": "code",
+      "language": null,
+      "path": ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch",
+      "removed": 0,
+      "sensitive": "dependency patch",
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 5,
+      "hunks": [],
+      "kind": "opaque",
+      "language": null,
+      "path": "docs/commands.md",
+      "removed": 1,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "import Command from '../@types/Command'"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "import { toggleDropdownActionCreator as toggleDropdown } from '../actions/toggleDropdown'"
+            },
+            {
+              "new": 3,
+              "old": 2,
+              "op": " ",
+              "text": "import { toggleNoteActionCreator as toggleNote } from '../actions/toggleNote'"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "import { isTouch } from '../browser'"
+            },
+            {
+              "new": 5,
+              "old": 3,
+              "op": " ",
+              "text": "import PencilIcon from '../components/icons/PencilIcon'"
+            },
+            {
+              "new": 6,
+              "old": 4,
+              "op": " ",
+              "text": "import { HOME_PATH } from '../constants'"
+            },
+            {
+              "new": 7,
+              "old": 5,
+              "op": " ",
+              "text": "import asyncFocus from '../device/asyncFocus'"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        },
+        {
+          "lines": [
+            {
+              "new": 19,
+              "old": 17,
+              "op": " ",
+              "text": "  multicursor: {"
+            },
+            {
+              "new": 20,
+              "old": 18,
+              "op": " ",
+              "text": "    // The end-of-run cursor restore dispatches setCursor, which resets noteFocus and would yank the caret out of the note that was just created. Instead, leave the cursor on the last selected thought with its note focused, ready to type."
+            },
+            {
+              "new": 21,
+              "old": 19,
+              "op": " ",
+              "text": "    preventSetCursor: true,"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "    // On mobile, the selection is what keeps the Command Center open, and the sheet would cover the keyboard that the note has just opened. Close it, which clears the selection, so that the note can be edited. This runs after the multicursors have been restored, so they cannot re-open it."
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "    onComplete: (filteredCursors, dispatch) => {"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "      if (isTouch) dispatch(toggleDropdown({ dropDownType: 'commandCenter', value: false }))"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "    },"
+            },
+            {
+              "new": 26,
+              "old": 20,
+              "op": " ",
+              "text": "  },"
+            },
+            {
+              "new": 27,
+              "old": 21,
+              "op": " ",
+              "text": "  svg: PencilIcon,"
+            },
+            {
+              "new": 28,
+              "old": 22,
+              "op": " ",
+              "text": "  canExecute: state => isDocumentEditable() && (!!state.cursor || hasMulticursor(state)),"
+            }
+          ],
+          "new_start": 19,
+          "old_start": 17
+        }
+      ],
+      "kind": "code",
+      "language": "typescript",
+      "path": "src/commands/note.ts",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/commands/note.ts::noteCommand.multicursor.onComplete"
+      ]
+    },
+    {
+      "added": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "import Command from '../@types/Command'"
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "op": " ",
+              "text": "import { addMulticursorActionCreator as addMulticursor } from '../actions/addMulticursor'"
+            },
+            {
+              "new": 3,
+              "old": 3,
+              "op": " ",
+              "text": "import { alertActionCreator as alert } from '../actions/alert'"
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "import { dismissKeyboardActionCreator as dismissKeyboard } from '../actions/dismissKeyboard'"
+            },
+            {
+              "new": 5,
+              "old": 4,
+              "op": " ",
+              "text": "import { toggleDropdownActionCreator as toggleDropdown } from '../actions/toggleDropdown'"
+            },
+            {
+              "new": 6,
+              "old": 5,
+              "op": " ",
+              "text": "import HelpIcon from '../components/icons/HelpIcon'"
+            },
+            {
+              "new": 7,
+              "old": 6,
+              "op": " ",
+              "text": "import { AlertType } from '../constants'"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        },
+        {
+          "lines": [
+            {
+              "new": 55,
+              "old": 54,
+              "op": " ",
+              "text": "    // The middleware ignores multiselection changes while a multicursor command is executing and declines to re-open"
+            },
+            {
+              "new": 56,
+              "old": 55,
+              "op": " ",
+              "text": "    // over an edit; neither should silence an explicit swipe, which is the user asking for the Command Center they can"
+            },
+            {
+              "new": 57,
+              "old": 56,
+              "op": " ",
+              "text": "    // see is closed."
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "    // A note keeps the caret when a selection starts, unlike a thought, whose editable blurs itself. Release it"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "    // first, so that the keyboard closes rather than staying up beneath the sheet."
+            },
+            {
+              "new": 60,
+              "old": 57,
+              "op": " ",
+              "text": "    dispatch(["
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "      state.noteFocus ? dismissKeyboard() : null,"
+            },
+            {
+              "new": 62,
+              "old": 58,
+              "op": " ",
+              "text": "      state.cursor && !hasMulticursor(state) ? addMulticursor({ path: state.cursor }) : null,"
+            },
+            {
+              "new": 63,
+              "old": 59,
+              "op": " ",
+              "text": "      toggleDropdown({ dropDownType: 'commandCenter', value: true }),"
+            },
+            {
+              "new": 64,
+              "old": 60,
+              "op": " ",
+              "text": "    ])"
+            }
+          ],
+          "new_start": 55,
+          "old_start": 54
+        }
+      ],
+      "kind": "code",
+      "language": "typescript",
+      "path": "src/commands/openCommandCenter.ts",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/commands/openCommandCenter.ts::openCommandCenterCommand.exec"
+      ]
+    },
+    {
+      "added": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 192,
+              "old": 192,
+              "op": " ",
+              "text": "          }}"
+            },
+            {
+              "new": 193,
+              "old": 193,
+              "op": " ",
+              "text": "          /** Fixes sheet shifting up on ios when it opens. */"
+            },
+            {
+              "new": 194,
+              "old": 194,
+              "op": " ",
+              "text": "          disableScrollLocking"
+            },
+            {
+              "new": 195,
+              "old": null,
+              "op": "+",
+              "text": "          /** Lifts the sheet above the keyboard only while it is open. On Chromium the lift tracks the live keyboard inset, so a keyboard that rises while the sheet is closing (e.g. after Note) would grow the sheet back up into view mid-tween. */"
+            },
+            {
+              "new": 196,
+              "old": null,
+              "op": "+",
+              "text": "          avoidKeyboard={isOpen}"
+            },
+            {
+              "new": 197,
+              "old": 195,
+              "op": " ",
+              "text": "        >"
+            },
+            {
+              "new": 198,
+              "old": 196,
+              "op": " ",
+              "text": "          {backgroundGlow.image ? ("
+            },
+            {
+              "new": 199,
+              "old": 197,
+              "op": " ",
+              "text": "            <motion.div"
+            }
+          ],
+          "new_start": 192,
+          "old_start": 192
+        }
+      ],
+      "kind": "code",
+      "language": "tsx",
+      "path": "src/components/CommandCenter/CommandCenter.tsx",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/components/CommandCenter/CommandCenter.tsx::CommandCenter"
+      ]
+    },
+    {
+      "added": 72,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": 1,
+              "op": " ",
+              "text": "import { KnownDevices } from 'puppeteer'"
+            },
+            {
+              "new": 2,
+              "old": 2,
+              "op": " ",
+              "text": "import clearThoughtCommand from '../../../commands/clearThought'"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "import noteCommand from '../../../commands/note'"
+            },
+            {
+              "new": 4,
+              "old": 3,
+              "op": " ",
+              "text": "import openCommandCenterCommand from '../../../commands/openCommandCenter'"
+            },
+            {
+              "new": 5,
+              "old": 4,
+              "op": " ",
+              "text": "import click from '../helpers/click'"
+            },
+            {
+              "new": 6,
+              "old": 5,
+              "op": " ",
+              "text": "import clickThought from '../helpers/clickThought'"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "import clickToolbar from '../helpers/clickToolbar'"
+            },
+            {
+              "new": 8,
+              "old": 6,
+              "op": " ",
+              "text": "import closeKeyboard from '../helpers/closeKeyboard'"
+            },
+            {
+              "new": 9,
+              "old": 7,
+              "op": " ",
+              "text": "import deviceEmulation from '../helpers/deviceEmulation'"
+            },
+            {
+              "new": 10,
+              "old": 8,
+              "op": " ",
+              "text": "import gesture from '../helpers/gesture'"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        },
+        {
+          "lines": [
+            {
+              "new": 12,
+              "old": 10,
+              "op": " ",
+              "text": "import longPressThought from '../helpers/longPressThought'"
+            },
+            {
+              "new": 13,
+              "old": 11,
+              "op": " ",
+              "text": "import paste from '../helpers/paste'"
+            },
+            {
+              "new": 14,
+              "old": 12,
+              "op": " ",
+              "text": "import waitForAlert from '../helpers/waitForAlert'"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "import waitForBrowserSettled from '../helpers/waitForBrowserSettled'"
+            },
+            {
+              "new": 16,
+              "old": 13,
+              "op": " ",
+              "text": "import waitForCommandCenterClosed from '../helpers/waitForCommandCenterClosed'"
+            },
+            {
+              "new": 17,
+              "old": 14,
+              "op": " ",
+              "text": "import waitForCommandCenterOpen from '../helpers/waitForCommandCenterOpen'"
+            },
+            {
+              "new": 18,
+              "old": 15,
+              "op": " ",
+              "text": "import waitForEditable from '../helpers/waitForEditable'"
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "import waitForNoteFocus from '../helpers/waitForNoteFocus'"
+            },
+            {
+              "new": 20,
+              "old": 16,
+              "op": " ",
+              "text": "import waitForSelector from '../helpers/waitForSelector'"
+            },
+            {
+              "new": 21,
+              "old": 17,
+              "op": " ",
+              "text": "import waitUntil from '../helpers/waitUntil'"
+            },
+            {
+              "new": 22,
+              "old": 18,
+              "op": " ",
+              "text": "import { page } from '../session'"
+            }
+          ],
+          "new_start": 12,
+          "old_start": 10
+        },
+        {
+          "lines": [
+            {
+              "new": 194,
+              "old": 190,
+              "op": " ",
+              "text": "    // Command Center ever leaving the screen."
+            },
+            {
+              "new": 195,
+              "old": 191,
+              "op": " ",
+              "text": "    expect(onscreen).toEqual({ focusedEditable: null, sheetStates: [] })"
+            },
+            {
+              "new": 196,
+              "old": 192,
+              "op": " ",
+              "text": "  })"
+            },
+            {
+              "new": 197,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 198,
+              "old": null,
+              "op": "+",
+              "text": "  // https://github.com/cybersemics/em/issues/5755"
+            },
+            {
+              "new": 199,
+              "old": null,
+              "op": "+",
+              "text": "  it('closes when the Note command enters edit mode', async () => {"
+            },
+            {
+              "new": 200,
+              "old": null,
+              "op": "+",
+              "text": "    await paste('- a')"
+            },
+            {
+              "new": 201,
+              "old": null,
+              "op": "+",
+              "text": "    await clickThought('a')"
+            },
+            {
+              "new": 202,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 203,
+              "old": null,
+              "op": "+",
+              "text": "    await gesture(openCommandCenterCommand)"
+            },
+            {
+              "new": 204,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForCommandCenterOpen()"
+            },
+            {
+              "new": 205,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 206,
+              "old": null,
+              "op": "+",
+              "text": "    await clickToolbar('Note')"
+            },
+            {
+              "new": 207,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForNoteFocus()"
+            },
+            {
+              "new": 208,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForBrowserSettled()"
+            },
+            {
+              "new": 209,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 210,
+              "old": null,
+              "op": "+",
+              "text": "    // the note has the keyboard, so the thought is no longer selected and the sheet is dismissed"
+            },
+            {
+              "new": 211,
+              "old": null,
+              "op": "+",
+              "text": "    expect(await page.$$('[aria-label=\"bullet\"][data-highlighted=\"true\"]')).toHaveLength(0)"
+            },
+            {
+              "new": 212,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForCommandCenterClosed()"
+            },
+            {
+              "new": 213,
+              "old": null,
+              "op": "+",
+              "text": "  })"
+            },
+            {
+              "new": 214,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 215,
+              "old": null,
+              "op": "+",
+              "text": "  // https://github.com/cybersemics/em/pull/5756#issuecomment-5964399980"
+            },
+            {
+              "new": 216,
+              "old": null,
+              "op": "+",
+              "text": "  it('does not make room for the keyboard while it closes for the Note command', async () => {"
+            },
+            {
+              "new": 217,
+              "old": null,
+              "op": "+",
+              "text": "    await paste('- a')"
+            },
+            {
+              "new": 218,
+              "old": null,
+              "op": "+",
+              "text": "    await clickThought('a')"
+            },
+            {
+              "new": 219,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 220,
+              "old": null,
+              "op": "+",
+              "text": "    await gesture(openCommandCenterCommand)"
+            },
+            {
+              "new": 221,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForCommandCenterOpen()"
+            },
+            {
+              "new": 222,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 223,
+              "old": null,
+              "op": "+",
+              "text": "    // The keyboard that the note raises arrives while the sheet is sliding out. Headless Chrome has no virtual keyboard"
+            },
+            {
+              "new": 224,
+              "old": null,
+              "op": "+",
+              "text": "    // whose inset could be measured, so capture whether the sheet pads its content by the keyboard inset at the moment"
+            },
+            {
+              "new": 225,
+              "old": null,
+              "op": "+",
+              "text": "    // it starts closing, which grows the sheet back up the screen as soon as the keyboard appears."
+            },
+            {
+              "new": 226,
+              "old": null,
+              "op": "+",
+              "text": "    const closingPaddingBottom = page.evaluate("
+            },
+            {
+              "new": 227,
+              "old": null,
+              "op": "+",
+              "text": "      () =>"
+            },
+            {
+              "new": 228,
+              "old": null,
+              "op": "+",
+              "text": "        new Promise<string>(resolve => {"
+            },
+            {
+              "new": 229,
+              "old": null,
+              "op": "+",
+              "text": "          const sheet = document.querySelector('[data-testid=\"command-center-panel\"]')!"
+            },
+            {
+              "new": 230,
+              "old": null,
+              "op": "+",
+              "text": "          const observer = new MutationObserver(() => {"
+            },
+            {
+              "new": 231,
+              "old": null,
+              "op": "+",
+              "text": "            if (sheet.getAttribute('data-sheet-state') !== 'closing') return"
+            },
+            {
+              "new": 232,
+              "old": null,
+              "op": "+",
+              "text": "            observer.disconnect()"
+            },
+            {
+              "new": 233,
+              "old": null,
+              "op": "+",
+              "text": "            resolve((sheet.querySelector('.react-modal-sheet-content-scroller') as HTMLElement).style.paddingBottom)"
+            },
+            {
+              "new": 234,
+              "old": null,
+              "op": "+",
+              "text": "          })"
+            },
+            {
+              "new": 235,
+              "old": null,
+              "op": "+",
+              "text": "          observer.observe(sheet, { attributeFilter: ['data-sheet-state'] })"
+            },
+            {
+              "new": 236,
+              "old": null,
+              "op": "+",
+              "text": "        }),"
+            },
+            {
+              "new": 237,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 238,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 239,
+              "old": null,
+              "op": "+",
+              "text": "    await clickToolbar('Note')"
+            },
+            {
+              "new": 240,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 241,
+              "old": null,
+              "op": "+",
+              "text": "    expect(await closingPaddingBottom).toBe('')"
+            },
+            {
+              "new": 242,
+              "old": null,
+              "op": "+",
+              "text": "  })"
+            },
+            {
+              "new": 243,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 244,
+              "old": null,
+              "op": "+",
+              "text": "  // https://github.com/cybersemics/em/pull/5756#issuecomment-5964322349"
+            },
+            {
+              "new": 245,
+              "old": null,
+              "op": "+",
+              "text": "  it('dismisses the keyboard when it is opened from a note', async () => {"
+            },
+            {
+              "new": 246,
+              "old": null,
+              "op": "+",
+              "text": "    await paste('- One')"
+            },
+            {
+              "new": 247,
+              "old": null,
+              "op": "+",
+              "text": "    await clickThought('One')"
+            },
+            {
+              "new": 248,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 249,
+              "old": null,
+              "op": "+",
+              "text": "    await gesture(noteCommand)"
+            },
+            {
+              "new": 250,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForNoteFocus()"
+            },
+            {
+              "new": 251,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 252,
+              "old": null,
+              "op": "+",
+              "text": "    await gesture(openCommandCenterCommand)"
+            },
+            {
+              "new": 253,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForCommandCenterOpen()"
+            },
+            {
+              "new": 254,
+              "old": null,
+              "op": "+",
+              "text": "    await waitForBrowserSettled()"
+            },
+            {
+              "new": 255,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 256,
+              "old": null,
+              "op": "+",
+              "text": "    // the caret leaves the note so that the keyboard closes, and the thought that the note belongs to is selected"
+            },
+            {
+              "new": 257,
+              "old": null,
+              "op": "+",
+              "text": "    const caret = await page.evaluate(() =>"
+            },
+            {
+              "new": 258,
+              "old": null,
+              "op": "+",
+              "text": "      document.activeElement instanceof HTMLElement && document.activeElement.isContentEditable"
+            },
+            {
+              "new": 259,
+              "old": null,
+              "op": "+",
+              "text": "        ? document.activeElement.getAttribute('aria-label')"
+            },
+            {
+              "new": 260,
+              "old": null,
+              "op": "+",
+              "text": "        : null,"
+            },
+            {
+              "new": 261,
+              "old": null,
+              "op": "+",
+              "text": "    )"
+            },
+            {
+              "new": 262,
+              "old": null,
+              "op": "+",
+              "text": "    expect(caret).toBeNull()"
+            },
+            {
+              "new": 263,
+              "old": null,
+              "op": "+",
+              "text": "    expect(await page.$$('[aria-label=\"bullet\"][data-highlighted=\"true\"]')).toHaveLength(1)"
+            },
+            {
+              "new": 264,
+              "old": null,
+              "op": "+",
+              "text": "  })"
+            },
+            {
+              "new": 265,
+              "old": 193,
+              "op": " ",
+              "text": "})"
+            }
+          ],
+          "new_start": 194,
+          "old_start": 190
+        }
+      ],
+      "kind": "test",
+      "language": "typescript",
+      "path": "src/e2e/puppeteer/__tests__/commandCenter.ts",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 2,
+      "hunks": [],
+      "kind": "opaque",
+      "language": null,
+      "path": "yarn.lock",
+      "removed": 2,
+      "sensitive": "dependency lockfile",
+      "status": "modified",
+      "symbols": []
+    }
+  ],
+  "head_sha": "3755cd396c0075e29d3ea6638e0fd2e572f3ed3b",
+  "pr": "cybersemics/em#5756",
+  "symbols": [
+    {
+      "added": 0,
+      "base_span": [
+        16,
+        30
+      ],
+      "call_sites": 4,
+      "hunks": [],
+      "id": "src/actions/dismissKeyboard.ts::dismissKeyboardActionCreator",
+      "kind": "function",
+      "path": "src/actions/dismissKeyboard.ts",
+      "qualname": "dismissKeyboardActionCreator",
+      "removed": 0,
+      "span": [
+        16,
+        30
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        40,
+        44
+      ],
+      "call_sites": 23,
+      "hunks": [],
+      "id": "src/actions/toggleDropdown.ts::toggleDropdownActionCreator",
+      "kind": "function",
+      "path": "src/actions/toggleDropdown.ts",
+      "qualname": "toggleDropdownActionCreator",
+      "removed": 0,
+      "span": [
+        40,
+        44
+      ],
+      "status": "context"
+    },
+    {
+      "added": 3,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "    onComplete: (filteredCursors, dispatch) => {"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "      if (isTouch) dispatch(toggleDropdown({ dropDownType: 'commandCenter', value: false }))"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "    },"
+            }
+          ],
+          "new_start": 23,
+          "old_start": 20
+        }
+      ],
+      "id": "src/commands/note.ts::noteCommand.multicursor.onComplete",
+      "kind": "function",
+      "path": "src/commands/note.ts",
+      "qualname": "noteCommand.multicursor.onComplete",
+      "removed": 0,
+      "span": [
+        23,
+        25
+      ],
+      "status": "added"
+    },
+    {
+      "added": 3,
+      "base_span": [
+        23,
+        63
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 55,
+              "old": 54,
+              "op": " ",
+              "text": "    // The middleware ignores multiselection changes while a multicursor command is executing and declines to re-open"
+            },
+            {
+              "new": 56,
+              "old": 55,
+              "op": " ",
+              "text": "    // over an edit; neither should silence an explicit swipe, which is the user asking for the Command Center they can"
+            },
+            {
+              "new": 57,
+              "old": 56,
+              "op": " ",
+              "text": "    // see is closed."
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "    // A note keeps the caret when a selection starts, unlike a thought, whose editable blurs itself. Release it"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "    // first, so that the keyboard closes rather than staying up beneath the sheet."
+            },
+            {
+              "new": 60,
+              "old": 57,
+              "op": " ",
+              "text": "    dispatch(["
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "      state.noteFocus ? dismissKeyboard() : null,"
+            },
+            {
+              "new": 62,
+              "old": 58,
+              "op": " ",
+              "text": "      state.cursor && !hasMulticursor(state) ? addMulticursor({ path: state.cursor }) : null,"
+            },
+            {
+              "new": 63,
+              "old": 59,
+              "op": " ",
+              "text": "      toggleDropdown({ dropDownType: 'commandCenter', value: true }),"
+            },
+            {
+              "new": 64,
+              "old": 60,
+              "op": " ",
+              "text": "    ])"
+            }
+          ],
+          "new_start": 55,
+          "old_start": 54
+        }
+      ],
+      "id": "src/commands/openCommandCenter.ts::openCommandCenterCommand.exec",
+      "kind": "function",
+      "path": "src/commands/openCommandCenter.ts",
+      "qualname": "openCommandCenterCommand.exec",
+      "removed": 0,
+      "span": [
+        24,
+        67
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        130,
+        258
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/components/AppComponent.tsx::AppComponent",
+      "kind": "function",
+      "path": "src/components/AppComponent.tsx",
+      "qualname": "AppComponent",
+      "removed": 0,
+      "span": [
+        130,
+        258
+      ],
+      "status": "context"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        124,
+        335
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 192,
+              "old": 192,
+              "op": " ",
+              "text": "          }}"
+            },
+            {
+              "new": 193,
+              "old": 193,
+              "op": " ",
+              "text": "          /** Fixes sheet shifting up on ios when it opens. */"
+            },
+            {
+              "new": 194,
+              "old": 194,
+              "op": " ",
+              "text": "          disableScrollLocking"
+            },
+            {
+              "new": 195,
+              "old": null,
+              "op": "+",
+              "text": "          /** Lifts the sheet above the keyboard only while it is open. On Chromium the lift tracks the live keyboard inset, so a keyboard that rises while the sheet is closing (e.g. after Note) would grow the sheet back up into view mid-tween. */"
+            },
+            {
+              "new": 196,
+              "old": null,
+              "op": "+",
+              "text": "          avoidKeyboard={isOpen}"
+            },
+            {
+              "new": 197,
+              "old": 195,
+              "op": " ",
+              "text": "        >"
+            },
+            {
+              "new": 198,
+              "old": 196,
+              "op": " ",
+              "text": "          {backgroundGlow.image ? ("
+            },
+            {
+              "new": 199,
+              "old": 197,
+              "op": " ",
+              "text": "            <motion.div"
+            }
+          ],
+          "new_start": 192,
+          "old_start": 192
+        }
+      ],
+      "id": "src/components/CommandCenter/CommandCenter.tsx::CommandCenter",
+      "kind": "function",
+      "path": "src/components/CommandCenter/CommandCenter.tsx",
+      "qualname": "CommandCenter",
+      "removed": 0,
+      "span": [
+        124,
+        337
+      ],
+      "status": "modified"
+    }
+  ],
+  "title": "Close the Command Center when Note enters edit mode on touch",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        ".yarn/patches/react-modal-sheet-npm-5.6.0-f2ff243f4a.patch"
+      ],
+      "kind": "risky_file",
+      "via": null
+    },
+    {
+      "focus": [
+        "yarn.lock"
+      ],
+      "kind": "risky_file",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/commands/note.ts::noteCommand.multicursor.onComplete"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/commands/openCommandCenter.ts::openCommandCenterCommand.exec"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/components/CommandCenter/CommandCenter.tsx::CommandCenter"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/cybersemics/em/pull/5756"
+}

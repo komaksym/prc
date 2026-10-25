@@ -1,5 +1,27 @@
 #!/usr/bin/env bash
+# Isolated release verification. Default mode is ONLINE: it bootstraps
+# dependencies from uv.lock, so an empty uv cache works. Pass --offline for
+# an explicit offline run, which requires a real warm uv cache and reuses
+# the cached Chromium via PLAYWRIGHT_BROWSERS_PATH (never downloads).
 set -euo pipefail
+
+UV_OFFLINE=""
+if [ "${1:-}" = "--offline" ]; then
+  UV_OFFLINE="--offline"
+  shift
+fi
+if [ "$#" -ne 0 ]; then
+  echo "usage: scripts/verify-release.sh [--offline]" >&2
+  exit 2
+fi
+
+if [ -n "$UV_OFFLINE" ]; then
+  cache_dir="$(uv cache dir 2>/dev/null || true)"
+  if [ -z "$cache_dir" ] || [ ! -d "$cache_dir" ] || [ -z "$(ls -A "$cache_dir" 2>/dev/null)" ]; then
+    echo "verify-release.sh --offline needs a warm uv cache (empty or missing: ${cache_dir:-unknown}); run without --offline once to populate it from uv.lock." >&2
+    exit 2
+  fi
+fi
 
 root=$(cd "$(dirname "$0")/.." && pwd)
 proof_root="$root/artifacts/release/verify"
@@ -15,24 +37,35 @@ import sys
 from pathlib import Path
 
 root, checkout = map(Path, sys.argv[1:])
-paths = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z']).decode().split('\0')
-for pattern in ['tests/test_release*.py', 'tests/test_eval*.py', 'tests/test_card_receipts.py', 'tests/test_explain_publication.py', 'scripts/eval/*.py', 'scripts/verify-release.sh']:
-    paths += [str(path.relative_to(root)) for path in root.glob(pattern)]
+sep = chr(0)
+paths = subprocess.check_output(['git', '-C', str(root), 'ls-files', '-z']).decode().split(sep)
 for name in paths:
     if name and (root / name).is_file():
         target = checkout / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(root / name, target)
 for name in ['eval/runs/2026-10-06-full', 'docs/media']:
-    shutil.copytree(root / name, checkout / name, dirs_exist_ok=True)
+    src = root / name
+    if src.exists():
+        shutil.copytree(src, checkout / name, dirs_exist_ok=True)
 PY
 printf '%s\n' "$checkout" > "$proof/checkout.txt"
 cd "$checkout"
-uv sync --frozen --offline > "$proof/sync.log" 2>&1
-uv run --offline ruff check . > "$proof/lint.log" 2>&1
-uv run --offline ruff format --check . > "$proof/format.log" 2>&1
-uv run --offline mypy > "$proof/typecheck.log" 2>&1
-uv run --offline pytest -q --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
+uv sync --frozen --extra voice $UV_OFFLINE > "$proof/sync.log" 2>&1
+uv run $UV_OFFLINE ruff check . > "$proof/lint.log" 2>&1
+uv run $UV_OFFLINE ruff format --check . > "$proof/format.log" 2>&1
+uv run $UV_OFFLINE mypy > "$proof/typecheck.log" 2>&1
+# The listening E2E transcribes real speech. An offline check must run it; an online check
+# names the gap instead of skipping, because this script fails on a skipped case.
+if uv run $UV_OFFLINE python -c 'from prc.explainer.listen import find_engine; find_engine()' > "$proof/recognizer.log" 2>&1; then
+  uv run $UV_OFFLINE pytest -q --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
+elif [ -n "$UV_OFFLINE" ]; then
+  echo "verify-release.sh --offline needs a speech recognizer to run the listening E2E: Muesli's muesli-cli or openai-whisper." >&2
+  exit 2
+else
+  echo "verify-release.sh found no speech recognizer; deselecting the listening E2E rather than skipping it." >&2
+  uv run $UV_OFFLINE pytest -q -m "not needs_recognizer" --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
+fi
 python3 - "$proof/tests.xml" <<'PY'
 import sys
 import xml.etree.ElementTree as ET
@@ -42,18 +75,60 @@ assert cases, 'no tests collected'
 skipped = [case.attrib for case in cases if case.find('skipped') is not None]
 assert not skipped, f'release checks skipped: {skipped}'
 PY
-uv build --offline --out-dir "$proof/dist" > "$proof/build.log" 2>&1
+uv build $UV_OFFLINE --out-dir "$proof/dist" > "$proof/build.log" 2>&1
+if [ -z "${PLAYWRIGHT_BROWSERS_PATH:-}" ]; then
+  echo "verify-release.sh needs PLAYWRIGHT_BROWSERS_PATH pointing at a cached Chromium; refusing to download browsers." >&2
+  echo "Example: PLAYWRIGHT_BROWSERS_PATH=/path/to/browser-cache bash scripts/verify-release.sh" >&2
+  exit 2
+fi
+if ! ls "$PLAYWRIGHT_BROWSERS_PATH"/chromium-* >/dev/null 2>&1; then
+  echo "verify-release.sh found no chromium-* under PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH; reuse the release browser cache instead of downloading." >&2
+  exit 2
+fi
+export PLAYWRIGHT_BROWSERS_PATH
+
 cp -R artifacts/e2e "$proof/e2e"
 printf 'Verified isolated release copy at %s\n' "$checkout"
 uv venv --python "$checkout/.venv/bin/python" "$proof/wheel-env" > "$proof/wheel-env.log" 2>&1
-uv pip install --offline --python "$proof/wheel-env/bin/python" "$proof/dist/prc-0.1.0-py3-none-any.whl[video]" > "$proof/wheel-install.log" 2>&1
+uv export --frozen --no-dev --extra video --extra voice --no-hashes --no-emit-project $UV_OFFLINE --output-file "$proof/dist/wheel-requirements.txt" > "$proof/wheel-export.log" 2>&1
+uv pip install $UV_OFFLINE --python "$proof/wheel-env/bin/python" --requirement "$proof/dist/wheel-requirements.txt" "$proof/dist/prc-0.1.0-py3-none-any.whl[video,voice]" > "$proof/wheel-install.log" 2>&1
 mkdir -p "$proof/smoke"
 cd "$proof/smoke"
+if [ -n "${HF_HUB_CACHE:-}" ]; then
+  hf_hub="$HF_HUB_CACHE"
+elif [ -n "${HF_HOME:-}" ]; then
+  hf_hub="$HF_HOME/hub"
+else
+  hf_hub="$HOME/.cache/huggingface/hub"
+fi
+if [ -d "$hf_hub/models--hexgrad--Kokoro-82M" ]; then
+  export HF_HUB_OFFLINE=1
+elif [ -n "$UV_OFFLINE" ]; then
+  echo "verify-release.sh --offline found no cached hexgrad/Kokoro-82M weights under $hf_hub; warm the cache once with network access instead of downloading during an offline check." >&2
+  exit 2
+fi
 "$proof/wheel-env/bin/prc" doctor > "$proof/doctor.log"
-"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$checkout/tests/data/boards/shop.json" --voice none --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
+python3 - "$checkout/tests/data/boards/shop.json" "$proof/board-code-names.json" <<'PY'
+import json
+import sys
+
+board = json.load(open(sys.argv[1]))
+board['scenes'][-1]['say'].append('Start review at `apply_discount` in cart.py, with the WELCOME10 code.')
+json.dump(board, open(sys.argv[2], 'w'))
+PY
+"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$proof/board-code-names.json" --voice kokoro --infographic "$checkout/tests/data/infographic/shop-brief.png" --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
+if "$proof/wheel-env/bin/python" -c 'from prc.explainer.listen import find_engine; find_engine()' > "$proof/wheel-recognizer.log" 2>&1; then
+  export PRC_RELEASE_LISTEN=1
+elif [ -n "$UV_OFFLINE" ]; then
+  echo "verify-release.sh --offline needs a speech recognizer to run the listening gate on the installed wheel." >&2
+  exit 2
+else
+  echo "verify-release.sh found no speech recognizer; the listening gate on the installed wheel is not run here." >&2
+fi
 "$proof/wheel-env/bin/python" - "$proof" <<'PY'
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -74,6 +149,28 @@ probe = json.loads(subprocess.check_output([
 stream = probe['streams'][0]
 assert (stream['width'], stream['height'], stream['r_frame_rate']) == (1920, 1080, '30/1')
 screenshots = proof / 'screenshots'
+doctor = (proof / 'doctor.log').read_text()
+assert 'kokoro ok' in doctor, doctor
+run = json.loads((folder / 'run.json').read_text())
+assert run['voice'] == 'kokoro', run['voice']
+media = json.loads(subprocess.check_output([
+    'ffprobe', '-v', 'error', '-show_entries',
+    'stream=index,codec_type,duration:format=duration', '-of', 'json', str(folder / 'video.mp4')
+]))
+video_dur = float(media['format']['duration'])
+audio = [s for s in media['streams'] if s.get('codec_type') == 'audio']
+assert audio, 'video.mp4 has no audio stream'
+assert audio[0].get('duration'), 'audio stream reports no duration'
+assert abs(float(audio[0]['duration']) - video_dur) <= 0.5, (audio[0]['duration'], video_dur)
+if os.environ.get('PRC_RELEASE_LISTEN') == '1':
+    heard = subprocess.run(
+        [str(proof / 'wheel-env' / 'bin' / 'prc'), 'listen', str(folder)],
+        capture_output=True, text=True,
+    )
+    assert heard.returncode == 0, heard.stdout + heard.stderr
+    listening = json.loads((folder / 'listening.json').read_text())
+    assert listening['passed'] and listening['calibration']['passed'], listening['lost']
+    assert {'apply_discount', 'cart.py', 'WELCOME10'} <= {t['token'] for t in listening['tokens']}
 screenshots.mkdir(exist_ok=True)
 errors = []
 with sync_playwright() as driver:

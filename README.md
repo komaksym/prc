@@ -32,6 +32,7 @@ uv run prc doctor
 ```
 
 Install `ffmpeg` and `ffprobe` with your system package manager if `doctor` reports them missing.
+Install `tesseract` to gate drawn infographics. `doctor` prints its version or reports it unavailable.
 Missing voice backends do not prevent a silent render with `--voice none`.
 
 ## Render the offline example
@@ -70,6 +71,65 @@ Inspect those paths before restoring a backup or removing a lock. Publication do
 A card-render failure can leave `card.png` absent. Inspect the printed `card` value and `run.json` warnings.
 
 prc writes local files. It does not post comments, upload videos, or publish a repository.
+
+## A drawn infographic (optional)
+
+Every `explain` run writes `infographic/brief.json`. It holds the only lines a drawing may show.
+These are the headline, node lines, a legend, computed facts, the look-first rows, the risky rows, the test verdict and the disclosure "Infographic drawn by AI. Words from prc."
+Node lines come from code evidence. PRC selects up to three exact added or removed calls from production code.
+It can add one node counting distinct test callers with added exact calls to a displayed symbol.
+Static calls do not prove test coverage.
+When no such calls are available, PRC can show Go call-to-typed-error mappings.
+These require the full file at the pinned head revision, with every captured head diff row matching that source.
+The mapping recognizes supported call/error-return patterns in production Go files. It does not build a Go call graph.
+PRC also extracts changed Python function docstring summaries from the complete pinned base and head files as `Before docs:` and `After docs:`.
+These are source documentation excerpts, not behavior inferred from board scenes.
+
+`relations` lists the node pairs the drawing must join with arrows.
+A brief with relations starts with three fact chips. A brief without relations starts with six.
+The word budget can reduce the chips and review rows.
+The geometric gate proves connecting ink only. It does not prove arrow direction, arrowheads, or correct relation endpoints.
+Review those details, dashed removed calls, and extra connectors in the image.
+Icons are allowed beside text or elsewhere on the canvas if they contain no letters or digits.
+Keep them away from numerical fact lines and all other lines that contain numbers.
+Your agent draws candidate images from those lines with its own image tool. The bundled skill uses baoyu-infographic.
+Pass the candidates to `explain` with a repeatable `--infographic` flag, in the order drawn.
+
+```sh
+uv run prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.json --infographic cand1.png --infographic cand2.png
+```
+
+prc reads an unchanged copy of each candidate with tesseract in four modes. All four must succeed.
+The word checks require coverage of every brief line and no unexcused foreign word at confidence 70 or more.
+A word can count as a misreading when most other readings see an allowed word at the same place.
+Short, inconsistent OCR tokens can also count as icon misreadings, subject to the gate's shape and agreement rules.
+OCR matching has no generic edit-distance tolerance. Prose permits only the explicit I/l glyph confusion after case normalization.
+Non-code tokens that mix letters and digits permit the explicit I/l/1 and O/0 glyph confusions.
+Code tokens and pure numbers match exactly after punctuation and case normalization.
+Split or joined OCR words must still cover the ordered brief text.
+Extra text below the confidence floor can escape detection. Icons that resemble letters can cause false rejection.
+When the brief has relations, the candidate must also have connecting ink for every pair of located node labels.
+A candidate that passes the word checks but lacks a connection returns `flat`.
+A candidate with no relations also returns `flat`, even when its word checks pass.
+PRC decodes candidate pixels with ffmpeg for the geometric check.
+The first passing drawing becomes `infographic.png`.
+The comment and the walkthrough then show that image first.
+`infographic/check.json` lists each candidate's verdict, missing lines, foreign words, successful or failed reading modes, and for each relation whether it is drawn.
+It records the hash of the exact checked PNG bytes. `run.json` records the attempts.
+Without a passing candidate, nothing is published and the card stays.
+
+To check that the narration says every code name clearly, run `prc listen` on an explain output folder.
+
+```sh
+uv run prc listen artifacts/explain/<run>
+```
+
+It transcribes the video's voice with Parakeet through Muesli's `muesli-cli` when Muesli is installed, or with Whisper base when `openai-whisper` is.
+First it checks the recognizer on planted controls: clear and garbled readings of the same code names, in the run's own voice.
+It exits 1 when a code name is heard fewer times than it is said, or when the controls fail.
+`listening.json` records the recognizer, its model and version, the transcript and every code name's verdict.
+It also records the planted-control verdict. A recognizer pass does not decide human pacing or tone.
+Review the narration by ear and inspect the selected image before you post it.
 
 ## Your agent writes the board
 
@@ -117,11 +177,19 @@ Without those blobs, the renderer uses the stored diff for highlighting.
 
 prc computes symbols, call relationships, diff rows, and statistics from captured code and provider data.
 The parser supports Python, JavaScript, TypeScript, and TSX. Static call analysis can miss dynamic calls or use name-only matches.
+Card, comment, and map totals share one calculation. Tests touched counts changed test files, not test functions.
+Direct test evidence requires an exact live call from a test symbol. Removed calls and name matches do not qualify.
 A missing direct test link does not prove that a function has no test coverage.
+Symbol and call totals describe parsed symbols and resolved calls. A zero count does not prove no code changed.
+Unsupported code, including Go, remains in file counts and diffs. Each summary names missing symbol analysis.
+Git supplies text line totals, including large files that PRC cannot parse.
+Object methods and callbacks in named JavaScript and TypeScript objects receive qualified names.
 Stored maps are reconciled once. Board checks and all outputs use the same file classifications and computed facts.
 The card and comment lead with symbols displayed in the diff, then symbols cited in the board.
 They show a file-level entry when a quoted change falls outside a parsed symbol.
-Files named `e2e_*` count as tests, including diagnostic checks.
+Files named `e2e_*` and browser test folders count as tests, including diagnostic checks and large test files.
+Dependency lockfiles and dependency patches require review under the sensitivity rules.
+Dense maps start with folder groups. Group tours and member lists preserve readable labels.
 External-call warnings apply to code, including automation scripts, and exclude tests, diagnostics, and documentation.
 The card shows up to three risky files and reports additional files with an overflow count.
 
@@ -160,11 +228,14 @@ Choose `--voice none` explicitly for silent output and estimated timing without 
 `--voice say` uses `/usr/bin/say` on macOS and ffmpeg for audio conversion.
 
 Kokoro needs the optional `voice` extra and Python 3.12 with this package's Python requirement.
-Installing that extra brings PyTorch and spaCy, but not the `en_core_web_sm` model package.
+Installing that extra brings PyTorch and spaCy, including the `en_core_web_sm` model package.
 The availability check requires that model before it selects Kokoro.
+First use downloads the Kokoro weights (`hexgrad/Kokoro-82M`) from Hugging Face.
 Review those downloads before choosing voice installation.
+Install the extra with uv from the lock. The spaCy model comes from its GitHub release,
+so a plain `pip install` cannot resolve the extra from package metadata alone.
 To keep the video extra when installing voice, use `uv sync --extra video --extra voice`.
-Then install the model with `.venv/bin/python -m spacy download en_core_web_sm`.
+If the model is still missing, install it with `.venv/bin/python -m spacy download en_core_web_sm`.
 First synthesis can still download Kokoro weights. Installed packages do not prove the weight cache is complete.
 Kokoro also needs the eSpeak phonemizer runtime. The backend currently defaults to Homebrew paths on macOS.
 Set `ESPEAK_DATA_PATH` and `PHONEMIZER_ESPEAK_LIBRARY` for a different installation.
@@ -187,6 +258,14 @@ The [launch thread](docs/launch/TWEET.md) is an unpublished draft.
 
 `brief` computes a text brief. `review`, `status`, and `decide` retain the earlier review and freshness workflow.
 `eval-analyze` handles the earlier paired evaluation format, separate from the MVP comprehension scoreboard.
+The bounded paired evaluation (v2) adds `eval-prepare`, `eval-session`, `eval-export`, and
+`eval-grade` on top of `eval-analyze`. It runs a private sealed study: two distinct unseen PRs
+per pair (default 3 pairs, configurable), GitHub+PRC against GitHub+Coldtea PR Lens CI, one
+MC plus two short questions per PR, a server-owned 20-minute reading deadline, blinded export
+after closure, and the explicit sealed protocol carried through grading and analysis. See
+[docs/design/paired-evaluation-v2.md](docs/design/paired-evaluation-v2.md) for the contract.
+The closed-study hub shows frozen keys and score meanings, scores multiple-choice answers,
+and saves your short-answer grades before displaying the exploratory analysis.
 Run `uv run prc --help` and a command's `--help` for its arguments.
 
 The repository verification command is:

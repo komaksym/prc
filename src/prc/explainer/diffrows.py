@@ -2,11 +2,29 @@
 
 from __future__ import annotations
 
+import itertools
+import math
+import re
 import unicodedata
 from difflib import SequenceMatcher
 from typing import Any
 
 MIN_RATIO = 0.4
+DIFF_BOTTOM = 862
+
+
+def prepare(rows: list[dict[str, Any]]) -> int:
+    """Expand tabs, trim trailing space and remove the common indent."""
+    code = [r for r in rows if "text" in r]
+    for r in code:
+        r["text"] = r["text"].expandtabs(4).rstrip()
+    cut = min(
+        (len(r["text"]) - len(r["text"].lstrip()) for r in code if r["text"].strip()),
+        default=0,
+    )
+    for r in code:
+        r["text"] = r["text"][cut:]
+    return cut
 
 
 def _words(tokens: list[dict[str, Any]]) -> list[int]:
@@ -116,18 +134,17 @@ def wrap_row(tokens: list[dict[str, Any]], cols: int) -> tuple[int, list[int]]:
     def room() -> int:
         return cols - (0 if first else hang)
 
-    for t in tokens:
-        txt = t["text"]
+    for txt in re.findall(r"\s+|\w+|[^\w\s]", text):
         if not txt.strip():
-            cur.append(_piece(t, txt))
+            cur.append(txt)
             used += _width(txt)
             continue
         while txt:
             if used + _width(txt) <= room():
-                cur.append(_piece(t, txt))
+                cur.append(txt)
                 used += _width(txt)
                 txt = ""
-            elif any(x["text"].strip() for x in cur):
+            elif any(x.strip() for x in cur):
                 lines.append(cur)
                 cur, used, first = [], 0, False
             else:
@@ -135,16 +152,78 @@ def wrap_row(tokens: list[dict[str, Any]], cols: int) -> tuple[int, list[int]]:
                 while n < len(txt) and used + _width(txt[: n + 1]) <= room():
                     n += 1
                 n = max(n, 1)
-                cur.append(_piece(t, txt[:n]))
+                cur.append(txt[:n])
                 lines.append(cur)
                 cur, used, txt, first = [], 0, txt[n:], False
     if cur:
         lines.append(cur)
     new: list[dict[str, Any]] = []
     breaks: list[int] = []
-    for li, line in enumerate(lines):
-        if li:
+    boundaries = iter(itertools.accumulate(sum(map(len, line)) for line in lines[:-1]))
+    stop = next(boundaries, None)
+    offset = 0
+    for token in tokens:
+        txt = token["text"]
+        while stop is not None and offset + len(txt) > stop:
+            size = stop - offset
+            if size:
+                new.append(_piece(token, txt[:size]))
             breaks.append(len(new))
-        new.extend(line)
+            txt = txt[size:]
+            offset = stop
+            stop = next(boundaries, None)
+        if txt:
+            new.append(_piece(token, txt))
+        offset += len(txt)
     tokens[:] = new
     return hang, breaks
+
+
+def diff_layout(scene: dict[str, Any]) -> dict[str, int]:
+    rows = [dict(row) for row in scene.get("rows", [])]
+    if not any("tokens" in row for row in rows):
+        prepare(rows)
+    nums = [row["num"] for row in rows if row.get("num") is not None]
+    gutter = scene.get("gutter", math.ceil((len(str(max(nums))) + 1) * 0.72) if nums else 1)
+    longest = 0
+    for row in rows:
+        if row.get("gap"):
+            continue
+        if "tokens" not in row:
+            row["tokens"] = [{"text": row.get("text", ""), "cls": ""}]
+            row["hang"], row["breaks"] = wrap_row(row["tokens"], 72 - gutter)
+        width = 0
+        for i, token in enumerate(row["tokens"]):
+            if i in row.get("breaks", []):
+                longest = max(longest, width)
+                width = row.get("hang", 0)
+            width += _width(token["text"])
+        longest = max(longest, width)
+
+    def height(font: int) -> int:
+        row_height = math.floor(font * 1.75 + 0.5)
+        return (
+            sum(
+                30 if row.get("gap") else row_height * (len(row.get("breaks", [])) + 1)
+                for row in rows
+            )
+            + 24
+            + (72 if scene.get("label") else 0)
+            + 48
+        )
+
+    def top(tall: int) -> int:
+        return max(118, math.floor(489 - tall / 2 + 0.5))
+
+    font = min(40, math.floor(1560 / ((longest + gutter) * 0.6 + 2)))
+    while font > 22 and top(height(font)) + height(font) > DIFF_BOTTOM:
+        font -= 1
+    font = max(22, font)
+    tall = height(font)
+    return {
+        "font": font,
+        "row_height": math.floor(font * 1.75 + 0.5),
+        "top": top(tall),
+        "height": tall,
+        "bottom": top(tall) + tall,
+    }

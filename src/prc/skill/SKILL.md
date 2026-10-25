@@ -20,6 +20,9 @@ not sell it. One idea per scene, one to three sentences per scene, each
 under 20 words, in plain words. No hype words, no slogans, no taglines,
 no wordplay.
 
+Counts describe parsed symbols and resolved calls. Unsupported languages can leave that analysis incomplete.
+Do not infer no tests from zero parsed test functions. Check the changed test files and original diff.
+
 ## 1. Render the deterministic outputs and read `map.json`
 
 Run `prc doctor` first. Video and card rendering require Chromium and ffmpeg.
@@ -156,8 +159,9 @@ Add `--map <stored map.json>` when step 1 needed it. Pass `--out` as an
 absolute path: a relative one currently crashes the renderer before the
 first frame. A failed check stops the render with exit 2 and one line per
 error: go back to step 5.
-On success the command prints the `out` folder with the 5 files:
-`map.json`, `map.html`, `board.json`, `video.mp4` and `run.json`.
+On success the command prints the `out` folder with the five product outputs
+(`map.html`, `video.mp4`, `doc.html`, `card.png`, `comment.md`) plus evidence
+(`map.json`, `board.json`, `run.json`).
 
 ## 8. Review your own frames and fix them
 
@@ -198,3 +202,82 @@ Also report `map.json`, `board.json`, and `run.json` as evidence and run metadat
 Say how many tries `prc board check` needed, what the board
 leaves out (step 6), and that prc posted nothing: the files are local,
 and publishing the video or the comment text is the user's own step.
+
+## 10. Gate one AI infographic per PR
+
+Every explain run writes an image vocabulary first: read
+`infographic/brief.json` in the output folder. It holds the title, the
+allowed lines with their roles, the relations, the sorted allowed words,
+the disclosure, the image profile, the fixed prompt rules, and the gate
+constants. Node lines name code-derived relations. PRC selects up to three
+exact added or removed production calls.
+It can add one node counting distinct test callers with added exact calls to a displayed symbol.
+Static calls do not prove test coverage.
+When no such calls are available, it can extract Go call-to-typed-error mappings.
+These require the full file at the pinned head revision and matching captured head diff rows.
+Explain reads that source from its Git directory. Missing or mismatched source yields no mapping for that file.
+Only supported call/error-return patterns in production Go files qualify. This does not build a Go call graph.
+Changed Python function docstring summaries add `Before docs:` and `After docs:` excerpts from the complete pinned base and head files.
+These are source documentation excerpts, not behavior inferred from board scenes.
+
+Each relation joins two node lines. PRC publishes an image only when all
+four OCR modes succeed, their readings cover every brief line, and no
+unexcused foreign word appears at confidence 70 or more.
+Every related node pair must also have connecting ink.
+A brief without relations returns `flat` after passing word checks and cannot publish an infographic.
+
+Keep prompt files and candidate images outside the explain output folder,
+for example in `<out-root>/<slug>-infographic/`. Each explain run
+replaces the whole output folder, so anything written inside it is lost.
+Save the prompt file before generating, then generate one candidate at a
+time with the baoyu-infographic technical profile from the brief
+(structural-breakdown layout, technical-schematic style, 16:9, English).
+Copy `prompt_rules` from the brief into the prompt, and list the relations
+as "source -> target" pairs so the drawing shows the structure. Draw it as
+a diagram: each node line alone in its own box, one straight arrow per
+relation from source box to target box, dashed for a removed call, with
+plain canvas between boxes. Place the headline above the diagram, the
+legend near the arrows, and the facts, rows, verdict and disclosure
+around it. Show every brief line exactly once, spelled exactly, and add
+no other words or numbers. Icons are allowed beside text or elsewhere on
+the canvas if they contain no letters or digits.
+Keep them away from numerical fact lines and all other lines that contain numbers.
+OCR can read an icon as a digit and reject the candidate.
+
+Gate each candidate by re-running explain with repeatable flags, in the
+order drawn:
+
+```sh
+prc explain --source https://github.com/<owner>/<repo>/pull/<N> --board board.json --infographic cand1.png --infographic cand2.png
+```
+
+PRC gates the candidates in argument order and publishes the first one
+that passes as `infographic.png` with the exact candidate bytes.
+`run.json` records the status and every attempt; `infographic/check.json`
+records the verdict with missing and invented words, successful reading
+modes and failed modes, and connecting-ink evidence for each relation.
+PRC checks and hashes an unchanged copy of each
+candidate. On a pass the comment
+embeds `infographic.png` and the walkthrough shows it at the top. The card
+stays in the bundle as the fallback.
+
+On a failure, read `infographic/check.json` first. It names the words OCR
+read that the brief does not hold and the lines OCR could not confirm.
+A `flat` verdict means the word checks passed but the brief has no relations
+or a required connection is missing. The `relations` rows identify missing connections.
+For a relation-free brief, keep the card as the fallback. Board edits cannot invent code relations.
+Change the next prompt to fix exactly those, for example by drawing an
+unconfirmed line larger and away from icons, or by drawing the missing
+arrow straight from one box to the other. Redraw from a new prompt
+file, at most two times. Never
+paint over text in an image editor: a redraw is a fresh generation from an
+updated prompt. After that the card stays as the fallback, and the run
+records the failed status.
+
+Read the selected drawing by eye before presenting it. OCR can miss faint text.
+Matching has no generic edit-distance tolerance. Prose permits only the explicit I/l glyph confusion after case normalization.
+Non-code tokens that mix letters and digits permit the explicit I/l/1 and O/0 glyph confusions.
+Code tokens and pure numbers match exactly after punctuation and case normalization.
+Split or joined OCR words must still cover the ordered brief text.
+The geometric gate proves connecting ink only. Confirm arrow direction, arrowheads, and correct endpoints by eye.
+Also check dashed removed calls and extra connectors. Redraw a candidate with an incorrect or extra arrow.
