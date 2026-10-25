@@ -1,28 +1,41 @@
-name: ci
+name: pr
 
 on:
+  pull_request:
+    # No "edited": a description edit would restart the macOS run. After a title fix, re-run the title job.
+    types: [opened, synchronize, reopened]
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  checks:
+    uses: komaksym/pr-gate/.github/workflows/checks.yml@d9054a367abf36081d50f80ce39a16b336a87f53 # v1.0.0
+    with:
+      run: ''
+    permissions:
+      contents: read
+      pull-requests: read
+
   ci:
     runs-on: macos-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
       - name: Install media and OCR tools
         run: brew install ffmpeg tesseract
       - name: Sync dependencies with video extra
@@ -41,8 +54,19 @@ jobs:
         run: bash scripts/verify-release.sh
       - name: Upload verify evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-verify
           path: artifacts/release/verify/
           retention-days: 14
+
+  gate:
+    if: always()
+    needs: [checks, ci]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
+      - run: echo gate passed
