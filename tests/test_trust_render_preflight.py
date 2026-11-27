@@ -431,6 +431,54 @@ def test_line_coverage_counts_changed_lines_not_files() -> None:
     assert len(cov["missing"]) == 2, cov
 
 
+def test_system_view_page_reports_cited_files_not_missing_code_lines() -> None:
+    """A board with no diff scene is a System View: it shows no code by design.
+
+    The 2026-10-24 swarm-deploy#116 flight test page said "Not covered: 329 of 329
+    changed lines", which reads as if the video skipped the whole change.
+    """
+    from prc.explainer.page import not_covered
+
+    m = tiny_map()
+    m["files"].append(
+        {
+            "path": "b.py",
+            "kind": "code",
+            "added": 1,
+            "removed": 0,
+            "hunks": [
+                {
+                    "old_start": 1,
+                    "new_start": 1,
+                    "lines": [{"op": "+", "old": None, "new": 1, "text": "z = 3"}],
+                }
+            ],
+        }
+    )
+    b = tiny_board(["2"])
+    b["scenes"][0] = {
+        "type": "groups",
+        "groups": [
+            {
+                "id": "g",
+                "title": "a",
+                "sub": "part a",
+                "col": 0,
+                "row": True,
+                "items": [{"id": "i", "text": "x = 1"}],
+            }
+        ],
+        "cite": [{"line": "a.py:2", "match": "x = 1"}],
+        "say": ["Part a sets a value."],
+        "cues": [],
+    }
+    out = not_covered(b, m)
+    assert "Not covered" not in out, out
+    assert "no code lines" in out, out
+    assert "1 of 2 changed files" in out, out
+    assert "b.py" in out and "a.py" not in out, out
+
+
 def test_board_coverage_and_doc_agree_on_missing_lines() -> None:
     from prc.explainer import boards
     from prc.explainer.page import not_covered
