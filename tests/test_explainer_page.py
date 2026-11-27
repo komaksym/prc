@@ -57,6 +57,23 @@ def test_files_url_points_at_the_line_in_the_pr_files_view() -> None:
     assert files_url("acme/shop", "12", "src/a.py", 7, removed=True) == base + "L7"
 
 
+def test_system_view_counts_files_cited_by_group_boxes() -> None:
+    from prc.explainer.page import not_covered
+
+    mapping = {"pr": "acme/shop#12", "files": [{"path": "loader.go"}, {"path": "errors.go"}]}
+    board = {
+        "scenes": [
+            {"type": "groups", "groups": [{"items": [{"id": "load", "line": "loader.go:-7"}]}]}
+        ]
+    }
+
+    summary = not_covered(board, mapping)
+
+    assert "Scenes cite 1 of 2 changed files." in summary
+    assert "<code>loader.go</code>" not in summary
+    assert "<code>errors.go</code>" in summary
+
+
 def test_page_carries_the_board_and_one_hunk_target_per_code_row(tmp_path: Path) -> None:
     from prc.explainer.page import files_url, render_page
 

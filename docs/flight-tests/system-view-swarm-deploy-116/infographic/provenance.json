@@ -1,0 +1,13 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "codex-imagegen",
+  "layout": "structural-breakdown (exploded)",
+  "style": "technical-schematic (isometric)",
+  "aspect": "16:9",
+  "language": "en",
+  "image_sha256": "536f29abcb87aa6526f03db3590e338b5a0595147c3fb1601478f6ae1d54d6a4",
+  "prompt_sha256": "7b30a259bc1f36076191066de21fac98302ffe7d0ade5af2ba8b0dd794cc48dc",
+  "purpose": "Shows swarm-deploy #116 exploded into its five system parts, with how the System View was built and what is still open.",
+  "visual_note": "Viewed: title \"System View: one PR, five parts\", blocks \"COMPOSE LOADER\" and \"SHARED/FAULTS\", arrow \"returns one type\", callouts \"1129 tests pass\" and \"Open: bent arrows\".",
+  "created_at": "2026-10-24T23:49:57Z"
+}

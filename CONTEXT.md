@@ -163,3 +163,15 @@ _Avoid_: Reviewer-facing file list, claim count
 **Review Revision**:
 A review of one exact Source Snapshot. Exact consumed payloads and each check's provenance and execution subject are archived. At presentation or decision recording, the controller reconciles the full Source Basis Identity, including eligibility and expiry at that boundary. It records matching, stale, or unknown together with the observation interval, resource times, and freshness deadline. A code match alone is insufficient. Local compare-and-swap protects the expected SourceSnapshotId and PublishedViewIdentity from concurrent replacement; it is not a transaction over GitHub resources. The UI says when the bundle last matched observed state and never promises timeless currentness or atomic live merge authorization. Changed source basis or analysis policy creates a new review revision and recomputes semantics. Notes on an old revision retain that old identity and observed freshness.
 _Avoid_: Mutable review, live PR state
+
+**Code View**:
+The explanation level that shows the changed lines of a pull request as quoted diff rows, alongside the behavior they carry.
+_Avoid_: Low-level view, line-by-line video
+
+**System View**:
+The explanation level that shows a pull request as the System Parts it changes and the Behavioral Concepts that move between them, with no code lines on screen. Evidence Links still point at the exact lines.
+_Avoid_: High-level flow, architecture video, overview mode
+
+**System Part**:
+A named unit of the reviewed repository, such as a package, service or module, that a System View draws as one box.
+_Avoid_: Component (reserved for Presentation Component), box, layer

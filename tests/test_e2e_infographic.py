@@ -370,6 +370,41 @@ def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
     return payload
 
 
+def test_explain_publishes_the_system_view_flight_test(tmp_path: Path) -> None:
+    board_path = ROOT / "docs" / "flight-tests" / "system-view-swarm-deploy-116" / "board.json"
+    map_path = ROOT / "tests" / "data" / "trustworthiness" / "swarm-116" / "map.json"
+    mapping = json.loads(map_path.read_text())
+    board = json.loads(board_path.read_text())
+    brief = gate.infobrief(mapping, mapping["brief"], board)
+    assert brief.mode == "storyboard-flow"
+    assert {(edge.source, edge.target) for edge in brief.relations} == {
+        ("init job check", "compose loader"),
+        ("compose loader", "compose errors"),
+    }
+    image = render_brief_png(gate.brief_dict(brief), tmp_path / "system-view.png")
+    result = run_cli(
+        tmp_path,
+        "explain",
+        "--source",
+        "github:swarm-deploy/swarm-deploy#116",
+        "--map",
+        str(map_path),
+        "--board",
+        str(board_path),
+        "--voice",
+        "none",
+        "--infographic",
+        str(image),
+        "--out",
+        str(tmp_path / "out"),
+    )
+    output = Path(result["out"])
+    run = json.loads((output / "run.json").read_text())
+    assert run["infographic"]["status"] == "passed"
+    for name in ("video.mp4", "page.html", "infographic.png"):
+        assert (output / name).stat().st_size > 0
+
+
 def brief_without_infographic(cwd: Path, board: Path = BOARD) -> Path:
     """A board build with no candidate fails by design and still writes the brief to draw."""
     env = dict(os.environ)
