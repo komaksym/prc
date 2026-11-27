@@ -1,0 +1,18 @@
+{
+  "bundle_sha256": "036f2ae251209bf7649b09afcd6d8ac4ace457d2b6023ad9fa4ab83d6f1f80b4",
+  "esbuild": "0.25.10",
+  "renderer": "0.3.2",
+  "schema": "0.7.0",
+  "tarball_sha256": {
+    "renderer": "c6c7ca978643392574cde90bddaf3031a3bb3d7cf664f86b8a8819e1731638a1",
+    "schema": "540133ec9b8196a10bb578fe8692e17641dd84161fc3b47800fc207ff523e8b5"
+  },
+  "validated_goldens": {
+    "em-5756.json": "85a5e7a84aeeada3ee261addcbabbb000ed5439fd1bca3d12863e15a42e42d5c",
+    "grouped.json": "ba0142feb4247c5f8184c794c58955f0f20193639cd07bf20757a25ce372c165",
+    "librarysync-98.json": "e6ad47761e162e32403b834a5ff021a387b372b6ada31a6942847f160a9f28e1",
+    "shop.json": "fc343ffd4a6d448308d4e54cad27c91a6ee3a0b16a862b00f1c46d04768847e2",
+    "swarm-116.json": "e45da4cf50592bc556b8a5d1251fe69538b6b92f68dc9ca732a7cb809bf0bfa8"
+  },
+  "zod": "4.6.5"
+}

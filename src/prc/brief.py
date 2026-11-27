@@ -112,7 +112,7 @@ KIND_RULES: tuple[Rule, ...] = (
     ),
     (
         _path(
-            r"(^|/)(tests?|__tests__|spec|specs|testdata|__mocks__|__fixtures__)/|(^|/)(test_|e2e_)[^/]*$|_tests?\.[a-z]+$"
+            r"(^|/)(tests?|__tests__|spec|specs|testdata|__mocks__|__fixtures__|e2e|\.puppeteer|cypress|playwright)/|(^|/)(test_|e2e_)[^/]*$|_tests?\.[a-z]+$"
             r"|\.(test|spec)\.[a-z]+$|(^|/)conftest\.py$|Tests?\.(java|kt|cs)$"
         ),
         "test",
@@ -161,6 +161,8 @@ SENSITIVE_RULES: tuple[SensitiveRule, ...] = tuple(
         (r"^\.github/workflows/", "CI workflow", False),
         (r"^\.github/", "repository automation config", False),
         (_MANIFEST, "dependency manifest", True),
+        (_LOCKFILE, "dependency lockfile", False),
+        (r"(^|/)(\.yarn/patches|patches)/.*\.patch$", "dependency patch", False),
         (
             _DOCKER + r"|\.tfvars?$|\.tf$|(^|/)(k8s|kubernetes|helm|terraform|infra)/",
             "Docker or infrastructure",
@@ -180,6 +182,8 @@ SENSITIVE_RULES: tuple[SensitiveRule, ...] = tuple(
 
 
 def kind_of(delta: Delta) -> Kind:
+    if delta.opaque and any(matches(delta) for matches, kind in KIND_RULES if kind == "test"):
+        return "test"
     return next(kind for matches, kind in KIND_RULES if matches(delta))
 
 

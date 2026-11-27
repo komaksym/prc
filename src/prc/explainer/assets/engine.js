@@ -482,9 +482,9 @@
 
   MAKERS.outro = (s, root) => {
     const wrap = D('outro', null, root);
-    const l1 = D('l1', esc(s.l1), wrap), l2 = D('l2', esc(s.l2), wrap);
+    const l1 = D('l1', fmt(s.l1), wrap), l2 = D('l2', fmt(s.l2), wrap);
     const cmd = D('cmd', `<b>prc map</b> ${esc(s.url)}`, wrap);
-    const fine = D('fine', esc(s.fine), wrap);
+    const fine = D('fine', esc(s.fine == null ? '' : s.fine), wrap);
     const at = name => cueT(s, q => q.do === name);
     return t => {
       l1.style.opacity = prog(t, at('l1'), 0.5);
@@ -503,31 +503,10 @@
     const stepAt = {};
     (s.cues || []).forEach(c => { if (c.do === 'step') stepAt[c.n] = c.t; });
     // A step that replaces lines lets the removed rows tint red before the new lines open in their place.
-    const swaps = new Set(s.rows.filter(r => r.op === '-').map(r => r.step));
-    // Fewer, shorter lines get a bigger font; the block is centred in the space above the captions.
-    const gutter = s.gutter || 0, GH = 30, TOP = 12;
-    const wide = c => { const n = c.codePointAt(0); return (n >= 0x1100 && n <= 0x115F) || (n >= 0x2E80 && n <= 0xA4CF) || (n >= 0xAC00 && n <= 0xD7AF) || (n >= 0xF900 && n <= 0xFAFF) || (n >= 0xFE30 && n <= 0xFE4F) || (n >= 0xFF00 && n <= 0xFF60) || (n >= 0xFFE0 && n <= 0xFFE6) ? 2 : 1; };
-    const tcols = t => [...t].reduce((a, ch) => a + wide(ch), 0);
-    // Widest visual line in columns, counting the hanging indent on continuation lines.
-    let longest = 0;
-    s.rows.forEach(r => {
-      if (r.gap || !r.tokens) { longest = Math.max(longest, (r.text || '').length); return; }
-      let w = 0;
-      r.tokens.forEach((tok, idx) => {
-        if ((r.breaks || []).includes(idx)) { longest = Math.max(longest, w); w = r.hang || 0; }
-        w += tcols(tok.text);
-      });
-      longest = Math.max(longest, w);
-    });
-    const widthBound = Math.floor(1560 / ((longest + gutter) * 0.6 + 2));
-    const rowH = fs => Math.round(fs * 1.75);
-    const tallAt = fs => s.rows.reduce((a, r) => a + (r.gap ? GH : rowH(fs) * (((r.breaks || []).length) + 1)), 2 * TOP) + (s.label ? 72 : 0) + 48;
-    const topAt = tall => Math.max(118, Math.round(489 - tall / 2));
-    let FS = Math.min(40, widthBound);
-    while (FS > 22 && topAt(tallAt(FS)) + tallAt(FS) > 862) FS -= 1;
-    FS = Math.max(22, FS);
+    const GH = 30, TOP = 12;
+    const FS = s.layout.font;
     if (FS < 28 && window.lint) window.lint.push(`scene ${s.i}: diff font ${FS} px is small at GitHub width; show fewer or shorter lines`);
-    const RH = rowH(FS);
+    const RH = s.layout.row_height;
     const digits = Math.max(1, ...s.rows.filter(r => r.num != null).map(r => String(r.num).length));
     const rows = s.rows.map((r, k) => {
       if (r.gap) return { r, k, el: D('drow gap', '<span class="sg"></span><span class="tx">⋯</span>', box), h: GH, t0: -Infinity, tin: -Infinity };
@@ -539,12 +518,11 @@
       const el = D('drow', `<span class="ln" style="width:${digits + 1}ch;line-height:${RH}px">${r.num}</span><span class="sg">${r.op === '+' ? '+' : r.op === '-' ? '−' : ''}</span><span class="tx"><span class="ct">${parts.join('') || esc(r.text)}</span></span>`, box);
       const t0 = r.step ? stepAt[r.step] : -Infinity;
       return { r, k, el, h: RH * (((r.breaks || []).length) + 1), sg: el.querySelector('.sg'), tx: el.querySelector('.tx'), ct: el.querySelector('.ct'),
-               t0, tin: r.op === '+' && swaps.has(r.step) ? t0 + 0.55 : t0, notes: [] };
+               t0, tin: r.motion.reveal[0], notes: [] };
     });
     const byRef = {};
     rows.forEach(R => { if (R.r.ref) byRef[R.r.ref] = R; if (R.ct) Object.assign(R.el.style, { fontSize: FS + 'px', lineHeight: RH + 'px' }); });
-    const tallest = rows.reduce((a, R) => a + R.h, 2 * TOP) + (s.label ? 72 : 0) + 48;
-    wrap.style.top = topAt(tallest) + 'px';
+    wrap.style.top = s.layout.top + 'px';
     rows.forEach(R => { if (R.ct) R.textW = Math.min(R.ct.offsetWidth, R.tx.clientWidth - 24); });
     // A note sits after the last visual line of its row, so it never covers wrapped text.
     const lastLineW = R => {
@@ -560,8 +538,16 @@
       const el = D('dnote', fmt(c.text), box);
       el.style.color = tone; el.style.borderColor = tone;
       const lnW = R.el.querySelector('.ln') ? R.el.querySelector('.ln').getBoundingClientRect().width : 0;
-      const x = Math.min(lnW + 56 + lastLineW(R) + 32, 1700 - el.offsetWidth - 20);
-      const N = { R, el, x, t: c.t, until: c.until != null ? c.until : Infinity, tone };
+      const want = lnW + 56 + lastLineW(R) + 32;
+      const limit = 1700 - el.offsetWidth - 20;
+      const clamped = want > limit + 1;
+      const stack = R.drop ? R.drop / 56 : 0;
+      const N = { R, el, x: clamped ? 120 : want, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: clamped, stack };
+      if (clamped) {
+        R.drop = (R.drop || 0) + 56;
+        R.h += 56;
+        el.dataset.moved = '1';
+      }
       R.notes.push(N);
       return N;
     });
@@ -570,8 +556,8 @@
       let y = TOP;
       rows.forEach(R => {
         let k = 1;
-        if (R.r.op === '+') k = prog(t, R.tin, 0.45);
-        const enter = prog(t, s.start + 0.25 + R.k * 0.035, 0.4);
+        if (R.r.op === '+') k = prog(t, ...R.r.motion.reveal);
+        const enter = R.r.gap ? 1 : prog(t, ...R.r.motion.enter);
         R.y = y; R.hk = k;
         R.el.style.top = y + 'px';
         R.el.style.height = R.h * k + 'px';
@@ -592,7 +578,7 @@
         if (R.r.op === '+') {
           R.sg.style.color = C.green;
           R.el.style.transform = `translateX(${lerp(-24, 0, k)}px)`;
-          bg = 0.10 + 0.42 * decay(t, R.tin + 0.45, 0.8);
+          bg = 0.10 + 0.42 * decay(t, R.tin + R.r.motion.reveal[1], 0.8);
           const mark = 0.34 * prog(t, R.tin + 0.3, 0.3);
           R.chg.forEach(el => { el.style.background = mark > 0 ? rgba(C.green, mark) : ''; });
         }
@@ -603,9 +589,15 @@
       });
       box.style.height = y + TOP + 'px';
       notes.forEach(N => {
+        const o = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * clamp(N.R.hk * 2 - 1);
         N.el.style.left = N.x + 'px';
-        N.el.style.top = N.R.y + N.R.h * N.R.hk - RH / 2 + 'px';
-        N.el.style.opacity = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * clamp(N.R.hk * 2 - 1);
+        N.el.style.opacity = o;
+        if (N.below) {
+          N.el.style.transform = 'none';
+          N.el.style.top = (N.R.y + (N.R.h - (N.R.drop || 0)) * N.R.hk + 8 + N.stack * 56) + 'px';
+        } else {
+          N.el.style.top = N.R.y + N.R.h * N.R.hk - RH / 2 + 'px';
+        }
       });
     };
   };
@@ -629,7 +621,7 @@
 
     const seek = t => {
       scenes.forEach(sc => {
-        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, sc.s.end - 0.35, 0.35));
+        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, ...sc.s.fade));
         sc.root.style.opacity = o;
         sc.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
         if (o > 0.001) sc.update(t);
@@ -640,7 +632,7 @@
       const sc = scenes.find(x => t >= x.s.start && t < x.s.end);
       const f = sc ? sc.s.footer || '' : '';
       if (f !== lastFoot) { foot.textContent = f; lastFoot = f; }
-      foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, sc.s.end - 0.35, 0.35)) : 0;
+      foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, ...sc.s.fade)) : 0;
       bar.style.width = `${(t / B.duration) * 100}%`;
     };
     if (sceneIndex == null) {
@@ -657,6 +649,36 @@
             const edge = r.bottom > SAFE.bottom ? `bottom ${Math.round(r.bottom)}px (captions start at ${SAFE.bottom})` : r.right > SAFE.right ? `right edge ${Math.round(r.right)}px` : r.left < SAFE.left ? `left edge ${Math.round(r.left)}px` : r.top < SAFE.top ? `top ${Math.round(r.top)}px` : null;
             const msg = edge && `scene ${s.i}: ${el.className.split(' ')[0]} "${el.textContent.trim().slice(0, 32)}" leaves the frame at the ${edge}`;
             if (msg && !window.lint.includes(msg)) window.lint.push(msg);
+          });
+        });
+        root.querySelectorAll('.dnote[data-moved]').forEach(el => {
+          const msg = `scene ${s.i}: note "${el.textContent.trim().slice(0, 32)}" moved below the code to avoid overlap`;
+          if (!window.lint.includes(msg)) window.lint.push(msg);
+        });
+        times.forEach(t => {
+          update(t);
+          root.querySelectorAll('.dnote').forEach(el => {
+            if (parseFloat(getComputedStyle(el).opacity) < 0.05) return;
+            const r = el.getBoundingClientRect();
+            const covers = [...root.querySelectorAll('.drow')].some(row => {
+              if (parseFloat(getComputedStyle(row).opacity) < 0.05) return false;
+              const ct = row.querySelector('.ct');
+              if (!ct) return false;
+              // A whole-row rect envelopes every wrapped line, so a note after a
+              // short last line still intersects the wide first line. Compare
+              // against each laid-out line box instead: getClientRects on the
+              // inline code span yields one rect per visual line.
+              return [...ct.getClientRects()].some(c => {
+                if (c.width < 1 || c.height < 1) return false;
+                const w = Math.min(r.right, c.right) - Math.max(r.left, c.left);
+                const h = Math.min(r.bottom, c.bottom) - Math.max(r.top, c.top);
+                return w > 12 && h > 12;
+              });
+            });
+            if (covers) {
+              const msg = `scene ${s.i}: note "${el.textContent.trim().slice(0, 32)}" overlaps code`;
+              if (!window.lint.includes(msg)) window.lint.push(msg);
+            }
           });
         });
       });

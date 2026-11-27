@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from prc.explainer.preflight import cited_refs, coverage_summary, line_coverage
+
 
 def show(m: dict[str, Any], wanted: list[str]) -> str:
     """The PR diff from map.json, each hunk line with the ref a board uses."""
@@ -45,22 +47,10 @@ def find(m: dict[str, Any], needles: list[str], only: str | None = None) -> str:
 
 
 def coverage(board: dict[str, Any], m: dict[str, Any]) -> str:
-    """How much of the PR a board accounts for. A part counts when a line of it is on screen."""
+    """How much of the PR a board accounts for. Changed-line counts are literal."""
     kinds = {f["path"]: f["kind"] for f in m["files"]}
 
-    shown = set()
-    for s in board["scenes"]:
-        for c in s.get("cite", []):
-            path, n = c["line"].rsplit(":", 1)
-            shown.add((path, int(n)))
-        for it in s.get("items", []):
-            if "cite" in it:
-                path, n = it["cite"].rsplit(":", 1)
-                shown.add((path, int(n)))
-        if s["type"] == "diff":
-            for r in s["lines"]:
-                ref = r["ref"] if isinstance(r, dict) else r
-                shown.add((s["file"], int(ref)))
+    shown = cited_refs(board)
 
     def hit(sym: dict[str, Any]) -> bool:
         for path, n in shown:
@@ -80,11 +70,7 @@ def coverage(board: dict[str, Any], m: dict[str, Any]) -> str:
     stops = [t for t in m["tour"] if t["focus"]]
     stop_hit = [any(hit(syms[f]) for f in t["focus"] if f in syms) for t in stops]
     files_shown = {p for p, _ in shown}
-    by_kind: dict[str, list[int]] = {}
-    for f in m["files"]:
-        k = by_kind.setdefault(f["kind"], [0, 0])
-        k[0] += f["added"]
-        k[1] += f["added"] if f["path"] in files_shown else 0
+    cov = line_coverage(board, m)
 
     name = board.get("name", "board")
     covered_files = len(files_shown & set(kinds))
@@ -92,9 +78,12 @@ def coverage(board: dict[str, Any], m: dict[str, Any]) -> str:
         f"{name}: tour stops {sum(stop_hit)}/{len(stops)} · code symbols {sum(map(hit, code))}/{len(code)} · "
         f"files {covered_files}/{len(kinds)}",
         f"covers {covered_files} of {len(kinds)} changed files",
-        "  added lines in files on screen, by kind: "
-        + ", ".join(f"{k} {v[1]}/{v[0]}" for k, v in by_kind.items()),
+        coverage_summary(cov),
     ]
+    if cov["missing"]:
+        rest = len(cov["missing"]) - 12
+        listed = ", ".join(cov["missing"][:12])
+        out.append("  missing changed lines: " + listed + (" ..." if rest > 0 else ""))
     for t, h in zip(stops, stop_hit, strict=True):
         out.append(
             f"  {'x' if h else ' '} {t['kind']:<7} {', '.join(f.split('::')[-1] for f in t['focus'])[:90]}"

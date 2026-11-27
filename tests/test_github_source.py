@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import json
+import urllib.error
+import urllib.request
+from email.message import Message
+from io import BytesIO
 from pathlib import Path
 from typing import Any
+from unittest.mock import Mock
 
 import pytest
 
-from prc.github_source import API, GitHubSource
+from prc.github_source import API, GitHubSource, urllib_transport
 from prc.model import PrRef
 from prc.source import SourceError
 
@@ -144,3 +149,102 @@ def test_refetches_when_pinned_commits_are_missing(tmp_path: Path) -> None:
     source.repo_path(ref)
 
     assert fetched == ["a" * 40, "a" * 40]
+
+
+class UnreadBody(BytesIO):
+    def read(self, size: int | None = -1) -> bytes:
+        raise AssertionError("HTTP error bodies must not be read")
+
+
+@pytest.mark.parametrize(
+    ("status", "remaining", "message"),
+    [
+        (
+            404,
+            None,
+            "pull request or resource is missing or inaccessible. "
+            "Check the repository, PR number, and access permissions.",
+        ),
+        (
+            401,
+            None,
+            "authentication was rejected. Check GITHUB_TOKEN credentials and repository access.",
+        ),
+        (
+            403,
+            None,
+            "request forbidden. Check GITHUB_TOKEN credentials and repository permissions.",
+        ),
+        (
+            403,
+            "1",
+            "request forbidden. Check GITHUB_TOKEN credentials and repository permissions.",
+        ),
+        (
+            403,
+            "0",
+            "API rate limit exceeded. Wait for the rate limit to reset before retrying.",
+        ),
+        (
+            429,
+            None,
+            "API rate limit exceeded. Wait for the rate limit to reset before retrying.",
+        ),
+        (
+            500,
+            "0",
+            "request failed. Check the request and retry if the failure is temporary.",
+        ),
+    ],
+)
+def test_http_error_preserves_status_and_safe_actionable_context(
+    status: int, remaining: str | None, message: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    headers = Message()
+    if remaining is not None:
+        headers["x-ratelimit-remaining"] = remaining
+    body = UnreadBody(b"untrusted response content")
+    error = urllib.error.HTTPError(
+        API + "/repos/o/r/pulls/999999", status, "untrusted server reason", headers, body
+    )
+    open_url = Mock(side_effect=error)
+    monkeypatch.setattr(urllib.request, "urlopen", open_url)
+    monkeypatch.setenv("GITHUB_TOKEN", "synthetic-credential")
+
+    with pytest.raises(SourceError) as raised:
+        urllib_transport(API + "/repos/o/r/pulls/999999")
+
+    assert str(raised.value) == f"GitHub HTTP {status}: {message}"
+    assert raised.value.__cause__ is error
+    assert body.tell() == 0
+    assert "synthetic-credential" not in str(raised.value)
+    assert "untrusted" not in str(raised.value)
+    open_url.assert_called_once()
+
+
+@pytest.mark.parametrize("error", [urllib.error.URLError("untrusted details"), TimeoutError()])
+def test_network_error_has_safe_actionable_context(
+    error: OSError, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(urllib.request, "urlopen", Mock(side_effect=error))
+    monkeypatch.setenv("GITHUB_TOKEN", "synthetic-credential")
+
+    with pytest.raises(SourceError) as raised:
+        urllib_transport(API + "/repos/o/r/pulls/999999")
+
+    assert str(raised.value) == (
+        f"GitHub network request failed: {type(error).__name__}. "
+        "Check your network connection and retry."
+    )
+    assert raised.value.__cause__ is error
+
+
+def test_non_github_url_is_rejected_before_http_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    open_url = Mock(side_effect=AssertionError("an untrusted origin must not be requested"))
+    monkeypatch.setattr(urllib.request, "urlopen", open_url)
+    monkeypatch.setenv("GITHUB_TOKEN", "synthetic-credential")
+
+    with pytest.raises(SourceError, match="refusing non-GitHub API URL"):
+        urllib_transport("https://example.com/repos/o/r/pulls/999999")
+
+    open_url.assert_not_called()

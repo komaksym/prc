@@ -1,0 +1,4765 @@
+{
+  "author": "coding-agent[bot]",
+  "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "brief": {
+    "checks": [
+      {
+        "name": "unit-tests",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod00.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod01.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod02.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod03.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod04.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod05.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod06.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod07.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod08.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod09.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod10.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "code",
+        "named": true,
+        "path": "src/pkg/mod11.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod00.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod01.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod02.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod03.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod04.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod05.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod06.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "test",
+        "named": true,
+        "path": "tests/test_mod07.py",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 0,
+        "kind": "config",
+        "named": false,
+        "path": ".github/workflows/ci.yml",
+        "removed": 0,
+        "sensitive": "CI workflow"
+      },
+      {
+        "added": 0,
+        "kind": "config",
+        "named": true,
+        "path": "pyproject.toml",
+        "removed": 0,
+        "sensitive": "dependency manifest"
+      },
+      {
+        "added": 0,
+        "kind": "docs",
+        "named": true,
+        "path": "docs/guide.md",
+        "removed": 0,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "ffffffffffffffffffffffffffffffffffffffff",
+    "look_first": [],
+    "mismatches": [],
+    "pr": "acme/shop#7",
+    "title": "Refactor the pipeline into staged modules"
+  },
+  "edges": [
+    {
+      "resolution": "exact",
+      "source": "src/app/routes0.py::handler_00",
+      "status": "kept",
+      "target": "src/pkg/mod00.py::func_000"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes0.py::handler_04",
+      "status": "kept",
+      "target": "src/pkg/mod02.py::func_002"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes0.py::handler_08",
+      "status": "kept",
+      "target": "src/pkg/mod04.py::func_004"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes1.py::handler_01",
+      "status": "kept",
+      "target": "src/pkg/mod05.py::func_005"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes1.py::handler_05",
+      "status": "kept",
+      "target": "src/pkg/mod01.py::func_001"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes1.py::handler_09",
+      "status": "kept",
+      "target": "src/pkg/mod03.py::func_003"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes2.py::handler_02",
+      "status": "kept",
+      "target": "src/pkg/mod04.py::func_004"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes2.py::handler_06",
+      "status": "kept",
+      "target": "src/pkg/mod00.py::func_000"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes2.py::handler_10",
+      "status": "kept",
+      "target": "src/pkg/mod02.py::func_002"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes3.py::handler_03",
+      "status": "kept",
+      "target": "src/pkg/mod03.py::func_003"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes3.py::handler_07",
+      "status": "kept",
+      "target": "src/pkg/mod05.py::func_005"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/app/routes3.py::handler_11",
+      "status": "kept",
+      "target": "src/pkg/mod01.py::func_001"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod00.py::func_012",
+      "status": "added",
+      "target": "src/pkg/mod00.py::func_036"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod00.py::func_012",
+      "status": "kept",
+      "target": "src/pkg/mod01.py::func_037"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod00.py::func_012",
+      "status": "removed",
+      "target": "src/pkg/mod02.py::func_038"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod01.py::func_013",
+      "status": "removed",
+      "target": "src/pkg/mod03.py::func_039"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod01.py::func_013",
+      "status": "removed",
+      "target": "src/pkg/mod04.py::func_040"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod01.py::func_013",
+      "status": "removed",
+      "target": "src/pkg/mod05.py::func_041"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod02.py::func_002",
+      "status": "added",
+      "target": "src/pkg/mod06.py::func_006"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod02.py::func_002",
+      "status": "kept",
+      "target": "src/pkg/mod07.py::func_007"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod02.py::func_002",
+      "status": "removed",
+      "target": "src/pkg/mod08.py::func_008"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod02.py::func_014",
+      "status": "added",
+      "target": "src/pkg/mod06.py::func_042"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod02.py::func_014",
+      "status": "removed",
+      "target": "src/pkg/mod07.py::func_043"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod02.py::func_014",
+      "status": "added",
+      "target": "src/pkg/mod08.py::func_044"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_003",
+      "status": "removed",
+      "target": "src/pkg/mod09.py::func_009"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod03.py::func_003",
+      "status": "removed",
+      "target": "src/pkg/mod10.py::func_010"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_003",
+      "status": "removed",
+      "target": "src/pkg/mod11.py::func_011"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_015",
+      "status": "added",
+      "target": "src/lib/util2.py::helper_11"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod03.py::func_015",
+      "status": "kept",
+      "target": "src/pkg/mod09.py::func_045"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_015",
+      "status": "added",
+      "target": "src/pkg/mod10.py::func_046"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_015",
+      "status": "kept",
+      "target": "src/pkg/mod11.py::func_047"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_027",
+      "status": "kept",
+      "target": "src/lib/util2.py::helper_08"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_039",
+      "status": "added",
+      "target": "src/lib/util2.py::helper_05"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod03.py::func_051",
+      "status": "kept",
+      "target": "src/lib/util2.py::helper_02"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod04.py::func_004",
+      "status": "added",
+      "target": "src/pkg/mod00.py::func_012"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod04.py::func_004",
+      "status": "removed",
+      "target": "src/pkg/mod01.py::func_013"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod04.py::func_004",
+      "status": "added",
+      "target": "src/pkg/mod02.py::func_014"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod04.py::func_016",
+      "status": "removed",
+      "target": "src/pkg/mod00.py::func_048"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod04.py::func_016",
+      "status": "kept",
+      "target": "src/pkg/mod01.py::func_049"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod04.py::func_016",
+      "status": "added",
+      "target": "src/pkg/mod02.py::func_050"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod05.py::func_005",
+      "status": "kept",
+      "target": "src/pkg/mod03.py::func_015"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod05.py::func_005",
+      "status": "added",
+      "target": "src/pkg/mod04.py::func_016"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod05.py::func_005",
+      "status": "kept",
+      "target": "src/pkg/mod05.py::func_017"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod05.py::func_017",
+      "status": "kept",
+      "target": "src/pkg/mod03.py::func_051"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod05.py::func_017",
+      "status": "added",
+      "target": "src/pkg/mod04.py::func_052"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod05.py::func_017",
+      "status": "removed",
+      "target": "src/pkg/mod05.py::func_053"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod06.py::func_006",
+      "status": "removed",
+      "target": "src/pkg/mod06.py::func_018"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod06.py::func_006",
+      "status": "kept",
+      "target": "src/pkg/mod07.py::func_019"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod06.py::func_006",
+      "status": "added",
+      "target": "src/pkg/mod08.py::func_020"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod06.py::func_018",
+      "status": "removed",
+      "target": "src/pkg/mod06.py::func_054"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod06.py::func_018",
+      "status": "removed",
+      "target": "src/pkg/mod07.py::func_055"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod06.py::func_018",
+      "status": "removed",
+      "target": "src/pkg/mod08.py::func_056"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_007",
+      "status": "kept",
+      "target": "src/pkg/mod09.py::func_021"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_007",
+      "status": "added",
+      "target": "src/pkg/mod10.py::func_022"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_007",
+      "status": "removed",
+      "target": "src/pkg/mod11.py::func_023"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_019",
+      "status": "kept",
+      "target": "src/lib/util1.py::helper_10"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_019",
+      "status": "kept",
+      "target": "src/pkg/mod09.py::func_057"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_019",
+      "status": "removed",
+      "target": "src/pkg/mod10.py::func_058"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_019",
+      "status": "kept",
+      "target": "src/pkg/mod11.py::func_059"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_031",
+      "status": "added",
+      "target": "src/lib/util1.py::helper_07"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_043",
+      "status": "kept",
+      "target": "src/lib/util1.py::helper_04"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod07.py::func_055",
+      "status": "added",
+      "target": "src/lib/util1.py::helper_01"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod08.py::func_008",
+      "status": "removed",
+      "target": "src/pkg/mod00.py::func_024"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod08.py::func_008",
+      "status": "removed",
+      "target": "src/pkg/mod01.py::func_025"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod08.py::func_008",
+      "status": "removed",
+      "target": "src/pkg/mod02.py::func_026"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod09.py::func_009",
+      "status": "kept",
+      "target": "src/pkg/mod03.py::func_027"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod09.py::func_009",
+      "status": "removed",
+      "target": "src/pkg/mod04.py::func_028"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod09.py::func_009",
+      "status": "kept",
+      "target": "src/pkg/mod05.py::func_029"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod10.py::func_010",
+      "status": "added",
+      "target": "src/pkg/mod06.py::func_030"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod10.py::func_010",
+      "status": "kept",
+      "target": "src/pkg/mod07.py::func_031"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod10.py::func_010",
+      "status": "added",
+      "target": "src/pkg/mod08.py::func_032"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod11.py::func_011",
+      "status": "removed",
+      "target": "src/pkg/mod09.py::func_033"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod11.py::func_011",
+      "status": "added",
+      "target": "src/pkg/mod10.py::func_034"
+    },
+    {
+      "resolution": "name",
+      "source": "src/pkg/mod11.py::func_011",
+      "status": "kept",
+      "target": "src/pkg/mod11.py::func_035"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod11.py::func_023",
+      "status": "added",
+      "target": "src/lib/util0.py::helper_09"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod11.py::func_035",
+      "status": "kept",
+      "target": "src/lib/util0.py::helper_06"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod11.py::func_047",
+      "status": "added",
+      "target": "src/lib/util0.py::helper_03"
+    },
+    {
+      "resolution": "exact",
+      "source": "src/pkg/mod11.py::func_059",
+      "status": "kept",
+      "target": "src/lib/util0.py::helper_00"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod00.py::test_case_0",
+      "status": "added",
+      "target": "src/pkg/mod00.py::func_000"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod01.py::test_case_1",
+      "status": "added",
+      "target": "src/pkg/mod07.py::func_007"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod02.py::test_case_2",
+      "status": "added",
+      "target": "src/pkg/mod02.py::func_014"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod03.py::test_case_3",
+      "status": "added",
+      "target": "src/pkg/mod09.py::func_021"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod04.py::test_case_4",
+      "status": "added",
+      "target": "src/pkg/mod04.py::func_028"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod05.py::test_case_5",
+      "status": "added",
+      "target": "src/pkg/mod11.py::func_035"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod06.py::test_case_6",
+      "status": "added",
+      "target": "src/pkg/mod06.py::func_042"
+    },
+    {
+      "resolution": "exact",
+      "source": "tests/test_mod07.py::test_case_7",
+      "status": "added",
+      "target": "src/pkg/mod01.py::func_049"
+    }
+  ],
+  "files": [
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod00.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod00.py::func_000",
+        "src/pkg/mod00.py::func_012",
+        "src/pkg/mod00.py::func_024",
+        "src/pkg/mod00.py::func_036",
+        "src/pkg/mod00.py::func_048"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod01.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod01.py::func_001",
+        "src/pkg/mod01.py::func_013",
+        "src/pkg/mod01.py::func_025",
+        "src/pkg/mod01.py::func_037",
+        "src/pkg/mod01.py::func_049"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod02.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod02.py::func_002",
+        "src/pkg/mod02.py::func_014",
+        "src/pkg/mod02.py::func_026",
+        "src/pkg/mod02.py::func_038",
+        "src/pkg/mod02.py::func_050"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod03.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod03.py::func_003",
+        "src/pkg/mod03.py::func_015",
+        "src/pkg/mod03.py::func_027",
+        "src/pkg/mod03.py::func_039",
+        "src/pkg/mod03.py::func_051"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod04.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod04.py::func_004",
+        "src/pkg/mod04.py::func_016",
+        "src/pkg/mod04.py::func_028",
+        "src/pkg/mod04.py::func_040",
+        "src/pkg/mod04.py::func_052"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod05.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod05.py::func_005",
+        "src/pkg/mod05.py::func_017",
+        "src/pkg/mod05.py::func_029",
+        "src/pkg/mod05.py::func_041",
+        "src/pkg/mod05.py::func_053"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod06.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod06.py::func_006",
+        "src/pkg/mod06.py::func_018",
+        "src/pkg/mod06.py::func_030",
+        "src/pkg/mod06.py::func_042",
+        "src/pkg/mod06.py::func_054"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod07.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod07.py::func_007",
+        "src/pkg/mod07.py::func_019",
+        "src/pkg/mod07.py::func_031",
+        "src/pkg/mod07.py::func_043",
+        "src/pkg/mod07.py::func_055"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod08.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod08.py::func_008",
+        "src/pkg/mod08.py::func_020",
+        "src/pkg/mod08.py::func_032",
+        "src/pkg/mod08.py::func_044",
+        "src/pkg/mod08.py::func_056"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod09.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod09.py::func_009",
+        "src/pkg/mod09.py::func_021",
+        "src/pkg/mod09.py::func_033",
+        "src/pkg/mod09.py::func_045",
+        "src/pkg/mod09.py::func_057"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod10.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod10.py::func_010",
+        "src/pkg/mod10.py::func_022",
+        "src/pkg/mod10.py::func_034",
+        "src/pkg/mod10.py::func_046",
+        "src/pkg/mod10.py::func_058"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "code",
+      "language": "python",
+      "path": "src/pkg/mod11.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "src/pkg/mod11.py::func_011",
+        "src/pkg/mod11.py::func_023",
+        "src/pkg/mod11.py::func_035",
+        "src/pkg/mod11.py::func_047",
+        "src/pkg/mod11.py::func_059"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod00.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod00.py::test_case_0"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod01.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod01.py::test_case_1"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod02.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod02.py::test_case_2"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod03.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod03.py::test_case_3"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod04.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod04.py::test_case_4"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod05.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod05.py::test_case_5"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod06.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod06.py::test_case_6"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "test",
+      "language": "python",
+      "path": "tests/test_mod07.py",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": [
+        "tests/test_mod07.py::test_case_7"
+      ]
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "config",
+      "language": null,
+      "path": ".github/workflows/ci.yml",
+      "removed": 0,
+      "sensitive": "CI workflow",
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "config",
+      "language": null,
+      "path": "pyproject.toml",
+      "removed": 0,
+      "sensitive": "dependency manifest",
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 0,
+      "hunks": [],
+      "kind": "docs",
+      "language": null,
+      "path": "docs/guide.md",
+      "removed": 0,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    }
+  ],
+  "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "pr": "acme/big#99",
+  "symbols": [
+    {
+      "added": 0,
+      "base_span": [
+        0,
+        2
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes0.py::handler_00",
+      "kind": "function",
+      "path": "src/app/routes0.py",
+      "qualname": "handler_00",
+      "removed": 0,
+      "span": [
+        0,
+        2
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        4,
+        6
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes0.py::handler_04",
+      "kind": "function",
+      "path": "src/app/routes0.py",
+      "qualname": "handler_04",
+      "removed": 0,
+      "span": [
+        4,
+        6
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        8,
+        10
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes0.py::handler_08",
+      "kind": "function",
+      "path": "src/app/routes0.py",
+      "qualname": "handler_08",
+      "removed": 0,
+      "span": [
+        8,
+        10
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        1,
+        3
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes1.py::handler_01",
+      "kind": "function",
+      "path": "src/app/routes1.py",
+      "qualname": "handler_01",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        5,
+        7
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes1.py::handler_05",
+      "kind": "function",
+      "path": "src/app/routes1.py",
+      "qualname": "handler_05",
+      "removed": 0,
+      "span": [
+        5,
+        7
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        9,
+        11
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes1.py::handler_09",
+      "kind": "function",
+      "path": "src/app/routes1.py",
+      "qualname": "handler_09",
+      "removed": 0,
+      "span": [
+        9,
+        11
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        2,
+        4
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes2.py::handler_02",
+      "kind": "function",
+      "path": "src/app/routes2.py",
+      "qualname": "handler_02",
+      "removed": 0,
+      "span": [
+        2,
+        4
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        6,
+        8
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes2.py::handler_06",
+      "kind": "function",
+      "path": "src/app/routes2.py",
+      "qualname": "handler_06",
+      "removed": 0,
+      "span": [
+        6,
+        8
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        10,
+        12
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes2.py::handler_10",
+      "kind": "function",
+      "path": "src/app/routes2.py",
+      "qualname": "handler_10",
+      "removed": 0,
+      "span": [
+        10,
+        12
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        3,
+        5
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes3.py::handler_03",
+      "kind": "function",
+      "path": "src/app/routes3.py",
+      "qualname": "handler_03",
+      "removed": 0,
+      "span": [
+        3,
+        5
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        7,
+        9
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes3.py::handler_07",
+      "kind": "function",
+      "path": "src/app/routes3.py",
+      "qualname": "handler_07",
+      "removed": 0,
+      "span": [
+        7,
+        9
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        11,
+        13
+      ],
+      "call_sites": 0,
+      "hunks": [],
+      "id": "src/app/routes3.py::handler_11",
+      "kind": "function",
+      "path": "src/app/routes3.py",
+      "qualname": "handler_11",
+      "removed": 0,
+      "span": [
+        11,
+        13
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        0,
+        2
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util0.py::helper_00",
+      "kind": "function",
+      "path": "src/lib/util0.py",
+      "qualname": "helper_00",
+      "removed": 0,
+      "span": [
+        0,
+        2
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        3,
+        5
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util0.py::helper_03",
+      "kind": "function",
+      "path": "src/lib/util0.py",
+      "qualname": "helper_03",
+      "removed": 0,
+      "span": [
+        3,
+        5
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        6,
+        8
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util0.py::helper_06",
+      "kind": "function",
+      "path": "src/lib/util0.py",
+      "qualname": "helper_06",
+      "removed": 0,
+      "span": [
+        6,
+        8
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        9,
+        11
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util0.py::helper_09",
+      "kind": "function",
+      "path": "src/lib/util0.py",
+      "qualname": "helper_09",
+      "removed": 0,
+      "span": [
+        9,
+        11
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        1,
+        3
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util1.py::helper_01",
+      "kind": "function",
+      "path": "src/lib/util1.py",
+      "qualname": "helper_01",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        4,
+        6
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util1.py::helper_04",
+      "kind": "function",
+      "path": "src/lib/util1.py",
+      "qualname": "helper_04",
+      "removed": 0,
+      "span": [
+        4,
+        6
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        7,
+        9
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util1.py::helper_07",
+      "kind": "function",
+      "path": "src/lib/util1.py",
+      "qualname": "helper_07",
+      "removed": 0,
+      "span": [
+        7,
+        9
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        10,
+        12
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util1.py::helper_10",
+      "kind": "function",
+      "path": "src/lib/util1.py",
+      "qualname": "helper_10",
+      "removed": 0,
+      "span": [
+        10,
+        12
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        2,
+        4
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util2.py::helper_02",
+      "kind": "function",
+      "path": "src/lib/util2.py",
+      "qualname": "helper_02",
+      "removed": 0,
+      "span": [
+        2,
+        4
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        5,
+        7
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util2.py::helper_05",
+      "kind": "function",
+      "path": "src/lib/util2.py",
+      "qualname": "helper_05",
+      "removed": 0,
+      "span": [
+        5,
+        7
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        8,
+        10
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util2.py::helper_08",
+      "kind": "function",
+      "path": "src/lib/util2.py",
+      "qualname": "helper_08",
+      "removed": 0,
+      "span": [
+        8,
+        10
+      ],
+      "status": "context"
+    },
+    {
+      "added": 0,
+      "base_span": [
+        11,
+        13
+      ],
+      "call_sites": 9,
+      "hunks": [],
+      "id": "src/lib/util2.py::helper_11",
+      "kind": "function",
+      "path": "src/lib/util2.py",
+      "qualname": "helper_11",
+      "removed": 0,
+      "span": [
+        11,
+        13
+      ],
+      "status": "context"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        0,
+        2
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 1,
+              "op": "-",
+              "text": "    old_0()"
+            },
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "    new_0()"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 1
+        }
+      ],
+      "id": "src/pkg/mod00.py::func_000",
+      "kind": "function",
+      "path": "src/pkg/mod00.py",
+      "qualname": "func_000",
+      "removed": 1,
+      "span": [
+        0,
+        3
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        120,
+        122
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 121,
+              "op": "-",
+              "text": "    old_12()"
+            },
+            {
+              "new": 121,
+              "old": null,
+              "op": "+",
+              "text": "    new_12()"
+            },
+            {
+              "new": 122,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 121,
+          "old_start": 121
+        }
+      ],
+      "id": "src/pkg/mod00.py::func_012",
+      "kind": "function",
+      "path": "src/pkg/mod00.py",
+      "qualname": "func_012",
+      "removed": 1,
+      "span": [
+        120,
+        123
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        240,
+        242
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 241,
+              "op": "-",
+              "text": "    old_24()"
+            },
+            {
+              "new": 241,
+              "old": null,
+              "op": "+",
+              "text": "    new_24()"
+            },
+            {
+              "new": 242,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 241,
+          "old_start": 241
+        }
+      ],
+      "id": "src/pkg/mod00.py::func_024",
+      "kind": "function",
+      "path": "src/pkg/mod00.py",
+      "qualname": "func_024",
+      "removed": 1,
+      "span": [
+        240,
+        243
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 361,
+              "op": "-",
+              "text": "    old_36()"
+            },
+            {
+              "new": 361,
+              "old": null,
+              "op": "+",
+              "text": "    new_36()"
+            },
+            {
+              "new": 362,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 361,
+          "old_start": 361
+        }
+      ],
+      "id": "src/pkg/mod00.py::func_036",
+      "kind": "function",
+      "path": "src/pkg/mod00.py",
+      "qualname": "func_036",
+      "removed": 1,
+      "span": [
+        360,
+        363
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        480,
+        482
+      ],
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 481,
+              "op": "-",
+              "text": "    old_48()"
+            },
+            {
+              "new": 481,
+              "old": null,
+              "op": "+",
+              "text": "    new_48()"
+            },
+            {
+              "new": 482,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 481,
+          "old_start": 481
+        }
+      ],
+      "id": "src/pkg/mod00.py::func_048",
+      "kind": "function",
+      "path": "src/pkg/mod00.py",
+      "qualname": "func_048",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 11,
+              "op": "-",
+              "text": "    old_1()"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "    new_1()"
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 11,
+          "old_start": 11
+        }
+      ],
+      "id": "src/pkg/mod01.py::func_001",
+      "kind": "function",
+      "path": "src/pkg/mod01.py",
+      "qualname": "func_001",
+      "removed": 1,
+      "span": [
+        10,
+        13
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        130,
+        132
+      ],
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 131,
+              "op": "-",
+              "text": "    old_13()"
+            },
+            {
+              "new": 131,
+              "old": null,
+              "op": "+",
+              "text": "    new_13()"
+            },
+            {
+              "new": 132,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 131,
+          "old_start": 131
+        }
+      ],
+      "id": "src/pkg/mod01.py::func_013",
+      "kind": "function",
+      "path": "src/pkg/mod01.py",
+      "qualname": "func_013",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        250,
+        252
+      ],
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 251,
+              "op": "-",
+              "text": "    old_25()"
+            },
+            {
+              "new": 251,
+              "old": null,
+              "op": "+",
+              "text": "    new_25()"
+            },
+            {
+              "new": 252,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 251,
+          "old_start": 251
+        }
+      ],
+      "id": "src/pkg/mod01.py::func_025",
+      "kind": "function",
+      "path": "src/pkg/mod01.py",
+      "qualname": "func_025",
+      "removed": 1,
+      "span": [
+        250,
+        253
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        370,
+        372
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 371,
+              "op": "-",
+              "text": "    old_37()"
+            },
+            {
+              "new": 371,
+              "old": null,
+              "op": "+",
+              "text": "    new_37()"
+            },
+            {
+              "new": 372,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 371,
+          "old_start": 371
+        }
+      ],
+      "id": "src/pkg/mod01.py::func_037",
+      "kind": "function",
+      "path": "src/pkg/mod01.py",
+      "qualname": "func_037",
+      "removed": 1,
+      "span": [
+        370,
+        373
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        490,
+        492
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 491,
+              "op": "-",
+              "text": "    old_49()"
+            },
+            {
+              "new": 491,
+              "old": null,
+              "op": "+",
+              "text": "    new_49()"
+            },
+            {
+              "new": 492,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 491,
+          "old_start": 491
+        }
+      ],
+      "id": "src/pkg/mod01.py::func_049",
+      "kind": "function",
+      "path": "src/pkg/mod01.py",
+      "qualname": "func_049",
+      "removed": 1,
+      "span": [
+        490,
+        493
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        20,
+        22
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 21,
+              "op": "-",
+              "text": "    old_2()"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "    new_2()"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 21,
+          "old_start": 21
+        }
+      ],
+      "id": "src/pkg/mod02.py::func_002",
+      "kind": "function",
+      "path": "src/pkg/mod02.py",
+      "qualname": "func_002",
+      "removed": 1,
+      "span": [
+        20,
+        23
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        140,
+        142
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 141,
+              "op": "-",
+              "text": "    old_14()"
+            },
+            {
+              "new": 141,
+              "old": null,
+              "op": "+",
+              "text": "    new_14()"
+            },
+            {
+              "new": 142,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 141,
+          "old_start": 141
+        }
+      ],
+      "id": "src/pkg/mod02.py::func_014",
+      "kind": "function",
+      "path": "src/pkg/mod02.py",
+      "qualname": "func_014",
+      "removed": 1,
+      "span": [
+        140,
+        143
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 261,
+              "op": "-",
+              "text": "    old_26()"
+            },
+            {
+              "new": 261,
+              "old": null,
+              "op": "+",
+              "text": "    new_26()"
+            },
+            {
+              "new": 262,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 261,
+          "old_start": 261
+        }
+      ],
+      "id": "src/pkg/mod02.py::func_026",
+      "kind": "function",
+      "path": "src/pkg/mod02.py",
+      "qualname": "func_026",
+      "removed": 1,
+      "span": [
+        260,
+        263
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        380,
+        382
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 381,
+              "op": "-",
+              "text": "    old_38()"
+            },
+            {
+              "new": 381,
+              "old": null,
+              "op": "+",
+              "text": "    new_38()"
+            },
+            {
+              "new": 382,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 381,
+          "old_start": 381
+        }
+      ],
+      "id": "src/pkg/mod02.py::func_038",
+      "kind": "function",
+      "path": "src/pkg/mod02.py",
+      "qualname": "func_038",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        500,
+        502
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 501,
+              "op": "-",
+              "text": "    old_50()"
+            },
+            {
+              "new": 501,
+              "old": null,
+              "op": "+",
+              "text": "    new_50()"
+            },
+            {
+              "new": 502,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 501,
+          "old_start": 501
+        }
+      ],
+      "id": "src/pkg/mod02.py::func_050",
+      "kind": "function",
+      "path": "src/pkg/mod02.py",
+      "qualname": "func_050",
+      "removed": 1,
+      "span": [
+        500,
+        503
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        30,
+        32
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 31,
+              "op": "-",
+              "text": "    old_3()"
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "    new_3()"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 31,
+          "old_start": 31
+        }
+      ],
+      "id": "src/pkg/mod03.py::func_003",
+      "kind": "function",
+      "path": "src/pkg/mod03.py",
+      "qualname": "func_003",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        150,
+        152
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 151,
+              "op": "-",
+              "text": "    old_15()"
+            },
+            {
+              "new": 151,
+              "old": null,
+              "op": "+",
+              "text": "    new_15()"
+            },
+            {
+              "new": 152,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 151,
+          "old_start": 151
+        }
+      ],
+      "id": "src/pkg/mod03.py::func_015",
+      "kind": "function",
+      "path": "src/pkg/mod03.py",
+      "qualname": "func_015",
+      "removed": 1,
+      "span": [
+        150,
+        153
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        270,
+        272
+      ],
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 271,
+              "op": "-",
+              "text": "    old_27()"
+            },
+            {
+              "new": 271,
+              "old": null,
+              "op": "+",
+              "text": "    new_27()"
+            },
+            {
+              "new": 272,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 271,
+          "old_start": 271
+        }
+      ],
+      "id": "src/pkg/mod03.py::func_027",
+      "kind": "function",
+      "path": "src/pkg/mod03.py",
+      "qualname": "func_027",
+      "removed": 1,
+      "span": [
+        270,
+        273
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        390,
+        392
+      ],
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 391,
+              "op": "-",
+              "text": "    old_39()"
+            },
+            {
+              "new": 391,
+              "old": null,
+              "op": "+",
+              "text": "    new_39()"
+            },
+            {
+              "new": 392,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 391,
+          "old_start": 391
+        }
+      ],
+      "id": "src/pkg/mod03.py::func_039",
+      "kind": "function",
+      "path": "src/pkg/mod03.py",
+      "qualname": "func_039",
+      "removed": 1,
+      "span": [
+        390,
+        393
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 511,
+              "op": "-",
+              "text": "    old_51()"
+            },
+            {
+              "new": 511,
+              "old": null,
+              "op": "+",
+              "text": "    new_51()"
+            },
+            {
+              "new": 512,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 511,
+          "old_start": 511
+        }
+      ],
+      "id": "src/pkg/mod03.py::func_051",
+      "kind": "function",
+      "path": "src/pkg/mod03.py",
+      "qualname": "func_051",
+      "removed": 1,
+      "span": [
+        510,
+        513
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        40,
+        42
+      ],
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 41,
+              "op": "-",
+              "text": "    old_4()"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "    new_4()"
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 41,
+          "old_start": 41
+        }
+      ],
+      "id": "src/pkg/mod04.py::func_004",
+      "kind": "function",
+      "path": "src/pkg/mod04.py",
+      "qualname": "func_004",
+      "removed": 1,
+      "span": [
+        40,
+        43
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 161,
+              "op": "-",
+              "text": "    old_16()"
+            },
+            {
+              "new": 161,
+              "old": null,
+              "op": "+",
+              "text": "    new_16()"
+            },
+            {
+              "new": 162,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 161,
+          "old_start": 161
+        }
+      ],
+      "id": "src/pkg/mod04.py::func_016",
+      "kind": "function",
+      "path": "src/pkg/mod04.py",
+      "qualname": "func_016",
+      "removed": 1,
+      "span": [
+        160,
+        163
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        280,
+        282
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 281,
+              "op": "-",
+              "text": "    old_28()"
+            },
+            {
+              "new": 281,
+              "old": null,
+              "op": "+",
+              "text": "    new_28()"
+            },
+            {
+              "new": 282,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 281,
+          "old_start": 281
+        }
+      ],
+      "id": "src/pkg/mod04.py::func_028",
+      "kind": "function",
+      "path": "src/pkg/mod04.py",
+      "qualname": "func_028",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        400,
+        402
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 401,
+              "op": "-",
+              "text": "    old_40()"
+            },
+            {
+              "new": 401,
+              "old": null,
+              "op": "+",
+              "text": "    new_40()"
+            },
+            {
+              "new": 402,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 401,
+          "old_start": 401
+        }
+      ],
+      "id": "src/pkg/mod04.py::func_040",
+      "kind": "function",
+      "path": "src/pkg/mod04.py",
+      "qualname": "func_040",
+      "removed": 1,
+      "span": [
+        400,
+        403
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        520,
+        522
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 521,
+              "op": "-",
+              "text": "    old_52()"
+            },
+            {
+              "new": 521,
+              "old": null,
+              "op": "+",
+              "text": "    new_52()"
+            },
+            {
+              "new": 522,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 521,
+          "old_start": 521
+        }
+      ],
+      "id": "src/pkg/mod04.py::func_052",
+      "kind": "function",
+      "path": "src/pkg/mod04.py",
+      "qualname": "func_052",
+      "removed": 1,
+      "span": [
+        520,
+        523
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        50,
+        52
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 51,
+              "op": "-",
+              "text": "    old_5()"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "    new_5()"
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 51,
+          "old_start": 51
+        }
+      ],
+      "id": "src/pkg/mod05.py::func_005",
+      "kind": "function",
+      "path": "src/pkg/mod05.py",
+      "qualname": "func_005",
+      "removed": 1,
+      "span": [
+        50,
+        53
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        170,
+        172
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 171,
+              "op": "-",
+              "text": "    old_17()"
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": "    new_17()"
+            },
+            {
+              "new": 172,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 171,
+          "old_start": 171
+        }
+      ],
+      "id": "src/pkg/mod05.py::func_017",
+      "kind": "function",
+      "path": "src/pkg/mod05.py",
+      "qualname": "func_017",
+      "removed": 1,
+      "span": [
+        170,
+        173
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        290,
+        292
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 291,
+              "op": "-",
+              "text": "    old_29()"
+            },
+            {
+              "new": 291,
+              "old": null,
+              "op": "+",
+              "text": "    new_29()"
+            },
+            {
+              "new": 292,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 291,
+          "old_start": 291
+        }
+      ],
+      "id": "src/pkg/mod05.py::func_029",
+      "kind": "function",
+      "path": "src/pkg/mod05.py",
+      "qualname": "func_029",
+      "removed": 1,
+      "span": [
+        290,
+        293
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 411,
+              "op": "-",
+              "text": "    old_41()"
+            },
+            {
+              "new": 411,
+              "old": null,
+              "op": "+",
+              "text": "    new_41()"
+            },
+            {
+              "new": 412,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 411,
+          "old_start": 411
+        }
+      ],
+      "id": "src/pkg/mod05.py::func_041",
+      "kind": "function",
+      "path": "src/pkg/mod05.py",
+      "qualname": "func_041",
+      "removed": 1,
+      "span": [
+        410,
+        413
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        530,
+        532
+      ],
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 531,
+              "op": "-",
+              "text": "    old_53()"
+            },
+            {
+              "new": 531,
+              "old": null,
+              "op": "+",
+              "text": "    new_53()"
+            },
+            {
+              "new": 532,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 531,
+          "old_start": 531
+        }
+      ],
+      "id": "src/pkg/mod05.py::func_053",
+      "kind": "function",
+      "path": "src/pkg/mod05.py",
+      "qualname": "func_053",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 61,
+              "op": "-",
+              "text": "    old_6()"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "    new_6()"
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 61,
+          "old_start": 61
+        }
+      ],
+      "id": "src/pkg/mod06.py::func_006",
+      "kind": "function",
+      "path": "src/pkg/mod06.py",
+      "qualname": "func_006",
+      "removed": 1,
+      "span": [
+        60,
+        63
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        180,
+        182
+      ],
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 181,
+              "op": "-",
+              "text": "    old_18()"
+            },
+            {
+              "new": 181,
+              "old": null,
+              "op": "+",
+              "text": "    new_18()"
+            },
+            {
+              "new": 182,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 181,
+          "old_start": 181
+        }
+      ],
+      "id": "src/pkg/mod06.py::func_018",
+      "kind": "function",
+      "path": "src/pkg/mod06.py",
+      "qualname": "func_018",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        300,
+        302
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 301,
+              "op": "-",
+              "text": "    old_30()"
+            },
+            {
+              "new": 301,
+              "old": null,
+              "op": "+",
+              "text": "    new_30()"
+            },
+            {
+              "new": 302,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 301,
+          "old_start": 301
+        }
+      ],
+      "id": "src/pkg/mod06.py::func_030",
+      "kind": "function",
+      "path": "src/pkg/mod06.py",
+      "qualname": "func_030",
+      "removed": 1,
+      "span": [
+        300,
+        303
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        420,
+        422
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 421,
+              "op": "-",
+              "text": "    old_42()"
+            },
+            {
+              "new": 421,
+              "old": null,
+              "op": "+",
+              "text": "    new_42()"
+            },
+            {
+              "new": 422,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 421,
+          "old_start": 421
+        }
+      ],
+      "id": "src/pkg/mod06.py::func_042",
+      "kind": "function",
+      "path": "src/pkg/mod06.py",
+      "qualname": "func_042",
+      "removed": 1,
+      "span": [
+        420,
+        423
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        540,
+        542
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 541,
+              "op": "-",
+              "text": "    old_54()"
+            },
+            {
+              "new": 541,
+              "old": null,
+              "op": "+",
+              "text": "    new_54()"
+            },
+            {
+              "new": 542,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 541,
+          "old_start": 541
+        }
+      ],
+      "id": "src/pkg/mod06.py::func_054",
+      "kind": "function",
+      "path": "src/pkg/mod06.py",
+      "qualname": "func_054",
+      "removed": 1,
+      "span": [
+        540,
+        543
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        70,
+        72
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 71,
+              "op": "-",
+              "text": "    old_7()"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "    new_7()"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 71,
+          "old_start": 71
+        }
+      ],
+      "id": "src/pkg/mod07.py::func_007",
+      "kind": "function",
+      "path": "src/pkg/mod07.py",
+      "qualname": "func_007",
+      "removed": 1,
+      "span": [
+        70,
+        73
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        190,
+        192
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 191,
+              "op": "-",
+              "text": "    old_19()"
+            },
+            {
+              "new": 191,
+              "old": null,
+              "op": "+",
+              "text": "    new_19()"
+            },
+            {
+              "new": 192,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 191,
+          "old_start": 191
+        }
+      ],
+      "id": "src/pkg/mod07.py::func_019",
+      "kind": "function",
+      "path": "src/pkg/mod07.py",
+      "qualname": "func_019",
+      "removed": 1,
+      "span": [
+        190,
+        193
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 311,
+              "op": "-",
+              "text": "    old_31()"
+            },
+            {
+              "new": 311,
+              "old": null,
+              "op": "+",
+              "text": "    new_31()"
+            },
+            {
+              "new": 312,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 311,
+          "old_start": 311
+        }
+      ],
+      "id": "src/pkg/mod07.py::func_031",
+      "kind": "function",
+      "path": "src/pkg/mod07.py",
+      "qualname": "func_031",
+      "removed": 1,
+      "span": [
+        310,
+        313
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        430,
+        432
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 431,
+              "op": "-",
+              "text": "    old_43()"
+            },
+            {
+              "new": 431,
+              "old": null,
+              "op": "+",
+              "text": "    new_43()"
+            },
+            {
+              "new": 432,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 431,
+          "old_start": 431
+        }
+      ],
+      "id": "src/pkg/mod07.py::func_043",
+      "kind": "function",
+      "path": "src/pkg/mod07.py",
+      "qualname": "func_043",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        550,
+        552
+      ],
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 551,
+              "op": "-",
+              "text": "    old_55()"
+            },
+            {
+              "new": 551,
+              "old": null,
+              "op": "+",
+              "text": "    new_55()"
+            },
+            {
+              "new": 552,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 551,
+          "old_start": 551
+        }
+      ],
+      "id": "src/pkg/mod07.py::func_055",
+      "kind": "function",
+      "path": "src/pkg/mod07.py",
+      "qualname": "func_055",
+      "removed": 1,
+      "span": [
+        550,
+        553
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        80,
+        82
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 81,
+              "op": "-",
+              "text": "    old_8()"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "    new_8()"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 81,
+          "old_start": 81
+        }
+      ],
+      "id": "src/pkg/mod08.py::func_008",
+      "kind": "function",
+      "path": "src/pkg/mod08.py",
+      "qualname": "func_008",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        200,
+        202
+      ],
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 201,
+              "op": "-",
+              "text": "    old_20()"
+            },
+            {
+              "new": 201,
+              "old": null,
+              "op": "+",
+              "text": "    new_20()"
+            },
+            {
+              "new": 202,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 201,
+          "old_start": 201
+        }
+      ],
+      "id": "src/pkg/mod08.py::func_020",
+      "kind": "function",
+      "path": "src/pkg/mod08.py",
+      "qualname": "func_020",
+      "removed": 1,
+      "span": [
+        200,
+        203
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        320,
+        322
+      ],
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 321,
+              "op": "-",
+              "text": "    old_32()"
+            },
+            {
+              "new": 321,
+              "old": null,
+              "op": "+",
+              "text": "    new_32()"
+            },
+            {
+              "new": 322,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 321,
+          "old_start": 321
+        }
+      ],
+      "id": "src/pkg/mod08.py::func_032",
+      "kind": "function",
+      "path": "src/pkg/mod08.py",
+      "qualname": "func_032",
+      "removed": 1,
+      "span": [
+        320,
+        323
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        440,
+        442
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 441,
+              "op": "-",
+              "text": "    old_44()"
+            },
+            {
+              "new": 441,
+              "old": null,
+              "op": "+",
+              "text": "    new_44()"
+            },
+            {
+              "new": 442,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 441,
+          "old_start": 441
+        }
+      ],
+      "id": "src/pkg/mod08.py::func_044",
+      "kind": "function",
+      "path": "src/pkg/mod08.py",
+      "qualname": "func_044",
+      "removed": 1,
+      "span": [
+        440,
+        443
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 561,
+              "op": "-",
+              "text": "    old_56()"
+            },
+            {
+              "new": 561,
+              "old": null,
+              "op": "+",
+              "text": "    new_56()"
+            },
+            {
+              "new": 562,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 561,
+          "old_start": 561
+        }
+      ],
+      "id": "src/pkg/mod08.py::func_056",
+      "kind": "function",
+      "path": "src/pkg/mod08.py",
+      "qualname": "func_056",
+      "removed": 1,
+      "span": [
+        560,
+        563
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        90,
+        92
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 91,
+              "op": "-",
+              "text": "    old_9()"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "    new_9()"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 91,
+          "old_start": 91
+        }
+      ],
+      "id": "src/pkg/mod09.py::func_009",
+      "kind": "function",
+      "path": "src/pkg/mod09.py",
+      "qualname": "func_009",
+      "removed": 1,
+      "span": [
+        90,
+        93
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 211,
+              "op": "-",
+              "text": "    old_21()"
+            },
+            {
+              "new": 211,
+              "old": null,
+              "op": "+",
+              "text": "    new_21()"
+            },
+            {
+              "new": 212,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 211,
+          "old_start": 211
+        }
+      ],
+      "id": "src/pkg/mod09.py::func_021",
+      "kind": "function",
+      "path": "src/pkg/mod09.py",
+      "qualname": "func_021",
+      "removed": 1,
+      "span": [
+        210,
+        213
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        330,
+        332
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 331,
+              "op": "-",
+              "text": "    old_33()"
+            },
+            {
+              "new": 331,
+              "old": null,
+              "op": "+",
+              "text": "    new_33()"
+            },
+            {
+              "new": 332,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 331,
+          "old_start": 331
+        }
+      ],
+      "id": "src/pkg/mod09.py::func_033",
+      "kind": "function",
+      "path": "src/pkg/mod09.py",
+      "qualname": "func_033",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        450,
+        452
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 451,
+              "op": "-",
+              "text": "    old_45()"
+            },
+            {
+              "new": 451,
+              "old": null,
+              "op": "+",
+              "text": "    new_45()"
+            },
+            {
+              "new": 452,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 451,
+          "old_start": 451
+        }
+      ],
+      "id": "src/pkg/mod09.py::func_045",
+      "kind": "function",
+      "path": "src/pkg/mod09.py",
+      "qualname": "func_045",
+      "removed": 1,
+      "span": [
+        450,
+        453
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        570,
+        572
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 571,
+              "op": "-",
+              "text": "    old_57()"
+            },
+            {
+              "new": 571,
+              "old": null,
+              "op": "+",
+              "text": "    new_57()"
+            },
+            {
+              "new": 572,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 571,
+          "old_start": 571
+        }
+      ],
+      "id": "src/pkg/mod09.py::func_057",
+      "kind": "function",
+      "path": "src/pkg/mod09.py",
+      "qualname": "func_057",
+      "removed": 1,
+      "span": [
+        570,
+        573
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        100,
+        102
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 101,
+              "op": "-",
+              "text": "    old_10()"
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "    new_10()"
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 101,
+          "old_start": 101
+        }
+      ],
+      "id": "src/pkg/mod10.py::func_010",
+      "kind": "function",
+      "path": "src/pkg/mod10.py",
+      "qualname": "func_010",
+      "removed": 1,
+      "span": [
+        100,
+        103
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        220,
+        222
+      ],
+      "call_sites": 1,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 221,
+              "op": "-",
+              "text": "    old_22()"
+            },
+            {
+              "new": 221,
+              "old": null,
+              "op": "+",
+              "text": "    new_22()"
+            },
+            {
+              "new": 222,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 221,
+          "old_start": 221
+        }
+      ],
+      "id": "src/pkg/mod10.py::func_022",
+      "kind": "function",
+      "path": "src/pkg/mod10.py",
+      "qualname": "func_022",
+      "removed": 1,
+      "span": [
+        220,
+        223
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        340,
+        342
+      ],
+      "call_sites": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 341,
+              "op": "-",
+              "text": "    old_34()"
+            },
+            {
+              "new": 341,
+              "old": null,
+              "op": "+",
+              "text": "    new_34()"
+            },
+            {
+              "new": 342,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 341,
+          "old_start": 341
+        }
+      ],
+      "id": "src/pkg/mod10.py::func_034",
+      "kind": "function",
+      "path": "src/pkg/mod10.py",
+      "qualname": "func_034",
+      "removed": 1,
+      "span": [
+        340,
+        343
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 461,
+              "op": "-",
+              "text": "    old_46()"
+            },
+            {
+              "new": 461,
+              "old": null,
+              "op": "+",
+              "text": "    new_46()"
+            },
+            {
+              "new": 462,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 461,
+          "old_start": 461
+        }
+      ],
+      "id": "src/pkg/mod10.py::func_046",
+      "kind": "function",
+      "path": "src/pkg/mod10.py",
+      "qualname": "func_046",
+      "removed": 1,
+      "span": [
+        460,
+        463
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        580,
+        582
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 581,
+              "op": "-",
+              "text": "    old_58()"
+            },
+            {
+              "new": 581,
+              "old": null,
+              "op": "+",
+              "text": "    new_58()"
+            },
+            {
+              "new": 582,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 581,
+          "old_start": 581
+        }
+      ],
+      "id": "src/pkg/mod10.py::func_058",
+      "kind": "function",
+      "path": "src/pkg/mod10.py",
+      "qualname": "func_058",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": null,
+      "call_sites": 4,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 111,
+              "op": "-",
+              "text": "    old_11()"
+            },
+            {
+              "new": 111,
+              "old": null,
+              "op": "+",
+              "text": "    new_11()"
+            },
+            {
+              "new": 112,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 111,
+          "old_start": 111
+        }
+      ],
+      "id": "src/pkg/mod11.py::func_011",
+      "kind": "function",
+      "path": "src/pkg/mod11.py",
+      "qualname": "func_011",
+      "removed": 1,
+      "span": [
+        110,
+        113
+      ],
+      "status": "added"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        230,
+        232
+      ],
+      "call_sites": 2,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 231,
+              "op": "-",
+              "text": "    old_23()"
+            },
+            {
+              "new": 231,
+              "old": null,
+              "op": "+",
+              "text": "    new_23()"
+            },
+            {
+              "new": 232,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 231,
+          "old_start": 231
+        }
+      ],
+      "id": "src/pkg/mod11.py::func_023",
+      "kind": "function",
+      "path": "src/pkg/mod11.py",
+      "qualname": "func_023",
+      "removed": 1,
+      "span": null,
+      "status": "deleted"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        350,
+        352
+      ],
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 351,
+              "op": "-",
+              "text": "    old_35()"
+            },
+            {
+              "new": 351,
+              "old": null,
+              "op": "+",
+              "text": "    new_35()"
+            },
+            {
+              "new": 352,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 351,
+          "old_start": 351
+        }
+      ],
+      "id": "src/pkg/mod11.py::func_035",
+      "kind": "function",
+      "path": "src/pkg/mod11.py",
+      "qualname": "func_035",
+      "removed": 1,
+      "span": [
+        350,
+        353
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        470,
+        472
+      ],
+      "call_sites": 5,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 471,
+              "op": "-",
+              "text": "    old_47()"
+            },
+            {
+              "new": 471,
+              "old": null,
+              "op": "+",
+              "text": "    new_47()"
+            },
+            {
+              "new": 472,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 471,
+          "old_start": 471
+        }
+      ],
+      "id": "src/pkg/mod11.py::func_047",
+      "kind": "function",
+      "path": "src/pkg/mod11.py",
+      "qualname": "func_047",
+      "removed": 1,
+      "span": [
+        470,
+        473
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 2,
+      "base_span": [
+        590,
+        592
+      ],
+      "call_sites": 3,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": null,
+              "old": 591,
+              "op": "-",
+              "text": "    old_59()"
+            },
+            {
+              "new": 591,
+              "old": null,
+              "op": "+",
+              "text": "    new_59()"
+            },
+            {
+              "new": 592,
+              "old": null,
+              "op": "+",
+              "text": "    pass"
+            }
+          ],
+          "new_start": 591,
+          "old_start": 591
+        }
+      ],
+      "id": "src/pkg/mod11.py::func_059",
+      "kind": "function",
+      "path": "src/pkg/mod11.py",
+      "qualname": "func_059",
+      "removed": 1,
+      "span": [
+        590,
+        593
+      ],
+      "status": "modified"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod00.py::test_case_0",
+      "kind": "function",
+      "path": "tests/test_mod00.py",
+      "qualname": "test_case_0",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod01.py::test_case_1",
+      "kind": "function",
+      "path": "tests/test_mod01.py",
+      "qualname": "test_case_1",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod02.py::test_case_2",
+      "kind": "function",
+      "path": "tests/test_mod02.py",
+      "qualname": "test_case_2",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod03.py::test_case_3",
+      "kind": "function",
+      "path": "tests/test_mod03.py",
+      "qualname": "test_case_3",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod04.py::test_case_4",
+      "kind": "function",
+      "path": "tests/test_mod04.py",
+      "qualname": "test_case_4",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod05.py::test_case_5",
+      "kind": "function",
+      "path": "tests/test_mod05.py",
+      "qualname": "test_case_5",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod06.py::test_case_6",
+      "kind": "function",
+      "path": "tests/test_mod06.py",
+      "qualname": "test_case_6",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    },
+    {
+      "added": 1,
+      "base_span": null,
+      "call_sites": 0,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "def t(): pass"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "id": "tests/test_mod07.py::test_case_7",
+      "kind": "function",
+      "path": "tests/test_mod07.py",
+      "qualname": "test_case_7",
+      "removed": 0,
+      "span": [
+        1,
+        3
+      ],
+      "status": "added"
+    }
+  ],
+  "title": "Refactor the pipeline into staged modules",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [
+        ".github/workflows/ci.yml"
+      ],
+      "kind": "risky_file",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod00.py::func_000"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod00.py::func_012"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod00.py::func_024"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod00.py::func_036"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod00.py::func_048"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod01.py::func_001"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod01.py::func_013"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod01.py::func_025"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod01.py::func_037"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod01.py::func_049"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod02.py::func_002"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod02.py::func_014"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod02.py::func_026"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod02.py::func_038"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod02.py::func_050"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod03.py::func_003"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod03.py::func_015"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod03.py::func_027"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod03.py::func_039"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod03.py::func_051"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod04.py::func_004"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod04.py::func_016"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod04.py::func_028"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod04.py::func_040"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod04.py::func_052"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod05.py::func_005"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod05.py::func_017"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod05.py::func_029"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod05.py::func_041"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod05.py::func_053"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod06.py::func_006"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod06.py::func_018"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod06.py::func_030"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod06.py::func_042"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod06.py::func_054"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod07.py::func_007"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod07.py::func_019"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod07.py::func_031"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod07.py::func_043"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod07.py::func_055"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod08.py::func_008"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod08.py::func_020"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod08.py::func_032"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod08.py::func_044"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod08.py::func_056"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod09.py::func_009"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod09.py::func_021"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod09.py::func_033"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod09.py::func_045"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod09.py::func_057"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod10.py::func_010"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod10.py::func_022"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod10.py::func_034"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod10.py::func_046"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod10.py::func_058"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod11.py::func_011"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod11.py::func_023"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod11.py::func_035"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod11.py::func_047"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [
+        "src/pkg/mod11.py::func_059"
+      ],
+      "kind": "entry",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/acme/big/pull/99"
+}

@@ -39,8 +39,22 @@ def test_added_file_without_final_newline(repo: Path) -> None:
 
 
 @pytest.mark.parametrize("ending", [b"\n", b"\r\n", b"\r", b"\x0c", b"\x1c", b"\xe2\x80\xa8"])
-def test_any_line_terminator_counts_as_a_final_newline(repo: Path, ending: bytes) -> None:
+def test_only_lf_terminates_a_git_line(repo: Path, ending: bytes) -> None:
     diff = unified_diff(repo, blob(repo, b"x" + ending), blob(repo, b"y" + ending))
 
-    assert MARK not in diff
-    assert diff.splitlines()[-2:] == ["-x", "+y"]
+    if ending.endswith(b"\n"):
+        assert MARK not in diff
+        assert diff.splitlines()[-2:] == ["-x", "+y"]
+    else:
+        assert diff.count(MARK) == 2
+        assert f"-x{ending.decode()}\n{MARK}+y{ending.decode()}\n{MARK}" in diff
+
+
+@pytest.mark.parametrize("ending", [b"\n", b"\r\n", b"\r", b"\x0c", b"\xe2\x80\xa8"])
+@pytest.mark.parametrize("added", [True, False])
+def test_absent_side_uses_git_newline_semantics(repo: Path, ending: bytes, added: bool) -> None:
+    oid = blob(repo, b"x" + ending)
+    diff = unified_diff(repo, ZERO if added else oid, oid if added else ZERO)
+
+    assert diff.count(MARK) == (0 if ending.endswith(b"\n") else 1)
+    assert ("+" if added else "-") + "x" + ending.decode() in diff

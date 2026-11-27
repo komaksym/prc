@@ -1,0 +1,16 @@
+{
+  "title": "Compose failures now have distinct error types.",
+  "lines": [
+    "Compose failures now have distinct error types.",
+    "7 files",
+    "0 parsed symbols changed",
+    "0 resolved call sites",
+    "2 test files touched",
+    "CI 4/4 passed",
+    "0 parsed code without test evidence",
+    "Look here first",
+    "file-level change in internal/compose/file.go",
+    "No parsed symbol changes. Top-level and unrecognized changes can remain.",
+    "Infographic drawn by AI. Words from prc."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Note closes the Command Center on touch.",
+  "lines": [
+    "Note closes the Command Center on touch.",
+    "7 files",
+    "3 parsed symbols changed",
+    "1 resolved call site",
+    "1 test file touched",
+    "CI 15/15 passed",
+    "3 parsed code without test evidence",
+    "Look here first",
+    "noteCommand.multicursor.onComplete in src/commands/note.ts",
+    "openCommandCenterCommand.exec in src/commands/openCommandCenter.ts",
+    "CommandCenter in src/components/CommandCenter/CommandCenter.tsx",
+    "No direct test evidence in this map for any live changed production symbol.",
+    "Infographic drawn by AI. Words from prc."
+  ]
+}

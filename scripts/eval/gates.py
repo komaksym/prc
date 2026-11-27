@@ -170,22 +170,31 @@ def gate_diagram(pr_dir: Path) -> tuple[bool, str]:
 
 
 def gate_card_facts(pr_dir: Path) -> tuple[bool, str]:
-    from prc.presentation.card import compute_stats
+    from prc.facts import compute_facts
 
     m = _read(pr_dir / "map.json")
-    stats = compute_stats(m, m.get("brief"))
+    facts = compute_facts(m, m.get("brief"))
+    stats = facts.stats
     card = (pr_dir / "card.html").read_text()
     pairs = re.findall(
         r'<div class="stat-value">([^<]*)</div>\s*<div class="stat-label">([^<]*)</div>',
         card,
     )
+
+    def noun(count: int, one: str, many: str) -> str:
+        return one if count == 1 else many
+
     expected = {
-        "files": str(stats.files),
-        "symbols changed": str(stats.symbols_changed),
-        "call sites": str(stats.call_sites),
-        "tests touched": str(stats.tests_touched),
-        "CI passed": stats.ci_text,
-        "no direct test": str(stats.untested_total),
+        noun(stats.files, "file", "files"): str(stats.files),
+        noun(stats.symbols_changed, "parsed symbol changed", "parsed symbols changed"): str(
+            stats.symbols_changed
+        ),
+        noun(stats.call_sites, "resolved call site", "resolved call sites"): str(stats.call_sites),
+        noun(stats.tests_touched, "test file touched", "test files touched"): str(
+            stats.tests_touched
+        ),
+        "no CI" if facts.ci_state == "none" else f"CI {facts.ci_state}": stats.ci_text,
+        "parsed code without test evidence": str(stats.untested_total),
     }
     actual = {html.unescape(label): html.unescape(value) for value, label in pairs}
     if len(pairs) != len(expected) or actual != expected:

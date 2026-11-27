@@ -21,6 +21,18 @@ def manifest() -> Any:
     return json.loads((DATA / "blobs" / "manifest.json").read_text())
 
 
+def test_crlf_file_highlights_every_line_in_place() -> None:
+    lines = H.file_runs("Cluster.cs", b"// note\r\nint a = 1;\r\nreturn a;\r\n")
+    assert ["".join(text for text, _ in runs) for runs in lines] == [
+        "// note",
+        "int a = 1;",
+        "return a;",
+    ]
+    assert lines[0] == [("// note", "c")]
+    assert ("int", "k") in lines[1]
+    assert ("return", "k") in lines[2]
+
+
 def blob_reader(pr: str) -> Callable[[str, str], bytes]:
     def read(side: str, path: str) -> bytes:
         p = DATA / "blobs" / pr / ({"new": "head", "old": "base"}[side]) / path

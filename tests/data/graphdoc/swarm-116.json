@@ -1,0 +1,177 @@
+{
+  "edges": [],
+  "flows": [],
+  "kind": "graph",
+  "lanes": [
+    {
+      "id": "files",
+      "label": "Changed files"
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "files"
+    ]
+  },
+  "lenses": [
+    "architecture"
+  ],
+  "nodes": [
+    {
+      "badges": [
+        "+100 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "path": "internal/compose/errors.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f0",
+      "kind": "module",
+      "label": "internal/compose/errors.go",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+125 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "path": "internal/compose/errors_test.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f1",
+      "kind": "test",
+      "label": "internal/compose/errors_test.go",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+42 / -11"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "internal/compose/file.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f2",
+      "kind": "module",
+      "label": "internal/compose/file.go",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+9 / -3"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "internal/compose/initjob.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f3",
+      "kind": "module",
+      "label": "internal/compose/initjob.go",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+21 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "path": "internal/modules/gitops/git/read_file_test.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f4",
+      "kind": "test",
+      "label": "internal/modules/gitops/git/read_file_test.go",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+6 / -2"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "path": "internal/modules/gitops/git/repository.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f5",
+      "kind": "module",
+      "label": "internal/modules/gitops/git/repository.go",
+      "lane": "files"
+    },
+    {
+      "badges": [
+        "+10 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "path": "internal/shared/faults/faults.go",
+          "revision": "head"
+        }
+      ],
+      "id": "f6",
+      "kind": "module",
+      "label": "internal/shared/faults/faults.go",
+      "lane": "files"
+    }
+  ],
+  "provenance": {
+    "base": {
+      "sha": "3dafc39698bafd42172a7a19230153d4127dc8e1"
+    },
+    "generator": {
+      "name": "prc"
+    },
+    "head": {
+      "sha": "2f7696dda0342ae9d5b2bfdf76bc57d64dc890a5"
+    },
+    "pullRequest": {
+      "number": 116,
+      "title": "Add shared faults package and structured compose errors",
+      "url": "https://github.com/swarm-deploy/swarm-deploy/pull/116"
+    },
+    "repo": {
+      "name": "swarm-deploy",
+      "owner": "swarm-deploy"
+    }
+  },
+  "schemaVersion": "0.2.0",
+  "title": "Add shared faults package and structured compose errors",
+  "views": [],
+  "walkthrough": {
+    "steps": [
+      {
+        "body": "Add shared faults package and structured compose errors - 7 files, 0 symbols, 0 calls added, 0 removed.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "What changed",
+        "id": "w0"
+      },
+      {
+        "body": "No parsed symbol changes. Top-level and unrecognized changes can remain.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "Summary",
+        "id": "w1"
+      }
+    ]
+  }
+}

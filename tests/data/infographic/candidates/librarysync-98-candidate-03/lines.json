@@ -1,0 +1,16 @@
+{
+  "title": "Up next is now the first unwatched episode after the furthest watched one.",
+  "lines": [
+    "Up next is now the first unwatched episode after the furthest watched one.",
+    "2 files",
+    "6 parsed symbols changed",
+    "12 resolved call sites",
+    "1 test file touched",
+    "CI 10/10 passed",
+    "0 parsed code without test evidence",
+    "Look here first",
+    "select_next_episode in backend/src/librarysync/core/next_episode.py",
+    "Direct test-call evidence found for all live changed production symbols in this map.",
+    "Infographic drawn by AI. Words from prc."
+  ]
+}

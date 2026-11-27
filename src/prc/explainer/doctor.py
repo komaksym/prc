@@ -5,6 +5,8 @@ from __future__ import annotations
 import os
 import shutil
 
+from prc.presentation import infographic
+
 
 def _ffmpeg() -> str:
     if shutil.which("ffmpeg") and shutil.which("ffprobe"):
@@ -51,6 +53,16 @@ def _voice() -> str:
     return "voice " + ", ".join(parts)
 
 
+def _tesseract() -> str:
+    version = infographic.tesseract_version()
+    if not version:
+        return (
+            "tesseract missing or unavailable (infographic gate unavailable; the card is used). "
+            "Install it (for example `brew install tesseract`)."
+        )
+    return f"{version} ok"
+
+
 def _token() -> str:
     return "GITHUB_TOKEN " + ("set" if os.environ.get("GITHUB_TOKEN") else "unset")
 
@@ -62,6 +74,7 @@ def report() -> str:
         f"python {sys.version.split()[0]} ok",
         _ffmpeg(),
         _chromium(),
+        _tesseract(),
         _voice(),
         _token(),
     ]

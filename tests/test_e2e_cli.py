@@ -28,8 +28,9 @@ def prc(*args: str, expect: int = 0) -> dict[str, Any]:
 
 
 def test_full_review_lifecycle_and_reproducible_artifact(tmp_path: Path) -> None:
-    shutil.rmtree(ARTIFACT, ignore_errors=True)
     store, out = str(ARTIFACT / "store"), str(ARTIFACT / "reviews")
+    for owned in (store, out):
+        shutil.rmtree(owned, ignore_errors=True)
     source = "fixture:basic"
 
     first = prc("review", "--source", source, "--store", store, "--out", out)

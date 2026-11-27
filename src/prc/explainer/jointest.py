@@ -30,6 +30,32 @@ ZERO_WIDTH = "​‌‍⁠﻿"
 ENTITY = re.compile(r"&(?:quot|amp|lt|gt|apos|nbsp|#\d+|#x[0-9a-fA-F]+);")
 
 
+def document(scene: dict[str, Any], index: int) -> dict[str, Any]:
+    """The join contract for prepared diff rows, before or after highlighting."""
+    return {
+        "scene": index,
+        "file": scene["file"],
+        "cut": scene["cut"],
+        "transform": "build",
+        "refs": [r["ref"] for r in scene["rows"] if "text" in r],
+        "frames": [
+            {
+                "t": None,
+                "rows": [
+                    {"gap": True}
+                    if "text" not in r
+                    else {
+                        "ref": r["ref"],
+                        "marker": r["op"],
+                        "tokens": r.get("tokens", [r["text"]]),
+                    }
+                    for r in scene["rows"]
+                ],
+            }
+        ],
+    }
+
+
 def tok_text(t: Any) -> str:
     if isinstance(t, str):
         return t

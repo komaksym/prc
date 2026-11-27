@@ -1,0 +1,33 @@
+{
+  "lines": [
+    "Next steps, in order",
+    "1",
+    "Fix the outputs",
+    "Kokoro voice",
+    "Change diagram",
+    "Map on PR Lens renderer",
+    "2",
+    "Protocol v2",
+    "6 pairs, 5 questions",
+    "Outputs built ahead",
+    "eval-analyze update",
+    "3",
+    "Add rivals",
+    "Agent text + Mermaid",
+    "PR Lens",
+    "Diff for every agent",
+    "4",
+    "Dry run",
+    "3 practice PRs",
+    "Time every build",
+    "Set the cap",
+    "Seal",
+    "Everything frozen",
+    "5",
+    "Run",
+    "Agents: 4 options, same PRs",
+    "You: PRC vs PR Lens, 6 pairs",
+    "Change the product before the seal. After it, any change starts a new study."
+  ],
+  "title": "Next steps, in order"
+}

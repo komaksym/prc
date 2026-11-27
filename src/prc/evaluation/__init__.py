@@ -1,6 +1,7 @@
 """Deterministic logic for the solo pilot evaluation protocol."""
 
 from prc.evaluation.analysis import AnalysisReport, Decision, PairOutcome, Scenario, analyze
+from prc.evaluation.kit import PAIRED_PROTOCOL_V2, KitError
 from prc.evaluation.protocol import (
     PROTOCOL,
     Condition,
@@ -15,6 +16,8 @@ from prc.evaluation.protocol import (
 __all__ = [
     "PROTOCOL",
     "AnalysisReport",
+    "KitError",
+    "PAIRED_PROTOCOL_V2",
     "Condition",
     "Decision",
     "Pair",

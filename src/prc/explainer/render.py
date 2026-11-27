@@ -13,9 +13,10 @@ from typing import Any
 
 from prc.explainer import highlight
 from prc.explainer.check import verify_board
-from prc.explainer.diffrows import pair_rows, wrap_row
+from prc.explainer.diffrows import diff_layout, pair_rows, prepare, wrap_row
+from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
-from prc.explainer.timing import fit_sentences
+from prc.explainer.timing import check_stamped_cues, fit_sentences
 from prc.explainer.voice import Backend
 
 ASSETS = Path(__file__).resolve().parent / "assets"
@@ -39,10 +40,10 @@ class Rendered:
     log: list[dict[str, Any]]
 
 
-def check_tools() -> None:
-    if not shutil.which("ffmpeg"):
+def check_tools(*, need_video: bool = True) -> None:
+    if need_video and not shutil.which("ffmpeg"):
         raise RenderError("ffmpeg is not on PATH. Install it (for example `brew install ffmpeg`).")
-    if not shutil.which("ffprobe"):
+    if need_video and not shutil.which("ffprobe"):
         raise RenderError("ffprobe is not on PATH. Install it (for example `brew install ffmpeg`).")
     try:
         import playwright.sync_api  # noqa: F401
@@ -148,17 +149,10 @@ def fill(
                 c["value"] = c["value"].format(**values)
         if s["type"] == "outro":
             s["url"] = (m.get("url") or "pr").removeprefix("https://")
+            s.setdefault("fine", "")
         if s["type"] == "diff":
             code = [r for r in s["rows"] if "text" in r]
-            for r in code:
-                r["text"] = r["text"].expandtabs(4).rstrip()
-            cut = min(
-                (len(r["text"]) - len(r["text"].lstrip()) for r in code if r["text"].strip()),
-                default=0,
-            )
-            for r in code:
-                r["text"] = r["text"][cut:]
-            s["cut"] = cut
+            s["cut"] = cut = prepare(s["rows"])
             nums = [r["num"] for r in code]
             s["gutter"] = math.ceil((len(str(max(nums))) + 1) * 0.72) if nums else 1
             fe = next((f for f in m["files"] if f["path"] == s["file"]), None)
@@ -177,6 +171,7 @@ def fill(
                     continue
                 hang, breaks = wrap_row(r["tokens"], 72 - s["gutter"])
                 r["hang"], r["breaks"] = hang, breaks
+            s["layout"] = diff_layout(s)
             s["lang"] = {
                 ".py": "py",
                 ".ts": "js",
@@ -196,28 +191,7 @@ def join_gate(board: dict[str, Any], m: dict[str, Any], out: Path) -> None:
         if s["type"] != "diff":
             continue
         code = [r for r in s["rows"] if "text" in r]
-        doc = {
-            "scene": i,
-            "file": s["file"],
-            "cut": s["cut"],
-            "transform": "build",
-            "refs": [r["ref"] for r in code],
-            "frames": [
-                {
-                    "t": None,
-                    "rows": [
-                        {"gap": True}
-                        if "text" not in r
-                        else {
-                            "ref": r["ref"],
-                            "marker": "+" if r["op"] == "+" else "−" if r["op"] == "-" else "",
-                            "tokens": r["tokens"],
-                        }
-                        for r in s["rows"]
-                    ],
-                }
-            ],
-        }
+        doc = document(s, i)
         (out / f"tokens_s{i}.json").write_text(json.dumps(doc))
         errs, rc = join_run(doc, m, [str(r["ref"]) for r in code])
         if rc != 0:
@@ -262,7 +236,7 @@ def render(
     git_dir: str | None = None,
     keys_only: bool = False,
 ) -> Rendered:
-    check_tools()
+    check_tools(need_video=not keys_only)
     from playwright.sync_api import sync_playwright
 
     out.mkdir(parents=True, exist_ok=True)
@@ -271,6 +245,9 @@ def render(
     join_gate(board, m, out)
     log: list[dict[str, Any]] = []
     cursor, clips = fit_sentences(board, backend, out / "audio", log)
+    stamped = check_stamped_cues(board)
+    if stamped:
+        raise RenderError("cue timing failed after narration fit:\n" + "\n".join(stamped))
     for s in board["scenes"]:
         if s["type"] == "graph":
             layout(s, m)
@@ -278,10 +255,11 @@ def render(
         (out / "phrases.json").write_text(json.dumps(log, indent=1))
 
     narration = out / "narration.wav"
-    if backend.has_audio:
-        mix_narration(clips, cursor, narration)
-    else:
-        silence(cursor, narration)
+    if not keys_only:
+        if backend.has_audio:
+            mix_narration(clips, cursor, narration)
+        else:
+            silence(cursor, narration)
 
     player = out / "player.html"
     player.write_text(

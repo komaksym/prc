@@ -1,0 +1,1031 @@
+{
+  "duration": 60.35000000000001,
+  "header": "<b>swarm-deploy #116</b> \u00b7 Copilot",
+  "name": "swarm-116",
+  "scenes": [
+    {
+      "end": 11.6,
+      "fade": [
+        11.25,
+        0.35
+      ],
+      "footer": "base 3dafc39  \u2192  head 2f7696d",
+      "i": 0,
+      "kicker": "Merged pull request",
+      "meta": "<span class=\"add\">+313</span> <span class=\"del\">\u221216</span> \u00b7 7 files \u00b7 swarm-deploy/swarm-deploy#116",
+      "say": [
+        "This pull request separates Compose read, syntax, and validation failures.",
+        "PRC can quote this Go diff, but cannot build its symbol or call graph."
+      ],
+      "sentences": [
+        {
+          "dur": 5.125,
+          "off": 4.655,
+          "on": 0.32,
+          "start": 0.45,
+          "text": "This pull request separates Compose read, syntax, and validation failures."
+        },
+        {
+          "dur": 4.825,
+          "off": 4.36,
+          "on": 0.3,
+          "start": 5.875,
+          "text": "PRC can quote this Go diff, but cannot build its symbol or call graph."
+        }
+      ],
+      "start": 0.0,
+      "title": "Add shared faults package and structured compose errors",
+      "type": "title"
+    },
+    {
+      "cite": [
+        {
+          "line": "internal/compose/file.go:78",
+          "match": "ReadComposeError"
+        },
+        {
+          "line": "internal/compose/file.go:83",
+          "match": "ParseComposeError"
+        },
+        {
+          "line": "internal/compose/file.go:88",
+          "match": "ValidateComposeError"
+        }
+      ],
+      "end": 25.274999999999995,
+      "fade": [
+        24.924999999999994,
+        0.35
+      ],
+      "footer": "receipts   file.go:78  \u00b7  file.go:83  \u00b7  file.go:88",
+      "groups": [
+        {
+          "col": 0,
+          "ground": "ReadComposeError",
+          "id": "read",
+          "items": [
+            {
+              "id": "read-error",
+              "text": "ReadComposeError"
+            }
+          ],
+          "row": true,
+          "title": "Read failure"
+        },
+        {
+          "col": 1,
+          "ground": "ParseComposeError",
+          "id": "syntax",
+          "items": [
+            {
+              "id": "parse-error",
+              "text": "ParseComposeError"
+            }
+          ],
+          "row": true,
+          "title": "YAML syntax failure"
+        },
+        {
+          "col": 2,
+          "ground": "ValidateComposeError",
+          "id": "validate",
+          "items": [
+            {
+              "id": "validate-error",
+              "text": "ValidateComposeError"
+            }
+          ],
+          "row": true,
+          "title": "Schema validation failure"
+        }
+      ],
+      "i": 1,
+      "say": [
+        "A read failure now returns ReadComposeError.",
+        "Invalid YAML returns ParseComposeError.",
+        "Decoded content failures return ValidateComposeError."
+      ],
+      "sentences": [
+        {
+          "dur": 3.525,
+          "off": 3.005,
+          "on": 0.31,
+          "start": 12.049999999999999,
+          "text": "A read failure now returns ReadComposeError."
+        },
+        {
+          "dur": 3.925,
+          "off": 3.415,
+          "on": 0.33,
+          "start": 15.874999999999998,
+          "text": "Invalid YAML returns ParseComposeError."
+        },
+        {
+          "dur": 4.275,
+          "off": 3.75,
+          "on": 0.34,
+          "start": 20.099999999999998,
+          "text": "Decoded content failures return ValidateComposeError."
+        }
+      ],
+      "start": 11.6,
+      "type": "groups"
+    },
+    {
+      "cues": [
+        {
+          "at": "new path",
+          "do": "step",
+          "n": 1,
+          "t": 29.834999999999994
+        }
+      ],
+      "cut": 4,
+      "end": 39.324999999999996,
+      "fade": [
+        38.974999999999994,
+        0.35
+      ],
+      "file": "internal/compose/file.go",
+      "footer": "receipts   7 lines quoted verbatim from the diff of file.go",
+      "gutter": 3,
+      "i": 2,
+      "label": "Different failures return different types",
+      "lang": "",
+      "layout": {
+        "bottom": 797,
+        "font": 36,
+        "height": 615,
+        "row_height": 63,
+        "top": 182
+      },
+      "lines": [
+        "76",
+        "77",
+        {
+          "ref": "-77",
+          "step": 1
+        },
+        {
+          "ref": "78",
+          "step": 1
+        },
+        {
+          "ref": "81",
+          "step": 1
+        },
+        {
+          "ref": "82",
+          "step": 1
+        },
+        {
+          "ref": "83",
+          "step": 1
+        }
+      ],
+      "rows": [
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              25.524999999999995,
+              0.4
+            ],
+            "reveal": [
+              25.274999999999995,
+              0.45
+            ]
+          },
+          "num": 76,
+          "op": " ",
+          "ref": "76",
+          "step": 0,
+          "text": "raw, err := l.fileReader(ctx, path)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "raw"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": ":"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "l"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "fileReader"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "ctx"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "path"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              25.559999999999995,
+              0.4
+            ],
+            "reveal": [
+              25.274999999999995,
+              0.45
+            ]
+          },
+          "num": 77,
+          "op": " ",
+          "ref": "77",
+          "step": 0,
+          "text": "if err != nil {",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "!"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "nil"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "{"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              25.594999999999995,
+              0.4
+            ],
+            "reveal": [
+              29.834999999999994,
+              0.45
+            ]
+          },
+          "num": 77,
+          "op": "-",
+          "ref": "-77",
+          "step": 1,
+          "text": "    return nil, fmt.Errorf(\"read compose file %s: %w\", path, err)",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "return"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "nil"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "fmt"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "Errorf"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "s",
+              "text": "read"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "compose"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "file"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "%"
+            },
+            {
+              "cls": "s",
+              "text": "s"
+            },
+            {
+              "cls": "s",
+              "text": ":"
+            },
+            {
+              "cls": "s",
+              "text": " "
+            },
+            {
+              "cls": "s",
+              "text": "%"
+            },
+            {
+              "cls": "s",
+              "text": "w"
+            },
+            {
+              "cls": "s",
+              "text": "\""
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "path"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              25.629999999999995,
+              0.4
+            ],
+            "reveal": [
+              30.384999999999994,
+              0.45
+            ]
+          },
+          "num": 78,
+          "op": "+",
+          "ref": "78",
+          "step": 1,
+          "text": "    return nil, &ReadComposeError{FilePath: path, Err: err}",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "return"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "nil"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "&"
+            },
+            {
+              "cls": "",
+              "text": "ReadComposeError"
+            },
+            {
+              "cls": "",
+              "text": "{"
+            },
+            {
+              "cls": "",
+              "text": "FilePath"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "path"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Err"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": "}"
+            }
+          ]
+        },
+        {
+          "gap": true,
+          "motion": {
+            "enter": [
+              25.664999999999996,
+              0.4
+            ],
+            "reveal": [
+              25.274999999999995,
+              0.45
+            ]
+          }
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              25.699999999999996,
+              0.4
+            ],
+            "reveal": [
+              30.384999999999994,
+              0.45
+            ]
+          },
+          "num": 81,
+          "op": "+",
+          "ref": "81",
+          "step": 1,
+          "text": "var syntax yaml.Node",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "var"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "syntax"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "yaml"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "Node"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 4,
+          "motion": {
+            "enter": [
+              25.734999999999996,
+              0.4
+            ],
+            "reveal": [
+              30.384999999999994,
+              0.45
+            ]
+          },
+          "num": 82,
+          "op": "+",
+          "ref": "82",
+          "step": 1,
+          "text": "if err = yaml.Unmarshal(raw, &syntax); err != nil {",
+          "tokens": [
+            {
+              "cls": "k",
+              "text": "if"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "yaml"
+            },
+            {
+              "cls": "",
+              "text": "."
+            },
+            {
+              "cls": "",
+              "text": "Unmarshal"
+            },
+            {
+              "cls": "",
+              "text": "("
+            },
+            {
+              "cls": "",
+              "text": "raw"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "&"
+            },
+            {
+              "cls": "",
+              "text": "syntax"
+            },
+            {
+              "cls": "",
+              "text": ")"
+            },
+            {
+              "cls": "",
+              "text": ";"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "!"
+            },
+            {
+              "cls": "k",
+              "text": "="
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "nil"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "{"
+            }
+          ]
+        },
+        {
+          "breaks": [],
+          "hang": 8,
+          "motion": {
+            "enter": [
+              25.769999999999996,
+              0.4
+            ],
+            "reveal": [
+              30.384999999999994,
+              0.45
+            ]
+          },
+          "num": 83,
+          "op": "+",
+          "ref": "83",
+          "step": 1,
+          "text": "    return nil, &ParseComposeError{FilePath: path, Err: err}",
+          "tokens": [
+            {
+              "cls": "",
+              "text": "    "
+            },
+            {
+              "cls": "k",
+              "text": "return"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "nil"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "k",
+              "text": "&"
+            },
+            {
+              "cls": "",
+              "text": "ParseComposeError"
+            },
+            {
+              "cls": "",
+              "text": "{"
+            },
+            {
+              "cls": "",
+              "text": "FilePath"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "path"
+            },
+            {
+              "cls": "",
+              "text": ","
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "Err"
+            },
+            {
+              "cls": "",
+              "text": ":"
+            },
+            {
+              "cls": "",
+              "text": " "
+            },
+            {
+              "cls": "",
+              "text": "err"
+            },
+            {
+              "cls": "",
+              "text": "}"
+            }
+          ]
+        }
+      ],
+      "say": [
+        "The old read path returned a formatted error.",
+        "The new path returns a type with the file path and original cause.",
+        "The YAML node is parsed first, then decoded into the schema."
+      ],
+      "sentences": [
+        {
+          "dur": 3.15,
+          "off": 2.645,
+          "on": 0.31,
+          "start": 25.724999999999994,
+          "text": "The old read path returned a formatted error."
+        },
+        {
+          "dur": 4.425,
+          "off": 3.98,
+          "on": 0.32,
+          "start": 29.174999999999994,
+          "text": "The new path returns a type with the file path and original cause."
+        },
+        {
+          "dur": 4.525,
+          "off": 4.0200000000000005,
+          "on": 0.325,
+          "start": 33.89999999999999,
+          "text": "The YAML node is parsed first, then decoded into the schema."
+        }
+      ],
+      "start": 25.274999999999995,
+      "type": "diff"
+    },
+    {
+      "big": "",
+      "cite": [
+        {
+          "line": "internal/compose/errors_test.go:36",
+          "match": "require.ErrorIs(t, err, fs.ErrNotExist)"
+        },
+        {
+          "line": "internal/compose/errors_test.go:49",
+          "match": "assert.False(t, errors.As(err, &validateErr))"
+        }
+      ],
+      "code": false,
+      "cues": [
+        {
+          "at": [
+            0,
+            0.1
+          ],
+          "do": "items",
+          "step": 0.4,
+          "t": 40.2175
+        }
+      ],
+      "end": 49.45,
+      "fade": [
+        49.1,
+        0.35
+      ],
+      "footer": "receipts   errors_test.go:36  \u00b7  errors_test.go:49",
+      "i": 3,
+      "items": [
+        {
+          "cite": "internal/compose/errors_test.go:27",
+          "text": "TestFileLoaderReadComposeError"
+        },
+        {
+          "cite": "internal/compose/errors_test.go:39",
+          "text": "TestFileLoaderParseComposeError"
+        }
+      ],
+      "label": "Added test evidence",
+      "more": null,
+      "say": [
+        "The read-error test preserves ErrNotExist in the error chain.",
+        "The syntax-error test rejects the validation-error type."
+      ],
+      "sentences": [
+        {
+          "dur": 4.425,
+          "off": 3.9250000000000003,
+          "on": 0.325,
+          "start": 39.775,
+          "text": "The read-error test preserves ErrNotExist in the error chain."
+        },
+        {
+          "dur": 4.05,
+          "off": 3.59,
+          "on": 0.32,
+          "start": 44.5,
+          "text": "The syntax-error test rejects the validation-error type."
+        }
+      ],
+      "start": 39.324999999999996,
+      "type": "list"
+    },
+    {
+      "cues": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "do": "l1",
+          "t": 49.900000000000006
+        },
+        {
+          "at": [
+            0,
+            0.5
+          ],
+          "do": "l2",
+          "t": 51.575
+        },
+        {
+          "at": [
+            1,
+            0.5
+          ],
+          "do": "cmd",
+          "t": 56.2
+        }
+      ],
+      "end": 60.35000000000001,
+      "fade": [
+        60.00000000000001,
+        0.35
+      ],
+      "fine": "Go symbol and call analysis is unsupported. Compare this excerpt with the original diff.",
+      "footer": "",
+      "i": 4,
+      "l1": "Compose failures now have distinct error types.",
+      "l2": "Start review at fileLoader.Load in compose/file.go.",
+      "say": [
+        "Compose failures now have distinct error types.",
+        "The shared faults interface and repository wrappers remain in the original diff."
+      ],
+      "sentences": [
+        {
+          "dur": 3.35,
+          "off": 2.9050000000000002,
+          "on": 0.32,
+          "start": 49.900000000000006,
+          "text": "Compose failures now have distinct error types."
+        },
+        {
+          "dur": 5.3,
+          "off": 4.795,
+          "on": 0.3,
+          "start": 53.550000000000004,
+          "text": "The shared faults interface and repository wrappers remain in the original diff."
+        }
+      ],
+      "start": 49.45,
+      "type": "outro",
+      "url": "github.com/swarm-deploy/swarm-deploy/pull/116"
+    }
+  ]
+}

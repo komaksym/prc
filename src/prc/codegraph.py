@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import bisect
 import itertools
+import json
 import posixpath
 import re
 from collections.abc import Callable, Iterable, Mapping
@@ -176,6 +177,9 @@ _JS_DEFINITIONS = f"""
 (generator_function_declaration name: (identifier) @name) @function
 (class_declaration name: (_) @name) @class
 (class_body (method_definition name: (_) @name) @function)
+(object (method_definition name: [(property_identifier) (string)] @name) @function)
+(object (pair key: [(property_identifier) (string)] @name
+  value: [(arrow_function) (function_expression)] @function))
 (program (lexical_declaration (variable_declarator name: (identifier) @name {_BOUND_FUNCTION}) @function))
 (program (variable_declaration (variable_declarator name: (identifier) @name {_BOUND_FUNCTION}) @function))
 (program (export_statement declaration: (lexical_declaration
@@ -323,6 +327,70 @@ def _key(node: Node) -> tuple[int, int, str]:
     return node.start_byte, node.end_byte, node.type
 
 
+@cache
+def _property_identifier(name: str) -> bool:
+    source = f"_.{name}".encode("utf-8", "surrogatepass")
+    root = _compiled("javascript").parser.parse(source).root_node
+    if root.has_error or root.named_child_count != 1:
+        return False
+    statement = root.named_children[0]
+    if statement.type != "expression_statement" or statement.named_child_count != 1:
+        return False
+    member = statement.named_children[0]
+    if member.type != "member_expression":
+        return False
+    obj = member.child_by_field_name("object")
+    prop = member.child_by_field_name("property")
+    return (
+        obj is not None
+        and obj.type == "identifier"
+        and obj.start_byte == 0
+        and obj.end_byte == 1
+        and prop is not None
+        and prop.type == "property_identifier"
+        and prop.start_byte == 2
+        and prop.end_byte == len(source)
+    )
+
+
+def _property_segment(name: str) -> str:
+    if name.startswith(('"', "'")):
+
+        def unescape(match: re.Match[str]) -> str:
+            escape = match.group()[1:]
+            if escape.startswith(("u", "x")):
+                digits = escape[1:].strip("{}")
+                if not digits:
+                    return match.group()
+                value = int(digits, 16)
+                return chr(value) if value <= 0x10FFFF else match.group()
+            return {
+                "n": "\n",
+                "r": "\r",
+                "t": "\t",
+                "b": "\b",
+                "f": "\f",
+                "v": "\v",
+                "0": "\0",
+                "\n": "",
+                "\r": "",
+                "\r\n": "",
+                "\u2028": "",
+                "\u2029": "",
+            }.get(escape, escape)
+
+        name = re.sub(
+            r"\\(?:u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|\r\n|[\s\S])",
+            unescape,
+            name[1:-1],
+        )
+        if "\\" in name:
+            return f"[{json.dumps(name)}]"
+    if _property_identifier(name):
+        return f".{name}"
+    return f"[{json.dumps(name)}]"
+
+
 def parse_file(path: str, data: bytes) -> ParsedFile | None:
     """None for an unsupported extension, a file over the size limit, or binary content."""
 
@@ -357,7 +425,38 @@ def parse_file(path: str, data: bytes) -> ParsedFile | None:
         while outer.parent is not None and outer.parent.type in spec.wrappers:
             outer = outer.parent
 
-        found.setdefault(_key(node), (node, outer, text_of(captures["name"][0]), is_class))
+        name = text_of(captures["name"][0])
+        if spec.family == "js" and (
+            node.parent is not None and node.parent.type in ("object", "pair")
+        ):
+            container: Node | None = node.parent
+            if container is not None and container.type == "pair":
+                outer = container
+                container = container.parent
+            parts = [_property_segment(name)]
+            while container is not None and container.type == "object":
+                binding: Node | None = container.parent
+                if binding is None:
+                    break
+                while binding is not None and binding.type in (
+                    "satisfies_expression",
+                    "as_expression",
+                    "parenthesized_expression",
+                ):
+                    binding = binding.parent
+                if binding is None:
+                    break
+                field = "key" if binding.type == "pair" else "name"
+                key = binding.child_by_field_name(field)
+                if binding.type not in ("pair", "variable_declarator") or key is None:
+                    parts.insert(0, f"object@{line_of(container.start_byte)}")
+                    break
+                parts.insert(
+                    0, _property_segment(text_of(key)) if binding.type == "pair" else text_of(key)
+                )
+                container = binding.parent
+            name = "".join(parts)
+        found.setdefault(_key(node), (node, outer, name, is_class))
 
     owners: dict[tuple[int, int, str], Definition] = {}
     definitions: list[Definition] = []
@@ -478,6 +577,7 @@ class Index:
         self.files = dict(sorted(files.items()))
         self.definitions: dict[str, dict[str, Definition]] = {}
         self.exported: dict[str, frozenset[str]] = {}
+        self.namespaces: dict[str, frozenset[str]] = {}
         self.bindings: dict[str, dict[str, Import]] = {}
         self.stars: dict[str, tuple[Import, ...]] = {}
         self.python_files: dict[str, str] = {}
@@ -500,11 +600,22 @@ class Index:
                 )
 
             self.definitions[path] = merged
+            namespaces: set[str] = set()
+            for qualname in merged:
+                if "@" in qualname:
+                    continue
+                for prefix in _prefixes(qualname):
+                    if "@" in prefix or prefix in merged:
+                        continue
+                    namespaces.add(prefix)
+            self.namespaces[path] = frozenset(namespaces)
             self.exported[path] = frozenset(
                 qualname
                 for qualname in merged
-                if all(
-                    merged.get(prefix) is not None and merged[prefix].kind == "class"
+                if "@" not in qualname
+                and all(
+                    (merged.get(prefix) is not None and merged[prefix].kind == "class")
+                    or prefix in namespaces
                     for prefix in _prefixes(qualname)
                 )
             )
@@ -513,6 +624,8 @@ class Index:
             family = LANGUAGES[posixpath.splitext(path)[1]].family
 
             for qualname in self.exported[path]:
+                if "[" in qualname:
+                    continue
                 names.setdefault((family, qualname.rsplit(".", 1)[-1]), set()).add(
                     f"{path}::{qualname}"
                 )
@@ -573,15 +686,17 @@ class Index:
 
         else:
             root, rest = call.chain[0], (*call.chain[1:], call.name)
-            scoped = self._scoped(path, call.scope, root)
+            holder = self._local_root(path, call.scope, root)
 
-            if scoped is not None:
-                qualname = ".".join((scoped, *rest))
+            if holder is not None:
+                qualname = ".".join((holder, *rest))
 
                 if qualname in local:
                     return f"{path}::{qualname}", "exact"
 
-            elif root in self.bindings[path]:
+                return None
+
+            if root in self.bindings[path]:
                 return self._imported(path, root, rest)
 
         named = self._named(path, call)
@@ -675,6 +790,20 @@ class Index:
             None,
         )
 
+    def _local_root(self, path: str, scope: str | None, name: str) -> str | None:
+        """Innermost holder for a qualified receiver root: definition or object namespace."""
+
+        local = self.definitions[path]
+        namespaces = self.namespaces[path]
+        scopes = [] if scope is None else [scope]
+        scopes += [p for p in _prefixes(scope or "") if p in local and local[p].kind != "class"]
+        scopes.append("")
+
+        return next(
+            (q for s in scopes if (q := f"{s}.{name}" if s else name) in local or q in namespaces),
+            None,
+        )
+
     def _enclosing_class(self, path: str, scope: str | None) -> str | None:
         local = self.definitions[path]
         scopes = [] if scope is None else [scope, *_prefixes(scope)]
@@ -698,9 +827,8 @@ def _module_name(path: str) -> str:
 def _prefixes(qualname: str) -> list[str]:
     """Proper dotted prefixes, innermost first: `a.b.c` gives `a.b`, `a`."""
 
-    parts = qualname.split(".")
-
-    return [".".join(parts[:end]) for end in range(len(parts) - 1, 0, -1)]
+    boundaries = re.finditer(r'\["(?:\\.|[^"\\])*"\]|\.', qualname)
+    return [qualname[: match.start()] for match in boundaries if match.start()][::-1]
 
 
 @dataclass(frozen=True, slots=True)

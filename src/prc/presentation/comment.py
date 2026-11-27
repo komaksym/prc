@@ -18,13 +18,14 @@ import re
 import unicodedata
 from typing import Any
 
+from prc.facts import TEST_NOTE, compute_facts
+from prc.facts import brief_of as _brief_of
 from prc.presentation.card import (
-    compute_stats,
     headline,
     look_first,
     risky,
-    untested,
 )
+from prc.presentation.infographic import DISCLOSURE
 from prc.presentation.render_brief import span
 
 MAX_NODES = 12
@@ -49,8 +50,11 @@ _DEF_LINES = (
 
 
 def short_label(qualname: str) -> str:
-    """The last dotted segment: `LinkedInMDPClient._get_paged` becomes `_get_paged`."""
-    return qualname.split(".")[-1].split("::")[-1]
+    start = 0
+    for match in re.finditer(r'\["(?:\\.|[^"\\])*"\]|::|\.', qualname):
+        if match.group() in (".", "::"):
+            start = match.end()
+    return qualname[start:]
 
 
 def mermaid_label(qualname: str) -> str:
@@ -62,7 +66,14 @@ def mermaid_label(qualname: str) -> str:
     )
     text = re.sub(r"\s+", " ", flat).strip()
     text = text.replace("#", "#35;").replace('"', "#quot;")
-    return text.replace("<", "#lt;").replace(">", "#gt;")[:LABEL_LIMIT]
+    text = text.replace("<", "#lt;").replace(">", "#gt;")
+    if len(text) <= LABEL_LIMIT:
+        return text
+    text = text[: LABEL_LIMIT - 1]
+    entity = text.rfind("#")
+    if entity >= 0 and ";" not in text[entity:]:
+        text = text[:entity]
+    return text + "…"
 
 
 def select_nodes(m: dict[str, Any]) -> list[str]:
@@ -159,48 +170,44 @@ def mermaid_block(m: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _brief_of(m: dict[str, Any], brief: Any) -> dict[str, Any]:
-    if brief is not None and isinstance(brief, dict):
-        return brief
-    if brief is not None:
-        return {
-            "mismatches": [
-                {"quote": x.quote, "fact": x.fact, "subjects": list(x.subjects)}
-                for x in brief.mismatches
-            ],
-            "look_first": [
-                {"path": p.path, "reason": p.reason, "lines": list(p.lines)}
-                for p in brief.look_first
-            ],
-        }
-    raw = m.get("brief", {})
-    return raw if isinstance(raw, dict) else {}
-
-
 def render_comment(
-    m: dict[str, Any], brief: Any = None, board: dict[str, Any] | None = None
+    m: dict[str, Any],
+    brief: Any = None,
+    board: dict[str, Any] | None = None,
+    *,
+    card_available: bool = True,
+    card_warning: str | None = None,
+    infographic: bool = False,
 ) -> str:
     """comment.md in PLAN order. PR strings via span(); Mermaid labels never."""
     b = _brief_of(m, brief)
+    facts = compute_facts(m, b)
     changed = [s for s in m.get("symbols", []) if s.get("status") in CHANGED]
-    test_paths = (
-        {f.path for f in brief.files if f.kind == "test"}
-        if brief is not None and not isinstance(brief, dict)
-        else {
-            f["path"]
-            for f in (brief or m.get("brief", {})).get("files", [])
-            if f.get("kind") == "test"
-        }
-    )
-    missing = untested(m, brief if brief is not None else m.get("brief"))
+    missing = facts.no_direct_test
     lines = [f"# {span(headline(m, board))}", ""]
-    lines += [
-        "![PR card](card.png)",
-        "",
-        "Upload `card.png` with this comment: images do not embed from the repo.",
-        "",
-        mermaid_block(m),
-    ]
+    if infographic:
+        lines += [
+            f"![{DISCLOSURE}](infographic.png)",
+            "",
+            "Upload `infographic.png` with this comment: images do not embed from the repo.",
+            "",
+        ]
+    elif card_available:
+        lines += [
+            "![PR card](card.png)",
+            "",
+            "Upload `card.png` with this comment: images do not embed from the repo.",
+            "",
+        ]
+    else:
+        lines += [
+            "PR card image was not produced. See card.html for the fallback card.",
+            "",
+        ]
+        if card_warning:
+            lines += [span(card_warning), ""]
+    if changed:
+        lines += [mermaid_block(m)]
     if len(changed) > MAX_NODES:
         lines += [f"Showing {MAX_NODES} of {len(changed)} changed symbols. Full map: map.html", ""]
     entries = look_first(m, brief if brief is not None else m.get("brief"), 3, board)
@@ -214,7 +221,7 @@ def render_comment(
     if surfaces:
         lines += [f"- {span(r.path)}: {r.reason}" for r in surfaces]
     else:
-        lines += ["No risky surfaces."]
+        lines += ["No changed path matches the sensitivity rules."]
     mismatches = b.get("mismatches", [])
     if mismatches:
         for x in mismatches:
@@ -222,20 +229,22 @@ def render_comment(
             lines.append(f"- {span(x['quote'])}")
             lines.append(f"  - {x['fact']} {subjects}".rstrip())
     elif not surfaces:
-        lines += ["Everything the description names is in the diff."]
-    lines += ["", "## Not covered by tests", ""]
-    if not changed:
-        lines += ["No code symbols changed."]
-    elif all(s.get("path") in test_paths for s in changed):
-        lines += ["No production symbols changed."]
-    elif missing:
-        lines += [f"- {span(u.name)} in {span(u.path)}" for u in missing]
-    else:
-        lines += ["Every changed symbol has a direct test."]
-    stats = compute_stats(m, brief if brief is not None else m.get("brief"))
+        lines += ["No description mismatch detected by the checked rules."]
+    lines += ["", "## Direct test-call evidence", ""]
+    lead = facts.limits_lead
+    if lead:
+        lines += [lead, ""]
+        lines += [f"- {span(entry.path)} ({entry.reason})" for entry in facts.limits]
+        lines += [""]
+    lines += [facts.test_verdict]
+    if missing:
+        lines += [""] + [f"- {span(u.name)} in {span(u.path)}" for u in missing]
+    lines += ["", TEST_NOTE]
+    stats = facts.stats
+    ci = "no CI" if facts.ci_state == "none" else f"CI {stats.ci_text} {facts.ci_state}"
     lines += [
         "",
-        f"Files {stats.files}, symbols {stats.symbols_changed}, CI {stats.ci_text}.",
+        f"Files {stats.files}, symbols {stats.symbols_changed}, {ci}.",
         "",
         f"*Written by prc from the code at head `{m.get('head_sha', '')[:12]}`.*",
         "",

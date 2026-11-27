@@ -1,0 +1,2565 @@
+{
+  "author": "Copilot",
+  "base_sha": "3dafc39698bafd42172a7a19230153d4127dc8e1",
+  "brief": {
+    "checks": [
+      {
+        "name": "code-lint",
+        "state": "passed"
+      },
+      {
+        "name": "frontend-test",
+        "state": "passed"
+      },
+      {
+        "name": "unit-test",
+        "state": "passed"
+      },
+      {
+        "name": "validate-labels",
+        "state": "passed"
+      }
+    ],
+    "files": [
+      {
+        "added": 100,
+        "kind": "code",
+        "named": true,
+        "path": "internal/compose/errors.go",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 125,
+        "kind": "test",
+        "named": false,
+        "path": "internal/compose/errors_test.go",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 42,
+        "kind": "code",
+        "named": true,
+        "path": "internal/compose/file.go",
+        "removed": 11,
+        "sensitive": null
+      },
+      {
+        "added": 9,
+        "kind": "code",
+        "named": true,
+        "path": "internal/compose/initjob.go",
+        "removed": 3,
+        "sensitive": null
+      },
+      {
+        "added": 21,
+        "kind": "test",
+        "named": false,
+        "path": "internal/modules/gitops/git/read_file_test.go",
+        "removed": 0,
+        "sensitive": null
+      },
+      {
+        "added": 6,
+        "kind": "code",
+        "named": true,
+        "path": "internal/modules/gitops/git/repository.go",
+        "removed": 2,
+        "sensitive": null
+      },
+      {
+        "added": 10,
+        "kind": "code",
+        "named": true,
+        "path": "internal/shared/faults/faults.go",
+        "removed": 0,
+        "sensitive": null
+      }
+    ],
+    "head_sha": "2f7696dda0342ae9d5b2bfdf76bc57d64dc890a5",
+    "look_first": [
+      {
+        "lines": [],
+        "path": "internal/compose/errors.go",
+        "reason": "largest code change (+100 \u22120)"
+      },
+      {
+        "lines": [],
+        "path": "internal/compose/file.go",
+        "reason": "largest code change (+42 \u221211)"
+      },
+      {
+        "lines": [],
+        "path": "internal/compose/initjob.go",
+        "reason": "largest code change (+9 \u22123)"
+      }
+    ],
+    "mismatches": [],
+    "pr": "swarm-deploy/swarm-deploy#116",
+    "title": "Add shared faults package and structured compose errors"
+  },
+  "edges": [],
+  "files": [
+    {
+      "added": 100,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "package compose"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "import ("
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "\t\"fmt\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "\t\"strings\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": ")"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "// ReadComposeError means a compose file could not be read."
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "type ReadComposeError struct {"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "\t// FilePath is the compose file path."
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "\tFilePath string"
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "\t// Err is the underlying (technical) cause."
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "\tErr error"
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": "func (e *ReadComposeError) Error() string {"
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "\treturn fmt.Sprintf(\"read compose file %q: %v\", e.FilePath, e.Err)"
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 20,
+              "old": null,
+              "op": "+",
+              "text": "// Unwrap returns the cause."
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "func (e *ReadComposeError) Unwrap() error { return e.Err }"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "// ParseComposeError means a compose file could not be parsed."
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "type ParseComposeError struct {"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "\t// FilePath is the compose file path."
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": "\tFilePath string"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "\t// Err is the underlying cause."
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "\tErr error"
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": "func (e *ParseComposeError) Error() string {"
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "\treturn fmt.Sprintf(\"parse compose file %q: %v\", e.FilePath, e.Err)"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": "// Unwrap returns the cause."
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "func (e *ParseComposeError) Unwrap() error { return e.Err }"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": "// Validation issue codes."
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "const ("
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "\t// IssueCodeRequired means a required field is missing."
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": "\tIssueCodeRequired = \"required\""
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "\t// IssueCodeInvalidType means a value has an unexpected YAML type."
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": "\tIssueCodeInvalidType = \"invalid_type\""
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "\t// IssueCodeInvalidValue means a value is not acceptable for the compose specification."
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "\tIssueCodeInvalidValue = \"invalid_value\""
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": ")"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "// ValidationIssue describes a single compose validation problem."
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "type ValidationIssue struct {"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "\t// ResourceType is the type of the invalid resource (service, network, ...)."
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": "\tResourceType string"
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "\t// ResourceName is the name of the invalid resource."
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "\tResourceName string"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": "\t// Field is the invalid field."
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "\tField string"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "\t// Code is a machine-readable issue code."
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "\tCode string"
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "\t// Message is a human-readable description."
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "\tMessage string"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": "// ValidateComposeError means a compose file is invalid."
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": "type ValidateComposeError struct {"
+            },
+            {
+              "new": 64,
+              "old": null,
+              "op": "+",
+              "text": "\t// FilePath is the compose file path."
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "\tFilePath string"
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "\t// Issues are found validation issues."
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "\tIssues []ValidationIssue"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "\t// Err is the optional underlying decoding error."
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "\tErr error"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "func (e *ValidateComposeError) Error() string {"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "\tmsgs := make([]string, 0, len(e.Issues))"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "\tfor _, issue := range e.Issues {"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "\t\tmsgs = append(msgs, issue.String())"
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "\treturn fmt.Sprintf(\"validate compose file %q: %s\", e.FilePath, strings.Join(msgs, \"; \"))"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "// Unwrap returns the underlying decoding error, if any."
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "func (e *ValidateComposeError) Unwrap() error { return e.Err }"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "// String formats the issue omitting empty attributes."
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": "func (i ValidationIssue) String() string {"
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": "\tconst partsCount = 3"
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "\tresource := i.ResourceType"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "\tif i.ResourceName != \"\" {"
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": "\t\tresource = fmt.Sprintf(\"%s %q\", resource, i.ResourceName)"
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "\tparts := make([]string, 0, partsCount)"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "\tfor _, part := range []string{resource, i.Field, i.Message} {"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": "\t\tif part != \"\" {"
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tparts = append(parts, part)"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "\t\t}"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "\treturn strings.Join(parts, \": \")"
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "code",
+      "language": null,
+      "path": "internal/compose/errors.go",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 125,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "package compose"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "import ("
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "\t\"context\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "\t\"errors\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "\t\"fmt\""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "\t\"io/fs\""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "\t\"strings\""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "\t\"testing\""
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": "\t\"github.com/stretchr/testify/assert\""
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "\t\"github.com/stretchr/testify/require\""
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "\t\"go.yaml.in/yaml/v3\""
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": ")"
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": "func loadFrom(files map[string]string) (*File, error) {"
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "\tloader := NewFileLoaderWithReader(func(_ context.Context, path string) ([]byte, error) {"
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": "\t\tcontent, ok := files[path]"
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "\t\tif !ok {"
+            },
+            {
+              "new": 20,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\treturn nil, &fs.PathError{Op: \"open\", Path: path, Err: fs.ErrNotExist}"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "\t\t}"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn []byte(content), nil"
+            },
+            {
+              "new": 23,
+              "old": null,
+              "op": "+",
+              "text": "\t})"
+            },
+            {
+              "new": 24,
+              "old": null,
+              "op": "+",
+              "text": "\treturn loader.Load(context.Background(), \"/stack/compose.yaml\")"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "func TestFileLoaderReadComposeError(t *testing.T) {"
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": "\t_, err := loadFrom(nil)"
+            },
+            {
+              "new": 31,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 32,
+              "old": null,
+              "op": "+",
+              "text": "\tvar readErr *ReadComposeError"
+            },
+            {
+              "new": 33,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorAs(t, err, &readErr)"
+            },
+            {
+              "new": 34,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t, \"/stack/compose.yaml\", readErr.FilePath)"
+            },
+            {
+              "new": 35,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 36,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorIs(t, err, fs.ErrNotExist)"
+            },
+            {
+              "new": 37,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 38,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "func TestFileLoaderParseComposeError(t *testing.T) {"
+            },
+            {
+              "new": 40,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 41,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 42,
+              "old": null,
+              "op": "+",
+              "text": "\t_, err := loadFrom(map[string]string{\"/stack/compose.yaml\": \"services: [unclosed\\n  a: b: c\"})"
+            },
+            {
+              "new": 43,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 44,
+              "old": null,
+              "op": "+",
+              "text": "\tvar parseErr *ParseComposeError"
+            },
+            {
+              "new": 45,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorAs(t, err, &parseErr)"
+            },
+            {
+              "new": 46,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t, \"/stack/compose.yaml\", parseErr.FilePath)"
+            },
+            {
+              "new": 47,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 48,
+              "old": null,
+              "op": "+",
+              "text": "\tvar validateErr *ValidateComposeError"
+            },
+            {
+              "new": 49,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.False(t, errors.As(err, &validateErr))"
+            },
+            {
+              "new": 50,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 51,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 52,
+              "old": null,
+              "op": "+",
+              "text": "func TestFileLoaderValidateComposeErrorInitJob(t *testing.T) {"
+            },
+            {
+              "new": 53,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 54,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 55,
+              "old": null,
+              "op": "+",
+              "text": "\t_, err := loadFrom(map[string]string{\"/stack/compose.yaml\": `"
+            },
+            {
+              "new": 56,
+              "old": null,
+              "op": "+",
+              "text": "services:"
+            },
+            {
+              "new": 57,
+              "old": null,
+              "op": "+",
+              "text": "  app:"
+            },
+            {
+              "new": 58,
+              "old": null,
+              "op": "+",
+              "text": "    image: nginx"
+            },
+            {
+              "new": 59,
+              "old": null,
+              "op": "+",
+              "text": "    x-init-deploy-jobs:"
+            },
+            {
+              "new": 60,
+              "old": null,
+              "op": "+",
+              "text": "      - command: [\"true\"]"
+            },
+            {
+              "new": 61,
+              "old": null,
+              "op": "+",
+              "text": "`})"
+            },
+            {
+              "new": 62,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 63,
+              "old": null,
+              "op": "+",
+              "text": "\tvar validateErr *ValidateComposeError"
+            },
+            {
+              "new": 64,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorAs(t, err, &validateErr)"
+            },
+            {
+              "new": 65,
+              "old": null,
+              "op": "+",
+              "text": "\tvar parseErr *ParseComposeError"
+            },
+            {
+              "new": 66,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.False(t, errors.As(err, &parseErr))"
+            },
+            {
+              "new": 67,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.NotEmpty(t, validateErr.Issues)"
+            },
+            {
+              "new": 68,
+              "old": null,
+              "op": "+",
+              "text": "\tissue := validateErr.Issues[0]"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t, \"service\", issue.ResourceType)"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t, \"app\", issue.ResourceName)"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t, \"init-jobs[0].image\", issue.Field)"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t, IssueCodeRequired, issue.Code)"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Equal(t,"
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "\t\t`validate compose file \"/stack/compose.yaml\": service \"app\": init-jobs[0].image: image is required`,"
+            },
+            {
+              "new": 75,
+              "old": null,
+              "op": "+",
+              "text": "\t\tvalidateErr.Error(),"
+            },
+            {
+              "new": 76,
+              "old": null,
+              "op": "+",
+              "text": "\t)"
+            },
+            {
+              "new": 77,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.NoError(t, validateErr.Err)"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": "func TestFileLoaderValidateComposeErrorWrongType(t *testing.T) {"
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "\t_, err := loadFrom(map[string]string{\"/stack/compose.yaml\": \"services:\\n  app:\\n    image: [a, b]\\n\"})"
+            },
+            {
+              "new": 84,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 85,
+              "old": null,
+              "op": "+",
+              "text": "\tvar validateErr *ValidateComposeError"
+            },
+            {
+              "new": 86,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorAs(t, err, &validateErr)"
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.NotEmpty(t, validateErr.Issues)"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.NotEmpty(t, validateErr.Issues[0].Message)"
+            },
+            {
+              "new": 89,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 90,
+              "old": null,
+              "op": "+",
+              "text": "\tvar typeErr *yaml.TypeError"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorAs(t, err, &typeErr)"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.True(t, strings.HasPrefix(validateErr.Error(), `validate compose file \"/stack/compose.yaml\": compose: line`), validateErr.Error())"
+            },
+            {
+              "new": 93,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 94,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 95,
+              "old": null,
+              "op": "+",
+              "text": "func TestFileLoaderKeepsIOErrorForReferencedFiles(t *testing.T) {"
+            },
+            {
+              "new": 96,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 97,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 98,
+              "old": null,
+              "op": "+",
+              "text": "\tcases := map[string]string{"
+            },
+            {
+              "new": 99,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\"env_file\": \"services:\\n  app:\\n    image: nginx\\n    env_file: [missing.env]\\n\","
+            },
+            {
+              "new": 100,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\"config\":   \"services:\\n  app:\\n    image: nginx\\nconfigs:\\n  c:\\n    file: missing.conf\\n\","
+            },
+            {
+              "new": 101,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\"secret\":   \"services:\\n  app:\\n    image: nginx\\nsecrets:\\n  s:\\n    file: missing.txt\\n\","
+            },
+            {
+              "new": 102,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 103,
+              "old": null,
+              "op": "+",
+              "text": "\tfor name, content := range cases {"
+            },
+            {
+              "new": 104,
+              "old": null,
+              "op": "+",
+              "text": "\t\tt.Run(name, func(t *testing.T) {"
+            },
+            {
+              "new": 105,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tt.Parallel()"
+            },
+            {
+              "new": 106,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 107,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t_, err := loadFrom(map[string]string{\"/stack/compose.yaml\": content})"
+            },
+            {
+              "new": 108,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 109,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\trequire.ErrorIs(t, err, fs.ErrNotExist)"
+            },
+            {
+              "new": 110,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tvar readErr *ReadComposeError"
+            },
+            {
+              "new": 111,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tassert.False(t, errors.As(err, &readErr), \"only the main file is ReadComposeError\")"
+            },
+            {
+              "new": 112,
+              "old": null,
+              "op": "+",
+              "text": "\t\t})"
+            },
+            {
+              "new": 113,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 114,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 115,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 116,
+              "old": null,
+              "op": "+",
+              "text": "func TestComposeErrorsWrap(t *testing.T) {"
+            },
+            {
+              "new": 117,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 118,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 119,
+              "old": null,
+              "op": "+",
+              "text": "\t_, err := loadFrom(nil)"
+            },
+            {
+              "new": 120,
+              "old": null,
+              "op": "+",
+              "text": "\twrapped := fmt.Errorf(\"sync: %w\", err)"
+            },
+            {
+              "new": 121,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 122,
+              "old": null,
+              "op": "+",
+              "text": "\tvar readErr *ReadComposeError"
+            },
+            {
+              "new": 123,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorAs(t, wrapped, &readErr)"
+            },
+            {
+              "new": 124,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Contains(t, wrapped.Error(), \"/stack/compose.yaml\")"
+            },
+            {
+              "new": 125,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "test",
+      "language": null,
+      "path": "internal/compose/errors_test.go",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 42,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 4,
+              "old": 4,
+              "op": " ",
+              "text": "\t\"context\""
+            },
+            {
+              "new": 5,
+              "old": 5,
+              "op": " ",
+              "text": "\t\"crypto/sha256\""
+            },
+            {
+              "new": 6,
+              "old": 6,
+              "op": " ",
+              "text": "\t\"encoding/hex\""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": "\t\"errors\""
+            },
+            {
+              "new": 8,
+              "old": 7,
+              "op": " ",
+              "text": "\t\"fmt\""
+            },
+            {
+              "new": 9,
+              "old": 8,
+              "op": " ",
+              "text": "\t\"hash\""
+            },
+            {
+              "new": 10,
+              "old": 9,
+              "op": " ",
+              "text": "\t\"os\""
+            }
+          ],
+          "new_start": 4,
+          "old_start": 4
+        },
+        {
+          "lines": [
+            {
+              "new": 75,
+              "old": 74,
+              "op": " ",
+              "text": "func (l *fileLoader) Load(ctx context.Context, path string) (*File, error) {"
+            },
+            {
+              "new": 76,
+              "old": 75,
+              "op": " ",
+              "text": "\traw, err := l.fileReader(ctx, path)"
+            },
+            {
+              "new": 77,
+              "old": 76,
+              "op": " ",
+              "text": "\tif err != nil {"
+            },
+            {
+              "new": null,
+              "old": 77,
+              "op": "-",
+              "text": "\t\treturn nil, fmt.Errorf(\"read compose file %s: %w\", path, err)"
+            },
+            {
+              "new": 78,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn nil, &ReadComposeError{FilePath: path, Err: err}"
+            },
+            {
+              "new": 79,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 80,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 81,
+              "old": null,
+              "op": "+",
+              "text": "\tvar syntax yaml.Node"
+            },
+            {
+              "new": 82,
+              "old": null,
+              "op": "+",
+              "text": "\tif err = yaml.Unmarshal(raw, &syntax); err != nil {"
+            },
+            {
+              "new": 83,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn nil, &ParseComposeError{FilePath: path, Err: err}"
+            },
+            {
+              "new": 84,
+              "old": 78,
+              "op": " ",
+              "text": "\t}"
+            },
+            {
+              "new": 85,
+              "old": 79,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 86,
+              "old": 80,
+              "op": " ",
+              "text": "\tschema := Compose{}"
+            },
+            {
+              "new": null,
+              "old": 81,
+              "op": "-",
+              "text": "\terr = yaml.Unmarshal(raw, &schema)"
+            },
+            {
+              "new": null,
+              "old": 82,
+              "op": "-",
+              "text": "\tif err != nil {"
+            },
+            {
+              "new": null,
+              "old": 83,
+              "op": "-",
+              "text": "\t\treturn nil, fmt.Errorf(\"decode compose schema: %w\", err)"
+            },
+            {
+              "new": 87,
+              "old": null,
+              "op": "+",
+              "text": "\tif err = syntax.Decode(&schema); err != nil {"
+            },
+            {
+              "new": 88,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn nil, &ValidateComposeError{FilePath: path, Issues: decodeIssues(err), Err: err}"
+            },
+            {
+              "new": 89,
+              "old": 84,
+              "op": " ",
+              "text": "\t}"
+            },
+            {
+              "new": 90,
+              "old": 85,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 86,
+              "op": "-",
+              "text": "\tif err = l.linkServices(&schema, filepath.Dir(path)); err != nil {"
+            },
+            {
+              "new": null,
+              "old": 87,
+              "op": "-",
+              "text": "\t\treturn nil, fmt.Errorf(\"link services: %w\", err)"
+            },
+            {
+              "new": 91,
+              "old": null,
+              "op": "+",
+              "text": "\tif issues := l.linkServices(&schema, filepath.Dir(path)); len(issues) > 0 {"
+            },
+            {
+              "new": 92,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn nil, &ValidateComposeError{FilePath: path, Issues: issues}"
+            },
+            {
+              "new": 93,
+              "old": 88,
+              "op": " ",
+              "text": "\t}"
+            },
+            {
+              "new": 94,
+              "old": 89,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 95,
+              "old": 90,
+              "op": " ",
+              "text": "\tif err = l.loadEnvFiles(ctx, filepath.Dir(path), schema.Services); err != nil {"
+            }
+          ],
+          "new_start": 75,
+          "old_start": 74
+        },
+        {
+          "lines": [
+            {
+              "new": 154,
+              "old": 149,
+              "op": " ",
+              "text": "\treturn nil"
+            },
+            {
+              "new": 155,
+              "old": 150,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 156,
+              "old": 151,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 152,
+              "op": "-",
+              "text": "func (*fileLoader) linkServices(compose *Compose, baseDir string) error {"
+            },
+            {
+              "new": 157,
+              "old": null,
+              "op": "+",
+              "text": "// decodeIssues converts a decode error of syntactically valid YAML into validation issues."
+            },
+            {
+              "new": 158,
+              "old": null,
+              "op": "+",
+              "text": "func decodeIssues(err error) []ValidationIssue {"
+            },
+            {
+              "new": 159,
+              "old": null,
+              "op": "+",
+              "text": "\tvar typeErr *yaml.TypeError"
+            },
+            {
+              "new": 160,
+              "old": null,
+              "op": "+",
+              "text": "\tif errors.As(err, &typeErr) {"
+            },
+            {
+              "new": 161,
+              "old": null,
+              "op": "+",
+              "text": "\t\tissues := make([]ValidationIssue, 0, len(typeErr.Errors))"
+            },
+            {
+              "new": 162,
+              "old": null,
+              "op": "+",
+              "text": "\t\tfor _, msg := range typeErr.Errors {"
+            },
+            {
+              "new": 163,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tissues = append(issues, ValidationIssue{"
+            },
+            {
+              "new": 164,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t\tResourceType: \"compose\","
+            },
+            {
+              "new": 165,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t\tCode:         IssueCodeInvalidType,"
+            },
+            {
+              "new": 166,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t\tMessage:      msg,"
+            },
+            {
+              "new": 167,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t})"
+            },
+            {
+              "new": 168,
+              "old": null,
+              "op": "+",
+              "text": "\t\t}"
+            },
+            {
+              "new": 169,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn issues"
+            },
+            {
+              "new": 170,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 171,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 172,
+              "old": null,
+              "op": "+",
+              "text": "\treturn []ValidationIssue{{"
+            },
+            {
+              "new": 173,
+              "old": null,
+              "op": "+",
+              "text": "\t\tResourceType: \"compose\","
+            },
+            {
+              "new": 174,
+              "old": null,
+              "op": "+",
+              "text": "\t\tCode:         IssueCodeInvalidValue,"
+            },
+            {
+              "new": 175,
+              "old": null,
+              "op": "+",
+              "text": "\t\tMessage:      err.Error(),"
+            },
+            {
+              "new": 176,
+              "old": null,
+              "op": "+",
+              "text": "\t}}"
+            },
+            {
+              "new": 177,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            },
+            {
+              "new": 178,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 179,
+              "old": null,
+              "op": "+",
+              "text": "func (*fileLoader) linkServices(compose *Compose, baseDir string) []ValidationIssue {"
+            },
+            {
+              "new": 180,
+              "old": null,
+              "op": "+",
+              "text": "\tvar issues []ValidationIssue"
+            },
+            {
+              "new": 181,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 182,
+              "old": 153,
+              "op": " ",
+              "text": "\tfor ind, service := range compose.Services {"
+            },
+            {
+              "new": 183,
+              "old": 154,
+              "op": " ",
+              "text": "\t\tresolveNetworkAliases(service.Networks, compose.Networks)"
+            },
+            {
+              "new": 184,
+              "old": 155,
+              "op": " ",
+              "text": ""
+            }
+          ],
+          "new_start": 154,
+          "old_start": 149
+        },
+        {
+          "lines": [
+            {
+              "new": 195,
+              "old": 166,
+              "op": " ",
+              "text": "\t\t\t}"
+            },
+            {
+              "new": 196,
+              "old": 167,
+              "op": " ",
+              "text": "\t\t}"
+            },
+            {
+              "new": 197,
+              "old": 168,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 169,
+              "op": "-",
+              "text": "\t\tinitJobs, err := normalizeInitJobs(service.InitJobs, compose.Networks)"
+            },
+            {
+              "new": null,
+              "old": 170,
+              "op": "-",
+              "text": "\t\tif err != nil {"
+            },
+            {
+              "new": null,
+              "old": 171,
+              "op": "-",
+              "text": "\t\t\treturn fmt.Errorf(\"load init jobs for service %q: %w\", service.Name, err)"
+            },
+            {
+              "new": 198,
+              "old": null,
+              "op": "+",
+              "text": "\t\tinitJobs, jobIssues := normalizeInitJobs(service.InitJobs, compose.Networks)"
+            },
+            {
+              "new": 199,
+              "old": null,
+              "op": "+",
+              "text": "\t\tfor _, issue := range jobIssues {"
+            },
+            {
+              "new": 200,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tissue.ResourceType = \"service\""
+            },
+            {
+              "new": 201,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tissue.ResourceName = service.Name"
+            },
+            {
+              "new": 202,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tissues = append(issues, issue)"
+            },
+            {
+              "new": 203,
+              "old": 172,
+              "op": " ",
+              "text": "\t\t}"
+            },
+            {
+              "new": 204,
+              "old": 173,
+              "op": " ",
+              "text": "\t\tservice.InitJobs = initJobs"
+            },
+            {
+              "new": 205,
+              "old": 174,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 206,
+              "old": 175,
+              "op": " ",
+              "text": "\t\tcompose.Services[ind] = service"
+            },
+            {
+              "new": 207,
+              "old": 176,
+              "op": " ",
+              "text": "\t}"
+            },
+            {
+              "new": 208,
+              "old": 177,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 178,
+              "op": "-",
+              "text": "\treturn nil"
+            },
+            {
+              "new": 209,
+              "old": null,
+              "op": "+",
+              "text": "\treturn issues"
+            },
+            {
+              "new": 210,
+              "old": 179,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 211,
+              "old": 180,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 212,
+              "old": 181,
+              "op": " ",
+              "text": "type objectFileContents map[string][]byte"
+            }
+          ],
+          "new_start": 195,
+          "old_start": 166
+        }
+      ],
+      "kind": "code",
+      "language": null,
+      "path": "internal/compose/file.go",
+      "removed": 11,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 9,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 18,
+              "old": 18,
+              "op": " ",
+              "text": "\tTimeout     specw.Duration   `yaml:\"timeout\" json:\"timeout,omitempty\"`"
+            },
+            {
+              "new": 19,
+              "old": 19,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 20,
+              "old": 20,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 21,
+              "op": "-",
+              "text": "func normalizeInitJobs(jobs []InitJob, networks map[string]Network) ([]InitJob, error) {"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "func normalizeInitJobs(jobs []InitJob, networks map[string]Network) ([]InitJob, []ValidationIssue) {"
+            },
+            {
+              "new": 22,
+              "old": null,
+              "op": "+",
+              "text": "\tvar issues []ValidationIssue"
+            },
+            {
+              "new": 23,
+              "old": 22,
+              "op": " ",
+              "text": "\tfor i := range jobs {"
+            },
+            {
+              "new": 24,
+              "old": 23,
+              "op": " ",
+              "text": "\t\tif jobs[i].Image == \"\" {"
+            },
+            {
+              "new": null,
+              "old": 24,
+              "op": "-",
+              "text": "\t\t\treturn nil, fmt.Errorf(\"init-jobs[%d]: image is required\", i)"
+            },
+            {
+              "new": 25,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tissues = append(issues, ValidationIssue{"
+            },
+            {
+              "new": 26,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t\tField:   fmt.Sprintf(\"init-jobs[%d].image\", i),"
+            },
+            {
+              "new": 27,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t\tCode:    IssueCodeRequired,"
+            },
+            {
+              "new": 28,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t\tMessage: \"image is required\","
+            },
+            {
+              "new": 29,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\t})"
+            },
+            {
+              "new": 30,
+              "old": null,
+              "op": "+",
+              "text": "\t\t\tcontinue"
+            },
+            {
+              "new": 31,
+              "old": 25,
+              "op": " ",
+              "text": "\t\t}"
+            },
+            {
+              "new": 32,
+              "old": 26,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 33,
+              "old": 27,
+              "op": " ",
+              "text": "\t\tresolveNetworkAliases(jobs[i].Networks, networks)"
+            }
+          ],
+          "new_start": 18,
+          "old_start": 18
+        },
+        {
+          "lines": [
+            {
+              "new": 36,
+              "old": 30,
+              "op": " ",
+              "text": "\t\t}"
+            },
+            {
+              "new": 37,
+              "old": 31,
+              "op": " ",
+              "text": "\t}"
+            },
+            {
+              "new": 38,
+              "old": 32,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": null,
+              "old": 33,
+              "op": "-",
+              "text": "\treturn jobs, nil"
+            },
+            {
+              "new": 39,
+              "old": null,
+              "op": "+",
+              "text": "\treturn jobs, issues"
+            },
+            {
+              "new": 40,
+              "old": 34,
+              "op": " ",
+              "text": "}"
+            }
+          ],
+          "new_start": 36,
+          "old_start": 30
+        }
+      ],
+      "kind": "code",
+      "language": null,
+      "path": "internal/compose/initjob.go",
+      "removed": 3,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 21,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "package git"
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": "import ("
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "\t\"context\""
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "\t\"io/fs\""
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "\t\"testing\""
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "\t\"github.com/stretchr/testify/assert\""
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "\t\"github.com/stretchr/testify/require\""
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": ")"
+            },
+            {
+              "new": 11,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 12,
+              "old": null,
+              "op": "+",
+              "text": "func TestGoGitRepositoryReadFileWrapsOriginalError(t *testing.T) {"
+            },
+            {
+              "new": 13,
+              "old": null,
+              "op": "+",
+              "text": "\tt.Parallel()"
+            },
+            {
+              "new": 14,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 15,
+              "old": null,
+              "op": "+",
+              "text": "\trepo := &GoGitRepository{path: t.TempDir()}"
+            },
+            {
+              "new": 16,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 17,
+              "old": null,
+              "op": "+",
+              "text": "\t_, err := repo.ReadFile(context.Background(), \"missing.yaml\")"
+            },
+            {
+              "new": 18,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 19,
+              "old": null,
+              "op": "+",
+              "text": "\trequire.ErrorIs(t, err, fs.ErrNotExist)"
+            },
+            {
+              "new": 20,
+              "old": null,
+              "op": "+",
+              "text": "\tassert.Contains(t, err.Error(), `\"missing.yaml\"`)"
+            },
+            {
+              "new": 21,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "test",
+      "language": null,
+      "path": "internal/modules/gitops/git/read_file_test.go",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    },
+    {
+      "added": 6,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 66,
+              "old": 66,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 67,
+              "old": 67,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 68,
+              "old": 68,
+              "op": " ",
+              "text": "func (r *GoGitRepository) ReadFile(_ context.Context, path string) ([]byte, error) {"
+            },
+            {
+              "new": null,
+              "old": 69,
+              "op": "-",
+              "text": "\tfullPath := filepath.Join(r.path, path)"
+            },
+            {
+              "new": null,
+              "old": 70,
+              "op": "-",
+              "text": "\treturn os.ReadFile(fullPath)"
+            },
+            {
+              "new": 69,
+              "old": null,
+              "op": "+",
+              "text": "\tcontent, err := os.ReadFile(filepath.Join(r.path, path))"
+            },
+            {
+              "new": 70,
+              "old": null,
+              "op": "+",
+              "text": "\tif err != nil {"
+            },
+            {
+              "new": 71,
+              "old": null,
+              "op": "+",
+              "text": "\t\treturn nil, fmt.Errorf(\"read repository file %q: %w\", path, err)"
+            },
+            {
+              "new": 72,
+              "old": null,
+              "op": "+",
+              "text": "\t}"
+            },
+            {
+              "new": 73,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 74,
+              "old": null,
+              "op": "+",
+              "text": "\treturn content, nil"
+            },
+            {
+              "new": 75,
+              "old": 71,
+              "op": " ",
+              "text": "}"
+            },
+            {
+              "new": 76,
+              "old": 72,
+              "op": " ",
+              "text": ""
+            },
+            {
+              "new": 77,
+              "old": 73,
+              "op": " ",
+              "text": "func (r *GoGitRepository) Pull(ctx context.Context) (PullResult, error) {"
+            }
+          ],
+          "new_start": 66,
+          "old_start": 66
+        }
+      ],
+      "kind": "code",
+      "language": null,
+      "path": "internal/modules/gitops/git/repository.go",
+      "removed": 2,
+      "sensitive": null,
+      "status": "modified",
+      "symbols": []
+    },
+    {
+      "added": 10,
+      "hunks": [
+        {
+          "lines": [
+            {
+              "new": 1,
+              "old": null,
+              "op": "+",
+              "text": "// Package faults provides common classification of technical failures."
+            },
+            {
+              "new": 2,
+              "old": null,
+              "op": "+",
+              "text": "package faults"
+            },
+            {
+              "new": 3,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 4,
+              "old": null,
+              "op": "+",
+              "text": "// Error is an error with a technical classification."
+            },
+            {
+              "new": 5,
+              "old": null,
+              "op": "+",
+              "text": "type Error interface {"
+            },
+            {
+              "new": 6,
+              "old": null,
+              "op": "+",
+              "text": "\terror"
+            },
+            {
+              "new": 7,
+              "old": null,
+              "op": "+",
+              "text": ""
+            },
+            {
+              "new": 8,
+              "old": null,
+              "op": "+",
+              "text": "\t// Temporary reports whether the failure may disappear on retry."
+            },
+            {
+              "new": 9,
+              "old": null,
+              "op": "+",
+              "text": "\tTemporary() bool"
+            },
+            {
+              "new": 10,
+              "old": null,
+              "op": "+",
+              "text": "}"
+            }
+          ],
+          "new_start": 1,
+          "old_start": 0
+        }
+      ],
+      "kind": "code",
+      "language": null,
+      "path": "internal/shared/faults/faults.go",
+      "removed": 0,
+      "sensitive": null,
+      "status": "added",
+      "symbols": []
+    }
+  ],
+  "head_sha": "2f7696dda0342ae9d5b2bfdf76bc57d64dc890a5",
+  "pr": "swarm-deploy/swarm-deploy#116",
+  "symbols": [],
+  "title": "Add shared faults package and structured compose errors",
+  "tour": [
+    {
+      "focus": [],
+      "kind": "overview",
+      "via": null
+    },
+    {
+      "focus": [],
+      "kind": "summary",
+      "via": null
+    }
+  ],
+  "url": "https://github.com/swarm-deploy/swarm-deploy/pull/116"
+}

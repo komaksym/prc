@@ -11,3 +11,4 @@ Report untested entry points explicitly.
 - [Board tools](board.md) covers guide, code lookup, coverage, and receipt checks.
 - [Review state](review.md) covers local review, freshness, and decisions.
 - [Skill installation](install.md) covers disposable Claude and Codex destinations.
+- [Paired session hub](paired.md) covers every hub button path with refusal recovery. Hub changes require `scripts/verify_paired_hub.py` PASS and cited proof. Operator-facing handoffs require scripts/handoff_study_hub.py with its supervised record under artifacts/handoff/.

@@ -1,0 +1,648 @@
+{
+  "edges": [
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "hero",
+      "files": [],
+      "from": "s3",
+      "id": "e3",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s8",
+      "id": "e5",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s13",
+      "id": "e11",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s8",
+      "id": "e6",
+      "kind": "call",
+      "to": "s17"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s13",
+      "id": "e12",
+      "kind": "call",
+      "to": "s17"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s19",
+      "id": "e14",
+      "kind": "call",
+      "to": "s2"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s19",
+      "id": "e15",
+      "kind": "call",
+      "to": "s6"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s19",
+      "id": "e16",
+      "kind": "call",
+      "to": "s14"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s19",
+      "id": "e17",
+      "kind": "call",
+      "to": "s15"
+    },
+    {
+      "animated": false,
+      "delta": "added",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s19",
+      "id": "e18",
+      "kind": "call",
+      "to": "s16"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s0",
+      "id": "e0",
+      "kind": "call",
+      "to": "s3"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s1",
+      "id": "e1",
+      "kind": "call",
+      "to": "s3"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s2",
+      "id": "e2",
+      "kind": "call",
+      "to": "s3"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s5",
+      "id": "e4",
+      "kind": "call",
+      "to": "s3"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s9",
+      "id": "e7",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s10",
+      "id": "e8",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s11",
+      "id": "e9",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s12",
+      "id": "e10",
+      "kind": "call",
+      "to": "s4"
+    },
+    {
+      "animated": false,
+      "delta": "unchanged",
+      "emphasis": "normal",
+      "files": [],
+      "from": "s18",
+      "id": "e13",
+      "kind": "call",
+      "to": "s3"
+    }
+  ],
+  "flows": [],
+  "kind": "graph",
+  "lanes": [
+    {
+      "id": "callers",
+      "label": "Callers"
+    },
+    {
+      "id": "changed",
+      "label": "Changed code"
+    },
+    {
+      "id": "callees",
+      "label": "Callees"
+    },
+    {
+      "id": "tests",
+      "label": "Tests"
+    }
+  ],
+  "layout": {
+    "direction": "right",
+    "laneOrder": [
+      "callers",
+      "changed",
+      "callees",
+      "tests"
+    ]
+  },
+  "lenses": [
+    "architecture"
+  ],
+  "nodes": [
+    {
+      "badges": [
+        "+23 / -2"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 49,
+          "path": "backend/src/librarysync/core/next_episode.py",
+          "revision": "head",
+          "startLine": 17
+        }
+      ],
+      "id": "s4",
+      "kind": "function",
+      "label": "select_next_episode",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+25 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 295,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 271
+        }
+      ],
+      "id": "s19",
+      "kind": "test",
+      "label": "test_find_next_episode_uses_last_watched_episode_across_seasons",
+      "lane": "tests"
+    },
+    {
+      "badges": [
+        "+7 / -5"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 138,
+          "path": "backend/src/librarysync/core/next_episode.py",
+          "revision": "head",
+          "startLine": 116
+        }
+      ],
+      "id": "s3",
+      "kind": "function",
+      "label": "find_next_episodes_bulk",
+      "lane": "changed"
+    },
+    {
+      "badges": [
+        "+10 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 48,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 39
+        }
+      ],
+      "id": "s13",
+      "kind": "test",
+      "label": "TestSelectNextEpisode.test_uses_latest_watched_episode_instead_of_earliest_unwatched",
+      "lane": "tests"
+    },
+    {
+      "badges": [
+        "+3 / -0"
+      ],
+      "delta": "added",
+      "files": [
+        {
+          "endLine": 56,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 54
+        }
+      ],
+      "id": "s8",
+      "kind": "test",
+      "label": "TestSelectNextEpisode.test_does_not_return_earlier_gaps_after_the_last_released_episode",
+      "lane": "tests"
+    },
+    {
+      "badges": [
+        "+2 / -0"
+      ],
+      "delta": "modified",
+      "files": [
+        {
+          "endLine": 59,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 30
+        }
+      ],
+      "id": "s7",
+      "kind": "test",
+      "label": "TestSelectNextEpisode",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 95,
+          "path": "backend/src/librarysync/api/routes_dashboard.py",
+          "revision": "head",
+          "startLine": 39
+        }
+      ],
+      "id": "s0",
+      "kind": "function",
+      "label": "get_up_next",
+      "lane": "callers"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 1265,
+          "path": "backend/src/librarysync/api/routes_history.py",
+          "revision": "head",
+          "startLine": 1250
+        }
+      ],
+      "id": "s1",
+      "kind": "function",
+      "label": "_attach_next_episodes",
+      "lane": "callers"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 113,
+          "path": "backend/src/librarysync/core/next_episode.py",
+          "revision": "head",
+          "startLine": 105
+        }
+      ],
+      "id": "s2",
+      "kind": "function",
+      "label": "find_next_episode",
+      "lane": "callers"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 207,
+          "path": "backend/src/librarysync/core/watch_state_pull.py",
+          "revision": "head",
+          "startLine": 41
+        }
+      ],
+      "id": "s5",
+      "kind": "function",
+      "label": "_build_complete_snapshot",
+      "lane": "callers"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 285,
+          "path": "backend/src/librarysync/db/models.py",
+          "revision": "head",
+          "startLine": 250
+        }
+      ],
+      "id": "s6",
+      "kind": "module",
+      "label": "WatchedItem",
+      "lane": "callees"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 37,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 35
+        }
+      ],
+      "id": "s9",
+      "kind": "test",
+      "label": "TestSelectNextEpisode.test_returns_first_episode_when_nothing_watched",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 33,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 31
+        }
+      ],
+      "id": "s10",
+      "kind": "test",
+      "label": "TestSelectNextEpisode.test_returns_first_unwatched_episode",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 59,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 58
+        }
+      ],
+      "id": "s11",
+      "kind": "test",
+      "label": "TestSelectNextEpisode.test_returns_none_for_empty_list",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 52,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 50
+        }
+      ],
+      "id": "s12",
+      "kind": "test",
+      "label": "TestSelectNextEpisode.test_returns_none_when_all_watched",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 185,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 167
+        }
+      ],
+      "id": "s14",
+      "kind": "test",
+      "label": "_create_episode",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 164,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 155
+        }
+      ],
+      "id": "s15",
+      "kind": "test",
+      "label": "_create_show",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 152,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 148
+        }
+      ],
+      "id": "s16",
+      "kind": "test",
+      "label": "_create_user",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 27,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 19
+        }
+      ],
+      "id": "s17",
+      "kind": "test",
+      "label": "_episode",
+      "lane": "tests"
+    },
+    {
+      "badges": [],
+      "delta": "unchanged",
+      "files": [
+        {
+          "endLine": 268,
+          "path": "backend/tests/test_next_episode.py",
+          "revision": "head",
+          "startLine": 188
+        }
+      ],
+      "id": "s18",
+      "kind": "test",
+      "label": "test_find_next_episode_and_bulk_return_first_released_unwatched",
+      "lane": "tests"
+    }
+  ],
+  "provenance": {
+    "base": {
+      "sha": "e3742c159512078753c40da9226cb5fd72de5444"
+    },
+    "generator": {
+      "name": "prc"
+    },
+    "head": {
+      "sha": "d24bcde9cfb3b1bb93dc77147d0d31f7598a264c"
+    },
+    "pullRequest": {
+      "number": 98,
+      "title": "Fix up-next episode selection for season progression",
+      "url": "https://github.com/willtho89/librarySync/pull/98"
+    },
+    "repo": {
+      "name": "librarySync",
+      "owner": "willtho89"
+    }
+  },
+  "schemaVersion": "0.2.0",
+  "title": "Fix up-next episode selection for season progression",
+  "views": [],
+  "walkthrough": {
+    "steps": [
+      {
+        "body": "Fix up-next episode selection for season progression - 2 files, 6 symbols, 10 calls added, 0 removed.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "What changed",
+        "id": "w0"
+      },
+      {
+        "body": "Changed +7 -5; backend/src/librarysync/core/next_episode.py.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s3"
+          ]
+        },
+        "heading": "find_next_episodes_bulk",
+        "id": "w1"
+      },
+      {
+        "body": "Changed +23 -2; called by find_next_episodes_bulk.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s4"
+          ]
+        },
+        "heading": "select_next_episode",
+        "id": "w2"
+      },
+      {
+        "body": "Changed test changed.",
+        "focus": {
+          "edges": [],
+          "kind": "selection",
+          "lanes": [],
+          "messages": [],
+          "nodes": [
+            "s7",
+            "s8",
+            "s13",
+            "s19"
+          ]
+        },
+        "heading": "Test TestSelectNextEpisode",
+        "id": "w3"
+      },
+      {
+        "body": "Direct test-call evidence found for all live changed production symbols in this map.",
+        "focus": {
+          "kind": "all"
+        },
+        "heading": "Summary",
+        "id": "w4"
+      }
+    ]
+  }
+}

@@ -443,3 +443,91 @@ def test_tour_has_one_test_step_with_at_most_six_tests(tmp_path: Path) -> None:
         ("test", tuple(f"tests/test_a.py::test_{n}" for n in range(6))),
         ("summary", ()),
     ]
+
+
+def test_object_handler_change_links_imported_test_caller(tmp_path: Path) -> None:
+    from prc.facts import compute_facts
+    from prc.identity import to_jsonable
+
+    base = {"command.ts": b"export const command = { exec() { return 0; } };\n"}
+    head = {
+        "command.ts": b"export const command = { exec() { return 1; } };\n",
+        "tests/test_command.ts": (
+            b'import { command } from "../command";\n'
+            b"function test_exec() { return command.exec(); }\n"
+        ),
+    }
+    change = custom_map(tmp_path, base, head)
+    symbols = by_id(change)
+
+    assert symbols["command.ts::command.exec"].status == "modified"
+    assert "command.ts::command" not in symbols
+    assert {(e.source, e.target, e.resolution) for e in change.edges} == {
+        ("tests/test_command.ts::test_exec", "command.ts::command.exec", "exact"),
+    }
+    missing = {entry.id for entry in compute_facts(to_jsonable(change)).no_direct_test}
+
+    assert "command.ts::command.exec" not in missing
+
+
+def test_quoted_property_change_has_no_nested_test_evidence(tmp_path: Path) -> None:
+    import json
+
+    from prc.facts import compute_facts
+    from prc.identity import to_jsonable
+
+    base = {
+        "command.ts": (
+            b"export const command = {\n"
+            b'  "nested.run": () => 1,\n'
+            b"  nested: { run: () => 11 },\n"
+            b"};\n"
+        ),
+        "tests/test_command.ts": (
+            b'import { command } from "../command";\n'
+            b"function test_run() { return command.nested.run(); }\n"
+        ),
+    }
+    head = {**base, "command.ts": base["command.ts"].replace(b"=> 1,", b"=> 2,")}
+    change = custom_map(tmp_path, base, head)
+    symbols = by_id(change)
+    changed = 'command.ts::command["nested.run"]'
+
+    assert changed in symbols
+    assert symbols[changed].status == "modified"
+    assert symbols[changed].span == (2, 2)
+    assert not any(edge.target == changed for edge in change.edges)
+    facts = compute_facts(to_jsonable(change))
+    assert {entry.id for entry in facts.no_direct_test} == {changed}
+    assert facts.stats.untested_total == 1
+    assert facts.test_verdict == (
+        "No direct test evidence in this map for any live changed production symbol."
+    )
+    (tmp_path / "collision-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
+    (tmp_path / "collision-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))
+
+
+def test_literal_backslash_key_change_has_no_exact_test_evidence(tmp_path: Path) -> None:
+    import json
+
+    from prc.facts import compute_facts
+    from prc.identity import to_jsonable
+
+    base = {
+        "command.js": rb'export const command = { "\\u0072un": () => 1 };',
+        "tests/test_command.js": (
+            b'import { command } from "../command";\n'
+            rb"function test_run() { return command.\u0072un(); }"
+        ),
+    }
+    head = {**base, "command.js": base["command.js"].replace(b"=> 1", b"=> 2")}
+    change = custom_map(tmp_path, base, head)
+    facts = compute_facts(to_jsonable(change))
+    (tmp_path / "literal-key-map.json").write_text(json.dumps(to_jsonable(change), indent=2))
+    (tmp_path / "literal-key-facts.json").write_text(json.dumps(to_jsonable(facts), indent=2))
+    changed = 'command.js::command["\\\\u0072un"]'
+
+    assert {entry.id for entry in facts.no_direct_test} == {changed}
+    assert by_id(change)[changed].status == "modified"
+    assert change.edges == ()
+    assert facts.stats.untested_total == 1

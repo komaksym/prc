@@ -109,3 +109,118 @@ Append one entry per stage or session. Newest at the bottom. Label every number 
 - Pipeline tests use synthesis doubles. Real Kokoro synthesis remains UNVERIFIED because the voice dependencies are unavailable in this environment.
 - The original source and its exact patch remain in private recovery evidence outside this checkout.
 - The parent supplied the process image in `.codex-pr-infographics/source-recovery-r4/`. It explains recovery gates, not completed runtime or release acceptance.
+
+## 2026-10-08. Public release readiness
+
+- Assessed whether prc is ready to release as a useful pull request visualizer. The report is `docs/launch/READINESS-2026-10-08.md`. The decision trail is `.audit/readiness-2026-10-08.tsv`.
+- Verdict is not ready (inferred from measured checks). A fresh public clone at `eeaba4b` installs on one Mac and fetches six unseen live pull requests. Output accuracy, usefulness evidence, the fresh-clone test suite, and license and distribution fail.
+- Two fresh agents with only the installed instructions finished the board workflow, and each logged many instruction problems. Two defects reproduced. `board check` passes a blank diff row that `explain` rejects, and `layout_warnings` misses a note over code.
+- Added `scripts/probe-public.sh`. It reruns the clone, install, offline example and boardless explain path. It starts with an empty uv cache, records the environment, and exits 1 if a step fails.
+- Proof, ignored by git, is in `artifacts/readiness/2026-10-08/` (u1 install, u3 live pull requests, u4 trials, u5 frames and repros, u9 report screenshots, tmp-copy). Key images are tracked in `docs/launch/evidence/readiness-2026-10-08/`.
+- Verify in the worktree passed. ruff check, ruff format, mypy (97 source files), pytest (572 passed in 259.89 s) and uv build exit 0. The fresh clone fails one release test because its uv cache is cold (D16). shellcheck is not installed; `bash -n` passes on the probe script.
+- Accepted six independent review flags. Corrected the baseline conclusion, probe exit status, install evidence, D15 evidence, voice limits and private-path count. The `say` example has non-silent audio; human listening and Kokoro remain untested.
+- No push and no PR. START-HERE.md requires the owner's yes.
+
+
+## Trustworthy facts, 2026-10-09
+
+The domain facts module supplies card, comment, and map totals. Static calls are qualified as evidence, not test coverage.
+Regressions include unsupported Go, TypeScript object handlers, browser-test paths, large-text counts, dependency risk, and the original librarySync decorator case.
+Proof lives under `artifacts/trustworthiness/2026-10-09/regressions/`. `stats-green.png` shows one test file for two test functions. `dense-green.png` and `dense-member-green.png` show readable groups and member names.
+The milestone is still in progress. Rendering, clean-cache installation, and human acceptance remain open.
+
+## Trustworthy PR explanation evidence, 2026-10-09
+
+The implementation and acceptance package pass at b880513. Human acceptance remains pending.
+Facts, static-call qualifications and changed-line coverage stay consistent across outputs.
+Regression fixes cover the assessment's D1 to D17 and defects found in later browser and model reviews.
+Quoted property identities, token-independent wrapping, required reveals and malformed boards have regression cases.
+
+`bash scripts/verify-release.sh` passed with an empty uv cache in `artifacts/release/verify/run-TnN2MF`.
+Ruff, formatting, mypy on 103 source files, wheel and sdist builds passed.
+Pytest passed 802 tests with no failures, errors or skips.
+The installed wheel produced all five outputs outside the source checkout. Its 1080p video lasts 41.008 seconds.
+The source archive comparison matches all source, test and script bytes to b880513.
+
+The acceptance package is `artifacts/trustworthiness/2026-10-09/acceptance/index.html`.
+It contains librarySync#98, em#5756 and swarm-deploy#116, their original diffs and their pinned base/head revisions.
+Each case includes a map, narrated video, walkthrough, card, comment, provenance and output hashes.
+Changed lines on screen are 16/79, 3/112 and 5/329. The package lists omitted lines and unsupported files.
+Chromium checks passed for every map, drawer, card, walkthrough and actual MP4 playback.
+The parent inspected final browser images and all 19 settled video scenes.
+Vercel agent-browser checked 35 local review links, three playing videos and map navigation without browser errors.
+Proof is in `acceptance/hub-browser-b880513`. The headless session is closed.
+
+Independent model reviews used GPT, Muse and GLM. Reproduced defects were corrected before final verification.
+The final GPT recheck found no new regression. Review reports are in `.audit/trust-*-review*.md`.
+DeepSeek checked the final decision trail against the transcript and durable proof. It found no high or medium issues.
+Minor evidence gaps are corrected or disclosed in `.audit/trust-milestone-trail-final-review.md`.
+The user is the only human reviewer. The worksheet retains three pending decisions.
+External project tests and human narration listening remain unverified. Kokoro is not installed.
+No push or new PR is approved. License, package-name and publication decisions remain separate.
+The full milestone record is `docs/launch/TRUSTWORTHY-PR-EXPLANATIONS.md`.
+
+## Final trustworthy PR inspection, 2026-10-09
+
+The machine work for the trustworthy PR explanation milestone is complete at source 548d8ab.
+The user is the only human reviewer. All three acceptance decisions remain pending.
+Public release evaluation and publication decisions remain separate.
+
+The earlier entry overstated complete card inspection and 35 hub clicks at b880513.
+Those claims are superseded by the final inventory and executed browser records below.
+Historical entries and their measured test counts remain unchanged.
+
+`scripts/verify-release.sh` passed from an empty uv cache in `artifacts/release/verify/run-uVHho9`.
+It passed lint, formatting, mypy on 104 files, 812 tests without failures, errors or skips, and wheel and source builds.
+The source archive matches 237 code, test, script and metadata paths at 548d8ab.
+The installed wheel produced all five outputs outside source. Its browser record reports no errors.
+The parent inspected its five browser images. Its video is 1920x1080 at 30 fps and lasts 41.008 seconds.
+
+The final wheel rebuilt all three acceptance cases at `artifacts/trustworthiness/2026-10-09/acceptance`.
+Its installed-package verifier confirms original diffs, code quotes, per-file totals, revisions, merge evidence and hashes.
+All 35 local links passed in background Vercel agent-browser with a screenshot per result. The session is closed.
+Proof is `acceptance/verification.json` and `acceptance/hub-browser-548d8ab/checks.json` within that directory.
+
+Direct model inspection covers three cards, 21 complete-walkthrough segments and 19 decoded video scenes.
+All 43 image hashes match. Video pixels match each final MP4. The walkthrough segments cover every page without gaps.
+Proof is `artifacts/trustworthiness/2026-10-09/inspection-548d8ab/inspection-results.json` and `artifact-bindings.json`.
+These checks do not replace human judgment of usefulness or narration.
+
+Tests for D18 to D24 landed at cadf6f9 before fixes at 548d8ab. All 15 final regressions pass.
+Independent GLM correctness review found no remaining defect in that delta.
+The final comment review requested two narrative removals; both are complete without changing executable test logic.
+The focused test, full ruff checks, mypy and git diff checks pass after those removals.
+Reports are `.audit/trust-final-inspection-review.md`, `.audit/trust-inspection-comments-review.md` and `.audit/trust-final-inspection-closure.md`.
+
+Next step. The user reviews the three cases and completes `acceptance.md` in the final acceptance directory.
+
+## GitHub browser baseline, 2026-10-09
+
+The user chose the normal GitHub PR page as the human review baseline.
+The packet and worksheet now direct the user to review on GitHub.
+The baseline includes description, Files changed, discussion, checks and navigation.
+Scores measure the extra help each PRC output adds beyond that baseline, from 1 to 5.
+Each case has fields for baseline notes, added help, preferred formats, would-use judgment and correctness findings.
+All three human decisions remain pending. Retained raw diffs are optional verification evidence.
+
+Read-only `gh api` checks confirm all three GitHub base/head pairs, file counts and line totals match the captured cases.
+The browser check initially lacked the baseline and grading instructions. Both appear after the update.
+Background Vercel agent-browser screenshots confirm readable instructions. All 35 local and three GitHub destinations are preserved.
+Proof is `.audit/github-review-baseline.json` and `artifacts/trustworthiness/2026-10-09/github-baseline/{before,after}.png`.
+Product source and rendered outputs remain unchanged. The frozen agent evaluation keeps its existing protocol.
+
+Next step. The user reviews the three PRs on GitHub and records the extra help from PRC in the worksheet.
+
+
+## Step 1 machine verification, 2026-10-10
+
+Source be2e7fa passes run-NYgULN from an empty uv package cache. All 855 tests pass with no skips.
+Static checks, build, installed-wheel browser interaction and forced Kokoro audio smoke pass. Chromium and model weights were reused.
+The three frozen real PRs now include one gated baoyu infographic, the PR Lens map and Kokoro narration.
+Original revisions, diffs, counts, quoted code and output hashes match. All 41 local hub links pass.
+Independent visual inspection covers 44 inventory images and 39 active-caption samples. Readability limits remain documented.
+Full soundtrack transcription and sampled waveform comparison support the machine audio checks. They do not prove listening.
+This runtime cannot receive audio input. s2e3, onComplete and ErrNotExist have explicit listening checks in the worksheet.
+The goal stays open for direct listening. Human acceptance, public release, push and PR creation remain gated.
+
+Next step. Review the complete three-case package and record the listening and usefulness judgments.

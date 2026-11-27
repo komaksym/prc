@@ -12,7 +12,10 @@ import html
 from pathlib import Path
 from typing import Any
 
+from prc.captions import shown, shown_html
+from prc.explainer.preflight import cited_refs, line_coverage
 from prc.explainer.render import ASSETS, board_json
+from prc.presentation.infographic import DISCLOSURE
 
 # Fixed template strings: the only chrome the doc may add. Every other string
 # is a board sentence or map-verbatim (titles, paths, numbers, shas).
@@ -27,15 +30,18 @@ TEMPLATE_STRINGS = frozenset(
         "Files and symbols this board leaves out.",
         "Changed files not shown",
         "Changed symbols not shown",
+        "Changed lines not shown",
+        "Some changed lines have no line refs and cannot be quoted.",
         "Everything changed is on screen.",
         "Built by prc explain from the checked board.",
+        DISCLOSURE,
     }
 )
 
 
 def captions(scene: dict[str, Any]) -> list[str]:
     """Caption prose: the show text, not the voice spelling."""
-    return [s if isinstance(s, str) else s.get("show", s.get("speak", "")) for s in scene["say"]]
+    return [shown(s) for s in scene["say"]]
 
 
 def receipt_refs(scene: dict[str, Any]) -> list[tuple[str, int, bool]]:
@@ -66,20 +72,9 @@ def receipt_url(
 def uncovered(
     board: dict[str, Any], m: dict[str, Any]
 ) -> tuple[list[tuple[str, str]], list[dict[str, Any]]]:
-    """Changed files and symbols the board does not show. Same rule as board coverage."""
+    """Changed files and symbols the board does not show. Same refs as board coverage."""
     kinds = {f["path"]: f["kind"] for f in m["files"]}
-    shown: set[tuple[str, int]] = set()
-    for s in board["scenes"]:
-        for c in s.get("cite", []):
-            path, n = c["line"].rsplit(":", 1)
-            shown.add((path, int(n)))
-        for it in s.get("items", []):
-            if "cite" in it:
-                path, n = it["cite"].rsplit(":", 1)
-                shown.add((path, int(n)))
-        if s["type"] == "diff":
-            for r in s["lines"]:
-                shown.add((s["file"], int(r["ref"] if isinstance(r, dict) else r)))
+    shown = cited_refs(board)
 
     def hit(sym: dict[str, Any]) -> bool:
         for path, n in shown:
@@ -130,20 +125,26 @@ def header_html(m: dict[str, Any]) -> str:
 
 def _scene_section(board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str, Any]) -> str:
     owner_repo = m["pr"].split("#")[0]
-    prose = "\n".join(f'<p class="prose">{html.escape(line)}</p>' for line in captions(s))
+    prose = "\n".join(f'<p class="prose">{shown_html(line)}</p>' for line in captions(s))
     receipts = ""
     links = [
-        (receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed), path, n)
+        (
+            receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, n, removed),
+            path,
+            n,
+            removed,
+        )
         for path, n, removed in receipt_refs(s)
     ]
     seen: set[str] = set()
     items = []
-    for href, path, n in links:
+    for href, path, n, removed in links:
         if href in seen:
             continue
         seen.add(href)
+        label = f"{path}#L{n} (removed)" if removed else f"{path}#L{n}"
         items.append(
-            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(path)}#L{n}</a></li>'
+            f'<li><a class="receipt" href="{html.escape(href)}">{html.escape(label)}</a></li>'
         )
     if items:
         receipts = "<h3>Receipts</h3>\n" + '<ul class="receipts">\n' + "\n".join(items) + "\n</ul>"
@@ -160,10 +161,31 @@ def _scene_section(board: dict[str, Any], i: int, s: dict[str, Any], m: dict[str
 
 def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
     files, syms = uncovered(board, m)
-    if not files and not syms:
-        body = "<p>Everything changed is on screen.</p>"
+    cov = line_coverage(board, m)
+    missing = cov["missing"]
+    unavail = cov["unavailable"]
+    count = f"<p>{cov['shown']} of {cov['total']} changed lines are on screen.</p>"
+    if not missing and not files and not syms and not unavail:
+        body = f"{count}\n<p>Everything changed is on screen.</p>"
     else:
-        parts = ["<p>Files and symbols this board leaves out.</p>"]
+        parts = [count, "<p>Files and symbols this board leaves out.</p>"]
+        if unavail:
+            parts.append("<p>Some changed lines have no line refs and cannot be quoted.</p>")
+        if missing:
+            owner_repo = m["pr"].split("#")[0]
+            items = []
+            for ref in missing:
+                path, n = ref.rsplit(":", 1)
+                removed = n.startswith("-")
+                num = abs(int(n))
+                href = receipt_url(owner_repo, m["head_sha"], m["base_sha"], path, num, removed)
+                label = f"{path}#L{num} (removed)" if removed else f"{path}#L{num}"
+                items.append(
+                    f'<li><a class="leftout" href="{html.escape(href)}">'
+                    f"{html.escape(label)}</a></li>"
+                )
+            rows = "\n".join(items)
+            parts.append(f'<h3>Changed lines not shown</h3>\n<ul class="receipts">\n{rows}\n</ul>')
         if files:
             rows = "\n".join(
                 f"<li><code>{html.escape(p)}</code> <span>{html.escape(k)}</span></li>"
@@ -184,7 +206,12 @@ def _not_covered(board: dict[str, Any], m: dict[str, Any]) -> str:
 
 
 def render_doc(
-    board: dict[str, Any], m: dict[str, Any], out_dir: Path, duration: float, has_video: bool
+    board: dict[str, Any],
+    m: dict[str, Any],
+    out_dir: Path,
+    duration: float,
+    has_video: bool,
+    infographic: bytes | None = None,
 ) -> str:
     """Write doc.html beside video.mp4. `board` must be filled and timed (as render leaves it)."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -194,6 +221,15 @@ def render_doc(
         else ""
     )
     sections = "\n".join(_scene_section(board, i, s, m) for i, s in enumerate(board["scenes"]))
+    figure = ""
+    if infographic is not None:
+        src = base64.b64encode(infographic).decode()
+        figure = (
+            '<figure class="infographic">'
+            f'<img src="data:image/png;base64,{src}" alt="{DISCLOSURE}">'
+            f"<figcaption>{DISCLOSURE}</figcaption></figure>"
+        )
+
     script = (
         f"window.DOC = {board_json(board)};\n"
         + (ASSETS / "engine.js").read_text()
@@ -233,7 +269,7 @@ def render_doc(
         '<link rel="icon" href="data:,">'
         f"<title>{html.escape(m['title'])}</title><style>{css}</style></head>\n"
         '<body class="doc">\n'
-        f"{header_html(m)}\n{video}"
+        f"{header_html(m)}\n{video}{figure}"
         f"{sections}\n{_not_covered(board, m)}\n"
         "<footer><p>Built by prc explain from the checked board.</p>"
         f"<p><code>{m['head_sha']}</code></p></footer>\n"

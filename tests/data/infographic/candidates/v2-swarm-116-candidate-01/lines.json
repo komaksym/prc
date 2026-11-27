@@ -1,0 +1,19 @@
+{
+  "title": "Compose failures now have distinct error types.",
+  "lines": [
+    "Compose failures now have distinct error types.",
+    "Read failure",
+    "ReadComposeError",
+    "YAML syntax failure",
+    "ParseComposeError",
+    "Schema validation failure",
+    "ValidateComposeError",
+    "7 files",
+    "0 parsed symbols changed",
+    "CI 4/4 passed",
+    "Look here first",
+    "file-level change in internal/compose/file.go",
+    "No parsed symbol changes. Top-level and unrecognized changes can remain.",
+    "Infographic drawn by AI. Words from prc."
+  ]
+}

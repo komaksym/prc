@@ -28,11 +28,12 @@ def test_coverage_is_a_development_dependency_with_product_wide_settings() -> No
 
 def test_release_verifier_uses_its_existing_pytest_run_for_one_coverage_report() -> None:
     script = (ROOT / "scripts" / "verify-release.sh").read_text()
-    run = 'coverage run -m pytest -q --junitxml="$proof/tests.xml"'
+    run = 'coverage run -m pytest "${pytest_args[@]}"'
     report = 'coverage xml -o "$proof/coverage.xml"'
     assert script.count("coverage run -m pytest") == 1, "reuse the one full release suite"
     assert script.count("coverage xml") == 1, "write one report for this isolated run"
-    assert "uv run --offline pytest" not in script, "do not run a second full suite"
+    assert 'pytest_args+=(-m "not needs_recognizer")' in script
+    assert " pytest -q " not in script, "run both selections under coverage"
     assert run in script
     assert report in script
     assert script.index(run) < script.index(report)

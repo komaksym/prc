@@ -1,0 +1,21 @@
+{
+  "lines": [
+    "How a PR infographic gets made",
+    "Checked facts",
+    "from the code",
+    "Label list",
+    "PRC writes every label",
+    "baoyu-infographic",
+    "agent draws the image",
+    "Label check",
+    "OCR text must match the list",
+    "Pass",
+    "Shown on the review page",
+    "Fail",
+    "Redraw, never paint over",
+    "up to 2 redraws",
+    "Still failing: card only, recorded in run.json",
+    "The model picks the look. PRC owns every word."
+  ],
+  "title": "How a PR infographic gets made"
+}

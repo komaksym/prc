@@ -7,6 +7,7 @@ import json
 import shutil
 import sys
 import tempfile
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -23,13 +24,14 @@ from prc.explainer.timing import predict as predict_seconds
 from prc.explainer.voice import Backend
 from prc.explainer.voice import select as select_voice
 from prc.freshness import FreshnessReport, StoredBasis, reconcile
-from prc.gitutil import list_paths
+from prc.gitutil import GitError, list_paths, read_blob
 from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_hex, to_jsonable
 from prc.model import PrRef
+from prc.presentation import infographic
 from prc.presentation.build import build_document
 from prc.presentation.card import CardError
 from prc.presentation.card import build_card_html as build_pr_card_html
-from prc.presentation.card import render_card_png as render_pr_card_png
+from prc.presentation.card import render_card as render_pr_card
 from prc.presentation.check import (
     check_document,
     check_entry,
@@ -183,7 +185,11 @@ class BriefResult:
 def _acquire_brief(
     source: PullRequestSource, ref: PrRef, clock: Clock, policy: EligibilityPolicy
 ) -> tuple[Acquisition, Path, Brief]:
+    from prc.source import SourceError
+
     bundle = capture_bundle(source, ref, clock)
+    if bundle.consistency != "stable":
+        raise SourceError(bundle.gaps[-1])
     repo = source.repo_path(ref)
     acquisition = build_snapshot(bundle, source.label, source.live_verified, repo, policy)
     comparison = acquisition.snapshot.comparison
@@ -331,6 +337,10 @@ def run_decide(
     return decision_id, report
 
 
+class InfographicMissingError(RuntimeError):
+    """No gated infographic was published for a board build."""
+
+
 class ExplainCheckError(RuntimeError):
     """A board that failed the checker, one line per error."""
 
@@ -350,6 +360,7 @@ class ExplainResult:
     duration: float
     estimate: float
     check_passed: bool
+    infographic: Path | None = None
 
 
 def _live_map_dict(
@@ -538,6 +549,7 @@ def run_explain(
     map_path: Path | None = None,
     voice: str = "auto",
     git_dir: str | None = None,
+    infographics: Sequence[Path] = (),
 ) -> ExplainResult:
     used, live_dict, change_map, repo = load_map_dict(source, ref, clock, policy, map_path)
     map_source = "stored" if map_path is not None else "live"
@@ -594,20 +606,91 @@ def run_explain(
             duration, warnings = rendered.duration, rendered.layout_warnings
             video = out_dir / "video.mp4"
             predicted = predict_seconds(board, backend)
-            render_explain_doc(board, used, work, duration, has_video=True)
+        sources: dict[str, str] = {}
+        directory = Path(git_dir) if git_dir is not None else repo
+        for file in rebuilt.get("files", []):
+            if file["path"].endswith((".go", ".py")) and file["status"] != "deleted":
+                try:
+                    sources[file["path"]] = read_blob(
+                        directory, f"{stored_head}:{file['path']}"
+                    ).decode("utf-8")
+                    if file["path"].endswith(".py") and file["status"] != "added":
+                        sources["base:" + file["path"]] = read_blob(
+                            directory, f"{rebuilt['base_sha']}:{file['path']}"
+                        ).decode("utf-8")
+                except (GitError, OSError, UnicodeDecodeError):
+                    continue
+        info_brief = infographic.infobrief(rebuilt, rebuilt.get("brief"), board, sources)
+        info_dir = work / "infographic"
+        info_dir.mkdir(parents=True, exist_ok=True)
+        infographic.write_brief_json(info_brief, info_dir / "brief.json")
+        records: list[dict[str, object]] = []
+        published_path: Path | None = None
+        published_sha: str | None = None
+        graphic_bytes: bytes | None = None
+        for n, cand in enumerate(infographics):
+            raw = infographic.read_png(cand)
+            snapshot = info_dir / f"candidate-{n + 1:02d}.png"
+            snapshot.write_bytes(raw)
+            verdict = infographic.gate(snapshot, info_brief)
+            sha = sha256_hex(raw)
+            records.append(
+                {
+                    "bytes": len(raw),
+                    "constants": verdict.detail.get("constants"),
+                    "invented": [[tok, conf] for tok, conf in verdict.invented],
+                    "missing": [[line, list(toks)] for line, toks in verdict.missing],
+                    "modes": verdict.detail.get("modes"),
+                    "failed_modes": verdict.detail.get("failed_modes"),
+                    "name": cand.name,
+                    "relations": verdict.detail.get("relations"),
+                    "sha256": sha,
+                    "tesseract": verdict.detail.get("tesseract"),
+                    "verdict": verdict.verdict,
+                }
+            )
+            if published_path is None and verdict.verdict == "pass":
+                (work / "infographic.png").write_bytes(raw)
+                published_path = out_dir / "infographic.png"
+                published_sha = sha
+                graphic_bytes = raw
+        (info_dir / "check.json").write_text(json.dumps(records, indent=2, sort_keys=True))
+        if infographics:
+            info_status = "passed" if published_path is not None else "failed"
+        else:
+            info_status = "missing"
+        if board is not None:
+            render_explain_doc(
+                board, used, work, duration, has_video=True, infographic=graphic_bytes
+            )
             doc_out = out_dir / "doc.html"
 
         card_html = out_dir / "card.html"
-        (work / "card.html").write_text(build_pr_card_html(rebuilt, rebuilt.get("brief"), board))
         card_png: Path | None = None
+        card_warning: str | None = None
         try:
-            render_pr_card_png(work / "card.html", work / "card.png")
+            render_pr_card(
+                rebuilt, rebuilt.get("brief"), board, work / "card.html", work / "card.png"
+            )
             card_png = out_dir / "card.png"
         except CardError as error:
+            (work / "card.html").write_text(
+                build_pr_card_html(rebuilt, rebuilt.get("brief"), board)
+            )
             (work / "card.png").unlink(missing_ok=True)
-            warnings = [*warnings, str(error)]
+            card_warning = str(error)
+            warnings = [*warnings, card_warning]
         comment_md = out_dir / "comment.md"
-        (work / "comment.md").write_text(render_pr_comment(rebuilt, rebuilt.get("brief"), board))
+        (work / "comment.md").write_text(
+            render_pr_comment(
+                rebuilt,
+                rebuilt.get("brief"),
+                board,
+                card_available=card_png is not None,
+                card_warning=card_warning,
+                infographic=published_path is not None,
+            )
+        )
 
         run = {
             "source": source.label,
@@ -625,12 +708,30 @@ def run_explain(
             "doc": str(doc_out) if doc_out else None,
             "card": str(card_png) if card_png else None,
             "comment": str(comment_md),
+            "infographic": {
+                "status": info_status,
+                "published_sha256": published_sha,
+                "attempts": [
+                    {key: record[key] for key in ("name", "sha256", "verdict")}
+                    for record in records
+                ],
+            },
             "layout_warnings": warnings,
         }
         run_json = out_dir / "run.json"
         (work / "run.json").write_text(json.dumps(run, indent=2, sort_keys=True))
 
         _publish_explain(work, out_dir)
+
+        if board is not None and published_path is None:
+            raise InfographicMissingError(
+                "prc explain: no gated infographic published (status: " + info_status + "). "
+                "Generate one candidate with the baoyu-infographic technical profile from "
+                + str(out_dir / "infographic" / "brief.json")
+                + " and re-run with --infographic <png>; evidence in "
+                + str(out_dir / "infographic" / "check.json")
+                + ". The build fails instead of publishing the card fallback."
+            )
 
         return ExplainResult(
             out_dir,
@@ -646,4 +747,5 @@ def run_explain(
             duration,
             estimate,
             check_passed,
+            infographic=published_path,
         )
