@@ -73,8 +73,25 @@ jobs:
     needs: [checks, ci]
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions: {}
+    permissions:
+      contents: read
     steps:
       - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
         run: exit 1
+      - if: github.event_name == 'pull_request'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - if: github.event_name == 'pull_request'
+        name: Verify committed infographic bundle
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          verifier=scripts/verify-pr-infographic.py
+          if git cat-file -e "$PR_BASE:$verifier" 2>/dev/null; then
+            git show "$PR_BASE:$verifier" > "$RUNNER_TEMP/pr-infographic.py"
+            verifier="$RUNNER_TEMP/pr-infographic.py"
+          fi
+          python3 "$verifier"
       - run: echo gate passed

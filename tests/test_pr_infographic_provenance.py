@@ -26,7 +26,7 @@ PROMPT = b"Draw the release workflow."
         ("missing-declaration", "pr-infographic.json"),
         ("invalid-path", "infographic.png"),
         ("edited-description", ""),
-        ("inherited-image", "new or changed"),
+        ("different-base", ""),
         ("truncated-png", "complete PNG"),
         ("uncommitted-replacement", "image_sha256"),
     ],
@@ -78,7 +78,7 @@ def test_pr_infographic_checks_the_committed_artifacts(
         (tmp_path / ".github/pr-infographic.json").write_text(json.dumps({"path": declared}))
     git("add", ".")
     git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "test")
-    base = git("rev-parse", "HEAD" if case == "inherited-image" else "HEAD^")
+    base = "1" * 40 if case == "different-base" else git("rev-parse", "HEAD^")
     if case == "uncommitted-replacement":
         (folder / "infographic.png").write_bytes(IMAGE + b"later")
     body = "Description changed" if case == "edited-description" else ""

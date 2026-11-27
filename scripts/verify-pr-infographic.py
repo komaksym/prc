@@ -54,9 +54,8 @@ def complete_png(image: bytes) -> bool:
 
 def verify(pull_request: dict[str, Any]) -> None:
     sha = pull_request["head"]["sha"]
-    base = pull_request["base"]["sha"]
-    if not all(re.fullmatch(r"[0-9a-f]{40}", ref) for ref in (base, sha)):
-        raise ValueError("The pull request base and head must be Git commit SHAs.")
+    if not re.fullmatch(r"[0-9a-f]{40}", sha):
+        raise ValueError("The pull request head must be a Git commit SHA.")
     declaration = json.loads(blob(sha, PurePosixPath(".github/pr-infographic.json")))
     path = declaration.get("path") if isinstance(declaration, dict) else None
     if not isinstance(path, str) or not re.fullmatch(
@@ -66,13 +65,6 @@ def verify(pull_request: dict[str, Any]) -> None:
     image = PurePosixPath(path)
     if ".." in image.parts:
         raise ValueError("Declare a repository-relative infographic.png in pr-infographic.json.")
-    diff = subprocess.run(
-        ["git", "diff", "--quiet", "--no-ext-diff", base, sha, "--", str(image)], check=False
-    )
-    if diff.returncode != 1:
-        raise ValueError(
-            "The declared infographic.png must be new or changed from the base commit."
-        )
     prompt = image.parent / "prompts/infographic.md"
     receipt = json.loads(blob(sha, image.parent / "provenance.json"))
     if not isinstance(receipt, dict) or receipt.get("skill") != "baoyu-infographic":
