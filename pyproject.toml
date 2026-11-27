@@ -32,6 +32,7 @@ voice = [
 
 [dependency-groups]
 dev = [
+    "coverage[toml]>=7",
     "pytest>=8",
     "ruff>=0.6",
     "mypy>=1.11",
@@ -75,3 +76,7 @@ norecursedirs = ["data"]
 markers = [
     "needs_recognizer: needs a local speech recognizer (Muesli or openai-whisper) to transcribe",
 ]
+
+[tool.coverage.run]
+source = ["src/prc"]
+relative_files = true

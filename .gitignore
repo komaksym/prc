@@ -27,4 +27,6 @@ eval/runs/2026-10-08-release-candidate/
 !tests/data/**/artifacts/
 eval/runs/*/logs/
 *.pyc
+.coverage
+.coverage.*
 .private/

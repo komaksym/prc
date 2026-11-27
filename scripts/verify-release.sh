@@ -57,15 +57,17 @@ uv run $UV_OFFLINE ruff format --check . > "$proof/format.log" 2>&1
 uv run $UV_OFFLINE mypy > "$proof/typecheck.log" 2>&1
 # The listening E2E transcribes real speech. An offline check must run it; an online check
 # names the gap instead of skipping, because this script fails on a skipped case.
-if uv run $UV_OFFLINE python -c 'from prc.explainer.listen import find_engine; find_engine()' > "$proof/recognizer.log" 2>&1; then
-  uv run $UV_OFFLINE pytest -q --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
-elif [ -n "$UV_OFFLINE" ]; then
-  echo "verify-release.sh --offline needs a speech recognizer to run the listening E2E: Muesli's muesli-cli or openai-whisper." >&2
-  exit 2
-else
+pytest_args=(-q "--junitxml=$proof/tests.xml")
+if ! uv run $UV_OFFLINE python -c 'from prc.explainer.listen import find_engine; find_engine()' > "$proof/recognizer.log" 2>&1; then
+  if [ -n "$UV_OFFLINE" ]; then
+    echo "verify-release.sh --offline needs a speech recognizer to run the listening E2E: Muesli's muesli-cli or openai-whisper." >&2
+    exit 2
+  fi
   echo "verify-release.sh found no speech recognizer; deselecting the listening E2E rather than skipping it." >&2
-  uv run $UV_OFFLINE pytest -q -m "not needs_recognizer" --junitxml="$proof/tests.xml" > "$proof/tests.log" 2>&1
+  pytest_args+=(-m "not needs_recognizer")
 fi
+uv run $UV_OFFLINE coverage run -m pytest "${pytest_args[@]}" > "$proof/tests.log" 2>&1
+uv run $UV_OFFLINE coverage xml -o "$proof/coverage.xml"
 python3 - "$proof/tests.xml" <<'PY'
 import sys
 import xml.etree.ElementTree as ET

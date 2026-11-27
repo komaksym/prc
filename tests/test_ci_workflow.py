@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "pr.yml"
+CODECOV_ACTION = "codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac"
 
 
 def read_workflow() -> str:
@@ -29,6 +30,13 @@ def test_gate_fails_when_ci_fails_or_is_cancelled() -> None:
     assert "needs: [checks, ci]" in gate, "gate must wait for the shared checks and ci"
     assert "contains(needs.*.result, 'failure')" in gate
     assert "contains(needs.*.result, 'cancelled')" in gate
+
+
+def test_gate_fails_when_a_prerequisite_is_skipped() -> None:
+    gate = read_workflow().split("\n  gate:", 1)[1]
+    assert "contains(needs.*.result, 'skipped')" in gate, (
+        "a skipped prerequisite leaves the required checks incomplete"
+    )
 
 
 def test_ci_workflow_triggers_always() -> None:
@@ -81,3 +89,18 @@ def test_ci_prepares_locked_wheel_cache_before_offline_verification() -> None:
     assert "uv pip install --python" in text
     assert "--constraint" in text
     assert text.index("uv pip install --python") < text.index("bash scripts/verify-release.sh")
+
+
+def test_ci_uploads_the_existing_release_coverage_with_oidc() -> None:
+    text = read_workflow()
+    ci = text.split("\n  ci:", 1)[1].split("\n  gate:", 1)[0]
+    assert "fetch-depth: 0" in ci, "Codecov needs the base history for patch coverage"
+    assert "id-token: write" in ci, "Codecov upload must use short-lived GitHub OIDC"
+    assert CODECOV_ACTION in ci, "the upload action must use the reviewed immutable pin"
+    assert "use_oidc: true" in ci
+    assert "files: artifacts/release/verify/run-*/coverage.xml" in ci
+    assert "disable_search: true" in ci, "the upload must name its only accepted report"
+    assert "fail_ci_if_error: true" in ci, "a failed upload must fail release verification"
+    assert ci.index("bash scripts/verify-release.sh") < ci.index(CODECOV_ACTION), (
+        "coverage upload must follow the release verifier that creates the report"
+    )
