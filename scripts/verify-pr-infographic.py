@@ -9,7 +9,6 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 from typing import Any
-from urllib.parse import quote
 from zlib import crc32
 
 
@@ -54,24 +53,26 @@ def complete_png(image: bytes) -> bool:
 
 
 def verify(pull_request: dict[str, Any]) -> None:
-    head = pull_request["head"]
-    sha = head["sha"]
-    if not re.fullmatch(r"[0-9a-f]{40}", sha):
-        raise ValueError("The pull request head is not a Git commit SHA.")
-    ref = quote(head["ref"], safe="/")
-    prefix = f"https://github.com/{head['repo']['full_name']}/blob/{ref}/"
-    links = re.findall(r"!\[[^\]\n]*\]\(([^\s)]+)\)", pull_request.get("body") or "")
-    paths = {
-        PurePosixPath(url.removeprefix(prefix).removesuffix("?raw=true"))
-        for url in links
-        if url.startswith(prefix)
-        and re.fullmatch(
-            r"(?:[\w.-]+/)*infographic\.png\?raw=true", url.removeprefix(prefix), re.ASCII
+    sha = pull_request["head"]["sha"]
+    base = pull_request["base"]["sha"]
+    if not all(re.fullmatch(r"[0-9a-f]{40}", ref) for ref in (base, sha)):
+        raise ValueError("The pull request base and head must be Git commit SHAs.")
+    declaration = json.loads(blob(sha, PurePosixPath(".github/pr-infographic.json")))
+    path = declaration.get("path") if isinstance(declaration, dict) else None
+    if not isinstance(path, str) or not re.fullmatch(
+        r"(?:[\w.-]+/)*infographic\.png", path, re.ASCII
+    ):
+        raise ValueError("Declare a repository-relative infographic.png in pr-infographic.json.")
+    image = PurePosixPath(path)
+    if ".." in image.parts:
+        raise ValueError("Declare a repository-relative infographic.png in pr-infographic.json.")
+    diff = subprocess.run(
+        ["git", "diff", "--quiet", "--no-ext-diff", base, sha, "--", str(image)], check=False
+    )
+    if diff.returncode != 1:
+        raise ValueError(
+            "The declared infographic.png must be new or changed from the base commit."
         )
-    }
-    if len(paths) != 1 or ".." in next(iter(paths)).parts:
-        raise ValueError("Embed one infographic.png from the pull request branch with ?raw=true.")
-    image = paths.pop()
     prompt = image.parent / "prompts/infographic.md"
     receipt = json.loads(blob(sha, image.parent / "provenance.json"))
     if not isinstance(receipt, dict) or receipt.get("skill") != "baoyu-infographic":

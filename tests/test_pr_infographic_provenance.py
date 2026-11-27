@@ -9,7 +9,6 @@ from pathlib import Path
 import pytest
 
 CHECKER = Path(__file__).resolve().parents[1] / "scripts" / "verify-pr-infographic.py"
-PREFIX = "https://github.com/example/prc/blob/feature/visual/"
 IMAGE = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpeqz8AAAAASUVORK5CYII="
 )
@@ -24,9 +23,10 @@ PROMPT = b"Draw the release workflow."
         ("wrong-skill", "baoyu-infographic"),
         ("wrong-image-hash", "image_sha256"),
         ("wrong-prompt-hash", "prompt_sha256"),
-        ("wrong-host", "Embed one"),
-        ("screenshot-only", "Embed one"),
-        ("encoded-ref", ""),
+        ("missing-declaration", "pr-infographic.json"),
+        ("invalid-path", "infographic.png"),
+        ("edited-description", ""),
+        ("inherited-image", "new or changed"),
         ("truncated-png", "complete PNG"),
         ("uncommitted-replacement", "image_sha256"),
     ],
@@ -38,6 +38,16 @@ def test_pr_infographic_checks_the_committed_artifacts(
         return subprocess.check_output(["git", *args], cwd=tmp_path, text=True).strip()
 
     git("init", "-q")
+    git(
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.com",
+        "commit",
+        "-qm",
+        "base",
+        "--allow-empty",
+    )
     folder = tmp_path / "visual"
     (folder / "prompts").mkdir(parents=True)
     image = IMAGE[:-12] if case == "truncated-png" else IMAGE
@@ -60,33 +70,26 @@ def test_pr_infographic_checks_the_committed_artifacts(
         receipt["prompt_sha256"] = "0" * 64
     if case != "missing-receipt":
         (folder / "provenance.json").write_text(json.dumps(receipt))
-    git("add", "visual")
+    (tmp_path / ".github").mkdir()
+    if case != "missing-declaration":
+        declared = (
+            "../visual/infographic.png" if case == "invalid-path" else "visual/infographic.png"
+        )
+        (tmp_path / ".github/pr-infographic.json").write_text(json.dumps({"path": declared}))
+    git("add", ".")
     git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "test")
+    base = git("rev-parse", "HEAD" if case == "inherited-image" else "HEAD^")
     if case == "uncommitted-replacement":
         (folder / "infographic.png").write_bytes(IMAGE + b"later")
-    url = PREFIX + "visual/infographic.png?raw=true"
-    ref = "feature/visual"
-    if case == "encoded-ref":
-        ref += "#1"
-        url = url.replace("feature/visual/", "feature/visual%231/")
-    if case == "wrong-host":
-        url = "https://example.com/" + url
-    body = (
-        f"![Overview]({url})"
-        if case != "screenshot-only"
-        else f"![Page]({PREFIX}page.png?raw=true)"
-    )
+    body = "Description changed" if case == "edited-description" else ""
     event = tmp_path / "event.json"
     event.write_text(
         json.dumps(
             {
                 "pull_request": {
                     "body": body,
-                    "head": {
-                        "ref": ref,
-                        "sha": git("rev-parse", "HEAD"),
-                        "repo": {"full_name": "example/prc"},
-                    },
+                    "head": {"sha": git("rev-parse", "HEAD")},
+                    "base": {"sha": base},
                 }
             }
         )
