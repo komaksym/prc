@@ -21,6 +21,7 @@ def test_release_copy_preserves_lint_scope(tmp_path: Path, source: str, expected
     (root / "scripts").mkdir(parents=True)
     script = root / "scripts/verify-release.sh"
     script.write_bytes((ROOT / "scripts/verify-release.sh").read_bytes())
+    shutil.copyfile(ROOT / "scripts/check-hygiene.sh", root / "scripts/check-hygiene.sh")
     (root / ".gitignore").write_text("artifacts/\n")
     (root / "source.py").write_text(source)
     (root / "artifacts").mkdir()
