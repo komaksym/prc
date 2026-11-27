@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import json
 import os
@@ -9,7 +10,9 @@ import pytest
 
 CHECKER = Path(__file__).resolve().parents[1] / "scripts" / "verify-pr-infographic.py"
 PREFIX = "https://github.com/example/prc/blob/feature/visual/"
-IMAGE = bytes.fromhex("89504e470d0a1a0a") + b"image"
+IMAGE = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpeqz8AAAAASUVORK5CYII="
+)
 PROMPT = b"Draw the release workflow."
 
 
@@ -23,6 +26,8 @@ PROMPT = b"Draw the release workflow."
         ("wrong-prompt-hash", "prompt_sha256"),
         ("wrong-host", "Embed one"),
         ("screenshot-only", "Embed one"),
+        ("encoded-ref", ""),
+        ("truncated-png", "complete PNG"),
         ("uncommitted-replacement", "image_sha256"),
     ],
 )
@@ -35,12 +40,13 @@ def test_pr_infographic_checks_the_committed_artifacts(
     git("init", "-q")
     folder = tmp_path / "visual"
     (folder / "prompts").mkdir(parents=True)
-    (folder / "infographic.png").write_bytes(IMAGE)
+    image = IMAGE[:-12] if case == "truncated-png" else IMAGE
+    (folder / "infographic.png").write_bytes(image)
     (folder / "prompts/infographic.md").write_bytes(PROMPT)
     receipt = {
         "skill": "baoyu-infographic",
         "backend": "codex-imagegen",
-        "image_sha256": hashlib.sha256(IMAGE).hexdigest(),
+        "image_sha256": hashlib.sha256(image).hexdigest(),
         "prompt_sha256": hashlib.sha256(PROMPT).hexdigest(),
         "purpose": "Shows how release checks reach the gate.",
         "visual_note": "The image reads Release checks and Gate.",
@@ -59,6 +65,10 @@ def test_pr_infographic_checks_the_committed_artifacts(
     if case == "uncommitted-replacement":
         (folder / "infographic.png").write_bytes(IMAGE + b"later")
     url = PREFIX + "visual/infographic.png?raw=true"
+    ref = "feature/visual"
+    if case == "encoded-ref":
+        ref += "#1"
+        url = url.replace("feature/visual/", "feature/visual%231/")
     if case == "wrong-host":
         url = "https://example.com/" + url
     body = (
@@ -73,7 +83,7 @@ def test_pr_infographic_checks_the_committed_artifacts(
                 "pull_request": {
                     "body": body,
                     "head": {
-                        "ref": "feature/visual",
+                        "ref": ref,
                         "sha": git("rev-parse", "HEAD"),
                         "repo": {"full_name": "example/prc"},
                     },

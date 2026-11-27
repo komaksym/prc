@@ -48,9 +48,13 @@ limitations. Do not describe an older run as proof for the current commit.
 Create one overview infographic with the Baoyu Infographic skill. Commit
 `infographic.png`, `prompts/infographic.md`, and `provenance.json` together.
 Embed the PNG in the pull request description with its branch blob URL and
-`?raw=true`. The required `gate` checks the receipt and both SHA-256 hashes
-against the pull request head. For an agent-drawn fallback, commit the source
+`?raw=true`. The base-branch workflow checks the receipt and both SHA-256
+hashes against the pull request head. For an agent-drawn fallback, commit the source
 beside the PNG and record its file name and approval in the receipt.
+
+When installing the check, first verify a passing and failing
+`baoyu/provenance` status on pull request heads. Then require that status
+alongside `gate` and `codecov/patch` in the main ruleset.
 
 ## Issues and labels
 

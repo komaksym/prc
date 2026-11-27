@@ -2,7 +2,7 @@ name: pr
 
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
+    types: [opened, synchronize, reopened]
   push:
     branches: [main]
   workflow_dispatch:
@@ -73,17 +73,8 @@ jobs:
     needs: [checks, ci]
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      contents: read
+    permissions: {}
     steps:
       - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
         run: exit 1
-      - if: github.event_name == 'pull_request'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - if: github.event_name == 'pull_request'
-        name: Verify the Baoyu infographic receipt
-        run: python3 scripts/verify-pr-infographic.py
       - run: echo gate passed

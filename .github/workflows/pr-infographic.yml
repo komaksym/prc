@@ -1,0 +1,56 @@
+name: PR infographic provenance
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: pr-infographic-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      statuses: write
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_HEAD: ${{ github.event.pull_request.head.sha }}
+      STATUS_CONTEXT: baoyu/provenance
+    steps:
+      - name: Mark the exact PR head as pending
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD" \
+            -f state=pending -f context="$STATUS_CONTEXT" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --silent
+      - name: Check out the trusted base commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Read and verify the PR head artifacts
+        id: verify
+        run: |
+          git fetch --no-tags --depth=1 origin "refs/pull/$PR_NUMBER/head"
+          test "$(git rev-parse FETCH_HEAD)" = "$PR_HEAD"
+          python3 scripts/verify-pr-infographic.py
+      - name: Publish provenance result on the exact PR head
+        if: always() && !cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+        run: |
+          state=failure
+          if [ "$VERIFY_OUTCOME" = success ]; then state=success; fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD" \
+            -f state="$state" -f context="$STATUS_CONTEXT" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            --silent
