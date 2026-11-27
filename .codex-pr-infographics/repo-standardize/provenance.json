@@ -1,0 +1,9 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "codex-imagegen",
+  "image_sha256": "ac2abbb293b5b56e0e534b5c53e9325727989ec338f9882b611350815ee7967d",
+  "prompt_sha256": "63f75bbc8ee6b988dc1ff2abe8b42fd6c163324c2d7a45181612d356c9fdeaf9",
+  "purpose": "Shows how PRC repository standards include a required Baoyu infographic receipt check.",
+  "visual_note": "Read “PRC repository standards”, “Original prompt”, “Baoyu receipt”, and “Gate checks both hashes at the PR commit”.",
+  "created_at": "2026-11-27T22:16:42.029426+00:00"
+}
