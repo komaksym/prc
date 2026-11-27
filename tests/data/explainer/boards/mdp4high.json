@@ -208,7 +208,8 @@
    ],
    "say": [
     "Now a validation cites the Beta Labs and Open Lab claims as one complete set.",
-    "Those become the current roles. Acme stays an alternative."
+    "Those become the current roles.",
+    "Acme stays an alternative."
    ],
    "cues": [
     {
@@ -227,17 +228,29 @@
     },
     {
      "at": "Beta Labs and Open Lab",
-     "do": "fly",
+     "do": "arrow",
      "from": "v1",
-     "to": "r2",
-     "arc": 80
+     "to": "r2"
     },
     {
      "at": "Beta Labs and Open Lab",
-     "do": "fly",
+     "do": "show",
+     "ids": [
+      "r2"
+     ]
+    },
+    {
+     "at": "Beta Labs and Open Lab",
+     "do": "arrow",
      "from": "v2",
-     "to": "r3",
-     "arc": 80
+     "to": "r3"
+    },
+    {
+     "at": "Beta Labs and Open Lab",
+     "do": "show",
+     "ids": [
+      "r3"
+     ]
     },
     {
      "at": "current roles",
@@ -261,7 +274,7 @@
    "type": "list",
    "label": "the input: evidence, claims, validations",
    "tone": "info",
-   "mark": "\u2022",
+   "mark": "•",
    "code": false,
    "more": null,
    "items": [
@@ -342,7 +355,8 @@
    ],
    "say": [
     "The command takes an input file, a report time and an output path.",
-    "It reads, resolves and writes. Failures print only an error code."
+    "It reads, resolves and writes.",
+    "Failures print only an error code."
    ],
    "cues": [
     {
@@ -366,7 +380,7 @@
    "type": "list",
    "label": "the engine: pure and deterministic",
    "tone": "blue",
-   "mark": "\u2022",
+   "mark": "•",
    "code": false,
    "more": null,
    "items": [
@@ -402,7 +416,7 @@
    "type": "list",
    "label": "the output file",
    "tone": "good",
-   "mark": "\u2713",
+   "mark": "✓",
    "code": false,
    "more": null,
    "items": [
@@ -424,8 +438,8 @@
     }
    ],
    "say": [
-    "Input is read strictly; errors carry a code, never raw input.",
-    "The report is written atomically."
+    "The reader checks input strictly; errors carry a code, never raw input.",
+    "The writer saves the report atomically."
    ],
    "cues": [
     {
@@ -471,13 +485,14 @@
     }
    ],
    "say": [
-    "Most added lines are the package. The rest is tests and docs."
+    "Most added lines are the package.",
+    "The rest is tests and docs."
    ],
    "cues": [
     {
      "at": [
       0,
-      0.1
+      0.18
      ],
      "do": "bars",
      "step": 0.3
@@ -491,14 +506,20 @@
      ]
     }
    ],
-   "hold": 0.2
+   "hold": 0.2,
+   "cite": [
+    {
+     "line": "src/linkedin_mdp_mcp/prospect_report/__init__.py:1",
+     "match": "\"\"\"Offline prospect evidence reconciliation.\"\"\""
+    }
+   ]
   },
   {
    "type": "list",
    "big": "{tests_added}",
    "label": "new end-to-end tests",
    "tone": "good",
-   "mark": "\u2713",
+   "mark": "✓",
    "code": false,
    "more": null,
    "items": [
@@ -547,7 +568,8 @@
    "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
    "nocap": true,
    "say": [
-    "Evidence goes in. One repeatable report comes out."
+    "Evidence goes in.",
+    "One repeatable report comes out."
    ],
    "cues": [
     {
@@ -559,15 +581,15 @@
     },
     {
      "at": [
-      0,
-      0.5
+      1,
+      0.24
      ],
      "do": "l2"
     },
     {
      "at": [
-      0,
-      0.9
+      1,
+      0.85
      ],
      "do": "cmd"
     }

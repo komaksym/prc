@@ -1,0 +1,175 @@
+{
+  "allowed": [
+    "1",
+    "2",
+    "3",
+    "503",
+    "ai",
+    "and",
+    "at",
+    "become",
+    "before",
+    "by",
+    "call",
+    "calls",
+    "change",
+    "checked",
+    "chunks",
+    "contactprovidererror",
+    "contacts",
+    "copy",
+    "declared",
+    "delegates",
+    "deleted",
+    "drawn",
+    "each",
+    "errors",
+    "exactly",
+    "failure",
+    "four",
+    "from",
+    "guard",
+    "header",
+    "http",
+    "in",
+    "infographic",
+    "kept",
+    "kind",
+    "m4",
+    "mapped",
+    "now",
+    "one",
+    "oversize",
+    "own",
+    "prc",
+    "proof",
+    "providers",
+    "py",
+    "read",
+    "request",
+    "require",
+    "safe",
+    "share",
+    "size",
+    "start",
+    "status",
+    "success",
+    "tests",
+    "the",
+    "three",
+    "to",
+    "transport",
+    "words",
+    "zero"
+  ],
+  "disclosure": "Infographic drawn by AI. Words from prc.",
+  "gate": {
+    "CONF_FLOOR": 70,
+    "CROSSINGS": 2,
+    "GAP": 2,
+    "LINE_LIMIT": 96,
+    "LINE_RUN": 1.5,
+    "MAX_WORDS": 80,
+    "PANELS_MAX_WORDS": 90,
+    "REACH": 4,
+    "WINDOW": 6
+  },
+  "lines": [
+    {
+      "role": "headline",
+      "text": "M4 providers share one transport guard"
+    },
+    {
+      "role": "subtitle",
+      "text": "contacts/providers.py now calls safe_transport_call"
+    },
+    {
+      "role": "panel",
+      "text": "1. BEFORE"
+    },
+    {
+      "role": "item",
+      "text": "providers.py kept own guard copy"
+    },
+    {
+      "role": "item",
+      "text": "_call checked the size header"
+    },
+    {
+      "role": "item",
+      "text": "_require_success mapped HTTP status"
+    },
+    {
+      "role": "panel",
+      "text": "2. CHANGE"
+    },
+    {
+      "role": "item",
+      "text": "_call delegates to safe_transport_call"
+    },
+    {
+      "role": "item",
+      "text": "Errors become ContactProviderError"
+    },
+    {
+      "role": "item",
+      "text": "_status_kind and _require_success deleted"
+    },
+    {
+      "role": "panel",
+      "text": "3. PROOF"
+    },
+    {
+      "role": "item",
+      "text": "Three tests, four providers each"
+    },
+    {
+      "role": "item",
+      "text": "Declared oversize: zero chunks read"
+    },
+    {
+      "role": "item",
+      "text": "503 failure: exactly one request"
+    },
+    {
+      "role": "footer",
+      "text": "Start at _call in providers.py"
+    },
+    {
+      "role": "note",
+      "text": "Infographic drawn by AI. Words from prc."
+    }
+  ],
+  "mode": "panels",
+  "profile": {
+    "aspect": "16:9",
+    "backend": "auto",
+    "language": "en",
+    "layout": "structural-breakdown",
+    "style": "technical-schematic"
+  },
+  "prompt": "Create one landscape 16:9 infographic with the baoyu-infographic profile: technical-schematic style, structural-breakdown layout.\n\nStyle: a technical-schematic blueprint on pale blue-white grid paper, drawn in dark navy ink with thin drafting lines, dimension ticks and corner marks. Keep every word dark on the light paper so it reads clearly.\n\nLayout:\n- Top: the headline in large bold letters, with the subtitle in smaller letters under it.\n- Middle: 3 panels in one row, left to right. Each panel has a numbered header bar with its panel header, one simple icon, and its labels as a short list.\n- Between panels: one bold arrow from each panel to the next, left to right (\"1. BEFORE\" to \"2. CHANGE\"; \"2. CHANGE\" to \"3. PROOF\"). Put no words on the arrows.\n- Bottom: a footer bar across the full width that holds the footer items and the disclosure.\n\nText: use only these lines, each exactly once and spelled exactly.\nHeadline: \"M4 providers share one transport guard\"\nSubtitle: \"contacts/providers.py now calls safe_transport_call\"\nPanel header: \"1. BEFORE\"\n  - label: \"providers.py kept own guard copy\"\n  - label: \"_call checked the size header\"\n  - label: \"_require_success mapped HTTP status\"\nPanel header: \"2. CHANGE\"\n  - label: \"_call delegates to safe_transport_call\"\n  - label: \"Errors become ContactProviderError\"\n  - label: \"_status_kind and _require_success deleted\"\nPanel header: \"3. PROOF\"\n  - label: \"Three tests, four providers each\"\n  - label: \"Declared oversize: zero chunks read\"\n  - label: \"503 failure: exactly one request\"\nFooter: \"Start at _call in providers.py\"\nDisclosure: \"Infographic drawn by AI. Words from prc.\"\n\nRules:\n- Show every line exactly once, spelled exactly.\n- Add no other words, numbers, titles, legends or watermarks than the lines given.\n- Put each panel header and its labels inside that panel.\n- Join each panel to the next with one arrow, left to right, and put no words on it.\n- Draw no other arrows or connector lines.\n- Icons are allowed inside panels but contain no letters or digits.\n- Draw every line as dark text on a light background.\n- Keep the disclosure line visible in the footer bar.\n",
+  "prompt_rules": [
+    "Show every line exactly once, spelled exactly.",
+    "Add no other words, numbers, titles, legends or watermarks than the lines given.",
+    "Put each panel header and its labels inside that panel.",
+    "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    "Draw no other arrows or connector lines.",
+    "Icons are allowed inside panels but contain no letters or digits.",
+    "Draw every line as dark text on a light background.",
+    "Keep the disclosure line visible in the footer bar."
+  ],
+  "relations": [
+    {
+      "from": "1. BEFORE",
+      "kind": "flow",
+      "to": "2. CHANGE"
+    },
+    {
+      "from": "2. CHANGE",
+      "kind": "flow",
+      "to": "3. PROOF"
+    }
+  ],
+  "title": "M4 providers share one transport guard"
+}

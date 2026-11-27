@@ -6,9 +6,8 @@ Fixtures need no credentials. Live GitHub entry points require network access an
 Capture commands, actions, resulting screens, and stored effects. Keep proof after cleanup.
 Report untested entry points explicitly.
 
-- [Change map](map.md) covers generation, symbol inspection, tours, and optional video export.
-- [Explainer](explain.md) covers checked video, walkthrough, card, comment, and stored-map rendering.
+- [Explainer](explain.md) covers the required infographic, Kokoro video, clickable page, and stored-source rendering.
 - [Board tools](board.md) covers guide, code lookup, coverage, and receipt checks.
 - [Review state](review.md) covers local review, freshness, and decisions.
 - [Skill installation](install.md) covers disposable Claude and Codex destinations.
-- [Paired session hub](paired.md) covers every hub button path with refusal recovery. Hub changes require `scripts/verify_paired_hub.py` PASS and cited proof. Operator-facing handoffs require scripts/handoff_study_hub.py with its supervised record under artifacts/handoff/.
+- [Notes review hub](notes.md) covers every PR link, artifact, and notes box. Hub changes require `scripts/verify_notes_hub.py` PASS and cited proof. Operator-facing handoffs require scripts/handoff_study_hub.py with its supervised record under artifacts/study-v3/handoff/notes/.

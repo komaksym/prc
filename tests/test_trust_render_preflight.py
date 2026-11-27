@@ -104,12 +104,12 @@ def test_check_rejects_wrapped_diff_beyond_visible_stage() -> None:
 
 
 def test_coverage_does_not_claim_clipped_wrapped_diff_is_complete() -> None:
-    from prc.explainer.doc import _not_covered
+    from prc.explainer.page import not_covered
     from prc.explainer.preflight import line_coverage
 
     m, b = wrapped_change()
     assert line_coverage(b, m)["shown"] < 12
-    assert "Everything changed is on screen" not in _not_covered(b, m)
+    assert "Everything changed is on screen" not in not_covered(b, m)
 
 
 def test_cli_rejects_wrapped_assignment_rows_beyond_stage() -> None:
@@ -230,11 +230,11 @@ def test_wrapped_diff_sign_sits_on_first_line() -> None:
         browser.close()
 
 
-def test_doc_prose_matches_video_captions_in_real_browser() -> None:
+def test_page_prose_matches_video_captions_in_real_browser() -> None:
     from playwright.sync_api import sync_playwright
 
     from prc.explainer.check import verify_board
-    from prc.explainer.doc import render_doc
+    from prc.explainer.page import render_page
     from prc.explainer.render import render
     from prc.explainer.voice import NoneBackend
 
@@ -248,7 +248,7 @@ def test_doc_prose_matches_video_captions_in_real_browser() -> None:
     proof = Path(__file__).resolve().parents[1] / "artifacts/e2e/caption-parity"
     facts = verify_board(b, m)
     rendered = render(b, m, facts, proof, NoneBackend(), None, keys_only=True)
-    render_doc(b, m, proof, rendered.duration, has_video=False)
+    render_page(b, m, proof, rendered.duration, has_video=False, infographic=None)
     read = """el => ({
         text: el.textContent,
         code: [...el.querySelectorAll('code')].map(c => c.textContent),
@@ -263,9 +263,13 @@ def test_doc_prose_matches_video_captions_in_real_browser() -> None:
             page.evaluate(f"window.seek({sentence['start'] + sentence['dur'] / 2})")
             video.append(page.locator(".ecap").evaluate(read))
             page.screenshot(path=str(proof / f"video-caption-{n}.png"))
-        page.goto((proof / "doc.html").as_uri())
-        doc = page.locator("#scene-0 .prose").evaluate_all(f"els => els.map({read})")
-        page.locator("#scene-0").screenshot(path=str(proof / "doc-scene.png"))
+        page.goto((proof / "page.html").as_uri())
+        page.wait_for_function("window.prcPage !== undefined")
+        doc = []
+        for n, sentence in enumerate(page.evaluate("window.PRC.board.scenes[0].sentences")):
+            page.evaluate(f"window.prcPage.seek({sentence['start'] + sentence['dur'] / 2})")
+            doc.append(page.locator("#stage .ecap").evaluate(read))
+            page.locator("#stage").screenshot(path=str(proof / f"page-caption-{n}.png"))
         browser.close()
     assert video == doc
     assert doc == [
@@ -304,7 +308,9 @@ def test_card_and_video_outro_render_code_names() -> None:
         page.wait_for_function("window.ready === true")
         page.evaluate("window.seek(window.BOARD.scenes.at(-1).end - 0.5)")
         page.screenshot(path=str(proof / "video-outro.png"))
-        outro = page.locator(".outro .l1, .outro .l2").evaluate_all(f"els => els.map({read})")
+        outro = page.locator(".outro .l1, .outro .l2 .tbody").evaluate_all(
+            f"els => els.map({read})"
+        )
         page.set_viewport_size({"width": 1200, "height": 630})
         cards = []
         for name in ("outro", "spoken"):
@@ -427,14 +433,13 @@ def test_line_coverage_counts_changed_lines_not_files() -> None:
 
 def test_board_coverage_and_doc_agree_on_missing_lines() -> None:
     from prc.explainer import boards
-    from prc.explainer.doc import uncovered
+    from prc.explainer.page import not_covered
 
     m = tiny_map()
     b = tiny_board(["2"])
     text = boards.coverage(b, m)
     assert "1/3" in text, text
-    files, syms = uncovered(b, m)
-    assert files == [] and syms == [], (files, syms)
+    assert "Not covered: 2 of 3 changed lines" in not_covered(b, m)
     from prc.explainer.preflight import line_coverage
 
     cov = line_coverage(b, m)
@@ -445,7 +450,7 @@ def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
     import re
 
     from prc.explainer import boards
-    from prc.explainer.doc import _not_covered
+    from prc.explainer.page import not_covered
     from prc.explainer.preflight import line_coverage
 
     m = tiny_map()
@@ -465,14 +470,16 @@ def test_missing_lines_list_removed_ascending_then_added_ascending() -> None:
     cov = line_coverage(b, m)
     assert cov["missing"] == ["a.py:-81", "a.py:-171", "a.py:-178", "a.py:3", "a.py:9"]
 
-    html = _not_covered(b, m)
-    labels = re.findall(r'<a class="leftout"[^>]*>([^<]+)</a>', html)
-    assert labels == [
-        "a.py#L81 (removed)",
-        "a.py#L171 (removed)",
-        "a.py#L178 (removed)",
-        "a.py#L3",
-        "a.py#L9",
+    html = not_covered(b, m)
+    assert "<summary>Not covered: 5 of 5 changed lines</summary>" in html
+    assert re.findall(r"<li>.*?</li>", html) == [
+        "<li><a href='https://github.com/"
+        + m["pr"].split("#")[0]
+        + "/pull/"
+        + m["pr"].split("#")[1]
+        + "/files#diff-"
+        + __import__("hashlib").sha256(b"a.py").hexdigest()
+        + "' target='_blank' rel='noopener'><code>a.py</code></a> 5 lines</li>"
     ]
 
     text = boards.coverage(b, m)
@@ -809,17 +816,17 @@ def stacked_notes_board() -> dict[str, Any]:
     }
 
 
-def test_stacked_clamped_notes_still_flag_overlap(tmp_path: Path) -> None:
+def test_stacked_clamped_notes_fail_the_render(tmp_path: Path) -> None:
     from prc.explainer.check import verify_board
-    from prc.explainer.render import render
+    from prc.explainer.render import RenderError, render
     from prc.explainer.voice import NoneBackend
 
     m = long_map()
     b = stacked_notes_board()
     facts = verify_board(b, m)
     assert facts.get("note_risks"), "four long notes on one row must warn in check"
-    rendered = render(b, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
-    assert any("overlaps code" in w for w in rendered.layout_warnings), rendered.layout_warnings
+    with pytest.raises(RenderError, match="overlaps code"):
+        render(b, m, facts, tmp_path, NoneBackend(), None, keys_only=True)
 
 
 def test_late_numeric_cue_rejected_in_check() -> None:

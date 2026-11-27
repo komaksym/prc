@@ -1,0 +1,17 @@
+[
+  {
+    "id": "v5-a",
+    "pr_identity": "komaksym/linkedin-mdp#5",
+    "title": "feat(report): publish private morning reports to Google Docs"
+  },
+  {
+    "id": "v5-b",
+    "pr_identity": "komaksym/linkedin-automation#22",
+    "title": "feat(trace): scored identity matching with tiers"
+  },
+  {
+    "id": "v5-c",
+    "pr_identity": "komaksym/leads-discovery#43",
+    "title": "fix: share bounded transport with M4 providers"
+  }
+]

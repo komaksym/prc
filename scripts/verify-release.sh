@@ -51,6 +51,7 @@ for name in ['eval/runs/2026-10-06-full', 'docs/media']:
 PY
 printf '%s\n' "$checkout" > "$proof/checkout.txt"
 cd "$checkout"
+git init --quiet
 uv sync --frozen --extra voice $UV_OFFLINE > "$proof/sync.log" 2>&1
 uv run $UV_OFFLINE ruff check . > "$proof/lint.log" 2>&1
 uv run $UV_OFFLINE ruff format --check . > "$proof/format.log" 2>&1
@@ -118,7 +119,7 @@ board = json.load(open(sys.argv[1]))
 board['scenes'][-1]['say'].append('Start review at `apply_discount` in cart.py, with the WELCOME10 code.')
 json.dump(board, open(sys.argv[2], 'w'))
 PY
-"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$proof/board-code-names.json" --voice kokoro --infographic "$checkout/tests/data/infographic/shop-brief.png" --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
+"$proof/wheel-env/bin/prc" explain --source fixture:shop --board "$proof/board-code-names.json" --voice kokoro --infographic "$checkout/artifacts/e2e/infographic/shop-diagram.png" --out "$proof/wheel-output" > "$proof/wheel-cli.json" 2> "$proof/wheel-cli.log"
 if "$proof/wheel-env/bin/python" -c 'from prc.explainer.listen import find_engine; find_engine()' > "$proof/wheel-recognizer.log" 2>&1; then
   export PRC_RELEASE_LISTEN=1
 elif [ -n "$UV_OFFLINE" ]; then
@@ -142,8 +143,10 @@ assert package and package.origin and str(proof / 'wheel-env') in package.origin
 result = json.loads((proof / 'wheel-cli.json').read_text())
 folder = Path(result['out'])
 assert result['check_passed'] is True
-for name in ['map.html', 'video.mp4', 'doc.html', 'card.png', 'comment.md', 'run.json']:
+for name in ['video.mp4', 'page.html', 'infographic.png', 'comment.md', 'run.json']:
     assert (folder / name).is_file(), name
+for name in ['map.html', 'doc.html', 'card.html', 'card.png']:
+    assert not (folder / name).exists(), name
 probe = json.loads(subprocess.check_output([
     'ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
     'stream=width,height,r_frame_rate:format=duration', '-of', 'json', str(folder / 'video.mp4')
@@ -175,38 +178,29 @@ if os.environ.get('PRC_RELEASE_LISTEN') == '1':
     assert {'apply_discount', 'cart.py', 'WELCOME10'} <= {t['token'] for t in listening['tokens']}
 screenshots.mkdir(exist_ok=True)
 errors = []
+board = json.loads((folder / 'board.json').read_text())
+diff = next(i for i, scene in enumerate(board['scenes']) if scene['type'] == 'diff')
 with sync_playwright() as driver:
     browser = driver.chromium.launch()
     page = browser.new_page(viewport={'width': 1280, 'height': 800})
     page.on('pageerror', lambda error: errors.append(str(error)))
-    page.goto((folder / 'map.html').as_uri())
-    page.wait_for_function('window.prcTour !== undefined')
-    page.screenshot(path=str(screenshots / 'map.png'))
-    nodes = page.locator('[data-node]')
-    assert nodes.count() > 0, 'map has no symbols'
-    change_map = json.loads((folder / 'map.json').read_text())
-    checkout = next(i for i, symbol in enumerate(change_map['symbols']) if symbol['qualname'] == 'checkout')
-    page.locator(f'[data-node="s{checkout}"]').click()
-    assert page.locator('#drawer').get_attribute('aria-hidden') == 'false'
-    assert 'apply_discount' in page.locator('#drawer').inner_text()
-    page.wait_for_function("() => getComputedStyle(document.querySelector('#drawer')).transform === 'none'")
-    page.screenshot(path=str(screenshots / 'map-drawer.png'))
-    page.keyboard.press('Escape')
-    assert page.locator('#drawer').get_attribute('aria-hidden') == 'true'
-    page.wait_for_function("() => document.querySelector('#drawer').getBoundingClientRect().left >= innerWidth")
-    page.screenshot(path=str(screenshots / 'map-closed.png'))
-    page.set_viewport_size({'width': 800, 'height': 900})
-    page.goto((folder / 'doc.html').as_uri())
-    page.wait_for_function('window.docReady === true')
-    assert page.locator('.shot').count() > 0, 'walkthrough has no scenes'
-    page.screenshot(path=str(screenshots / 'doc.png'), full_page=True)
+    page.goto((folder / 'page.html').as_uri())
+    page.wait_for_function('window.prcPage !== undefined')
+    page.screenshot(path=str(screenshots / 'page.png'))
+    page.click(f'#strip button:nth-child({diff + 1})')
+    page.locator('#scale .pg-hit').first.click()
+    page.wait_for_selector('#panel:not([hidden])')
+    assert '/files#diff-' in (page.get_attribute('#panel-gh', 'href') or ''), 'hunk panel has no GitHub link'
+    page.screenshot(path=str(screenshots / 'page-hunk.png'))
+    page.click('#info-open')
+    page.wait_for_function("document.querySelector('#info img').naturalWidth > 100")
+    page.screenshot(path=str(screenshots / 'page-infographic.png'))
     assert not errors, errors
     browser.close()
-board = json.loads((folder / 'board.json').read_text())
 settled = next(scene['end'] - 0.5 for scene in board['scenes'] if scene['type'] == 'diff')
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-ss', str(settled), '-i', str(folder / 'video.mp4'),
                 '-frames:v', '1', str(screenshots / 'video.png')], check=True)
 (proof / 'wheel-check.json').write_text(json.dumps({'installed_package': package.origin, 'output': str(folder), 'probe': probe, 'screenshots': str(screenshots), 'browser_errors': errors}, indent=2))
-print('Installed wheel produced all five outputs outside the source checkout.')
+print('Installed wheel produced the video, page and infographic outside the source checkout.')
 PY
 printf '%s\n' "$proof" > "$proof_root/latest-success.txt"

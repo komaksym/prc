@@ -1,0 +1,113 @@
+{
+  "title": "M4 contact providers share the transport guard",
+  "mode": "panels",
+  "lines": [
+    {
+      "role": "headline",
+      "text": "M4 contact providers share the transport guard"
+    },
+    {
+      "role": "subtitle",
+      "text": "One check for errors, size, status"
+    },
+    {
+      "role": "panel",
+      "text": "1. BEFORE"
+    },
+    {
+      "role": "item",
+      "text": "Own _call and _require_success"
+    },
+    {
+      "role": "item",
+      "text": "Local _status_kind status table"
+    },
+    {
+      "role": "panel",
+      "text": "2. CHANGE"
+    },
+    {
+      "role": "item",
+      "text": "_call wraps safe_transport_call"
+    },
+    {
+      "role": "item",
+      "text": "Deletes _require_success, _status_kind"
+    },
+    {
+      "role": "item",
+      "text": "Re-raises as ContactProviderError"
+    },
+    {
+      "role": "panel",
+      "text": "3. PARTS"
+    },
+    {
+      "role": "item",
+      "text": "Exa, Clay, Apollo, Instantly adapters"
+    },
+    {
+      "role": "item",
+      "text": "discovery/base.py shared guard"
+    },
+    {
+      "role": "panel",
+      "text": "4. PROOF"
+    },
+    {
+      "role": "item",
+      "text": "Declared 9 bytes: invalid_response"
+    },
+    {
+      "role": "item",
+      "text": "Chunked stream stops at chunk 2"
+    },
+    {
+      "role": "item",
+      "text": "503 sends exactly one request"
+    },
+    {
+      "role": "footer",
+      "text": "Start at _call in providers.py"
+    },
+    {
+      "role": "legend",
+      "text": "Problem"
+    },
+    {
+      "role": "legend",
+      "text": "Change"
+    },
+    {
+      "role": "legend",
+      "text": "Part"
+    },
+    {
+      "role": "legend",
+      "text": "Proof"
+    },
+    {
+      "role": "note",
+      "text": "Infographic drawn by AI. Words from PRC."
+    }
+  ],
+  "relations": [
+    {
+      "from": "1. BEFORE",
+      "to": "2. CHANGE",
+      "kind": "flow"
+    },
+    {
+      "from": "2. CHANGE",
+      "to": "3. PARTS",
+      "kind": "flow"
+    },
+    {
+      "from": "3. PARTS",
+      "to": "4. PROOF",
+      "kind": "flow"
+    }
+  ],
+  "prompt": "Create one landscape 16:9 infographic with the baoyu-infographic profile: technical-schematic style, structural-breakdown layout.\n\nStyle: a technical-schematic blueprint on pale white grid paper, with thin drafting lines, dimension ticks and corner marks. Color carries meaning: vermillion #D55E00 means problem, orange #E69F00 means change, sky blue #56B4E9 means part, bluish green #009E73 means proof, grey #8A93A6 means context. Fill each panel with its pale tint and frame it with a thick border in its full color. Draw its header bar in the same pale tint, underlined by a thick rule in the full color, with the header text in dark navy. Draw icons and arrows in the panel color. Keep every word dark navy on the light tints so it reads clearly; never put white text on a color.\n\nLayout:\n- Top: the headline in large bold letters, with the subtitle in smaller letters under it.\n- Middle: 4 panels in one row, left to right. Each panel has a plain solid numbered header bar with its panel header, one simple icon with no letters, digits or digit-like shapes, and its labels as a short list.\n- Between panels: one bold arrow from each panel to the next, left to right (\"1. BEFORE\" to \"2. CHANGE\"; \"2. CHANGE\" to \"3. PARTS\"; \"3. PARTS\" to \"4. PROOF\"). Put no words on the arrows.\n- Bottom: a footer bar across the full width that holds the footer items, the key (each key word beside a small square swatch of its color) and the disclosure.\n\nText: use only these lines, each exactly once and spelled exactly.\nHeadline: \"M4 contact providers share the transport guard\"\nSubtitle: \"One check for errors, size, status\"\nPanel header: \"1. BEFORE\" (color: vermillion #D55E00, tint #FBE3D3)\n  - label: \"Own _call and _require_success\"\n  - label: \"Local _status_kind status table\"\nPanel header: \"2. CHANGE\" (color: orange #E69F00, tint #FDF0D2)\n  - label: \"_call wraps safe_transport_call\"\n  - label: \"Deletes _require_success, _status_kind\"\n  - label: \"Re-raises as ContactProviderError\"\nPanel header: \"3. PARTS\" (color: sky blue #56B4E9, tint #DDF0FB)\n  - label: \"Exa, Clay, Apollo, Instantly adapters\"\n  - label: \"discovery/base.py shared guard\"\nPanel header: \"4. PROOF\" (color: bluish green #009E73, tint #D5F1E8)\n  - label: \"Declared 9 bytes: invalid_response\"\n  - label: \"Chunked stream stops at chunk 2\"\n  - label: \"503 sends exactly one request\"\nFooter: \"Start at _call in providers.py\"\nKey: \"Problem\" beside the vermillion #D55E00 swatch\nKey: \"Change\" beside the orange #E69F00 swatch\nKey: \"Part\" beside the sky blue #56B4E9 swatch\nKey: \"Proof\" beside the bluish green #009E73 swatch\nDisclosure: \"Infographic drawn by AI. Words from PRC.\"\n\nRules:\n- Show every line exactly once, spelled exactly.\n- Add no other words, numbers, titles or watermarks than the lines given.\n- Put each panel header and its labels inside that panel.\n- Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.\n- Color each panel with its named key color: a pale tint fill and a thick border in that color, and use no other accent colors.\n- Draw each header bar in the panel's pale tint with dark navy text, never white text on a saturated bar.\n- Join each panel to the next with one arrow, left to right, and put no words on it.\n- Draw no other arrows or connector lines.\n- Icons are allowed inside panels but contain no letters, digits or digit-like shapes.\n- Draw every line as dark text on a light background.\n- Keep the disclosure line visible in the footer bar.\n",
+  "source": "artifacts/output-v5/infographics/v5-c/candidate-01.png (leads-discovery #43, colored panels with pale header bars)"
+}

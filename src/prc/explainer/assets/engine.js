@@ -1,7 +1,15 @@
 (() => {
   const W = 1920, H = 1080;
-  const C = { blue: '#58C4DD', green: '#83C167', red: '#FC6255', gold: '#F0AC5F', grey: '#8A93A6', text: '#ECEFF4', dim: '#5B6475', bg: '#0E1320' };
-  const STATUS = { modified: C.blue, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
+  const KEY = window.PRC_KEY;
+  if (!Array.isArray(KEY) || !KEY.length) throw new Error('engine.js needs window.PRC_KEY from prc.tones.key_script()');
+  // One meaning per color, in key order: red problem, gold change, blue part, green proof,
+  // grey context. The colors come from prc/tones.py through window.PRC_KEY; paper, ink and
+  // muted ink come from the look's CSS variables (prc/explainer/themes.py).
+  const [red, gold, blue, green, grey] = KEY.map(k => k[1]);
+  const look = getComputedStyle(document.documentElement);
+  const v = (name, dflt) => look.getPropertyValue(name).trim() || dflt;
+  const C = { blue, green, red, gold, grey, text: v('--prc-text', '#ECEFF4'), dim: v('--prc-dim', '#5B6475'), bg: v('--prc-bg', '#0E1320') };
+  const STATUS = { modified: C.gold, added: C.green, context: C.grey, removed: C.red, kept: C.grey };
   const TONE = { bad: C.red, good: C.green, info: C.gold };
   const clamp = x => Math.max(0, Math.min(1, x));
   const smooth = x => { x = clamp(x); return x * x * x * (x * (x * 6 - 15) + 10); };
@@ -13,7 +21,9 @@
   const rgba = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a.toFixed(3)})`;
   const measure = (() => { const cx = document.createElement('canvas').getContext('2d'); return (text, font) => { cx.font = font; return cx.measureText(text || '').width; }; })();
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const link = (text, url) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text);
   const fmt = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+  const URL_RE = /https?:\/\/[^\s'"<>`]+[^\s'"<>`.,;:)\]}]/g;
   const NS = 'http://www.w3.org/2000/svg';
   const S = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs || {}) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
   const D = (cls, html, parent) => { const d = document.createElement('div'); if (cls) d.className = cls; if (html != null) d.innerHTML = html; if (parent) parent.appendChild(d); return d; };
@@ -38,11 +48,13 @@
       seg.span = span; tl.appendChild(span);
     });
     const meta = D('meta', s.meta, wrap);
+    const key = D('ckey', KEY.map(([l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join(''), wrap);
     const t0 = s.start + 0.5, typing = 1.5;
     return t => {
       kicker.style.opacity = prog(t, s.start + 0.15, 0.5);
       chars.forEach((c, i) => { c.style.opacity = prog(t, t0 + i * typing / chars.length, 0.2); });
       meta.style.opacity = prog(t, t0 + typing, 0.5);
+      key.style.opacity = prog(t, t0 + typing + 0.3, 0.5);
       segs.forEach(seg => {
         if (!seg.claim) return;
         const k = prog(t, seg.at, 0.6);
@@ -54,7 +66,7 @@
   };
 
   MAKERS.graph = (s, root) => {
-    D('legend', ['new', 'changed', 'existing'].map((l, i) => { const c = [C.green, C.blue, C.grey][i]; return `<span><i style="border-color:${c};background:${c}33"></i>${l}</span>`; }).join(''), root);
+    D('legend', ['new', 'changed', 'existing'].map((l, i) => { const c = [C.green, C.gold, C.grey][i]; return `<span><i style="border-color:${c};background:${c}33"></i>${l}</span>`; }).join(''), root);
     const svg = S('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, style: 'position:absolute;inset:0' }, root);
     S('defs', {}, svg).innerHTML = `<filter id="glow${s.i}" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
     const cam = S('g', {}, svg);
@@ -266,7 +278,26 @@
   };
 
   const PAD = 24, IH = 90, GAP = 18;
-  const groupHead = (s, g) => s.head || (g.sub ? 124 : 82);
+  // Group title and subtitle fonts come from the look's CSS, so a look may size them freely.
+  // A hidden probe reads the computed font, spacing, side room and block height once per page.
+  let HF = null;
+  const headFonts = root => {
+    if (HF) return HF;
+    const p = D('grp', '<div class="gt">Xg</div><div class="gs">Xg</div>', root);
+    p.style.visibility = 'hidden';
+    const read = el => {
+      const c = getComputedStyle(el), n = v => parseFloat(v) || 0;
+      return { font: [c.fontStyle, c.fontWeight, c.fontSize, c.fontFamily].join(' '), ls: n(c.letterSpacing), upper: c.textTransform === 'uppercase',
+        side: n(c.marginLeft) + n(c.marginRight) + n(c.paddingLeft) + n(c.paddingRight),
+        h: el.offsetHeight + n(c.marginTop) + n(c.marginBottom) };
+    };
+    HF = { gt: read(p.children[0]), gs: read(p.children[1]) };
+    p.remove();
+    return HF;
+  };
+  const textW = (f, text) => measure(f.upper ? String(text || '').toUpperCase() : text, f.font) + String(text || '').length * f.ls + f.side + 6;
+  // The baseline heads (124 with a subtitle, 82 without) stay the floor, so the dark look keeps its layout.
+  const groupHead = (s, g) => s.head || Math.max(g.sub ? 124 : 82, HF ? Math.ceil(HF.gt.h + (g.sub ? HF.gs.h + 28 : 31)) : 0);
   const groupH = (s, g) => { const n = Math.max(1, g.items.filter(it => !it.outside).length); return g.row ? groupHead(s, g) + IH + PAD : groupHead(s, g) + n * (IH + GAP) - GAP + PAD; };
 
   // Groups without x/y are placed by column (`col`, default 0), stacked and centred, so a board never authors pixels.
@@ -277,7 +308,7 @@
       const iw = Math.max(g.row ? 150 : 220, ...g.items.map(it => Math.max(measure(it.text, '500 40px ui-monospace, Menlo, monospace') + (g.row ? 40 : 54),
         it.label ? measure(it.label.toUpperCase(), '700 17px system-ui') + it.label.length * 1.7 + 40 : 0)));
       g.w = g.w || Math.ceil(Math.max(g.row ? 2 * PAD + inside * iw + (inside - 1) * GAP : 2 * PAD + iw,
-        measure(g.title.toUpperCase(), '700 24px system-ui') + g.title.length * 24 * 0.16 + 2 * PAD + 6, measure(g.sub, '31px system-ui') + 2 * PAD + 6));
+        textW(HF.gt, g.title), g.sub ? textW(HF.gs, g.sub) : 0));
       const iwF = g.row ? (g.w - 2 * PAD - (inside - 1) * GAP) / inside : g.w - 2 * PAD;
       g.fw = g.w + (g.row && out ? 18 + out * (iwF + GAP) - GAP : 0);
       g.fh = groupH(s, g) + (!g.row && out ? 18 + out * (IH + GAP) - GAP : 0);
@@ -296,8 +327,9 @@
   };
 
   MAKERS.groups = (s, root) => {
-    const groups = {}, items = {}, flies = [], marks = [], notes = [];
+    const groups = {}, items = {}, flies = [], arrows = [], marks = [], notes = [];
     const tones = t => ({ bad: C.red, good: C.green, info: C.gold, blue: C.blue }[t] || C.blue);
+    headFonts(root);
     if (s.groups.some(g => g.x == null)) autoLayout(s);
 
     s.groups.forEach(g => {
@@ -306,6 +338,7 @@
       const iw = g.row ? (g.w - 2 * PAD - (inside - 1) * GAP) / inside : g.w - 2 * PAD;
       const h = groupH(s, g);
       const el = D('grp', `<div class="gt">${esc(g.title)}</div>${g.sub ? `<div class="gs">${fmt(g.sub)}</div>` : ''}`, root);
+      el.dataset.id = g.id;
       Object.assign(el.style, { left: g.x + 'px', top: g.y + 'px', width: g.w + 'px', height: h + 'px' });
       const G = groups[g.id] = { el, x: g.x, y: g.y, w: g.w, h, show: Infinity, tone: [], flash: [] };
       let k = 0, o = 0;
@@ -315,6 +348,7 @@
         const y = g.row ? g.y + HEAD : it.outside ? g.y + h + 18 + n * (IH + GAP) : g.y + HEAD + n * (IH + GAP);
         const pel = D('pill' + (it.kind === 'slot' ? ' slot' : '') + (g.row ? ' seat' : ''), `<span class="pt">${esc(it.text)}</span>${it.label ? `<span class="plabel">${esc(it.label)}</span>` : ''}`, root);
         Object.assign(pel.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: IH + 'px' });
+        pel.dataset.id = it.id;
         const label = pel.querySelector('.plabel');
         if (label) label.style.color = tones(it.labelTone || it.tone || 'bad');
         items[it.id] = { it, el: pel, label, x, y, w, h: IH, G, k: k + o, show: Infinity, fill: it.kind === 'slot' ? Infinity : -Infinity, tone: it.tone ? [{ t: -Infinity, v: it.tone }] : [], strike: Infinity, flash: [] };
@@ -329,17 +363,43 @@
       else if (c.do === 'strike') items[c.id].strike = c.t;
       else if (c.do === 'fly') {
         const a = items[c.from], b = items[c.to], dur = c.dur || 0.9;
+        // A fly copies one value: the checker refuses a fly between two different texts, so the clone never renames.
         // The clone slides its text from where the source shows it to where the target will, so the landing never doubles letters.
-        const tw = measure(a.it.text, '500 40px ui-monospace, Menlo, monospace');
-        const inset = I => I.el.classList.contains('seat') ? Math.max(0, (I.w - tw) / 2 - 3) : 24;
+        const font = '500 40px ui-monospace, Menlo, monospace';
+        const inset = (I, text) => I.el.classList.contains('seat') ? Math.max(0, (I.w - measure(text, font)) / 2 - 3) : 24;
         const el = D('pill fly', `<span class="pt">${esc(a.it.text)}</span>`, root);
-        Object.assign(el.style, { height: a.h + 'px', paddingRight: '0px', whiteSpace: 'nowrap' });
-        flies.push({ a, b, el, t: c.t, dur, fade: !!c.fade, arc: c.arc || 60, pa: inset(a), pb: inset(b) });
+        Object.assign(el.style, { height: a.h + 'px', paddingRight: '0px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' });
+        flies.push({ a, b, el, t: c.t, dur, fade: !!c.fade, arc: c.arc || 60, pa: inset(a, a.it.text), pb: inset(b, b.it.text) });
         if (!c.fade) { b.fill = Math.min(b.fill, c.t + dur); b.flash.push({ t: c.t + dur }); if (b.it.kind !== 'slot') b.show = Math.min(b.show, c.t + dur); }
+      } else if (c.do === 'arrow') {
+        // An arrow relates two boxes: it draws from the source edge to the target edge, and nothing moves or changes text.
+        const A = box(c.from), B = box(c.to), color = tones(c.tone || 'info');
+        const mid = R => [R.x + R.w / 2, R.y + R.h / 2];
+        const edge = (R, from, to) => {
+          const dx = to[0] - from[0], dy = to[1] - from[1], len = Math.hypot(dx, dy) || 1;
+          const k = Math.min(dx ? R.w / 2 / Math.abs(dx) : Infinity, dy ? R.h / 2 / Math.abs(dy) : Infinity);
+          return [from[0] + dx * k + dx / len * 6, from[1] + dy * k + dy / len * 6];
+        };
+        const [x1, y1] = edge(A, mid(A), mid(B)), [x2, y2] = edge(B, mid(B), mid(A));
+        const len = Math.hypot(x2 - x1, y2 - y1) || 1, ux = (x2 - x1) / len, uy = (y2 - y1) / len, HL = 28, HW = 15;
+        const bx = x2 - ux * HL, by = y2 - uy * HL;
+        const svg = S('svg', { class: 'garrow', viewBox: `0 0 ${W} ${H}`, width: W, height: H }, root);
+        Object.assign(svg.dataset, { from: c.from, to: c.to, x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x2.toFixed(1), y2: y2.toFixed(1) });
+        const shaft = S('line', { class: 'shaft', x1, y1, x2: x1, y2: y1, stroke: color, 'stroke-width': 6, 'stroke-linecap': 'round' }, svg);
+        const head = S('polygon', { class: 'head', fill: color,
+          points: [[x2, y2], [bx - uy * HW, by + ux * HW], [bx + uy * HW, by - ux * HW]].map(p => p.map(v => v.toFixed(1)).join(',')).join(' ') }, svg);
+        let label = null;
+        if (c.label) {
+          label = D('galabel', fmt(c.label), root);
+          Object.assign(label.style, { left: (x1 + bx) / 2 + 'px', top: (y1 + by) / 2 - 14 + 'px', color, borderColor: color });
+        }
+        arrows.push({ svg, shaft, head, label, x1, y1, bx, by, t: c.t, until: c.until != null ? c.until : Infinity });
       } else if (c.do === 'mark') {
         const B = box(c.id), tone = tones(c.tone || 'bad');
         const el = D('gmark', `${esc(c.text || '✗')}<i class="ring"></i>`, root);
         Object.assign(el.style, { left: B.x + B.w - 30 + 'px', top: B.y - 20 + 'px', color: tone, borderColor: tone });
+        // The mark covers the box's last 30 px; a top-right label ends left of it.
+        if (B.label) B.label.style.right = '42px';
         marks.push({ el, ring: el.querySelector('.ring'), t: c.t });
         B.flash.push({ t: c.t, color: tone });
       } else if (c.do === 'note') {
@@ -401,6 +461,14 @@
         F.el.style.opacity = q <= 1 || !F.fade ? 1 : 1 - (q - 1) / 0.6;
         F.el.style.transform = q > 1 && F.fade ? `scale(${lerp(1, 0.7, (q - 1) / 0.6)})` : '';
       });
+      arrows.forEach(R => {
+        const o = Math.min(prog(t, R.t, 0.3), 1 - prog(t, R.until, 0.35)), k = prog(t, R.t, 0.5);
+        R.svg.style.opacity = o;
+        R.shaft.setAttribute('x2', lerp(R.x1, R.bx, k).toFixed(1));
+        R.shaft.setAttribute('y2', lerp(R.y1, R.by, k).toFixed(1));
+        R.head.style.opacity = prog(t, R.t + 0.35, 0.15);
+        if (R.label) R.label.style.opacity = Math.min(prog(t, R.t + 0.3, 0.3), 1 - prog(t, R.until, 0.35));
+      });
       marks.forEach(M => {
         M.el.style.opacity = t >= M.t ? 1 : 0;
         M.el.style.transform = `scale(${lerp(1.7, 1, easeOut((t - M.t) / 0.3))})`;
@@ -445,7 +513,7 @@
     const wrap = D('list', null, root);
     const head = D('head', `<span class="big" style="color:${TONE[s.tone || 'good']}">${esc(s.big)}</span><span class="lbl">${esc(s.label)}</span>`, wrap);
     const c = (s.cues || []).find(q => q.do === 'items'), step = c.step || 0.3;
-    const items = s.items.map((it, i) => ({ el: D('item', `<span class="ok" style="color:${TONE[s.tone || 'good']}">${esc(s.mark || '✓')}</span><span>${s.code ? `<code>${esc(it.text)}</code>` : esc(it.text)}</span><span class="c">${esc(it.cite.split('/').pop())}</span>`, wrap), at: c.t + i * step }));
+    const items = s.items.map((it, i) => ({ el: D('item', `<span class="ok" style="color:${TONE[s.tone || 'good']}">${esc(s.mark || '✓')}</span><span>${s.code ? `<code>${esc(it.text)}</code>` : esc(it.text)}</span><span class="c">${link(it.cite.split('/').pop(), it.url)}</span>`, wrap), at: c.t + i * step }));
     if (s.more) items.push({ el: D('more', esc(s.more), wrap), at: c.t + items.length * step });
     return t => {
       head.style.opacity = prog(t, s.start + 0.15, 0.5);
@@ -459,7 +527,7 @@
     const box = D('rows', null, rc);
     const c = (s.cues || []).find(q => q.do === 'rows'), step = c.step || 0.8;
     const rows = s.rows.map((r, i) => ({
-      el: D('row', `<div class="kind">${esc(r.kind)}</div><div class="line"><div class="txt${r.prose ? ' prose' : ''}">${esc(r.text)}</div><div class="cite">${esc(r.line || '')}</div></div>`, box),
+      el: D('row', `<div class="kind">${esc(r.kind)}</div><div class="line"><div class="txt${r.prose ? ' prose' : ''}">${esc(r.text)}</div><div class="cite">${link(r.line || '', r.url)}</div></div>`, box),
       at: c.t + i * step,
     }));
     const ver = D('verdict', esc(s.verdict[0]), claim);
@@ -480,10 +548,70 @@
     return t => cards.forEach(c => { const k = prog(t, c.at, 0.5); c.el.style.opacity = k; c.el.style.transform = `translateY(${lerp(34, 0, k)}px)`; });
   };
 
+  MAKERS.screens = (s, root) => {
+    const n = (s.images || []).length;
+    // One shot sits beside its words at full height; a before/after pair sits side by side.
+    const single = n === 1;
+    const wrap = D('screens' + (single ? ' side' : ' pair'), null, root);
+    const row = D('srow', null, wrap);
+    const maxW = single ? 1312 : 870, maxH = single ? 760 : 560;
+    // Size the image box to the shot's own aspect, so no bars pad it. Upscale at most 2x.
+    const fit = el => {
+      const go = () => {
+        const nw = el.naturalWidth, nh = el.naturalHeight;
+        if (!nw || !nh) return;
+        let w = Math.min(maxW, nw * 2), h = w * nh / nw;
+        if (h > maxH) { h = maxH; w = h * nw / nh; }
+        el.style.width = Math.round(w) + 'px';
+        el.style.height = Math.round(h) + 'px';
+        el.dataset.fit = '1';
+      };
+      if (el.complete && el.naturalWidth) go(); else el.addEventListener('load', go);
+    };
+    const c = (s.cues || []).find(q => q.do === 'show'), step = (c && c.step) || 0.3;
+    const base = c ? c.t : s.start + 0.3;
+    const figs = (s.images || []).map((img, i) => {
+      const fig = D('sfig', null, row);
+      if (!single) D('slabel', esc(img.label || ''), fig);
+      const frame = D('sframe', null, fig);
+      const el = document.createElement('img');
+      el.src = img.src || ('evidence/' + img.path);
+      el.alt = img.caption || s.caption || '';
+      el.loading = 'eager';
+      fit(el);
+      // The page opens the full-size shot in a new tab; the video ignores the link.
+      const full = document.createElement('a');
+      full.href = el.getAttribute('src');
+      full.target = '_blank';
+      full.rel = 'noopener';
+      full.appendChild(el);
+      frame.appendChild(full);
+      return { fig, el, at: base + i * step };
+    });
+    const side = single ? D('sside', null, row) : wrap;
+    if (single) D('slabel', esc(s.images[0].label || ''), side);
+    const cap = D('scap', fmt(s.caption || ''), side);
+    const src = D('ssrc', null, side);
+    // Each shot credits its own origin; an archive copy is never filed under the PR description.
+    const origins = [];
+    (s.images || []).forEach(img => {
+      const o = img.source_label ? [img.source_label, img.source_url] : ['PR description', s.source_url];
+      if (!origins.some(x => x[0] === o[0])) origins.push(o);
+    });
+    origins.sort((a, b) => (a[0] === 'PR description' ? 0 : 1) - (b[0] === 'PR description' ? 0 : 1));
+    src.innerHTML = 'Source: ' + origins.map(o => '<a href="' + esc(o[1] || '') + '" target="_blank" rel="noopener">' + esc(o[0]) + '</a>').join(' · ');
+    return t => {
+      figs.forEach(f => { const k = prog(t, f.at, 0.5); f.fig.style.opacity = k; f.fig.style.transform = 'translateY(' + lerp(20, 0, k) + 'px)'; });
+      cap.style.opacity = prog(t, s.start + 0.2, 0.5);
+      src.style.opacity = prog(t, s.start + 0.4, 0.5);
+    };
+  };
+
   MAKERS.outro = (s, root) => {
     const wrap = D('outro', null, root);
-    const l1 = D('l1', fmt(s.l1), wrap), l2 = D('l2', fmt(s.l2), wrap);
-    const cmd = D('cmd', `<b>prc map</b> ${esc(s.url)}`, wrap);
+    const l1 = D('l1', fmt(s.l1), wrap);
+    const l2 = D('l2 tip', '<span class=\'tlabel\'>Review tip</span><span class=\'tbody\'>' + fmt(s.l2) + '</span>', wrap);
+    const cmd = D('cmd', `<b>Review on GitHub</b> ${esc(s.url)}`, wrap);
     const fine = D('fine', esc(s.fine == null ? '' : s.fine), wrap);
     const at = name => cueT(s, q => q.do === name);
     return t => {
@@ -510,10 +638,19 @@
     const digits = Math.max(1, ...s.rows.filter(r => r.num != null).map(r => String(r.num).length));
     const rows = s.rows.map((r, k) => {
       if (r.gap) return { r, k, el: D('drow gap', '<span class="sg"></span><span class="tx">⋯</span>', box), h: GH, t0: -Infinity, tin: -Infinity };
-      const parts = [];
-      (r.tokens || []).forEach((tok, idx) => {
+      const parts = [], toks = r.tokens || [];
+      // A URL in code is a value, not a page to visit, so it opens the line that defines it on GitHub.
+      // The highlighter splits a URL into many tokens, so one link spans every token that overlaps it; each token keeps its own .mt span.
+      const urls = [...toks.map(t => t.text).join('').matchAll(URL_RE)].map(m => ({ a: m.index, b: m.index + m[0].length, url: m[0] }));
+      let pos = 0;
+      toks.forEach((tok, idx) => {
         if ((r.breaks || []).includes(idx)) parts.push(`<br><span class="hang" style="display:inline-block;width:${r.hang || 0}ch"></span>`);
+        const end = pos + tok.text.length;
+        const u = urls.find(u => u.a < Math.max(end, pos + 1) && pos < u.b);
+        if (u && !u.open) { parts.push(`<a href="${esc(r.url || u.url)}" target="_blank" rel="noopener">`); u.open = true; }
         parts.push(`<span class="mt ${tok.cls || ''}${tok.chg ? ' chg' : ''}">${esc(tok.text)}</span>`);
+        if (u && end >= u.b) parts.push('</a>');
+        pos = end;
       });
       const el = D('drow', `<span class="ln" style="width:${digits + 1}ch;line-height:${RH}px">${r.num}</span><span class="sg">${r.op === '+' ? '+' : r.op === '-' ? '−' : ''}</span><span class="tx"><span class="ct">${parts.join('') || esc(r.text)}</span></span>`, box);
       const t0 = r.step ? stepAt[r.step] : -Infinity;
@@ -533,21 +670,38 @@
       if (hangs.length) w += hangs[hangs.length - 1].getBoundingClientRect().width;
       return w;
     };
+    const fontOf = FS + 'px ui-monospace, Menlo, monospace';
+    const rowMaxW = R => {
+      const toks = R.r.tokens || [];
+      const brs = new Set(R.r.breaks || []);
+      let best = 0, cur = 0;
+      toks.forEach((tk, idx) => {
+        if (brs.has(idx)) best = Math.max(best, cur), cur = (R.r.hang || 0) * FS * 0.6;
+        cur += measure(tk.text, fontOf);
+      });
+      return Math.max(best, cur);
+    };
     const notes = (s.cues || []).filter(c => c.do === 'note').map(c => {
       const R = byRef[c.line], tone = TONE[c.tone || 'info'];
       const el = D('dnote', fmt(c.text), box);
       el.style.color = tone; el.style.borderColor = tone;
-      const lnW = R.el.querySelector('.ln') ? R.el.querySelector('.ln').getBoundingClientRect().width : 0;
-      const want = lnW + 56 + lastLineW(R) + 32;
-      const limit = 1700 - el.offsetWidth - 20;
-      const clamped = want > limit + 1;
+      const estNote = measure(c.text, '600 26px system-ui') + 44;
+      const lnEl = R.el.querySelector('.ln');
+      const lnW = lnEl ? (lnEl.getBoundingClientRect().width || ((String(R.r.num).length + 1) * FS * 0.6)) : 60;
+      const codeEnd = lnW + 56 + rowMaxW(R);
+      const marginX = 1700 - estNote - 20;
+      const beside = codeEnd + 24 <= marginX - 8;
       const stack = R.drop ? R.drop / 56 : 0;
-      const N = { R, el, x: clamped ? 120 : want, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: clamped, stack };
-      if (clamped) {
+      let leader = null;
+      if (beside) {
+        leader = D('dleader', null, box);
+        leader.style.background = tone;
+      } else {
         R.drop = (R.drop || 0) + 56;
         R.h += 56;
         el.dataset.moved = '1';
       }
+      const N = { R, el, leader, codeEnd, x: beside ? marginX : 120, t: c.t, until: c.until != null ? c.until : Infinity, tone, below: !beside, stack };
       R.notes.push(N);
       return N;
     });
@@ -558,12 +712,15 @@
         let k = 1;
         if (R.r.op === '+') k = prog(t, ...R.r.motion.reveal);
         const enter = R.r.gap ? 1 : prog(t, ...R.r.motion.enter);
-        R.y = y; R.hk = k;
+        // An added row opens to its full height in the first half of its reveal, and its text
+        // fades in only in the second half, so wrapped lines never squeeze onto each other.
+        const open = clamp(k * 2);
+        R.y = y; R.hk = open; R.vis = clamp(k * 2 - 1);
         R.el.style.top = y + 'px';
-        R.el.style.height = R.h * k + 'px';
+        R.el.style.height = R.h * open + 'px';
         // Removed rows stay on screen: their text dims to 0.85 and the row tints red. No strike, no close.
-        R.el.style.opacity = enter * clamp(k * 2 - 1) * (R.r.op === '-' ? lerp(1, 0.85, prog(t, R.t0, 0.3)) : 1);
-        y += R.h * k;
+        R.el.style.opacity = enter * R.vis * (R.r.op === '-' ? lerp(1, 0.85, prog(t, R.t0, 0.3)) : 1);
+        y += R.h * open;
         if (!R.ct) return;
         if (!R.chg) R.chg = [...R.el.querySelectorAll('.mt.chg')];
         let bg = 0, color = C.green;
@@ -589,14 +746,22 @@
       });
       box.style.height = y + TOP + 'px';
       notes.forEach(N => {
-        const o = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * clamp(N.R.hk * 2 - 1);
+        const o = Math.min(prog(t, N.t, 0.3), 1 - prog(t, N.until, 0.3)) * N.R.vis;
         N.el.style.left = N.x + 'px';
         N.el.style.opacity = o;
         if (N.below) {
           N.el.style.transform = 'none';
           N.el.style.top = (N.R.y + (N.R.h - (N.R.drop || 0)) * N.R.hk + 8 + N.stack * 56) + 'px';
+          if (N.leader) N.leader.style.opacity = 0;
         } else {
-          N.el.style.top = N.R.y + N.R.h * N.R.hk - RH / 2 + 'px';
+          const cy = N.R.y + N.R.h * N.R.hk - RH / 2;
+          N.el.style.top = cy + 'px';
+          if (N.leader) {
+            N.leader.style.opacity = o * 0.9;
+            N.leader.style.left = N.codeEnd + 8 + 'px';
+            N.leader.style.width = Math.max(8, N.x - N.codeEnd - 12) + 'px';
+            N.leader.style.top = cy + 'px';
+          }
         }
       });
     };
@@ -615,13 +780,20 @@
     const scenes = B.scenes
       .map((s, idx) => ({ s, idx }))
       .filter(x => sceneIndex == null || x.idx === sceneIndex)
-      .map(x => { const r = D('scene', null, stage); return { s: x.s, root: r, update: MAKERS[x.s.type](x.s, r) }; });
+      .map(x => { const r = D('scene', null, stage); return { s: x.s, root: r, update: MAKERS[x.s.type](x.s, r), after: x.idx ? B.scenes[x.idx - 1].end : -Infinity }; });
     const sentences = scenes.flatMap(sc => (sc.s.nocap ? [] : sc.s.sentences));
     let lastCap, lastFoot;
+    // The footer names receipts; on the clickable page each receipt opens its line on GitHub.
+    const footHTML = s => s.footer_parts ? s.footer_parts.map(p => p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.text)}</a>` : esc(p.text)).join('') : esc(s.footer || '');
 
     const seek = t => {
       scenes.forEach(sc => {
-        const o = Math.min(prog(t, sc.s.start, 0.45), 1 - prog(t, ...sc.s.fade));
+        // Scenes are sequential: a scene enters only after the previous scene's window ends,
+        // and leaves at its own end, so the next scene's cards never land on the current
+        // scene. render also refuses a board whose windows overlap.
+        const from = Math.max(sc.s.start, sc.after);
+        const inside = t >= from && t < sc.s.end;
+        const o = inside ? Math.min(prog(t, from, 0.45), 1 - prog(t, ...sc.s.fade)) : 0;
         sc.root.style.opacity = o;
         sc.root.style.visibility = o > 0.001 ? 'visible' : 'hidden';
         if (o > 0.001) sc.update(t);
@@ -631,7 +803,7 @@
       cap.style.opacity = cur ? Math.min(prog(t, cur.start - 0.15, 0.15), 1 - prog(t, cur.start + cur.dur + 0.1, 0.15)) : 0;
       const sc = scenes.find(x => t >= x.s.start && t < x.s.end);
       const f = sc ? sc.s.footer || '' : '';
-      if (f !== lastFoot) { foot.textContent = f; lastFoot = f; }
+      if (f !== lastFoot) { foot.innerHTML = sc ? footHTML(sc.s) : ''; lastFoot = f; }
       foot.style.opacity = sc ? Math.min(prog(t, sc.s.start + 0.3, 0.5), 1 - prog(t, ...sc.s.fade)) : 0;
       bar.style.width = `${(t / B.duration) * 100}%`;
     };
@@ -657,7 +829,7 @@
         });
         times.forEach(t => {
           update(t);
-          root.querySelectorAll('.dnote').forEach(el => {
+          root.querySelectorAll('.dnote,.dleader').forEach(el => {
             if (parseFloat(getComputedStyle(el).opacity) < 0.05) return;
             const r = el.getBoundingClientRect();
             const covers = [...root.querySelectorAll('.drow')].some(row => {

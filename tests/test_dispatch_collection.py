@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-HUB_MARKERS = ("button-level end-to-end", "verify_paired_hub")
+HUB_MARKERS = ("notes-hub browser pass", "verify_notes_hub")
 
 
 def _agents_text() -> str:
@@ -16,6 +16,18 @@ def test_close_dispatch_row_is_present() -> None:
     assert "Close every dispatch" in _agents_text()
 
 
+def test_transition_row_is_present() -> None:
+    """2026-10-18: prototype clips showed two scenes at once at every cut."""
+    text = _agents_text()
+    for marker in (
+        "one scene at a time",
+        "tests/test_transitions.py",
+        "hook case 8",
+        "opens to its full height before its text shows",
+    ):
+        assert marker in text, f"AGENTS.md rule table must name {marker}"
+
+
 def test_hub_button_pass_row_is_present() -> None:
     text = _agents_text()
     for marker in HUB_MARKERS:
@@ -24,10 +36,10 @@ def test_hub_button_pass_row_is_present() -> None:
 
 def test_hub_row_names_its_enforcement() -> None:
     text = _agents_text()
-    assert "test_verify_paired_hub" in text
+    assert "test_verify_notes_hub" in text
 
 
-HANDOFF_MARKERS = ("handoff_study_hub", "artifacts/handoff")
+HANDOFF_MARKERS = ("handoff_study_hub", "artifacts/study-v3/handoff/notes")
 
 
 def test_handoff_row_is_present() -> None:
@@ -38,5 +50,5 @@ def test_handoff_row_is_present() -> None:
 
 def test_handoff_row_names_its_enforcement() -> None:
     text = _agents_text()
-    assert "test_verify_paired_hub" in text
+    assert "test_verify_notes_hub" in text
     assert "test_dispatch_collection" in text

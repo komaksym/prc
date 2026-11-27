@@ -46,26 +46,6 @@ def test_card_gate_accepts_the_true_ci_state_and_singular_labels(
     assert gates.gate_card_facts(tmp_path) == (True, "card numbers match recomputation")
 
 
-@pytest.mark.parametrize("damage", ["missing", "sha", "line"])
-def test_doc_gate_requires_the_board_receipt(tmp_path: Path, damage: str) -> None:
-    m = {"pr": "owner/repo#1", "head_sha": "a" * 40, "base_sha": "b" * 40}
-    board = {"scenes": [{"type": "title", "cite": [{"line": "main.py:7"}]}]}
-    (tmp_path / "map.json").write_text(json.dumps(m))
-    (tmp_path / "board.json").write_text(json.dumps(board))
-    url = f"https://github.com/owner/repo/blob/{'a' * 40}/main.py#L7"
-    (tmp_path / "doc.html").write_text(f'<a href="{url}">receipt</a>')
-    assert gates.gate_doc_links(tmp_path)[0]
-    damaged = (
-        ""
-        if damage == "missing"
-        else url.replace("a" * 40, "c" * 40)
-        if damage == "sha"
-        else url.replace("#L7", "#L8")
-    )
-    (tmp_path / "doc.html").write_text(f'<a href="{damaged}">receipt</a>')
-    assert not gates.gate_doc_links(tmp_path)[0]
-
-
 def test_empty_run_cannot_pass_the_gate_cli(tmp_path: Path) -> None:
     (tmp_path / "outputs").mkdir()
     outcome = subprocess.run(

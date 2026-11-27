@@ -1,0 +1,9 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "codex-imagegen",
+  "image_sha256": "1a6ab4ee6659cc164f594bb39f949c2c5b0de0896e03629dcc9fb8fef47d3faf",
+  "prompt_sha256": "8993f2e4bceb70981a69f2b5b2c9373b2aaa21f677e694fd04607315fb59b50f",
+  "purpose": "Shows how the PRC explainer branch connects source checks, three artifacts, and the System View review.",
+  "visual_note": "Read “PRC explainer layer”, “One checked storyboard”, “Clickable page”, and “Release checks cover the installed CLI and patch coverage.”",
+  "created_at": "2026-11-27T17:18:50.137329+00:00"
+}

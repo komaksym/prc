@@ -2,6 +2,15 @@
 
 Append one entry per stage or session. Newest at the bottom. Label every number measured or estimated.
 
+## 2026-10-22. Verification cleanup
+
+Added annotations to the explainer test helpers. Strict mypy now reports no issues in 120 files.
+Applied existing Ruff formatting without changing assertions or runtime behavior.
+The release copy now initializes Git before validation, so Ruff preserves the source ignore rules.
+The new regression failed on the old script and passes with ignored experiments and failing source cases.
+Final acceptance runs the isolated release command after the cleanup commit.
+Its evidence remains under `artifacts/release/verify/`, with the latest passing run in `latest-success.txt`.
+
 ## 2026-10-06 01:00 CEST. Handoff (Opus)
 
 - Moved the project from `~/dev/Codex/2026-10-04/pr-comprehension-implementation` to `~/dev/prc`. The old path is a symlink to the new one, so old absolute paths still work. Repaired the git worktrees.
@@ -224,3 +233,40 @@ This runtime cannot receive audio input. s2e3, onComplete and ErrNotExist have e
 The goal stays open for direct listening. Human acceptance, public release, push and PR creation remain gated.
 
 Next step. Review the complete three-case package and record the listening and usefulness judgments.
+
+## Game battle review, 2026-10-21
+
+Added Tuxemon/Tuxemon #2370 as one light-mode review with actual before-and-after game screenshots.
+The author supplied the screenshots. PRC did not install or run Tuxemon.
+The comparison shows overlapping monster sprites before and separate pairs afterward.
+Nine storyboard scenes cover representative lines from all four changed Python files.
+Sixteen reading entries explain every changed code unit, including supporting combat refactors.
+
+The board passes its receipt check. The focused renderer, transition and UI-evidence checks passed 122 tests.
+Independent factual review found a screenshot-description error, which the parent corrected before the final render.
+The second native baoyu infographic candidate passed the unchanged text gate.
+The full release check and exact-artifact browser, click, vision and listening checks remain required before handoff.
+Their records are collected under `/private/tmp/prc-battle-proof/` and the release verification directory.
+The final local output is `artifacts/game-review/light/Tuxemon-2370/labsheet/`.
+Existing study outputs and application code remain unchanged. Publication still requires the user's approval.
+
+The exact-page browser pass found a callout intercepting a code-line click.
+The renderer now lets clicks pass through decorative callouts. A browser regression test fails before this fix and passes after it.
+The page verifier scrolls each target into view before clicking it.
+The full test suite passes 1126 tests. Source lint and the package build pass.
+The repository typecheck still reports 16 existing errors in test_explainer_v6.py and test_transitions.py.
+The isolated release check stops on existing lint errors in tracked artifact scripts.
+
+Independent reviewer Leibniz inspected all 17 page shots and the native baoyu infographic.
+The parent found three video scenes with delayed added-code reveals and moved those reveals into the first sentence.
+Socrates checked the six changed cue anchors against the source board and reran the receipt check.
+The rebuilt 102.3-second labsheet video reuses the original narration.
+Final click and visual records are under `/private/tmp/prc-battle-proof/final-click/` and `/private/tmp/prc-battle-proof/final-vision/`.
+The Prove It Works principle required checking the generated page and video directly.
+The Fix Root Causes principle put the click fix in decorative callout hit testing and the timing fix in the source board.
+
+On 2026-10-22, the parent resumed the exact-output handoff check without changing the generated artifacts.
+The live page still answers at its existing local URL. Its screenshot pair remains readable.
+The rebuilt video's Parakeet check passes with no lost words or identifier gaps.
+The final proof set is `/private/tmp/prc-battle-proof/handoff-current/`.
+The game example remains a local checkpoint. The existing repository typecheck and release-lint failures remain open.
