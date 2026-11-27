@@ -6,7 +6,7 @@ description: Write a board.json storyboard for one pull request so prc can rende
 # prc-explain: write the board for one pull request video
 
 You write one JSON file, the board. `prc` turns it into a narrated 1920x1080
-video, walkthrough, map, card, and comment draft. It checks cited code and explicit numeric assertions.
+video, a clickable page, and a gated infographic. It checks cited code and explicit numeric assertions.
 Review the prose against the captured code. A valid citation can support a false interpretation.
 `prc` never posts
 anything to GitHub: it only writes local files. Say that to the user at
@@ -25,7 +25,7 @@ Do not infer no tests from zero parsed test functions. Check the changed test fi
 
 ## 1. Render the deterministic outputs and read `map.json`
 
-Run `prc doctor` first. Video and card rendering require Chromium and ffmpeg.
+Run `prc doctor` first. Video and page rendering require Chromium and ffmpeg.
 Use `--voice none` for silent output when voice backends are unavailable.
 Follow the user's installation policy before installing missing tools or voice models.
 Then render the PR without a board:
@@ -34,7 +34,7 @@ Then render the PR without a board:
 prc explain --source https://github.com/<owner>/<repo>/pull/<N>
 ```
 
-This writes `map.json`, `map.html` and `run.json` into
+This writes `map.json` and `run.json` into
 `artifacts/explain/<owner>-<repo>-<N>-<head12>/` and prints that folder as
 `out`. Read `map.json` there: it is the only source of truth for the rest
 of this skill. Every name, value, label and count you put on screen must
@@ -68,7 +68,7 @@ with the evidence (the tests the PR adds, when it adds any), then the
 outro. The outro's two lines hand the reviewer off: what changed in one
 plain sentence, then where to start reviewing (a file and what it decides)
 or what the PR leaves untested. Never a slogan or a quotable line.
-The card and comment headline use the outro's `l1` change summary when supplied.
+The infographic and comment headline use the outro's `l1` change summary when supplied.
 Write `l1` about the resulting behavior. Keep the old behavior in the introduction or diff scene.
 
 ## 3. Pick lines with `board show` and `board find`
@@ -159,8 +159,8 @@ Add `--map <stored map.json>` when step 1 needed it. Pass `--out` as an
 absolute path: a relative one currently crashes the renderer before the
 first frame. A failed check stops the render with exit 2 and one line per
 error: go back to step 5.
-On success the command prints the `out` folder with the five product outputs
-(`map.html`, `video.mp4`, `doc.html`, `card.png`, `comment.md`) plus evidence
+On success the command prints the `out` folder with the three artifacts
+(`video.mp4`, `page.html`, `infographic.png`) plus evidence
 (`map.json`, `board.json`, `run.json`).
 
 ## 8. Review your own frames and fix them
@@ -188,15 +188,13 @@ scene). Fix the board for anything unreadable or wrong (fewer rows, shorter line
 for a picture that needs a beat), then repeat steps 5 to 8 until the
 frames read cleanly.
 
-## 9. Tell the user where the 5 files are
+## 9. Tell the user where the 3 artifacts are
 
-Report the `out` folder and its five product outputs:
+Report the `out` folder and its three artifacts:
 
-- `map.html` is the browsable code map.
 - `video.mp4` is the explainer video.
-- `doc.html` is the written walkthrough.
-- `card.png` is the PR card.
-- `comment.md` is the comment draft.
+- `page.html` is the clickable storyboard page.
+- `infographic.png` is the gated infographic.
 
 Also report `map.json`, `board.json`, and `run.json` as evidence and run metadata.
 Say how many tries `prc board check` needed, what the board
@@ -244,7 +242,7 @@ the canvas if they contain no letters or digits.
 Keep them away from numerical fact lines and all other lines that contain numbers.
 OCR can read an icon as a digit and reject the candidate.
 
-Gate each candidate by re-running explain with repeatable flags, in the
+Every board build fails without a gated infographic. Gate each candidate by re-running explain with repeatable flags, in the
 order drawn:
 
 ```sh
@@ -258,20 +256,19 @@ records the verdict with missing and invented words, successful reading
 modes and failed modes, and connecting-ink evidence for each relation.
 PRC checks and hashes an unchanged copy of each
 candidate. On a pass the comment
-embeds `infographic.png` and the walkthrough shows it at the top. The card
-stays in the bundle as the fallback.
+embeds `infographic.png` and the page links to it.
 
 On a failure, read `infographic/check.json` first. It names the words OCR
 read that the brief does not hold and the lines OCR could not confirm.
 A `flat` verdict means the word checks passed but the brief has no relations
 or a required connection is missing. The `relations` rows identify missing connections.
-For a relation-free brief, keep the card as the fallback. Board edits cannot invent code relations.
+For a relation-free brief, no infographic can publish and the build fails. Board edits cannot invent code relations.
 Change the next prompt to fix exactly those, for example by drawing an
 unconfirmed line larger and away from icons, or by drawing the missing
 arrow straight from one box to the other. Redraw from a new prompt
 file, at most two times. Never
 paint over text in an image editor: a redraw is a fresh generation from an
-updated prompt. After that the card stays as the fallback, and the run
+updated prompt. After that the build still fails, and the run
 records the failed status.
 
 Read the selected drawing by eye before presenting it. OCR can miss faint text.

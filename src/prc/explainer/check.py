@@ -20,20 +20,425 @@ from prc.explainer.speech import speakable
 
 CHANGED = ("added", "modified")
 ROWS = 12
+LABEL = 30
+MAX_SECONDS = 150
+
+# v6 box roles: every container and box says what it is at that moment.
+# A group caption lives in sub, a slot names what fills it in label, and a
+# cue label that names a count must match the count-like boxes drawn.
+NUMBER_WORDS = {
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+}
+COUNT_LIKE = ("row", "matched", "unmatched", "inserted", "event", "fetch", "count")
+
+
+def _parse_count(label: str) -> int | None:
+    low = label.lower()
+    if "count" not in low:
+        return None
+    m = re.search(r"(\d+)", low)
+    if m:
+        return int(m.group(1))
+    for w, n in NUMBER_WORDS.items():
+        if re.search(r"(?<!\w)" + w + r"(?!\w)", low):
+            return n
+    return None
+
+
+def _count_like(text: str) -> bool:
+    low = text.lower()
+    return any(k in low for k in COUNT_LIKE)
+
+
+def box_role_problems(i: int, s: dict[str, Any]) -> list[str]:
+    problems: list[str] = []
+    groups = s.get("groups", [])
+    item_group = {}
+    for g in groups:
+        if not str(g.get("sub", "") or "").strip():
+            problems.append(
+                f"scene {i}: group {g.get('id')!r} needs a caption in sub "
+                "saying what it is at that moment "
+                "(for example 'Google Doc before the run')"
+            )
+        for it in g.get("items", []):
+            item_group[it.get("id")] = g
+            if it.get("kind") == "slot" and not str(it.get("label", "") or "").strip():
+                problems.append(f"scene {i}: slot {it.get('id')!r} needs a label for what fills it")
+    for c in s.get("cues", []):
+        if c.get("do") != "arrow":
+            continue
+        label = str(c.get("label", "") or "")
+        want = _parse_count(label)
+        if want is None:
+            continue
+        src = item_group.get(c.get("from"))
+        if src is None:
+            src = next((g for g in groups if g.get("id") == c.get("from")), None)
+        got = sum(
+            1
+            for it in (src.get("items", []) if src else [])
+            if _count_like(str(it.get("text", "")))
+        )
+        if got != want:
+            problems.append(
+                f"scene {i}: arrow label {label!r} names {want} counts "
+                f"but the source draws {got}; draw all {want} or drop the number"
+            )
+    return problems
+
+
+CODE_EXT = frozenset(
+    [
+        ".py",
+        ".pyi",
+        ".js",
+        ".mjs",
+        ".cjs",
+        ".jsx",
+        ".ts",
+        ".tsx",
+        ".go",
+        ".sh",
+        ".bash",
+        ".zsh",
+        ".sql",
+        ".rb",
+        ".rs",
+        ".java",
+        ".kt",
+        ".kts",
+        ".swift",
+        ".c",
+        ".h",
+        ".cc",
+        ".cpp",
+        ".hpp",
+        ".cs",
+        ".php",
+        ".scala",
+        ".lua",
+        ".pl",
+        ".ex",
+        ".exs",
+        ".dart",
+        ".vue",
+        ".svelte",
+        ".css",
+        ".scss",
+        ".html",
+    ]
+)
+CONFIG_EXT = frozenset([".toml", ".yml", ".yaml", ".ini", ".cfg", ".conf"])
+CONFIG_NAMES = frozenset(
+    [
+        "dockerfile",
+        "makefile",
+        "package.json",
+        "jenkinsfile",
+        "procfile",
+        "gemfile",
+        "go.mod",
+        ".env.example",
+    ]
+)
+LOCKS = frozenset(
+    [
+        "uv.lock",
+        "poetry.lock",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        "cargo.lock",
+        "gemfile.lock",
+        "go.sum",
+        "composer.lock",
+        "pipfile.lock",
+    ]
+)
+NOT_BEHAVIOR_DIRS = frozenset(
+    [
+        "tests",
+        "test",
+        "__tests__",
+        "docs",
+        "dist",
+        "build",
+        "artifacts",
+        "reports",
+        "node_modules",
+        "vendor",
+    ]
+)
+NOT_BEHAVIOR_EXT = frozenset(
+    [
+        ".md",
+        ".mdx",
+        ".rst",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".webp",
+        ".svg",
+        ".ico",
+        ".pdf",
+        ".mp4",
+        ".mp3",
+        ".wav",
+        ".zip",
+        ".gz",
+        ".woff",
+        ".woff2",
+        ".ttf",
+    ]
+)
+# ASD-STE100 sentence limits: an instruction tells the viewer to do something, a description states a fact.
+MAX_INSTRUCTION = 20
+MAX_DESCRIPTION = 25
+IMPERATIVES = frozenset(
+    [
+        "add",
+        "ask",
+        "begin",
+        "call",
+        "check",
+        "click",
+        "compare",
+        "consider",
+        "look",
+        "go",
+        "keep",
+        "make",
+        "mind",
+        "note",
+        "notice",
+        "open",
+        "pick",
+        "read",
+        "remember",
+        "review",
+        "run",
+        "see",
+        "skip",
+        "start",
+        "stop",
+        "test",
+        "trust",
+        "try",
+        "use",
+        "verify",
+        "watch",
+        "write",
+        "never",
+        "do",
+        "don't",
+        "focus",
+        "follow",
+        "find",
+        "expect",
+    ]
+)
+BE_FORMS = frozenset(
+    [
+        "be",
+        "is",
+        "are",
+        "was",
+        "were",
+        "been",
+        "being",
+        "am",
+        "get",
+        "gets",
+        "got",
+        "gotten",
+        "getting",
+    ]
+)
+ADVERBS = frozenset(
+    ["not", "now", "never", "also", "still", "always", "only", "then", "just", "already", "often"]
+)
+PARTICIPLES = frozenset(
+    [
+        "done",
+        "made",
+        "given",
+        "taken",
+        "shown",
+        "seen",
+        "known",
+        "written",
+        "built",
+        "sent",
+        "kept",
+        "held",
+        "run",
+        "set",
+        "found",
+        "left",
+        "lost",
+        "read",
+        "put",
+        "cut",
+        "hit",
+        "brought",
+        "bought",
+        "caught",
+        "taught",
+        "thought",
+        "told",
+        "sold",
+        "paid",
+        "said",
+        "spent",
+        "won",
+        "chosen",
+        "drawn",
+        "driven",
+        "broken",
+        "spoken",
+        "stolen",
+        "frozen",
+        "forgotten",
+        "hidden",
+        "thrown",
+        "grown",
+        "blown",
+        "flown",
+        "worn",
+        "torn",
+        "begun",
+        "struck",
+        "stuck",
+        "bound",
+        "fed",
+        "led",
+        "met",
+        "felt",
+        "dealt",
+        "meant",
+        "lent",
+        "bent",
+        "rebuilt",
+        "rewritten",
+        "overridden",
+        "undone",
+        "split",
+        "shut",
+        "spread",
+        "let",
+        "cast",
+        "forbidden",
+        "withheld",
+        "laid",
+        "shaken",
+        "eaten",
+        "understood",
+        "forgiven",
+    ]
+)
+NOT_PARTICIPLES = frozenset(
+    [
+        "need",
+        "indeed",
+        "speed",
+        "seed",
+        "feed",
+        "bed",
+        "red",
+        "shed",
+        "bleed",
+        "breed",
+        "proceed",
+        "succeed",
+        "exceed",
+        "embed",
+    ]
+)
+_SENTENCE_END = re.compile(
+    r"(?<!\be\.g)(?<!\bi\.e)(?<!\bvs)[.!?]+[\"')\]]*\s+(?=[\"'(\[]*[A-Z0-9])"
+)
+_CODE_SPAN = re.compile(r"\x60[^\x60]*\x60")
 VERBS: dict[str, set[str]] = {
     "title": {"claim"},
     "graph": {"show", "draw", "pulse", "focus", "walk", "flash", "note"},
     "calc": {"chip"},
     "timeline": {"bar", "ask", "overlap", "stamp", "message"},
-    "groups": {"show", "tone", "fill", "strike", "fly", "mark", "note"},
+    "groups": {"show", "tone", "fill", "strike", "fly", "arrow", "mark", "note"},
     "bars": {"bars", "dim", "note"},
     "list": {"items"},
     "receipt": {"rows", "verdict"},
     "stats": {"card"},
     "outro": {"l1", "l2", "cmd"},
     "diff": {"step", "note"},
+    "screens": {"show"},
 }
 NEEDS = {"list": "items", "receipt": "rows"}
+
+
+def behavior_file(path: str) -> bool:
+    """Code, CI workflows and config: the files whose change alters what the software does.
+
+    Tests, lock files, generated or binary files, evidence and reports, and docs are not.
+    """
+    parts = path.lower().split("/")
+    name = parts[-1]
+    ext = "." + name.rsplit(".", 1)[1] if "." in name.lstrip(".") else ""
+    if any(part in NOT_BEHAVIOR_DIRS for part in parts[:-1]):
+        return False
+    if name in LOCKS or ext == ".lock" or ext in NOT_BEHAVIOR_EXT or ".min." in name:
+        return False
+    if re.fullmatch(r"test_.*\.py|.*_test\.\w+|.*\.(test|spec)\.\w+", name):
+        return False
+    if (
+        name in CONFIG_NAMES
+        or name.startswith("dockerfile")
+        or re.fullmatch(r"tsconfig.*\.json|requirements.*\.txt|\.env\..*example", name)
+    ):
+        return True
+    return ext in CODE_EXT or ext in CONFIG_EXT
+
+
+def shown_files(board: dict[str, Any]) -> set[str]:
+    """Files a scene puts on screen: a diff scene's file, or the path of a cited line."""
+    shown: set[str] = set()
+    for s in board["scenes"]:
+        if s["type"] == "diff":
+            shown.add(s["file"])
+        refs = [c.get("line") for c in s.get("cite", [])]
+        refs += [it.get("cite") for it in s.get("items", []) if isinstance(it, dict)]
+        refs += [r.get("line") for r in s.get("rows", []) if isinstance(r, dict)]
+        refs += [e.get("line") for e in s.get("edges", []) if isinstance(e, dict)]
+        shown.update(ref.rsplit(":", 1)[0] for ref in refs if isinstance(ref, str) and ":" in ref)
+    return shown
+
+
+def missing_behavior_files(board: dict[str, Any], m: dict[str, Any]) -> list[str]:
+    """Changed behavior files no scene shows. A file with no diff line to quote is not required."""
+    tests = {f["path"] for f in m["brief"]["files"] if f.get("kind") == "test"}
+    shown = shown_files(board)
+    return sorted(
+        f["path"]
+        for f in m["files"]
+        if f.get("status") != "deleted"
+        and f["path"] not in tests
+        and behavior_file(f["path"])
+        and any(h.get("lines") for h in f.get("hunks", []))
+        and f["path"] not in shown
+    )
 
 
 def scripted(scene: dict[str, Any]) -> list[str]:
@@ -46,6 +451,136 @@ def scripted(scene: dict[str, Any]) -> list[str]:
 
 def spoken(scene: dict[str, Any]) -> list[str]:
     return [speakable(text) for text in scripted(scene)]
+
+
+def _words(sentence: str) -> list[str]:
+    """Words as a reader counts them: a code span is one word, bare punctuation is none."""
+    plain = _CODE_SPAN.sub("code", sentence)
+    return [w for w in plain.split() if re.search(r"\w", w)]
+
+
+def _passive(words: list[str]) -> str | None:
+    """The first be or get form followed, past at most one adverb, by a past participle."""
+    bare = [re.sub(r"^\W+|\W+$", "", w).lower() for w in words]
+    for k, word in enumerate(bare):
+        if word not in BE_FORMS:
+            continue
+        j = k + 1
+        if j < len(bare) and bare[j] in ADVERBS:
+            j += 1
+        if j >= len(bare):
+            continue
+        verb = bare[j]
+        regular = verb.endswith("ed") and len(verb) > 3 and verb not in NOT_PARTICIPLES
+        if regular or verb in PARTICIPLES:
+            return " ".join(re.sub(r"^\W+|\W+$", "", w) for w in words[k : j + 1])
+    return None
+
+
+def narration_problems(i: int | str, scene: dict[str, Any]) -> list[str]:
+    """ASD-STE100 rules for each caption: one short sentence in the active voice."""
+    where = f"scene {i}" if isinstance(i, int) else i
+    problems: list[str] = []
+    for say in scene.get("say", []):
+        caption = say if isinstance(say, str) else say["show"]
+        parts = [p for p in _SENTENCE_END.split(_CODE_SPAN.sub("code", caption)) if p.strip()]
+        if len(parts) > 1:
+            problems.append(
+                f"{where}: {caption!r} holds {len(parts)} sentences; ASD-STE100 asks for "
+                "one statement per sentence, so give each its own say entry"
+            )
+        words = _words(caption)
+        if not words:
+            continue
+        first = re.sub(r"^\W+|\W+$", "", words[0]).lower()
+        if first in IMPERATIVES and len(words) > MAX_INSTRUCTION:
+            problems.append(
+                f"{where}: {caption!r} is an instruction of {len(words)} words; "
+                f"ASD-STE100 allows {MAX_INSTRUCTION} at most"
+            )
+        elif first not in IMPERATIVES and len(words) > MAX_DESCRIPTION:
+            problems.append(
+                f"{where}: {caption!r} is a description of {len(words)} words; "
+                f"ASD-STE100 allows {MAX_DESCRIPTION} at most"
+            )
+        phrase = _passive(words)
+        if phrase:
+            problems.append(
+                f"{where}: {caption!r} uses the passive {phrase!r}; ASD-STE100 asks for the "
+                "active voice, so name who does the action"
+            )
+    return problems
+
+
+READING_GROUP = 4
+SHARED_ROLES = ("test", "docs", "data")
+
+
+def reading_problems(board: dict[str, Any], m: dict[str, Any]) -> list[str]:
+    """The reading path gives every changed unit one entry: one or two plain sentences.
+
+    Tests, docs and data may share an entry across files. Code, CI and config entries
+    stay in one file and hold at most READING_GROUP units, so each function gets words.
+    """
+    from prc.explainer.units import units
+
+    known = {u["id"]: u for u in units(m)}
+    reading = board.get("reading")
+    if not isinstance(reading, list):
+        return [
+            "board has no reading list; run `prc board units` and give every unit "
+            "one sentence in `reading`"
+        ]
+    problems: list[str] = []
+    seen: dict[str, int] = {}
+    for k, entry in enumerate(reading):
+        where = f"reading {k}"
+        ids = entry.get("units") if isinstance(entry, dict) else None
+        say = entry.get("say") if isinstance(entry, dict) else None
+        if not isinstance(ids, list) or not ids or not all(isinstance(x, str) for x in ids):
+            problems.append(f"{where}: needs a nonempty units list of unit ids")
+            continue
+        sentences = [say] if isinstance(say, str) else say
+        if (
+            not isinstance(sentences, list)
+            or not 1 <= len(sentences) <= 2
+            or not all(isinstance(s, str) and s.strip() for s in sentences)
+        ):
+            problems.append(f"{where}: say needs one or two sentences")
+        else:
+            problems += narration_problems(where, {"say": sentences})
+        found = []
+        for uid in ids:
+            if uid not in known:
+                problems.append(
+                    f"{where}: {uid!r} is not a unit of this pull request; run `prc board units`"
+                )
+            elif uid in seen:
+                problems.append(f"{where}: {uid!r} is already explained in reading {seen[uid]}")
+            else:
+                seen[uid] = k
+                found.append(known[uid])
+        roles = {u["role"] for u in found}
+        paths = {u["path"] for u in found}
+        if len(roles) > 1:
+            problems.append(
+                f"{where}: mixes {', '.join(sorted(roles))} units; give each role its own entry"
+            )
+        elif found and found[0]["role"] not in SHARED_ROLES:
+            if len(paths) > 1:
+                problems.append(
+                    f"{where}: joins units from {len(paths)} files; "
+                    "code, CI and config entries stay in one file"
+                )
+            if len(found) > READING_GROUP:
+                problems.append(
+                    f"{where}: joins {len(found)} units; code, CI and config entries hold "
+                    f"at most {READING_GROUP}"
+                )
+    missing = [uid for uid in known if uid not in seen]
+    if missing:
+        problems.append("units with no reading sentence: " + ", ".join(missing))
+    return problems
 
 
 def find_phrase(scene: dict[str, Any], phrase: str) -> list[tuple[int, int]]:
@@ -67,6 +602,8 @@ def scene_ids(s: dict[str, Any]) -> set[str]:
         return {r["id"] for r in s["rows"]}
     if s["type"] == "diff":
         return {ref if isinstance(ref, str) else ref["ref"] for ref in s["lines"]}
+    if s["type"] == "screens":
+        return {img.get("path", "") for img in s.get("images", []) if isinstance(img, dict)}
     return set()
 
 
@@ -106,6 +643,48 @@ class Checker:
 
     def fail(self, message: str) -> None:
         self.failures.append(message)
+
+    def link(self, i: int, s: dict[str, Any], c: dict[str, Any]) -> None:
+        """A fly copies one value; an arrow relates two boxes and moves nothing."""
+        texts = {it["id"]: it["text"] for g in s["groups"] for it in g["items"]}
+        if c["do"] == "fly":
+            a, b = texts.get(c.get("from")), texts.get(c.get("to"))
+            if a is not None and b is not None and a != b:
+                self.fail(
+                    f"scene {i}: fly from {c['from']!r} to {c['to']!r} changes the text from "
+                    f"{a!r} to {b!r}, so the box renames mid-flight; "
+                    'use an "arrow" cue to relate two different items'
+                )
+            return
+        if "from" not in c or "to" not in c:
+            self.fail(f"scene {i}: arrow cue needs 'from' and 'to'")
+            return
+        if c["from"] == c["to"]:
+            self.fail(f"scene {i}: arrow cue joins {c['from']!r} to itself")
+        label = c.get("label", "")
+        if not isinstance(label, str) or len(label) >= LABEL:
+            self.fail(f"scene {i}: arrow label {label!r} needs text under {LABEL} characters")
+        self.arrow_ends(i, s, c)
+
+    def arrow_ends(self, i: int, s: dict[str, Any], c: dict[str, Any]) -> None:
+        """An arrow between two row groups leaves from, and lands on, the box nearest the other
+        group; any other end draws the line across the boxes between."""
+        home = {it["id"]: g for g in s["groups"] for it in g["items"]}
+        a, b = home.get(c["from"]), home.get(c["to"])
+        if a is None or b is None or a is b or a.get("col", 0) == b.get("col", 0):
+            return
+        rightward = a.get("col", 0) < b.get("col", 0)
+        for end, g, facing in ((c["from"], a, rightward), (c["to"], b, not rightward)):
+            if not g.get("row"):
+                continue
+            inside = [it["id"] for it in g["items"] if not it.get("outside")]
+            near = inside[-1] if facing else inside[0]
+            if end != near:
+                self.fail(
+                    f"scene {i}: arrow from {c['from']!r} to {c['to']!r} crosses the boxes of "
+                    f"row group {g['id']!r}; start or end it at {near!r}, the box nearest the "
+                    f"other group, instead of {end!r}"
+                )
 
     def touch(self, sid: str) -> None:
         if self.sym[sid]["status"] in CHANGED and self.kinds.get(self.sym[sid]["path"]) != "test":
@@ -300,6 +879,7 @@ def _validate_shape(board: dict[str, Any]) -> None:
         "list": "items",
         "stats": "cards",
         "receipt": "rows",
+        "screens": "images",
     }
     for i, scene in enumerate(board["scenes"]):
         if not isinstance(scene, dict):
@@ -354,8 +934,14 @@ def _validate_shape(board: dict[str, Any]) -> None:
         raise SystemExit("receipts failed:\n" + "\n".join(problems))
 
 
-def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
+def verify_board(
+    board: dict[str, Any], m: dict[str, Any], evidence: dict[str, Any] | None = None
+) -> dict[str, Any]:
     _validate_shape(board)
+    if evidence is None:
+        inline = board.get("evidence")
+        if isinstance(inline, dict) and "shots" in inline:
+            evidence = inline
     verdicts: dict[int, tuple[str, str]] = {}
     bar_facts: dict[str, Any] = {}
     ck = Checker(m)
@@ -369,6 +955,8 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             ck.fail(f"scene {i}: unknown scene type {s['type']!r}")
             continue
         ids = scene_ids(s)
+        for problem in narration_problems(i, s):
+            ck.fail(problem)
         pairs = (
             [e if isinstance(e, list) else [e["s"], e["t"]] for e in s.get("edges", [])]
             if s["type"] == "graph"
@@ -408,6 +996,8 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
                     )
             if "until" in c:
                 ck.when(i, s, c["until"])
+            if s["type"] == "groups" and verb in ("fly", "arrow"):
+                ck.link(i, s, c)
             named = [c[k] for k in ("id", "from", "to", "line") if k in c] + [
                 x for k in ("ids", "path", "keep") for x in c.get(k, [])
             ]
@@ -499,6 +1089,9 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
                             f"scene {i}: {word!r} is on screen but on none of the scene's cited lines"
                         )
 
+            for problem in box_role_problems(i, s):
+                ck.fail(problem)
+
         if s["type"] == "receipt":
             kinds = set()
 
@@ -525,8 +1118,66 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
             else:
                 verdicts[i] = ("NOT FOUND IN THE CODE", "bad")
 
+        if s["type"] == "screens":
+            imgs = s.get("images", [])
+            if not isinstance(imgs, list) or not (1 <= len(imgs) <= 2):
+                ck.fail(f"scene {i}: a screens scene shows 1 or 2 evidence images side by side")
+            else:
+                for img in imgs:
+                    if (
+                        not isinstance(img, dict)
+                        or not isinstance(img.get("path"), str)
+                        or not isinstance(img.get("label"), str)
+                    ):
+                        ck.fail(f"scene {i}: each screens image needs a path and a label")
+                    elif evidence is not None:
+                        known = {
+                            sh.get("path")
+                            for sh in evidence.get("shots", [])
+                            if isinstance(sh, dict)
+                        }
+                        if img.get("path") not in known:
+                            ck.fail(
+                                f"scene {i}: {img.get('path')!r} is not in evidence.json; a screens scene may cite only paths in evidence.json"
+                            )
+            if not isinstance(s.get("caption"), str) or not s.get("caption", "").strip():
+                ck.fail(f"scene {i}: a screens scene needs a caption saying what changed on screen")
+            if not isinstance(s.get("source_url"), str) or not s.get("source_url", "").strip():
+                ck.fail(f"scene {i}: a screens scene needs a source_url to the PR on GitHub")
+
+    if evidence is not None:
+        has_shots = bool(evidence.get("shots")) and bool(evidence.get("ui_change"))
+        has_notice = bool(evidence.get("notice"))
+        has_screens = any(s.get("type") == "screens" for s in board["scenes"])
+        if has_shots and not has_screens:
+            ck.fail('board needs one screens scene showing the evidence images (kind "screens")')
+        if has_notice and has_screens:
+            ck.fail(
+                "board has a notice and must not contain screens; the notice says the PR was not run"
+            )
+        if has_notice and board.get("notice") != evidence.get("notice"):
+            ck.fail(
+                f'board "notice" must be exactly {evidence.get("notice")!r}; the page shows it at the top'
+            )
+
     for problem in join_preflight(board, m):
         ck.fail(problem)
+    missing = missing_behavior_files(board, m)
+    if missing:
+        ck.fail(
+            "behavior files on no scene: "
+            + ", ".join(missing)
+            + "; show each with a diff scene, a cite, a list item or a receipt line"
+        )
+    if "reading" in board:
+        for problem in reading_problems(board, m):
+            ck.fail(problem)
+    estimate = silent_estimate(board)
+    if estimate > MAX_SECONDS:
+        ck.fail(
+            f"silent estimate ~{estimate:.0f} s is over the {MAX_SECONDS} s limit; "
+            "cut scenes or sentences, and spend the time on behavior files"
+        )
     if ck.failures:
         sys.exit("receipts failed:\n  " + "\n  ".join(ck.failures))
     if not ck.failures:
@@ -582,12 +1233,17 @@ def verify_board(board: dict[str, Any], m: dict[str, Any]) -> dict[str, Any]:
 
 
 def main(argv: list[str]) -> int:
+    from prc.explainer.evidence import load_beside
+
     board = json.loads(Path(argv[0]).read_text())
     m = json.loads(Path(argv[1]).read_text())
-    facts = verify_board(board, m)
+    facts = verify_board(board, m, load_beside(Path(argv[1])))
     print(f"{facts['receipts']} receipts verified")
 
-    print(f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); guide target is 45-75 s")
+    print(
+        f"~{facts['estimate_none_seconds']:.1f} s silent (voice none); "
+        f"guide target is 45-{MAX_SECONDS} s"
+    )
     print(facts["coverage_summary"])
     for risk in facts["note_risks"]:
         print(f"warning: {risk}")

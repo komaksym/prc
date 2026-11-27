@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import os
 import re
 import subprocess
@@ -36,7 +37,8 @@ CLASS = [
     ("number", "n"),
     ("keyword", "k"),
     ("operator", "k"),
-    ("constant.builtin", "k"),
+    # True, False, None share the number color, as on GitHub, so they never read as keywords.
+    ("constant.builtin", "n"),
     ("variable.builtin", "k"),
     ("function", "f"),
 ]
@@ -71,6 +73,7 @@ def classes_pyg(path: str, data: bytes) -> list[str]:
     from pygments.token import (  # type: ignore[import-untyped]  # noqa: I001
         Comment,
         Keyword,
+        Literal,
         Name,
         Number,
         Operator,
@@ -85,14 +88,21 @@ def classes_pyg(path: str, data: bytes) -> list[str]:
         (Comment, "c"),
         (String, "s"),
         (Number, "n"),
+        (Keyword.Constant, "n"),
         (Keyword, "k"),
         (Operator, "k"),
         (Name.Builtin, "f"),
         (Name.Function, "f"),
+        (Name.Tag, "k"),
     ]
     lexed: list[str] = []
+    expr = False
     for tok, val in lexer.get_tokens(data.decode()):
-        lexed += [next((c for t, c in m if tok in t), "")] * len(val.encode())
+        if tok in Literal.Scalar.Plain:
+            c, expr = _plain_scalar(val, expr)
+        else:
+            c = next((c for t, c in m if tok in t), "")
+        lexed += [c] * len(val.encode())
     if b"\r\n" not in data:
         return lexed
     # Pygments rewrites CRLF as LF before lexing; give each CR no class and keep byte offsets.
@@ -105,6 +115,22 @@ def classes_pyg(path: str, data: bytes) -> list[str]:
             out.append(lexed[j] if j < len(lexed) else "")
             j += 1
     return out
+
+
+_YAML_CONST = re.compile(r"[-+]?(\d[\d_.]*|true|false|null|yes|no|on|off|~)", re.IGNORECASE)
+
+
+def _plain_scalar(val: str, expr: bool) -> tuple[str, bool]:
+    """Class of one unquoted YAML value word: ${{ }} expressions, constants, or text.
+
+    Returns the class and whether a ${{ expression stays open after this word.
+    """
+    word = val.strip()
+    if expr or word.startswith("${{"):
+        return "f", not word.endswith("}}")
+    if _YAML_CONST.fullmatch(word):
+        return "n", False
+    return ("s" if word else ""), False
 
 
 def file_runs(path: str, data: bytes) -> list[list[tuple[str, Any]]]:
@@ -266,3 +292,28 @@ def attach_tokens(
         if runs is None:
             raise RuntimeError(f"highlight: {path} has no line {r['num']} for row {r.get('ref')}")
         r["tokens"] = row_tokens(runs, cut)
+
+
+def paint_map(m: dict[str, Any], git_dir: str | None) -> dict[str, Any]:
+    """A copy of the map whose hunk lines carry tokens, coloured as the video colours them.
+
+    Whole files come from git when git_dir is set, else the hunk text. A file whose lines
+    cannot be read keeps plain rows.
+    """
+    out = copy.deepcopy(m)
+    for f in out.get("files", []):
+        lines = [ln for hk in f.get("hunks", []) for ln in hk.get("lines", []) if "text" in ln]
+        rows = [
+            {"op": ln.get("op") or " ", "num": ln["old"] if ln.get("op") == "-" else ln["new"]}
+            for ln in lines
+        ]
+        try:
+            attach_tokens(
+                rows, str(f["path"]), 0, git_dir, str(m.get("head_sha", "")),
+                str(m.get("base_sha", "")), f.get("hunks", []),
+            )  # fmt: skip
+        except (RuntimeError, ValueError, OSError, UnicodeDecodeError):
+            continue
+        for ln, r in zip(lines, rows, strict=True):
+            ln["tokens"] = r["tokens"]
+    return out

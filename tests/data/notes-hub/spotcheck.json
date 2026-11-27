@@ -1,0 +1,302 @@
+[
+  {
+    "id": "s1",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Page reading path, the entry for ‘ReportCounts’, ‘ReportResult’, ‘ReportResult.__post_init__’",
+    "text": "`__post_init__` rejects a run time without a time zone and counts on a run that did not complete.",
+    "claim": "`__post_init__` rejects a run time without a time zone and counts on a run that did not complete.",
+    "label": "partly",
+    "reason": "The check is symmetric: it also rejects a COMPLETE run without counts. Fixed before render. Now: “`__post_init__` rejects a run time without a time zone, counts on a run that did not complete, and a complete run without counts.”",
+    "evidence": [
+      {
+        "text": "src/linkedin_mdp_mcp/google_doc_report.py:69",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR69"
+      }
+    ]
+  },
+  {
+    "id": "s2",
+    "pr": "komaksym/linkedin-automation#22",
+    "pr_title": "feat(trace): scored identity matching with tiers",
+    "where": "Page reading path, the entry for ‘normalize’",
+    "text": "`normalize` lowercases a name and removes bracketed text, punctuation and extra spaces.",
+    "claim": "`normalize` lowercases a name and removes bracketed text, punctuation and extra spaces.",
+    "label": "partly",
+    "reason": "normalize removes only round-bracket text, and it removes every character outside a-z, including digits and accented letters. Fixed before render. Now: “`normalize` lowercases a name and removes text in round brackets. It turns every character outside a to z into a space, then it collapses the spaces.”",
+    "evidence": [
+      {
+        "text": "scripts/trace_first_dm.py:45",
+        "url": "https://github.com/komaksym/linkedin-automation/pull/22/files#diff-b2194cbc35d7d9f8c4b5866f3acec504e813db51111db70bccbc493f1a72197bR45"
+      }
+    ]
+  },
+  {
+    "id": "s3",
+    "pr": "komaksym/leads-discovery#43",
+    "pr_title": "fix: share bounded transport with M4 providers",
+    "where": "Video and page, scene 3 “Before this change, each adapter method called _call and then _require_success”, callout",
+    "text": "A callout on the box “discovery/base.py” says “not used by M4 yet”.",
+    "claim": "not used by M4 yet",
+    "label": "partly",
+    "reason": "safe_transport_call was not used by M4, but M4 already imported read_bounded_response and validate_response_size_header from discovery/base.py, so the box as a whole was in use. Fixed before render. Now: “M4 skips safe_transport_call”",
+    "evidence": [
+      {
+        "text": "src/leads_discovery/contacts/providers.py:327",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-a22f830253925bd35c1131b3c440e03f76e22e674fff1eaddc319fe78b9cafcfR327"
+      },
+      {
+        "text": "src/leads_discovery/contacts/providers.py:434",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-a22f830253925bd35c1131b3c440e03f76e22e674fff1eaddc319fe78b9cafcfR434"
+      },
+      {
+        "text": "src/leads_discovery/contacts/providers.py:552",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-a22f830253925bd35c1131b3c440e03f76e22e674fff1eaddc319fe78b9cafcfR552"
+      },
+      {
+        "text": "src/leads_discovery/contacts/providers.py:641",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-a22f830253925bd35c1131b3c440e03f76e22e674fff1eaddc319fe78b9cafcfR641"
+      }
+    ]
+  },
+  {
+    "id": "s4",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Video and page, scene 8 “synthetic scenarios”, narration",
+    "text": "Each scenario names the expected exit code and the status in the Doc.",
+    "claim": "Each scenario names the expected exit code and the status in the Doc.",
+    "label": "supported",
+    "reason": "cases maps each name to (exit code, Doc status or None).",
+    "evidence": [
+      {
+        "text": "tests/e2e_doc_report.py:208",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R208"
+      }
+    ]
+  },
+  {
+    "id": "s5",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Page reading path, the entry for ‘run’",
+    "text": "It returns 0 for success, 1 for a BLOCKED or FAILED run and 2 for a Google failure.",
+    "claim": "It returns 0 for success, 1 for a BLOCKED or FAILED run and 2 for a Google failure.",
+    "label": "partly",
+    "reason": "The mapping is right, but cleanup failures also change the code: a LinkedIn or Supabase close failure returns 1 after COMPLETE, and a publisher close failure returns 2. Fixed before render. Now: “It returns 0 for success, 1 for a BLOCKED or FAILED run or a client cleanup failure, and 2 for a Google failure.”",
+    "evidence": [
+      {
+        "text": "scripts/report_connections_doc.py:76",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R76"
+      },
+      {
+        "text": "scripts/report_connections_doc.py:87",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-ae4651b791554885691e5439c7e07983819af9ab95a7e822a05a376ed2ca5878R87"
+      },
+      {
+        "text": "tests/e2e_doc_report.py:217",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-611723ce987a2e3e568a3645b8623f2947dc1895aa75f817e07ea2dc45824c30R217"
+      }
+    ]
+  },
+  {
+    "id": "s6",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Infographic",
+    "text": "The infographic panel “CHANGE” says “Daily run at 06:17 UTC”.",
+    "claim": "CHANGE: Daily run at 06:17 UTC",
+    "label": "partly",
+    "reason": "The cron exists, but a scheduled run is skipped unless GOOGLE_DOC_REPORT_ENABLED is true, and the infographic never says this. Fixed before render. Now: “Opt-in daily run at 06:17 UTC”",
+    "evidence": [
+      {
+        "text": ".github/workflows/morning-report.yml:13",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-9e959fd73ba05577412f73b5739a5c00d19ce3377040399b002b179c242ec4b4R13"
+      }
+    ]
+  },
+  {
+    "id": "s7",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Video and page, scene 7 “New workflow: Private Morning Report”, scene label",
+    "text": "The changed lines of .github/workflows/morning-report.yml carry the title “New workflow: Private Morning Report”.",
+    "claim": "New workflow: Private Morning Report",
+    "label": "supported",
+    "reason": "The new workflow file is named Private Morning Report.",
+    "evidence": [
+      {
+        "text": ".github/workflows/morning-report.yml:1",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-9e959fd73ba05577412f73b5739a5c00d19ce3377040399b002b179c242ec4b4R1"
+      }
+    ]
+  },
+  {
+    "id": "s8",
+    "pr": "komaksym/linkedin-automation#22",
+    "pr_title": "feat(trace): scored identity matching with tiers",
+    "where": "Video and page, scene 5 “Score and tier helpers”, narration",
+    "text": "`normalize` lowercases a name and removes bracketed text and punctuation.",
+    "claim": "`normalize` lowercases a name and removes bracketed text and punctuation.",
+    "label": "partly",
+    "reason": "normalize removes only round-bracket text, and it removes every character outside a-z, including digits and accented letters. Fixed before render. Now: “`normalize` lowercases a name and removes text in round brackets. It turns every character outside a to z into a space.”",
+    "evidence": [
+      {
+        "text": "scripts/trace_first_dm.py:45",
+        "url": "https://github.com/komaksym/linkedin-automation/pull/22/files#diff-b2194cbc35d7d9f8c4b5866f3acec504e813db51111db70bccbc493f1a72197bR45"
+      }
+    ]
+  },
+  {
+    "id": "s9",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Page reading path, the entry for ‘settings’",
+    "text": "The Report Boundary E2E workflow runs on pull requests that touch the workflows, `src`, the report script, the tests or `pyproject.toml`.",
+    "claim": "The Report Boundary E2E workflow runs on pull requests that touch the workflows, `src`, the report script, the tests or `pyproject.toml`.",
+    "label": "partly",
+    "reason": "The path filter lists only three of the five workflows; changelog-backfill.yml and e2e.yml do not trigger it. Fixed before render. Now: “The Report Boundary E2E workflow runs on pull requests that touch the report, test or sync workflows, `src`, the report script, the tests or `pyproject.toml`.”",
+    "evidence": [
+      {
+        "text": ".github/workflows/report-tests.yml:5",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-27ece5d3125a08efc67d04965fcf3cf9f6f1d19f38c6d4ea9fb8ff67c43db031R5"
+      }
+    ]
+  },
+  {
+    "id": "s10",
+    "pr": "komaksym/leads-discovery#43",
+    "pr_title": "fix: share bounded transport with M4 providers",
+    "where": "Video and page, scene 4 “Now _call hands each request to safe_transport_call, which checks connect errors, size and status”, arrow label",
+    "text": "An arrow from “_call” to “safe_transport_call” carries the label “delegates”.",
+    "claim": "delegates",
+    "label": "supported",
+    "reason": "_call returns safe_transport_call(...).",
+    "evidence": [
+      {
+        "text": "src/leads_discovery/contacts/providers.py:193",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-a22f830253925bd35c1131b3c440e03f76e22e674fff1eaddc319fe78b9cafcfR193"
+      }
+    ]
+  },
+  {
+    "id": "s11",
+    "pr": "komaksym/linkedin-automation#22",
+    "pr_title": "feat(trace): scored identity matching with tiers",
+    "where": "Page reading path, the entry for ‘match_names’",
+    "text": "It returns rows that score at least 0.6, highest score first, with tier and matched text.",
+    "claim": "It returns rows that score at least 0.6, highest score first, with tier and matched text.",
+    "label": "supported",
+    "reason": "It returns (row, score, tier, matched text) tuples for scores >= 0.6, sorted high to low.",
+    "evidence": [
+      {
+        "text": "scripts/trace_first_dm.py:82",
+        "url": "https://github.com/komaksym/linkedin-automation/pull/22/files#diff-b2194cbc35d7d9f8c4b5866f3acec504e813db51111db70bccbc493f1a72197bR82"
+      }
+    ]
+  },
+  {
+    "id": "s12",
+    "pr": "komaksym/linkedin-automation#22",
+    "pr_title": "feat(trace): scored identity matching with tiers",
+    "where": "Video and page, scene 1 “Title”, narration",
+    "text": "This pull request changes how `trace_first_dm.py` matches a name to prospect rows.",
+    "claim": "This pull request changes how `trace_first_dm.py` matches a name to prospect rows.",
+    "label": "supported",
+    "reason": "The diff rewrites match_names in scripts/trace_first_dm.py.",
+    "evidence": [
+      {
+        "text": "scripts/trace_first_dm.py:41 (old)",
+        "url": "https://github.com/komaksym/linkedin-automation/pull/22/files#diff-b2194cbc35d7d9f8c4b5866f3acec504e813db51111db70bccbc493f1a72197bL41"
+      }
+    ]
+  },
+  {
+    "id": "s13",
+    "pr": "komaksym/linkedin-automation#22",
+    "pr_title": "feat(trace): scored identity matching with tiers",
+    "where": "Video and page, scene 7 “new tests”, narration",
+    "text": "Four new tests cover `normalize`, `similarity` and `match_names`.",
+    "claim": "Four new tests cover `normalize`, `similarity` and `match_names`.",
+    "label": "supported",
+    "reason": "The diff adds exactly four tests for normalize, similarity and match_names.",
+    "evidence": [
+      {
+        "text": "tests/test_trace_first_dm.py:64",
+        "url": "https://github.com/komaksym/linkedin-automation/pull/22/files#diff-8ba2146b36cde10ff69a867b64cb20b18df06740b43c81534f9ea084e302f95fR64"
+      }
+    ]
+  },
+  {
+    "id": "s14",
+    "pr": "komaksym/linkedin-mdp#5",
+    "pr_title": "feat(report): publish private morning reports to Google Docs",
+    "where": "Page reading path, the entry for ‘GoogleDocPublisher’, ‘GoogleDocPublisher.__init__’, ‘GoogleDocPublisher.aclose’",
+    "text": "`GoogleDocPublisher` makes its own HTTP client with a 30 second timeout and no redirects.",
+    "claim": "`GoogleDocPublisher` makes its own HTTP client with a 30 second timeout and no redirects.",
+    "label": "supported",
+    "reason": "Without an injected client it creates AsyncClient(timeout=30, follow_redirects=False).",
+    "evidence": [
+      {
+        "text": "src/linkedin_mdp_mcp/google_doc_report.py:120",
+        "url": "https://github.com/komaksym/linkedin-mdp/pull/5/files#diff-997c7f526b66a84ac29be4c15cf342c0948e1accd92b45cf9196562aae7a805eR120"
+      }
+    ]
+  },
+  {
+    "id": "s15",
+    "pr": "komaksym/leads-discovery#43",
+    "pr_title": "fix: share bounded transport with M4 providers",
+    "where": "Video and page, scene 2 “Each M4 contact provider sends its HTTP request through one guard”, narration",
+    "text": "With an 8-byte limit, a reply that declares 9 bytes gives `invalid_response` before any body read.",
+    "claim": "With an 8-byte limit, a reply that declares 9 bytes gives `invalid_response` before any body read.",
+    "label": "supported",
+    "reason": "Test sets LEADS_MAX_HTTP_RESPONSE_BYTES=8, declares Content-Length 9, asserts invalid_response and zero chunks read.",
+    "evidence": [
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:227",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R227"
+      },
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:240",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R240"
+      },
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:251",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R251"
+      },
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:288",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R288"
+      }
+    ]
+  },
+  {
+    "id": "s16",
+    "pr": "komaksym/leads-discovery#43",
+    "pr_title": "fix: share bounded transport with M4 providers",
+    "where": "Video and page, scene 2 “Each M4 contact provider sends its HTTP request through one guard”, box title",
+    "text": "The box “Mock reply” carries the note “from httpx.MockTransport”. It holds “Length 9”, “503”.",
+    "claim": "Mock reply — from httpx.MockTransport",
+    "label": "supported",
+    "reason": "The tests build the client with httpx.MockTransport(handler).",
+    "evidence": [
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:227",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R227"
+      },
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:240",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R240"
+      },
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:251",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R251"
+      },
+      {
+        "text": "tests/test_live_readiness_remaining_contracts.py:288",
+        "url": "https://github.com/komaksym/leads-discovery/pull/43/files#diff-ff58e9f6b4ed74be0531eb8f85c42218fbea2058b715b436afc4213662847c38R288"
+      }
+    ]
+  }
+]

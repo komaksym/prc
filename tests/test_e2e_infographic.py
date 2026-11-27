@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 
 from prc.presentation import infographic as gate
+from prc.tones import TONES
 
 ROOT = Path(__file__).resolve().parents[1]
 PROOF = ROOT / "artifacts" / "e2e" / "infographic"
@@ -26,7 +27,7 @@ LINES = [
     "Risky surfaces",
     "cart.py: external calls",
     "Direct test evidence found",
-    "Infographic drawn by AI. Words from prc.",
+    "Infographic drawn by AI. Words from PRC.",
 ]
 
 ROLES: list[gate.Role] = [
@@ -247,6 +248,112 @@ def test_gate_rejects_arrowhead_that_merges_with_label(tmp_path: Path) -> None:
     assert decision.verdict != "pass", decision
 
 
+PANELS: dict[str, Any] = {
+    "mode": "panels",
+    "headline": "Missing references get an explicit result",
+    "subtitle": "One status check in the handler",
+    "panels": [
+        {"title": "BEFORE", "lines": ["Status 404 had no name", "Callers guessed the meaning"]},
+        {"title": "SWITCH", "lines": ["Handler checks the status", "Returns not found"]},
+        {"title": "PROOF", "lines": ["One test covers 404"]},
+    ],
+    "footer": ["Start at handler.py"],
+}
+
+
+def render_panels_png(payload: dict[str, Any], path: Path, extra: str = "") -> Path:
+    """Draw a panels brief as the prompt asks: titled panels in their key colors, arrows between
+    them, and a footer bar with the key swatches."""
+    lines = payload["lines"]
+    text = {
+        role: [ln["text"] for ln in lines if ln["role"] == role]
+        for role in ("headline", "subtitle", "footer", "legend", "note")
+    }
+    tones = payload.get("tones") or ["context"] * sum(ln["role"] == "panel" for ln in lines)
+    panels: list[tuple[str, list[str]]] = []
+    for ln in lines:
+        if ln["role"] == "panel":
+            panels.append((ln["text"], []))
+        elif ln["role"] == "item":
+            panels[-1][1].append(ln["text"])
+    if extra:
+        panels[1][1].append(extra)
+    width, gap, top = 440, 90, 230
+    body = (
+        "<div style='position:absolute;left:60px;top:40px;font-weight:700;font-size:46px'>"
+        + html.escape(text["headline"][0])
+        + "</div><div style='position:absolute;left:60px;top:120px;font-size:32px'>"
+        + html.escape(text["subtitle"][0])
+        + "</div>"
+    )
+    for k, (title, items) in enumerate(panels):
+        x = 60 + k * (width + gap)
+        _, _, color, tint = TONES[tones[k]]
+        body += (
+            f"<div style='position:absolute;left:{x}px;top:{top}px;width:{width}px;height:400px;"
+            f"border:6px solid {color};border-radius:12px;background:{tint}'>"
+            f"<div style='background:{tint};border-bottom:6px solid {color};padding:14px 22px;"
+            "font-weight:700;font-size:34px;color:#10213f'>"
+            + html.escape(title)
+            + "</div>"
+            + "".join(
+                "<div style='padding:18px 22px 0;font-size:28px;color:#10213f'>"
+                + html.escape(item)
+                + "</div>"
+                for item in items
+            )
+            + "</div>"
+        )
+        if k:
+            ax = x - gap + 10
+            body += (
+                "<svg width='1600' height='900'>"
+                + ARROW
+                + f"<line x1='{ax}' y1='{top + 200}' x2='{ax + gap - 30}' y2='{top + 200}' "
+                "stroke='#1d4ed8' stroke-width='6' marker-end='url(#a)'/></svg>"
+            )
+    body += (
+        "<div style='position:absolute;left:0;top:720px;width:1600px;height:150px;"
+        "background:#dbeafe;font-size:28px'>"
+        + "".join(
+            f"<div style='position:absolute;left:60px;top:{24 + 56 * i}px'>"
+            + html.escape(t)
+            + "</div>"
+            for i, t in enumerate(text["footer"] + text["note"])
+        )
+        + "".join(
+            f"<div style='position:absolute;left:{900 + 160 * (i % 4)}px;top:{24 + 56 * (i // 4)}px;"
+            "display:flex;align-items:center;gap:10px'>"
+            f"<span style='width:24px;height:24px;background:{TONES[tone][2]}'></span>"
+            + html.escape(TONES[tone][0])
+            + "</div>"
+            for i, tone in enumerate(dict.fromkeys(tones))
+        )
+        + "</div>"
+    )
+    return render_html_png(body, path, width=1600, height=900)
+
+
+def test_gate_passes_a_panels_image_with_its_lines_and_fails_an_invented_word(
+    tmp_path: Path,
+) -> None:
+    brief = gate.infobrief({"files": []}, None, {"infographic": PANELS, "scenes": []})
+    payload = gate.brief_dict(brief)
+    PROOF.mkdir(parents=True, exist_ok=True)
+
+    good = render_panels_png(payload, tmp_path / "panels.png")
+    PROOF.joinpath("panels-pass.png").write_bytes(good.read_bytes())
+    decision = gate.gate(good, brief)
+    assert decision.verdict == "pass", decision
+    assert "relations" not in decision.detail
+
+    bad = render_panels_png(payload, tmp_path / "panels-invented.png", extra="Faster checkout")
+    PROOF.joinpath("panels-invented.png").write_bytes(bad.read_bytes())
+    invented = gate.gate(bad, brief)
+    assert invented.verdict == "invented", invented
+    assert {"faster", "checkout"} <= {tok for tok, _ in invented.invented}
+
+
 def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
     env = dict(os.environ)
     env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")
@@ -263,21 +370,23 @@ def run_cli(cwd: Path, *argv: str) -> dict[str, Any]:
     return payload
 
 
-def brief_without_infographic(cwd: Path, board: Path) -> Path:
-    """Explain once with no candidate: the loud failure still writes the artist brief."""
+def brief_without_infographic(cwd: Path, board: Path = BOARD) -> Path:
+    """A board build with no candidate fails by design and still writes the brief to draw."""
     env = dict(os.environ)
     env["PYTHONPATH"] = str(ROOT / "src") + os.pathsep + env.get("PYTHONPATH", "")
     done = subprocess.run(
         [sys.executable, "-m", "prc.cli", "explain", "--source", "fixture:shop",
-         "--board", str(board), "--voice", "none", "--store", str(cwd / "store"),
-         "--out", str(cwd / "out")],
-        capture_output=True, text=True, cwd=cwd, check=False, env=env,
+         "--board", str(board), "--voice", "none",
+         "--store", str(cwd / "store"), "--out", str(cwd / "out")],
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+        check=False,
+        env=env,
     )  # fmt: skip
     assert done.returncode == 2, done.stderr
     assert "no gated infographic published" in done.stderr
-    (folder,) = [
-        path for path in (cwd / "out").iterdir() if (path / "infographic" / "brief.json").is_file()
-    ]
+    (folder,) = [p for p in (cwd / "out").iterdir() if (p / "infographic" / "brief.json").is_file()]
     return folder
 
 
@@ -353,19 +462,19 @@ def test_explain_records_binary_tesseract_failure(
     checks = json.loads((out / "infographic" / "check.json").read_text())
     assert len(checks) == 1
     assert checks[0]["verdict"] == "tool"
-    assert len(checks[0]["failed_modes"]) == (4 if stage == "ocr" else 0)
+    assert len(checks[0]["failed_modes"]) == (len(gate.READS) if stage == "ocr" else 0)
     run = json.loads((out / "run.json").read_text())
     assert run["infographic"]["status"] == "failed"
     assert run["infographic"]["published_sha256"] is None
     assert not (out / "infographic.png").exists()
-    assert "![PR card](card.png)" in (out / "comment.md").read_text()
+    assert "card.png" not in (out / "comment.md").read_text()
+    assert not (out / "card.png").exists()
     PROOF.mkdir(parents=True, exist_ok=True)
     PROOF.joinpath(f"binary-{stage}-check.json").write_text(json.dumps(checks, indent=2))
-    PROOF.joinpath(f"binary-{stage}-card.png").write_bytes((out / "card.png").read_bytes())
 
 
 def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
-    seed = brief_without_infographic(tmp_path, BOARD)
+    seed = brief_without_infographic(tmp_path)
     lines = brief_texts(seed)
     payload = json.loads((seed / "infographic" / "brief.json").read_text())
     assert payload["relations"], "the shop brief should give the artist calls to draw"
@@ -422,12 +531,13 @@ def test_explain_publishes_first_passing_candidate(tmp_path: Path) -> None:
     assert checks[0]["sha256"] == hashlib.sha256(bad.read_bytes()).hexdigest()
 
     comment = (out / "comment.md").read_text()
-    assert "![Infographic drawn by AI. Words from prc.](infographic.png)" in comment
+    assert "![Infographic drawn by AI. Words from PRC.](infographic.png)" in comment
     assert "![PR card](card.png)" not in comment
 
-    doc = (out / "doc.html").read_text()
-    assert "data:image/png;base64," in doc
-    assert "<figcaption>Infographic drawn by AI. Words from prc.</figcaption>" in doc
+    doc = (out / "page.html").read_text()
+    assert "<img src='infographic.png'" in doc
+    assert "id='info-open'" in doc
+    assert "data:image/png;base64," not in doc
 
 
 def test_explain_without_infographic_fails_loudly(

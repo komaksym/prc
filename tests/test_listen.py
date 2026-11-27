@@ -15,7 +15,6 @@ from prc.explainer.listen import ListenError, check_tokens, find_engine
 from prc.explainer.voice import available
 
 SHOP_BOARD = Path(__file__).resolve().parent / "data" / "boards" / "shop.json"
-SHOP_INFOGRAPHIC = Path(__file__).resolve().parent / "data" / "infographic" / "shop-brief.png"
 
 LIBRARYSYNC_SAY = [
     "Now up next starts after the furthest watched episode.",
@@ -93,10 +92,16 @@ def test_explain_then_listen_hears_every_code_name(tmp_path: Path) -> None:
     )
     board_path = tmp_path / "board.json"
     board_path.write_text(json.dumps(board))
+    from test_e2e_infographic import brief_without_infographic, render_brief_png
+
+    seed = brief_without_infographic(tmp_path, board_path)
+    drawn = render_brief_png(
+        json.loads((seed / "infographic" / "brief.json").read_text()), tmp_path / "drawn.png"
+    )
     out = tmp_path / "out"
     explain = ["explain", "--source", "fixture:shop", "--store", str(tmp_path / "store")]
     explain += ["--board", str(board_path), "--voice", "kokoro", "--out", str(out)]
-    explain += ["--infographic", str(SHOP_INFOGRAPHIC)]
+    explain += ["--infographic", str(drawn)]
     assert main(explain) == 0
     (folder,) = [p for p in out.iterdir() if (p / "narration.wav").is_file()]
 

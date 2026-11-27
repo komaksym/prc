@@ -187,6 +187,9 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
     if not (shutil.which("ffmpeg") and shutil.which("ffprobe")):
         pytest.skip("ffmpeg/ffprobe not on PATH")
 
+    m = json.loads((DATA / "maps" / "pr12.json").read_text())
+    code = next(f for f in m["files"] if f["path"].startswith("src/"))
+    line = next(ln for h in code["hunks"] for ln in h["lines"] if ln["op"] == "+" and ln["text"])
     board: dict[str, Any] = {
         "name": "hostile",
         "scenes": [
@@ -194,6 +197,7 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
                 "type": "title",
                 "kicker": "Open pull request",
                 "say": ['A title with a quote " and </script> inside.'],
+                "cite": [{"line": f"{code['path']}:{line['new']}", "match": line["text"].strip()}],
             },
             {
                 "type": "outro",
@@ -216,8 +220,8 @@ def test_hostile_text_cannot_break_the_page(tmp_path: Path) -> None:
 
     assert rendered.duration > 0
     html = (out / "player.html").read_text()
-    assert html.count("</script>") == 2, "only the two real script tags may close"
-    assert "</script>" not in html.replace("</script>", "", 2).replace("<\\/script>", "")
+    assert html.count("</script>") == 3, "only the board, key and engine script tags may close"
+    assert "</script>" not in html.replace("</script>", "", 3).replace("<\\/script>", "")
 
 
 def _write(board: dict[str, Any], tmp_path: Path) -> Path:

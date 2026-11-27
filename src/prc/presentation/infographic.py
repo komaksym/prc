@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 import ast
+import copy
 import json
+import os
 import re
 import shutil
 import subprocess
+import tempfile
 import unicodedata
 from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass
 from itertools import pairwise
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, TypeGuard
 
 import numpy as np
 import numpy.typing as npt
@@ -21,6 +24,7 @@ from pygments.token import Comment, String  # type: ignore[import-untyped]
 
 from prc import facts
 from prc.presentation import card, diagram
+from prc.tones import TONES
 
 Box = tuple[int, int, int, int]
 """Left, top, width and height of an OCR word, in image pixels."""
@@ -29,11 +33,21 @@ SHORT_TOKEN = 2
 ICON_HEIGHT = 1.6
 GLYPH_WIDTH = 1.2
 GLYPH_TOKEN = 3
+BULLET_HEIGHT = 0.75
+CLIPPED_PREFIX = 3
 CONF_FLOOR = 70
 WINDOW = 6
 MAX_WORDS = 80
+PANELS_MAX_WORDS = 90
+PANEL_WORDS = 6
+MAX_PANELS = 4
+MAX_PANEL_LINES = 4
+MAX_FOOTER = 3
 LINE_LIMIT = 96
-DISCLOSURE = "Infographic drawn by AI. Words from prc."
+# Uppercase PRC: Tesseract reads lowercase "prc" in small footer text as "pre",
+# so the disclosure uses capitals the OCR reads reliably. The gate still accepts
+# "pre" for older drawings (see _match).
+DISCLOSURE = "Infographic drawn by AI. Words from PRC."
 PROFILE = {
     "aspect": "16:9",
     "backend": "auto",
@@ -54,14 +68,58 @@ PROMPT_RULES = (
     "Draw every line as dark text on a light background.",
     "Keep the disclosure line visible.",
 )
+PANEL_RULES = (
+    "Show every line exactly once, spelled exactly.",
+    "Add no other words, numbers, titles or watermarks than the lines given.",
+    "Put each panel header and its labels inside that panel.",
+    "Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.",
+    "Color each panel with its named key color: a pale tint fill and a thick border in that color, "
+    "and use no other accent colors.",
+    "Draw each header bar in the panel's pale tint with dark navy text, never white text on a "
+    "saturated bar.",
+    "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    "Draw no other arrows or connector lines.",
+    "Icons are allowed inside panels but contain no letters, digits or digit-like shapes.",
+    "Draw every line as dark text on a light background.",
+    "Keep the disclosure line visible in the footer bar.",
+)
+_TONE_WORDS = (
+    ("problem", ("before", "problem", "bug", "old", "risk", "gap", "broken", "fail")),
+    ("proof", ("proof", "test", "tests", "result", "verified", "evidence")),
+    ("change", ("change", "switch", "fix", "new", "after", "now", "how")),
+    ("part", ("parts", "pieces", "components", "files", "flow", "map", "where")),
+)
+
+
+def guess_tone(title: str) -> str:
+    """The tone a panel title names; a panel can set its own with "tone"."""
+    words = set(tokenize(title))
+    return next((tone for tone, cues in _TONE_WORDS if words & set(cues)), "context")
+
+
 LOOK_LABEL = "Look here first"
 RISKY_LABEL = "Risky surfaces"
 MAX_CALLS = 3
-Role = Literal["headline", "node", "legend", "label", "chip", "row", "verdict", "note"]
-RelationKind = Literal["call", "removed call", "maps", "becomes"]
+Role = Literal[
+    "headline",
+    "subtitle",
+    "node",
+    "legend",
+    "label",
+    "chip",
+    "row",
+    "verdict",
+    "panel",
+    "item",
+    "footer",
+    "note",
+]
+Mode = Literal["source", "storyboard-flow", "panels"]
+RelationKind = Literal["call", "removed call", "maps", "becomes", "flow"]
 LEGEND: dict[str, str] = {
     "call": "Arrows show new calls",
     "removed call": "Dashed arrows show removed calls",
+    "flow": "Arrows show the cited storyboard flow",
 }
 MIXED_CALL_LEGEND = "Arrows into code names show new calls"
 IconKind = Literal["lone", "tall"]
@@ -83,11 +141,199 @@ class Relation:
     kind: RelationKind
 
 
+LAYOUT_REGISTRY: dict[str, dict[str, Any]] = {
+    "before-after": {
+        "layout": "binary-comparison",
+        "panels": "BEFORE / AFTER",
+        "when": "few files and few calls: a focused before/after change",
+        "links": "chain",
+        "middle": (
+            "- Middle: two columns split by a vertical center divider.",
+            "- Left of the divider: {left}, with its labels as a short list.",
+            "- Right of the divider: {right}, stacked top to bottom, "
+            "each with its labels as a short list.",
+        ),
+        "strip": "- Under both columns: a full-width proof strip holding {strip}, "
+        "with its labels as a short list.",
+        "close": "- Each area has a plain solid numbered header bar with its panel header, "
+        "one simple icon with no letters, digits or digit-like shapes, "
+        "and its labels as a short list.",
+        "arrows": "- Across the divider: one bold arrow from {left} to {right_first}. "
+        "Put no words on the arrow.{strip_clause}",
+        "rule": "Join the left panel to the first right-hand panel with one arrow across "
+        "the center divider, and put no words on it.{strip_rule}",
+    },
+    "pipeline": {
+        "layout": "linear-progression",
+        "panels": "steps in order",
+        "when": "many files or long call chains: a workflow or pipeline",
+        "links": "chain",
+        "middle": (
+            "- Middle: {count} numbered nodes on a single horizontal path, "
+            "left to right in panel order: {nodes}.",
+        ),
+        "strip": "",
+        "close": "- Each node has a plain solid numbered header bar with its panel header, "
+        "one simple icon with no letters, digits or digit-like shapes, "
+        "and its labels as a short list.",
+        "arrows": "- Along the path: one bold arrow from each node to the next ({chain}). "
+        "Put no words on the arrows.",
+        "rule": "Join each node to the next with one arrow along the path, and put no words on it.",
+    },
+    "hub": {
+        "layout": "hub-spoke",
+        "panels": "shared center with adapters around it",
+        "when": "few files but many calls sharing one guard",
+        "links": "spokes",
+        "middle": (
+            "- Middle: a center hub holding {center}, with {outer} as spoke nodes around it.",
+        ),
+        "strip": "",
+        "close": "- The hub and each spoke node have a plain solid numbered header bar "
+        "with their panel header, one simple icon with no letters, digits or digit-like "
+        "shapes, and their labels as a short list.",
+        "arrows": "- Spokes: one bold spoke arrow on each spoke between the hub and its node, "
+        "following the panel order ({chain}). Put no words on the arrows.",
+        "rule": "Join the hub to each outer panel with one spoke arrow, and put no words on it.",
+    },
+    "parts": {
+        "layout": "structural-breakdown",
+        "panels": "BEFORE / CHANGE / PARTS / PROOF",
+        "when": "default: many parts to break down",
+        "links": "chain",
+        "middle": (
+            "- Middle: {count} panels in one row, left to right. Each panel has a plain solid "
+            "numbered header bar with its panel header, one simple icon with no letters, digits or "
+            "digit-like shapes, and its labels as a short list.",
+        ),
+        "strip": "",
+        "close": "",
+        "arrows": "- Between panels: one bold arrow from each panel to the next, left to right "
+        "({chain}). Put no words on the arrows.",
+        "rule": "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    },
+}
+
+
+def _brief_files(m: dict[str, Any]) -> list[dict[str, Any]]:
+    brief = m.get("brief") if isinstance(m.get("brief"), dict) else {}
+    files = brief.get("files") if isinstance(brief, dict) else []
+    if not isinstance(files, list):
+        return []
+    return [item for item in files if isinstance(item, dict)]
+
+
+def content_shape(m: dict[str, Any] | None, board: dict[str, Any] | None = None) -> str:
+    """Content shape of a PR: before-after, pipeline, hub, or parts."""
+    if m is None:
+        return "parts"
+    files = _brief_files(m)
+    edges = m.get("edges")
+    n_files = len(files)
+    n_edges = len(edges) if isinstance(edges, list) else 0
+    if isinstance(board, dict):
+        selection = board.get("infographic")
+        if isinstance(selection, dict) and selection.get("mode") == "storyboard-flow":
+            return "pipeline"
+    if n_files <= 3 and n_edges <= 10:
+        return "before-after"
+    if n_files <= 3 and n_edges >= 15:
+        return "hub"
+    if n_files >= 5 or n_edges >= 20:
+        return "pipeline"
+    return "parts"
+
+
+def select_layout(m: dict[str, Any] | None, board: dict[str, Any] | None = None) -> str:
+    """Baoyu layout for a PR: the registry layout for its content shape."""
+    return str(LAYOUT_REGISTRY[content_shape(m, board)]["layout"])
+
+
+def _layout_entry(layout: str) -> dict[str, Any]:
+    """Registry geometry for a baoyu layout, falling back to structural-breakdown."""
+    for entry in LAYOUT_REGISTRY.values():
+        if entry.get("layout") == layout:
+            return entry
+    return LAYOUT_REGISTRY["parts"]
+
+
+def _panel_center(headers: list[str], tones: list[str]) -> int:
+    """Index of the hub panel: the shared part panel, else the middle panel."""
+    for i, tone in enumerate(tones):
+        if tone == "part":
+            return i
+    return len(headers) // 2
+
+
+def _panel_relations(headers: list[str], tones: list[str], layout: str) -> tuple[Relation, ...]:
+    """Arrows between authored panels, placed per the layout geometry."""
+    if _layout_entry(layout).get("links") == "spokes":
+        at = _panel_center(headers, tones)
+        center = headers[at]
+        before = [Relation(one, center, "flow") for one in headers[:at]]
+        after = [Relation(center, one, "flow") for one in headers[at + 1 :]]
+        return tuple(before + after)
+    if _layout_entry(layout).get("layout") == "binary-comparison" and len(headers) >= 2:
+        # Two columns split by a divider: one arrow crosses the divider to the
+        # first right-hand panel. Stacked right-hand panels need no arrow
+        # between them, and a trailing proof strip takes arrows from nothing.
+        return (Relation(headers[0], headers[1], "flow"),)
+    return tuple(Relation(one, other, "flow") for one, other in pairwise(headers))
+
+
+def _panel_places(
+    headers: list[str], tones: list[str], relations: tuple[Relation, ...]
+) -> dict[str, str]:
+    """Quoted panel names placed into the registry geometry for every layout."""
+    quoted = [f'"{header}"' for header in headers]
+    strip_raw = headers[-1] if len(headers) >= 3 and tones and tones[-1] == "proof" else ""
+    strip = f'"{strip_raw}"' if strip_raw else ""
+    right_names = [header for header in headers[1:] if header != strip_raw]
+    right = ", ".join(f'"{header}"' for header in right_names)
+    at = _panel_center(headers, tones)
+    outer = ", ".join(f'"{header}"' for i, header in enumerate(headers) if i != at)
+    return {
+        "left": quoted[0],
+        "right": right,
+        "right_first": f'"{right_names[0]}"' if right_names else "",
+        "strip": strip,
+        "strip_clause": " Draw no arrows into or out of the proof strip." if strip else "",
+        "strip_rule": " Draw no arrows into or out of the proof strip." if strip else "",
+        "center": f'"{headers[at]}"',
+        "outer": outer,
+        "nodes": ", ".join(quoted),
+        "count": str(len(headers)),
+        "chain": "; ".join(f'"{r.source}" to "{r.target}"' for r in relations),
+    }
+
+
+def _layout_geometry(br: InfographicBrief) -> tuple[list[str], str, list[str]]:
+    """Middle lines, arrows line and arrow rules for the brief's baoyu layout."""
+    entry = _layout_entry(br.layout)
+    headers = [line.text for line in br.lines if line.role == "panel"]
+    tones = list(br.tones) or ["context"] * len(headers)
+    places = _panel_places(headers, tones, br.relations)
+    middle = [line.format(**places) for line in entry["middle"]]
+    if entry["strip"] and places["strip"]:
+        middle.append(entry["strip"].format(**places))
+    if entry["close"]:
+        middle.append(entry["close"])
+    arrows = entry["arrows"].format(**places)
+    rules = [
+        entry["rule"].format(**places),
+        "Draw no other arrows or connector lines.",
+    ]
+    return middle, arrows, rules
+
+
 @dataclass(frozen=True, slots=True)
 class InfographicBrief:
     title: str
     lines: tuple[BriefLine, ...]
     relations: tuple[Relation, ...] = ()
+    mode: Mode = "source"
+    tones: tuple[str, ...] = ()
+    layout: str = "structural-breakdown"
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,7 +360,29 @@ class GateDecision:
 _SPLIT = re.compile(r"[^a-z0-9]+")
 _CODE_WORD = re.compile(r"[._/:][A-Za-z0-9]|[a-z][A-Z]")
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
-READS = (("3", ""), ("11", ""), ("3", "150"), ("11", "150"))
+# The "up2x" read runs Tesseract on a doubled image: small panel text that reads as
+# low-confidence garbage at native resolution ("mapped" as "auppeth") reads cleanly
+# with more pixels. _read_mode doubles the PNG with ffmpeg for this marker.
+# The "ink" reads keep only dark pixels: colored panel frames, rules and icons drop out
+# and the dark navy words stay. Tesseract skips a header bar framed by thick colored
+# rules ("2. CHANGE" in the v5 colored panels), but reads it on the ink image.
+READS = (
+    ("3", ""),
+    ("11", ""),
+    ("3", "150"),
+    ("11", "150"),
+    ("3", "up2x"),
+    ("3", "ink"),
+    ("11", "ink"),
+    ("4", "ink"),
+)
+# Luma below this is text ink. Navy text sits near 30; the darkest key color, bluish
+# green #009E73, sits near 106.
+INK_LUMA = 90
+_FILTERS = {
+    "up2x": "scale=iw*2:ih*2",
+    "ink": f"format=gray,geq=lum='if(lt(lum(X\\,Y)\\,{INK_LUMA})\\,0\\,255)'",
+}
 
 
 def tokenize(text: str) -> list[str]:
@@ -140,6 +408,9 @@ def _match(word: str, tok: str, code: frozenset[str] = frozenset()) -> bool:
         return "0" in word and word.replace("0", "o") == tok
     if word in code or _has_digit(word) or _has_digit(tok):
         return False
+    if {word, tok} == {"prc", "pre"}:
+        # Tesseract reads the footer "prc" as "pre" in most panels drawings.
+        return True
     return _fold(word) == _fold(tok)
 
 
@@ -410,38 +681,153 @@ def _nodes(relations: tuple[Relation, ...]) -> list[str]:
     return list(dict.fromkeys(t for r in relations for t in (r.source, r.target)))
 
 
+def _short(text: Any, limit: int = LINE_LIMIT) -> TypeGuard[str]:
+    return isinstance(text, str) and bool(text.strip()) and len(text) <= limit
+
+
+def _panels(
+    selection: dict[str, Any],
+    m: dict[str, Any] | None = None,
+    board: dict[str, Any] | None = None,
+) -> InfographicBrief:
+    """A titled-panel brief: exactly the authored headline, subtitle, panel lines and footer.
+
+    The arrows join the panels per the selected layout geometry: a chain in panel order,
+    except hub-spoke spokes that run between the hub and each outer panel.
+    """
+    head, sub = selection.get("headline"), selection.get("subtitle", "")
+    panels, footer = selection.get("panels"), selection.get("footer", [])
+    if not _short(head):
+        raise ValueError("panels infographic needs a headline within the line limit")
+    if not isinstance(sub, str) or len(sub) > LINE_LIMIT:
+        raise ValueError("panels infographic subtitle needs text within the line limit")
+    if not isinstance(panels, list) or not 2 <= len(panels) <= MAX_PANELS:
+        raise ValueError(f"panels infographic needs 2 to {MAX_PANELS} panels")
+    if (
+        not isinstance(footer, list)
+        or len(footer) > MAX_FOOTER
+        or not all(_short(text) for text in footer)
+    ):
+        raise ValueError(f"panels infographic takes 0 to {MAX_FOOTER} footer items of short text")
+    lines = [BriefLine("headline", head.strip())]
+    if sub.strip():
+        lines.append(BriefLine("subtitle", sub.strip()))
+    headers: list[str] = []
+    tones: list[str] = []
+    seen: set[tuple[str, ...]] = set()
+    for n, panel in enumerate(panels, 1):
+        title = panel.get("title") if isinstance(panel, dict) else None
+        items = panel.get("lines") if isinstance(panel, dict) else None
+        if not _short(title):
+            raise ValueError(f"panel {n} needs a title")
+        tone = panel.get("tone") or guess_tone(title)
+        if tone not in TONES:
+            raise ValueError(f"panel {n}: tone {tone!r} is not one of {', '.join(TONES)}")
+        tones.append(tone)
+        if not isinstance(items, list) or not 1 <= len(items) <= MAX_PANEL_LINES:
+            raise ValueError(f"panel {n} needs 1 to {MAX_PANEL_LINES} lines")
+        for text in (title, *items):
+            if not _short(text) or len(text.split()) > PANEL_WORDS:
+                raise ValueError(f"panel {n}: {text!r} needs text of at most {PANEL_WORDS} words")
+        title = title.strip()
+        number = f"{n}."
+        header = title if title.startswith(number + " ") else f"{number} {title}"
+        identity = tuple(tokenize(header.removeprefix(number)))
+        if identity in seen:
+            raise ValueError("panels infographic needs unique panel titles")
+        seen.add(identity)
+        headers.append(header)
+        lines.append(BriefLine("panel", header))
+        lines += [BriefLine("item", text.strip()) for text in items]
+    lines += [BriefLine("footer", text.strip()) for text in footer]
+    if marked := next((line.text for line in lines if "`" in line.text), None):
+        raise ValueError(
+            f"panels infographic line {marked!r} has a backtick; an image draws it as written, "
+            "so name the code without backticks"
+        )
+    lines += [BriefLine("legend", TONES[tone][0]) for tone in dict.fromkeys(tones)]
+    lines.append(BriefLine("note", DISCLOSURE))
+    words = _word_count(tuple(lines))
+    if words > PANELS_MAX_WORDS:
+        raise ValueError(
+            f"panels infographic has {words} words with the disclosure; "
+            f"use at most {PANELS_MAX_WORDS} words"
+        )
+    layout_name = select_layout(m, board)
+    relations = _panel_relations(headers, tones, layout_name)
+    return InfographicBrief(
+        head.strip(), tuple(lines), relations, "panels", tuple(tones), layout_name
+    )
+
+
+def _story_flow(m: dict[str, Any], board: dict[str, Any]) -> tuple[Relation, ...]:
+    from prc.explainer.check import verify_board
+
+    selection = board["infographic"]
+    if not isinstance(selection, dict) or selection.get("mode") != "storyboard-flow":
+        raise ValueError("infographic mode must be storyboard-flow")
+    index = selection.get("scene")
+    scenes = board.get("scenes", [])
+    if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < len(scenes):
+        raise ValueError("infographic scene must name an existing groups scene")
+    scene = scenes[index]
+    if scene.get("type") != "groups":
+        raise ValueError("infographic scene must be a groups scene")
+    verify_board(copy.deepcopy(board), m)
+    endpoints: dict[str, str] = {}
+    owners: dict[str, str] = {}
+    titles: set[tuple[str, ...]] = set()
+    for group in scene["groups"]:
+        title = group.get("title")
+        if not isinstance(title, str) or not title.strip() or len(title) > LINE_LIMIT:
+            raise ValueError("infographic group titles need nonempty text within the line limit")
+        identity = tuple(tokenize(title))
+        if not identity or identity in titles:
+            raise ValueError("infographic groups need unique group titles after text normalization")
+        titles.add(identity)
+        owners[group["id"]] = title
+        for item in group["items"]:
+            if item["id"] in endpoints:
+                raise ValueError("infographic groups need unique item IDs")
+            endpoints[item["id"]] = title
+    links: list[Relation] = []
+    for cue in scene.get("cues", []):
+        if cue.get("do") not in ("fly", "arrow"):
+            continue
+        ends = endpoints | owners if cue["do"] == "arrow" else endpoints
+        source, target = ends.get(cue.get("from")), ends.get(cue.get("to"))
+        if source is None or target is None or source == target:
+            raise ValueError(
+                "infographic fly and arrow cues must connect boxes in distinct named groups"
+            )
+        links.append(Relation(source, target, "flow"))
+    unique = tuple(dict.fromkeys(links))
+    if not unique or len(unique) > MAX_CALLS:
+        raise ValueError(f"infographic scene needs 1 to {MAX_CALLS} distinct flow relationships")
+    return unique
+
+
 def infobrief(
     m: dict[str, Any],
     brief: Any,
     board: dict[str, Any] | None,
     sources: dict[str, str] | None = None,
 ) -> InfographicBrief:
+    selection = board.get("infographic") if board is not None else None
+    if isinstance(selection, dict) and selection.get("mode") == "panels":
+        return _panels(selection, m, board)
     title = card.headline(m, board)
     found = facts.compute_facts(m, brief)
-    stats = found.stats
-    ci = "no CI" if found.ci_state == "none" else f"CI {stats.ci_text} {found.ci_state}"
-    files = f"{stats.files} {_label(stats.files, 'file', 'files')}"
-    changed = (
-        f"{stats.symbols_changed} "
-        f"{_label(stats.symbols_changed, 'parsed symbol changed', 'parsed symbols changed')}"
-    )
-    links = structure(m, brief, board, sources)
-    chips = (
-        [files, changed, ci]
-        if links
-        else [
-            files,
-            changed,
-            f"{stats.call_sites} "
-            f"{_label(stats.call_sites, 'resolved call site', 'resolved call sites')}",
-            f"{stats.tests_touched} "
-            f"{_label(stats.tests_touched, 'test file touched', 'test files touched')}",
-            ci,
-            f"{stats.untested_total} parsed code without test evidence",
-        ]
+    story = board is not None and "infographic" in board
+    links = (
+        _story_flow(m, board)
+        if board is not None and story
+        else structure(m, brief, board, sources)
     )
     head: list[BriefLine] = [BriefLine("headline", title)]
-    taken = {title, *chips}
+    taken = {title}
+    if story and any(r.source in taken or r.target in taken for r in links):
+        raise ValueError("infographic headline must differ from its group titles")
     links = tuple(r for r in links if r.source not in taken and r.target not in taken)
     head += [BriefLine("node", text) for text in _nodes(links)]
     kinds = {r.kind for r in links}
@@ -449,20 +835,20 @@ def infobrief(
     if kinds - {"call", "removed call"}:
         legend["call"] = MIXED_CALL_LEGEND
     head += [BriefLine("legend", text) for kind, text in legend.items() if kind in kinds]
-    head += [BriefLine("chip", text) for text in chips]
-    look = list(card.look_first(m, brief, 3, board))
+    look = [] if story else list(card.look_first(m, brief, 3, board))
     if look:
         head.append(BriefLine("label", LOOK_LABEL))
         head += [BriefLine("row", f"{e.name} in {e.path}") for e in look]
-    surfaces = list(card.risky(m, brief))
-    if surfaces:
-        head.append(BriefLine("label", RISKY_LABEL))
-        head += [BriefLine("row", f"{r.path}: {r.reason}") for r in surfaces]
     head.append(BriefLine("verdict", found.test_verdict))
     head.append(BriefLine("note", DISCLOSURE))
     trimmed = tuple(BriefLine(line.role, _trim_line(line.text)) for line in head)
     fitted = _fit_words(trimmed)
-    return InfographicBrief(fitted[0].text, fitted, links)
+    if story and any(
+        tokenize(line.text) == tokenize(fitted[0].text) for line in fitted if line.role == "node"
+    ):
+        raise ValueError("infographic headline must differ from its group titles after fitting")
+    mode: Mode = "storyboard-flow" if story else "source"
+    return InfographicBrief(fitted[0].text, fitted, links, mode, (), select_layout(m, board))
 
 
 def allowed_words(br: InfographicBrief) -> set[str]:
@@ -501,21 +887,113 @@ def gate_constants() -> dict[str, Any]:
         "LINE_RUN": diagram.LINE_RUN,
         "LINE_LIMIT": LINE_LIMIT,
         "MAX_WORDS": MAX_WORDS,
+        "PANELS_MAX_WORDS": PANELS_MAX_WORDS,
         "REACH": diagram.REACH,
         "WINDOW": WINDOW,
     }
 
 
+def _quoted(texts: list[str]) -> str:
+    return ", ".join(f'"{text}"' for text in texts)
+
+
+def prompt(br: InfographicBrief) -> str:
+    """The image prompt for the baoyu-infographic technical profile, built from the brief only."""
+    open_line = (
+        "Create one landscape 16:9 infographic with the baoyu-infographic profile: "
+        f"technical-schematic style, {br.layout} layout."
+    )
+    if br.mode != "panels":
+        rows = [f'- {line.role}: "{line.text}"' for line in br.lines]
+        flows = [f'- "{r.source}" to "{r.target}" ({r.kind})' for r in br.relations]
+        return (
+            "\n".join(
+                [
+                    open_line,
+                    "",
+                    "Text: use only these lines, each exactly once and spelled exactly.",
+                    *rows,
+                ]
+                + (["", "Arrows, source to target:", *flows] if flows else [])
+                + ["", "Rules:", *(f"- {rule}" for rule in PROMPT_RULES)]
+            )
+            + "\n"
+        )
+    by_role = {
+        role: [ln.text for ln in br.lines if ln.role == role]
+        for role in ("subtitle", "footer", "legend", "note")
+    }
+    panels: list[tuple[str, list[str]]] = []
+    for line in br.lines:
+        if line.role == "panel":
+            panels.append((line.text, []))
+        elif line.role == "item":
+            panels[-1][1].append(line.text)
+    text = [f'Headline: "{br.title}"']
+    text += [f'Subtitle: "{sub}"' for sub in by_role["subtitle"]]
+    tones = list(br.tones) or ["context"] * len(panels)
+    for (header, items), tone in zip(panels, tones, strict=True):
+        word, name, color, tint = TONES[tone]
+        text.append(f'Panel header: "{header}" (color: {name} {color}, tint {tint})')
+        text += [f'  - label: "{item}"' for item in items]
+    text += [f'Footer: "{item}"' for item in by_role["footer"]]
+    key = {TONES[t][0]: TONES[t] for t in tones}
+    text += [
+        f'Key: "{word}" beside the {key[word][1]} {key[word][2]} swatch'
+        for word in by_role["legend"]
+    ]
+    text += [f'Disclosure: "{note}"' for note in by_role["note"]]
+    middle, arrows, rules = _layout_geometry(br)
+    layout = [
+        "Style: a technical-schematic blueprint on pale white grid paper, with thin drafting "
+        "lines, dimension ticks and corner marks. Color carries meaning: "
+        + ", ".join(
+            f"{name} {color} means {word.lower()}" for word, name, color, _ in TONES.values()
+        )
+        + ". Fill each panel with its pale tint and frame it with a thick border in its full color. "
+        "Draw its header bar in the same pale tint, underlined by a thick rule in the full color, "
+        "with the header text in dark navy. Draw icons and arrows in the panel color. Keep every "
+        "word dark navy on the light tints so it reads clearly; never put white text on a color.",
+        "",
+        "Layout:",
+        "- Top: the headline in large bold letters, with the subtitle in smaller letters under it.",
+        *middle,
+        arrows,
+        "- Bottom: a footer bar across the full width that holds the footer items, the key (each "
+        "key word beside a small square swatch of its color) and the disclosure.",
+    ]
+    return (
+        "\n".join(
+            [
+                open_line,
+                "",
+                *layout,
+                "",
+                "Text: use only these lines, each exactly once and spelled exactly.",
+                *text,
+            ]
+            + ["", "Rules:", *(f"- {rule}" for rule in rules)]
+        )
+        + "\n"
+    )
+
+
 def brief_dict(br: InfographicBrief) -> dict[str, Any]:
+    profile = dict(PROFILE)
+    profile["layout"] = br.layout
     return {
         "allowed": sorted(allowed_words(br)),
         "disclosure": DISCLOSURE,
         "gate": gate_constants(),
+        "layout": br.layout,
         "lines": [{"role": line.role, "text": line.text} for line in br.lines],
-        "profile": dict(PROFILE),
-        "prompt_rules": list(PROMPT_RULES),
+        "mode": br.mode,
+        "profile": profile,
+        "prompt": prompt(br),
+        "prompt_rules": list(_layout_geometry(br)[2] if br.mode == "panels" else PROMPT_RULES),
         "relations": [{"from": r.source, "to": r.target, "kind": r.kind} for r in br.relations],
         "title": br.title,
+        "tones": list(br.tones),
     }
 
 
@@ -523,6 +1001,7 @@ def write_brief_json(br: InfographicBrief, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(brief_dict(br), indent=2, sort_keys=True)
     path.write_text(payload + "\n")
+    path.with_name("prompt.md").write_text(prompt(br))
     return path
 
 
@@ -704,6 +1183,25 @@ def _allowed_neighbor(token: str, idx: int, ocr: list[str], allowed: set[str]) -
     return _fold(left) in allowed or _fold(right) in allowed
 
 
+def _rejoined(words: tuple[OcrWord, ...], prose: set[str]) -> set[int]:
+    """Ids of words split by a visual break that rejoin to a permitted word.
+
+    A hatched header bar can split CHANGE into "cha" and "nge" with a stray reading
+    between them in page order, so stream adjacency misses the split. Words sitting
+    side by side on one text line whose edge tokens rejoin to a prose word are the
+    two halves of one drawn word.
+    """
+    found: set[int] = set()
+    for line in _text_lines(words):
+        for first, second in pairwise(line):
+            left = tokenize(first.text)
+            right = tokenize(second.text)
+            if left and right and _fold(left[-1] + right[0]) in prose:
+                found.add(id(first))
+                found.add(id(second))
+    return found
+
+
 def _misread(
     token: str,
     box: Box | None,
@@ -714,11 +1212,12 @@ def _misread(
 ) -> bool:
     """True when the other reads show this token is a misreading of an icon or an allowed word.
 
-    Most other reads see an allowed word at the same place. Or the token has no digit and is
-    short: one letter that looks like an icon (alone on its text line, or much taller than its
-    neighbors), up to GLYPH_TOKEN letters in a square box much taller than its neighbors (a gear
-    read as "god"), or a token that fewer than STABLE_READS confident reads (all reads, when
-    there are fewer) see there.
+    Most other reads see an allowed word at the same place. Or the token is short: one letter
+    that looks like an icon (alone on its text line, or much taller than its neighbors), up to
+    GLYPH_TOKEN letters in a square box much taller than its neighbors (a gear read as "god"),
+    a lone single digit from an icon region (a checkbox grid read as "4"), or a token that
+    fewer than STABLE_READS confident reads (all reads, when there are fewer) see there.
+    Longer digit codes and tall digit strokes stay invented, as does a digit every read sees.
     """
     if box is None:
         return False
@@ -737,7 +1236,16 @@ def _misread(
     )
     if len(others) >= 2 and agree * 2 > len(others):
         return True
-    if _has_digit(token):
+    digit = _has_digit(token)
+    if not digit and len(token) >= CLIPPED_PREFIX:
+        # One read clips a drawn word ("PROOF" read as "PROO") that another read sees whole.
+        whole = (t for r in others for t in at_place(r, CONF_FLOOR))
+        if any(t != token and t.startswith(token) and known(t) for t in whole):
+            return True
+    if digit and (len(token) > 1 or icon == "tall"):
+        # Longer codes stay exact, and a tall digit-like icon stroke beside text
+        # (the "9" in the square-glyph tests) stays invented: only a lone single
+        # digit can be an icon-region reading.
         return False
     seen = 1 + sum(1 for r in others if token in at_place(r, CONF_FLOOR))
     if seen == len(reads):
@@ -754,6 +1262,34 @@ def _misread(
 def _glyph(box: Box) -> bool:
     """A box about as wide as it is tall. Printed words of two or more letters are wider."""
     return box[2] <= GLYPH_WIDTH * box[3]
+
+
+def _bullets(words: tuple[OcrWord, ...], known: Callable[[str], bool]) -> set[int]:
+    """Ids of list bullet dots read as one letter (a "●" read as "e" in every mode).
+
+    The dot is the first confident word on its text line, a square box at most
+    BULLET_HEIGHT of the height of the word after it, and that word is a brief word.
+    """
+    found: set[int] = set()
+    for line in _text_lines(words):
+        sure = [w for w in line if w.conf >= CONF_FLOOR and tokenize(w.text)]
+        if len(sure) < 2:
+            continue
+        dot, item = sure[0], sure[1]
+        toks = tokenize(dot.text)
+        after = tokenize(item.text)
+        if (
+            dot.box
+            and item.box
+            and len(toks) == 1
+            and len(toks[0]) == 1
+            and not _has_digit(toks[0])
+            and _glyph(dot.box)
+            and dot.box[3] <= BULLET_HEIGHT * item.box[3]
+            and known(after[0])
+        ):
+            found.add(id(dot))
+    return found
 
 
 def score_ocr(
@@ -787,16 +1323,22 @@ def score_ocr(
 
     streams: list[list[str]] = []
     scored: list[list[tuple[str, float, Box | None, IconKind | None]]] = []
+    owners: list[list[int]] = []
     for read in reads:
         icons = _icon_like(read.words)
         toks: list[str] = []
         confs: list[tuple[str, float, Box | None, IconKind | None]] = []
+        held: list[int] = []
         for word in read.words:
             for tok in tokenize(word.text):
                 toks.append(tok)
                 confs.append((tok, word.conf, word.box, icons.get(id(word))))
+                held.append(id(word))
         streams.append(toks)
         scored.append(confs)
+        owners.append(held)
+    rejoined = [_rejoined(read.words, prose) for read in reads]
+    bullets = [_bullets(read.words, known) for read in reads]
     detail: dict[str, Any] = {
         "allowed": len(allowed),
         "brief_lines": len(br.lines),
@@ -819,6 +1361,10 @@ def score_ocr(
                 good = False
             else:
                 good = _allowed_neighbor(tok, pos, ocr, prose)
+            if not good:
+                good = owners[idx][pos] in rejoined[idx]
+            if not good:
+                good = owners[idx][pos] in bullets[idx]
             if not good:
                 good = _misread(tok, box, idx, reads, known, icon)
             if not good:
@@ -879,6 +1425,7 @@ def score_ocr(
             if any(
                 known(tok)
                 or _allowed_neighbor(tok, pos + offset, streams[idx], prose)
+                or id(word) in rejoined[idx]
                 or (
                     word.conf >= CONF_FLOOR and not _misread(tok, word.box, idx, reads, known, None)
                 )
@@ -936,7 +1483,54 @@ def tool_decision(
     return GateDecision("tool", (), (), detail)
 
 
+def _filtered_png(png: Path, kind: str) -> Path | None:
+    """A filtered copy of the image for the up2x or ink read, or None without ffmpeg."""
+    if shutil.which("ffmpeg") is None:
+        return None
+    fd, tmp = tempfile.mkstemp(prefix=f"prc-{kind}-", suffix=".png")
+    os.close(fd)
+    try:
+        done = subprocess.run(
+            ["ffmpeg", "-v", "error", "-y", "-i", str(png), "-vf", _FILTERS[kind], tmp],
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError, UnicodeDecodeError):
+        Path(tmp).unlink(missing_ok=True)
+        return None
+    if done.returncode != 0:
+        Path(tmp).unlink(missing_ok=True)
+        return None
+    return Path(tmp)
+
+
 def _read_mode(png: Path, psm: str, dpi: str) -> tuple[OcrWord, ...] | None:
+    if dpi == "ink":
+        inked = _filtered_png(png, "ink")
+        if inked is None:
+            return None
+        try:
+            return _read_mode(inked, psm, "")
+        finally:
+            inked.unlink(missing_ok=True)
+    if dpi == "up2x":
+        doubled = _filtered_png(png, "up2x")
+        if doubled is None:
+            return None
+        try:
+            words = _read_mode(doubled, psm, "")
+        finally:
+            doubled.unlink(missing_ok=True)
+        if words is None:
+            return None
+        # All gate geometry (places, locate, the ink mask) runs in base-image
+        # pixels, so scale the doubled boxes back before returning the read.
+        return tuple(
+            word if word.box is None else OcrWord(word.text, word.conf, _halve(word.box))
+            for word in words
+            if word.box is None or _halve(word.box) is not None
+        )
     args = ["tesseract", str(png), "stdout", "--psm", psm]
     if dpi:
         args += ["--dpi", dpi]
@@ -949,23 +1543,38 @@ def _read_mode(png: Path, psm: str, dpi: str) -> tuple[OcrWord, ...] | None:
     return parse_tsv(done.stdout)
 
 
-def gate(png: Path, br: InfographicBrief) -> GateDecision:
-    version = tesseract_version()
-    if not version:
-        return tool_decision()
+def read_modes(png: Path) -> tuple[tuple[OcrRead, ...], list[str]]:
+    """One OCR read per entry in READS, plus the modes that failed to read."""
     reads: list[OcrRead] = []
     failed: list[str] = []
     for psm, dpi in READS:
-        mode = f"psm-{psm}-dpi-{dpi}" if dpi else f"psm-{psm}"
+        if dpi in _FILTERS:
+            mode = f"psm-{psm}-{dpi}"
+        elif dpi:
+            mode = f"psm-{psm}-dpi-{dpi}"
+        else:
+            mode = f"psm-{psm}"
         words = _read_mode(png, psm, dpi)
         if words is None:
             failed.append(mode)
         else:
             reads.append(OcrRead(mode, words))
+    return tuple(reads), failed
+
+
+def gate(png: Path, br: InfographicBrief) -> GateDecision:
+    version = tesseract_version()
+    if not version:
+        return tool_decision()
+    reads, failed = read_modes(png)
     if failed:
-        return tool_decision(version, failed, tuple(reads))
+        return tool_decision(version, failed, reads)
     decision = score_ocr(tuple(reads), br, tesseract=version)
     if decision.verdict != "pass":
+        return decision
+    if br.mode == "panels":
+        # Panel frames hold many lines each, so the ink test between two text lines is not
+        # reliable there; the gate checks the words and a reviewer checks the arrows by eye.
         return decision
     if not br.relations:
         return GateDecision(
@@ -1078,3 +1687,11 @@ def read_png(path: Path) -> bytes:
     if not raw.startswith(_PNG_MAGIC):
         raise ValueError(f"infographic must be a PNG: {path}")
     return raw
+
+
+def _halve(box: Box) -> Box | None:
+    """A doubled-read word box back in base-image pixels, or None when it vanishes."""
+    left, top, width, height = (part // 2 for part in box)
+    if width <= 0 or height <= 0:
+        return None
+    return (left, top, width, height)

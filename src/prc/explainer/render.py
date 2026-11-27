@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import math
 import re
@@ -14,17 +15,21 @@ from typing import Any
 from prc.explainer import highlight
 from prc.explainer.check import verify_board
 from prc.explainer.diffrows import diff_layout, pair_rows, prepare, wrap_row
+from prc.explainer.evidence import copy_shots, load_beside
 from prc.explainer.jointest import document
 from prc.explainer.jointest import run as join_run
+from prc.explainer.page import files_url
+from prc.explainer.themes import Look, look
 from prc.explainer.timing import check_stamped_cues, fit_sentences
 from prc.explainer.voice import Backend
+from prc.tones import key_script
 
 ASSETS = Path(__file__).resolve().parent / "assets"
 FPS = 30
 
-PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head>
+PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>{css}{look}</style></head>
 <body class="video"><div id="app" class="emount"><div class="escale" id="scale"></div></div>
-<script>window.BOARD = {board};</script><script>{js}
+<script>window.BOARD = {board};</script>{key}<script>{js}
 prcMount(document.getElementById('scale'), window.BOARD, null);</script></body></html>"""
 
 
@@ -106,34 +111,70 @@ def fill(
     m: dict[str, Any],
     facts: dict[str, Any],
     git_dir: str | None = None,
+    evidence_dir: Path | str | None = None,
 ) -> None:
     repo, number = m["pr"].split("/")[1].split("#")
+    owner_repo = m["pr"].split("#")[0]
+    commit = "https://github.com/" + owner_repo + "/commit/"
     added = sum(f["added"] for f in m["brief"]["files"])
     removed = sum(f["removed"] for f in m["brief"]["files"])
     board["header"] = f"<b>{repo} #{number}</b> · {m['author']}"
     values = {k: v for k, v in facts.items() if isinstance(v, int)}
+    texts = {
+        (f["path"], ("-" + str(ln["old"])) if ln.get("op") == "-" else ("+" + str(ln["new"]))): str(
+            ln.get("text", "")
+        )
+        for f in m.get("files", [])
+        for h in f.get("hunks", [])
+        for ln in h.get("lines", [])
+    }
 
     for i, s in enumerate(board["scenes"]):
         s["i"] = i
-        cites = [
-            re.sub(r":-(\d+)$", r":\1 (old)", c["line"].rsplit("/", 1)[-1])
-            for c in s.get("cite", [])
-        ]
-        s["footer"] = ("receipts   " + "  ·  ".join(cites[:4])) if cites else ""
+        receipts = s.get("cite", [])[:4]
+        cites = [re.sub(r":-(\d+)$", r":\1 (old)", c["line"].rsplit("/", 1)[-1]) for c in receipts]
+        s["footer"] = ("receipts   " + "  ·  ".join(cites)) if cites else ""
+        s["footer_parts"] = []
+        for k, (c, label) in enumerate(zip(receipts, cites, strict=True)):
+            path, n = c["line"].rsplit(":", 1)
+            url = files_url(owner_repo, number, path, abs(int(n)), int(n) < 0)
+            s["footer_parts"] += [
+                {"text": "  ·  " if k else "receipts   "},
+                {"text": label, "url": url},
+            ]
 
         if s["type"] == "title":
-            s["title"] = m["title"]
+            # The title types one plain character at a time, so a code span drops its backticks.
+            s["title"] = str(m["title"]).replace("`", "")
             s["meta"] = (
-                f'<span class="add">+{added}</span> <span class="del">−{removed}</span>'
-                f" · {len(m['brief']['files'])} files · {m['pr']}"
+                f'<span class="add">+{added}</span> <span class="del">−{removed}</span> · '
+                f'<a href="https://github.com/{owner_repo}/pull/{number}" target="_blank" rel="noopener">{m["pr"]}</a>'
             )
             s["footer"] = f"base {m['base_sha'][:7]}  →  head {m['head_sha'][:7]}"
-            segments, rest = [], m["title"]
+            s["footer_parts"] = [
+                {"text": "base "},
+                {"text": m["base_sha"][:7], "url": commit + m["base_sha"]},
+                {"text": "  →  head "},
+                {"text": m["head_sha"][:7], "url": commit + m["head_sha"]},
+            ]
+            segments, rest = [], s["title"]
             for claim in s.get("claims", []):
                 before, _, rest = rest.partition(claim["text"])
                 segments += [{"text": before}, {"text": claim["text"], "claim": claim["n"]}]
             if s.get("claims"):
                 s["segments"] = segments + [{"text": rest}]
+        if s["type"] == "groups":
+            # Each box opens the cited line its name comes from, as the check grounded it.
+            for g in s["groups"]:
+                for it in g["items"]:
+                    word = it.get("ground", it["text"])
+                    for c in s.get("cite", []):
+                        path, n = c["line"].rsplit(":", 1)
+                        key = ("-" + n[1:]) if n.startswith("-") else ("+" + n)
+                        if word in texts.get((path, key), ""):
+                            it["line"] = c["line"]
+                            it["url"] = _line_url(owner_repo, number, c["line"])
+                            break
         if s["type"] == "list":
             if "more" not in s:
                 rest = facts["tests_added"] - len(s["items"])
@@ -141,12 +182,27 @@ def fill(
                     f"+ {rest} more" if s.get("big") == "{tests_added}" and rest > 0 else None
                 )
             s["big"] = s.get("big", "").format(**values)
+        for it in s.get("items", []) if s["type"] == "list" else []:
+            it["url"] = _line_url(owner_repo, number, it["cite"])
         if s["type"] == "receipt":
             s["verdict"] = facts["verdicts"][i]
             s["footer"] = ""
+            s["footer_parts"] = []
+            for r in s["rows"]:
+                if "line" in r:
+                    r["url"] = _line_url(owner_repo, number, r["line"])
         if s["type"] == "stats":
             for c in s["cards"]:
                 c["value"] = c["value"].format(**values)
+        if s["type"] == "screens":
+            for img in s.get("images", []):
+                if isinstance(img, dict) and isinstance(img.get("path"), str):
+                    name = Path(str(img["path"])).name
+                    img.setdefault("src", f"evidence/{name}")
+            if not s.get("source_url") and m.get("url"):
+                s["source_url"] = str(m["url"])
+            s["footer"] = ""
+            s["footer_parts"] = []
         if s["type"] == "outro":
             s["url"] = (m.get("url") or "pr").removeprefix("https://")
             s.setdefault("fine", "")
@@ -171,6 +227,9 @@ def fill(
                     continue
                 hang, breaks = wrap_row(r["tokens"], 72 - s["gutter"])
                 r["hang"], r["breaks"] = hang, breaks
+                r["url"] = files_url(
+                    owner_repo, number, s["file"], int(r["num"]), r.get("op") == "-"
+                )
             s["layout"] = diff_layout(s)
             s["lang"] = {
                 ".py": "py",
@@ -183,6 +242,19 @@ def fill(
             s["footer"] = (
                 f"receipts   {len(code)} lines quoted verbatim from the diff of {s['file'].rsplit('/', 1)[-1]}"
             )
+            s["footer_parts"] = [
+                {"text": f"receipts   {len(code)} lines quoted verbatim from the diff of "},
+                {
+                    "text": s["file"].rsplit("/", 1)[-1],
+                    "url": files_url(owner_repo, number, s["file"]),
+                },
+            ]
+
+
+def _line_url(owner_repo: str, number: str, cite: str) -> str:
+    """GitHub Files-view link for a "path:n" cite; a negative n is a removed line."""
+    path, n = cite.rsplit(":", 1)
+    return files_url(owner_repo, number, path, abs(int(n)), int(n) < 0)
 
 
 def join_gate(board: dict[str, Any], m: dict[str, Any], out: Path) -> None:
@@ -227,45 +299,40 @@ def silence(cursor: float, out: Path) -> None:
     )  # fmt: skip
 
 
-def render(
+def overlapping_scenes(board: dict[str, Any]) -> list[str]:
+    """Scene windows that overlap. The engine shows a scene only inside its own window,
+    so overlapping windows would cut a scene before its fade; render refuses them."""
+    scenes = board["scenes"]
+    return [
+        f"scene {b.get('i', n + 1)} starts at {float(b['start']):.3f}s, "
+        f"before scene {a.get('i', n)} ends at {float(a['end']):.3f}s"
+        for n, (a, b) in enumerate(zip(scenes, scenes[1:], strict=False))
+        if float(b["start"]) < float(a["end"]) - 1e-6
+    ]
+
+
+def record(
     board: dict[str, Any],
-    m: dict[str, Any],
-    facts: dict[str, Any],
     out: Path,
-    backend: Backend,
-    git_dir: str | None = None,
+    narration: Path,
+    duration: float,
+    theme: Look,
     keys_only: bool = False,
-) -> Rendered:
-    check_tools(need_video=not keys_only)
+) -> list[str]:
+    """Write player.html in the look, check its DOM, take key frames and record video.mp4."""
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
     from playwright.sync_api import sync_playwright
 
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "audio").mkdir(exist_ok=True)
-    fill(board, m, facts, git_dir)
-    join_gate(board, m, out)
-    log: list[dict[str, Any]] = []
-    cursor, clips = fit_sentences(board, backend, out / "audio", log)
-    stamped = check_stamped_cues(board)
-    if stamped:
-        raise RenderError("cue timing failed after narration fit:\n" + "\n".join(stamped))
-    for s in board["scenes"]:
-        if s["type"] == "graph":
-            layout(s, m)
-    if log:
-        (out / "phrases.json").write_text(json.dumps(log, indent=1))
-
-    narration = out / "narration.wav"
-    if not keys_only:
-        if backend.has_audio:
-            mix_narration(clips, cursor, narration)
-        else:
-            silence(cursor, narration)
-
+    overlaps = overlapping_scenes(board)
+    if overlaps:
+        raise RenderError("scene windows overlap:\n  " + "\n  ".join(overlaps))
     player = out / "player.html"
     player.write_text(
         PAGE.format(
             css=(ASSETS / "engine.css").read_text(),
+            look=theme.css(),
             board=board_json(board),
+            key=key_script(theme.ink),
             js=(ASSETS / "engine.js").read_text(),
         )
     )
@@ -314,7 +381,30 @@ def render(
         if dom_errs:
             browser.close()
             raise RenderError("DOM text mismatch:\n  " + "\n  ".join(dom_errs))
+        screens_total = sum(
+            len(s.get("images", [])) for s in board["scenes"] if s.get("type") == "screens"
+        )
+        if screens_total:
+            # The engine sizes each shot to its own aspect once it loads; record only after that.
+            # A timeout falls through to the load check below, which names the unloaded image.
+            with contextlib.suppress(PlaywrightTimeout):
+                page.wait_for_function(
+                    "[...document.querySelectorAll('.screens .sframe img')].every(i => i.dataset.fit)",
+                    timeout=15000,
+                )
+            loaded = page.evaluate(
+                "() => [...document.querySelectorAll('.screens .sframe img')].map(function(i){return {src: i.getAttribute('src'), w: i.naturalWidth}})"
+            )
+            bad = [e for e in loaded if not e.get("w")]
+            if bad or len(loaded) != screens_total:
+                browser.close()
+                raise RenderError("screens images failed to load: " + repr(loaded))
+
         warnings = list(page.evaluate("window.lint || []"))
+        overlaps = [w for w in warnings if "overlaps code" in w]
+        if overlaps:
+            browser.close()
+            raise RenderError("callout covers code:\n  " + "\n  ".join(overlaps))
 
         keys = out / "keys"
         keys.mkdir(exist_ok=True)
@@ -334,7 +424,7 @@ def render(
                 stdin=subprocess.PIPE,
             )  # fmt: skip
             assert ffmpeg.stdin is not None
-            for n in range(int(round(cursor * FPS)) + 1):
+            for n in range(int(round(duration * FPS)) + 1):
                 page.evaluate(f"seek({n / FPS})")
                 ffmpeg.stdin.write(page.screenshot(type="jpeg", quality=92))
             ffmpeg.stdin.close()
@@ -346,15 +436,78 @@ def render(
             browser.close()
             raise RenderError("page errors: " + " | ".join(errors))
         browser.close()
+    return warnings
 
+
+def render(
+    board: dict[str, Any],
+    m: dict[str, Any],
+    facts: dict[str, Any],
+    out: Path,
+    backend: Backend,
+    git_dir: str | None = None,
+    keys_only: bool = False,
+    evidence_dir: Path | str | None = None,
+) -> Rendered:
+    check_tools(need_video=not keys_only)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "audio").mkdir(exist_ok=True)
+    fill(board, m, facts, git_dir, evidence_dir)
+    if evidence_dir is not None:
+        copy_shots(board, Path(evidence_dir), out)
+    join_gate(board, m, out)
+    log: list[dict[str, Any]] = []
+    cursor, clips = fit_sentences(board, backend, out / "audio", log)
+    stamped = check_stamped_cues(board)
+    if stamped:
+        raise RenderError("cue timing failed after narration fit:\n" + "\n".join(stamped))
+    for s in board["scenes"]:
+        if s["type"] == "graph":
+            layout(s, m)
+    if log:
+        (out / "phrases.json").write_text(json.dumps(log, indent=1))
+
+    narration = out / "narration.wav"
+    if not keys_only:
+        if backend.has_audio:
+            mix_narration(clips, cursor, narration)
+        else:
+            silence(cursor, narration)
+
+    warnings = record(board, out, narration, cursor, look("dark"), keys_only=keys_only)
     return Rendered(cursor, int(round(cursor * FPS)) + 1, warnings, log)
 
 
 def render_board(
-    board_path: Path, map_path: Path, out: Path, backend: Backend, git_dir: str | None = None
+    board_path: Path,
+    map_path: Path,
+    out: Path,
+    backend: Backend,
+    git_dir: str | None = None,
+    evidence_dir: Path | str | None = None,
 ) -> Rendered:
     """Check, fill and render a board file against a map file. Used by tests and the CLI."""
     board = json.loads(board_path.read_text())
     m = json.loads(map_path.read_text())
-    facts = verify_board(board, m)
-    return render(board, m, facts, out, backend, git_dir)
+    evidence = load_beside(map_path)
+    facts = verify_board(board, m, evidence)
+    if evidence_dir is None:
+        evidence_dir = map_path.parent
+    return render(board, m, facts, out, backend, git_dir, evidence_dir=evidence_dir)
+
+
+def render_look(src: Path, out: Path, name: str, keys_only: bool = False) -> Rendered:
+    """Record a finished output again in another look: same board, same narration.
+
+    src holds board.json (filled and timed), map.json and narration.wav from a full
+    render. No voice synthesis runs, so every look of a pull request says the same words
+    at the same times.
+    """
+    check_tools(need_video=not keys_only)
+    theme = look(name)
+    board = json.loads((src / "board.json").read_text())
+    out.mkdir(parents=True, exist_ok=True)
+    copy_shots(board, src, out)
+    duration = float(board["duration"])
+    warnings = record(board, out, src / "narration.wav", duration, theme, keys_only)
+    return Rendered(duration, int(round(duration * FPS)) + 1, warnings, [])

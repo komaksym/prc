@@ -6,7 +6,7 @@
    "kicker": "Open pull request",
    "say": [
     "This pull request adds a date to each row of the invitation report.",
-    "It shows when the prospect was added."
+    "It shows when someone added the prospect."
    ]
   },
   {
@@ -159,7 +159,7 @@
    ],
    "say": [
     "A missing, malformed, out-of-range, timezone-less or future timestamp shows as unknown.",
-    "The row keeps a reason, and the bad value is never copied."
+    "The row keeps a reason, and the report never copies the bad value."
    ],
    "cues": [
     {
@@ -285,7 +285,8 @@
    "fine": "Every name, number and arrow on screen was checked against the pull request's code before rendering.",
    "nocap": true,
    "say": [
-    "Each row now shows its date added. Unknown stays unknown."
+    "Each row now shows its date added.",
+    "Unknown stays unknown."
    ],
    "cues": [
     {
@@ -298,14 +299,14 @@
     {
      "at": [
       0,
-      0.5
+      0.84
      ],
      "do": "l2"
     },
     {
      "at": [
-      0,
-      0.9
+      1,
+      0.75
      ],
      "do": "cmd"
     }

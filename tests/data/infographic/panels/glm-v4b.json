@@ -1,0 +1,144 @@
+{
+  "allowed": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "6",
+    "ai",
+    "and",
+    "at",
+    "before",
+    "best",
+    "by",
+    "change",
+    "contains",
+    "cutoff",
+    "difflib",
+    "drawn",
+    "fields",
+    "filter",
+    "first",
+    "four",
+    "from",
+    "get",
+    "infographic",
+    "input",
+    "keeps",
+    "match",
+    "matches",
+    "name",
+    "names",
+    "only",
+    "order",
+    "pin",
+    "prc",
+    "proof",
+    "ranks",
+    "rows",
+    "scores",
+    "start",
+    "tests",
+    "tiers",
+    "words"
+  ],
+  "disclosure": "Infographic drawn by AI. Words from PRC.",
+  "gate": {
+    "CONF_FLOOR": 70,
+    "CROSSINGS": 2,
+    "GAP": 2,
+    "LINE_LIMIT": 96,
+    "LINE_RUN": 1.5,
+    "MAX_WORDS": 80,
+    "PANELS_MAX_WORDS": 90,
+    "REACH": 4,
+    "WINDOW": 6
+  },
+  "lines": [
+    {
+      "role": "headline",
+      "text": "Name matches get scores and tiers"
+    },
+    {
+      "role": "subtitle",
+      "text": "match_names ranks best first"
+    },
+    {
+      "role": "panel",
+      "text": "1. BEFORE"
+    },
+    {
+      "role": "item",
+      "text": "contains filter only"
+    },
+    {
+      "role": "item",
+      "text": "input order ranks"
+    },
+    {
+      "role": "panel",
+      "text": "2. CHANGE"
+    },
+    {
+      "role": "item",
+      "text": "difflib scores name fields"
+    },
+    {
+      "role": "item",
+      "text": "0.6 cutoff keeps rows"
+    },
+    {
+      "role": "item",
+      "text": "best match first"
+    },
+    {
+      "role": "panel",
+      "text": "3. PROOF"
+    },
+    {
+      "role": "item",
+      "text": "four tests pin ranks"
+    },
+    {
+      "role": "footer",
+      "text": "Start at match_names"
+    },
+    {
+      "role": "note",
+      "text": "Infographic drawn by AI. Words from PRC."
+    }
+  ],
+  "mode": "panels",
+  "profile": {
+    "aspect": "16:9",
+    "backend": "auto",
+    "language": "en",
+    "layout": "structural-breakdown",
+    "style": "technical-schematic"
+  },
+  "prompt": "Create one landscape 16:9 infographic with the baoyu-infographic profile: technical-schematic style, structural-breakdown layout.\n\nStyle: a technical-schematic blueprint on pale blue-white grid paper, drawn in dark navy ink with thin drafting lines, dimension ticks and corner marks. Keep every word dark on the light paper so it reads clearly.\n\nLayout:\n- Top: the headline in large bold letters, with the subtitle in smaller letters under it.\n- Middle: 3 panels in one row, left to right. Each panel has a plain solid numbered header bar with its panel header, one simple icon with no letters, digits or digit-like shapes, and its labels as a short list.\n- Between panels: one bold arrow from each panel to the next, left to right (\"1. BEFORE\" to \"2. CHANGE\"; \"2. CHANGE\" to \"3. PROOF\"). Put no words on the arrows.\n- Bottom: a footer bar across the full width that holds the footer items and the disclosure.\n\nText: use only these lines, each exactly once and spelled exactly.\nHeadline: \"Name matches get scores and tiers\"\nSubtitle: \"match_names ranks best first\"\nPanel header: \"1. BEFORE\"\n  - label: \"contains filter only\"\n  - label: \"input order ranks\"\nPanel header: \"2. CHANGE\"\n  - label: \"difflib scores name fields\"\n  - label: \"0.6 cutoff keeps rows\"\n  - label: \"best match first\"\nPanel header: \"3. PROOF\"\n  - label: \"four tests pin ranks\"\nFooter: \"Start at match_names\"\nDisclosure: \"Infographic drawn by AI. Words from PRC.\"\n\nRules:\n- Show every line exactly once, spelled exactly.\n- Add no other words, numbers, titles, legends or watermarks than the lines given.\n- Put each panel header and its labels inside that panel.\n- Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.\n- Join each panel to the next with one arrow, left to right, and put no words on it.\n- Draw no other arrows or connector lines.\n- Icons are allowed inside panels but contain no letters, digits or digit-like shapes.\n- Draw every line as dark text on a light background.\n- Keep the disclosure line visible in the footer bar.\n",
+  "prompt_rules": [
+    "Show every line exactly once, spelled exactly.",
+    "Add no other words, numbers, titles, legends or watermarks than the lines given.",
+    "Put each panel header and its labels inside that panel.",
+    "Draw each panel header on a plain solid header bar with no hatching or pattern behind the text.",
+    "Join each panel to the next with one arrow, left to right, and put no words on it.",
+    "Draw no other arrows or connector lines.",
+    "Icons are allowed inside panels but contain no letters, digits or digit-like shapes.",
+    "Draw every line as dark text on a light background.",
+    "Keep the disclosure line visible in the footer bar."
+  ],
+  "relations": [
+    {
+      "from": "1. BEFORE",
+      "kind": "flow",
+      "to": "2. CHANGE"
+    },
+    {
+      "from": "2. CHANGE",
+      "kind": "flow",
+      "to": "3. PROOF"
+    }
+  ],
+  "title": "Name matches get scores and tiers"
+}

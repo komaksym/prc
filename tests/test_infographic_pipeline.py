@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -29,12 +28,7 @@ def test_explain_gates_an_immutable_snapshot_and_records_readings(
         assert path.read_bytes() == captured
         return gate.GateDecision("pass", (), (), {"modes": {"psm-3": 18}, "failed_modes": []})
 
-    def card(*args: Any) -> None:
-        args[-2].write_text("card")
-        args[-1].write_bytes(captured)
-
     monkeypatch.setattr(gate, "gate", check)
-    monkeypatch.setattr(pipeline, "render_pr_card", card)
     result = pipeline.run_explain(
         FixtureSource(repo=tmp_path, resources={}),
         PrRef("acme", "shop", 1),

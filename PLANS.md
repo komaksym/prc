@@ -10,21 +10,30 @@ before bringing the later explainer and System View changes onto that base.
 - [ ] Reapply the explainer changes after the original trust split. Run the
   installed CLI through System View before promoting the resulting stack.
 
+# Game screen review
+
+## Summary
+
+Add one light-mode review of Tuxemon #2370 with its source before-and-after screenshots.
+Follow the milestones in [.audit/game-review-plan.md](.audit/game-review-plan.md).
+Keep the existing study output unchanged. Publication requires approval under START-HERE.md.
+
 # Study v3: three PRC artifacts and a study on the operator's own PRs, 2026-10-14
 
 ## Summary
 
 The first v2 reading showed four product defects and one study defect. The walkthrough repeats GitHub's header and once said 5/5 CI where GitHub showed 4/5. The interactive map copies PR Lens, which is the baseline aid. No study build attempted an infographic (run.json: status missing, attempts []), yet the aid still published. The HTML page only replays the video. The questions asked for line-level code detail in unfamiliar repos and languages.
 v3 ships PRC as three artifacts made from one storyboard: the infographic (high level: what changed in the system and why), the narrated video, and a clickable page that steps through the same scenes and opens each file and hunk. The walkthrough and map are removed. A build without a gated infographic fails.
-The study uses the operator's own repos (komaksym), Python only, agent PRs from the last month. The operator read none of them, so familiarity is equal. Pairs come from one repo with similar size; a coin picks the PRC side. Questions ask what the agent actually did, what could break, and whether to merge. Answer keys cite diff lines or later commits. The v2 study is archived with its data.
+The study uses the operator's own repos (komaksym), Python only, agent PRs from the last month. The operator reports no PR reading in the last month. Project familiarity can still differ; each reading records prior exposure. Pairs come from one repo with similar size; a coin picks the PRC side. Questions ask what the agent actually did, what could break, and whether to merge. Answer keys cite the pinned source and original diff. The v2 study is archived with its data.
 No push, PR or publication without explicit approval (D21).
 
-- [ ] A1. Remove the walkthrough and the map from PRC output, the study aid and docs.
-- [ ] A2. One storyboard drives the video and the clickable page; each scene links to its file and hunk.
-- [ ] A3. Infographic required: the build fails without a gated, published infographic; proven on one real PR with a baoyu-infographic image.
-- [ ] B1. Candidate pool: komaksym Python agent PRs from the last month with genuine Lens comments at the pinned head; 3 pairs plus 1 practice pair, same repo, similar size.
-- [ ] B2. Frozen questions and answer keys, 3 per PR, review level, checked by a second model.
-- [ ] B3. Archive v2, prebuild Lens and PRC outputs at pinned revisions, seal, draw coins.
+- [x] A1. Remove the walkthrough, the map and the card from PRC output, docs and skill (worker A; study-aid kit changes belong to worker B). Done in 44dff6c and 1e42273: `prc map` deleted; `map.html`, `doc.html`, `card.html` and `card.png` no longer written; the comment and infographic brief carry no file-count or CI summary; `PRODUCT_OUTPUTS` is video.mp4, page.html, infographic.png. Release and eval checks follow in 329c67e.
+- [x] A2. One storyboard drives the video and the clickable page. Done in ae9f77e: `explainer/page.py` renders `page.html` from the video's board and engine: a 16:9 dark stage with one scene at a time, Play/Pause on the video's own narration, Previous/Next, scene strip, arrow and space keys, auto-advance at scene end, code regions that open a hunk panel with the local diff and a PR files link (`#diff-<sha256(path)>R<line>`), a one-line collapsed Not covered summary, and the infographic one click away. Browser proof (d9040c0, `scripts/verify_page.py`, isolated headless agent-browser over local HTTP): PASS, 10 states, all screenshot hashes differ; play advanced narration 0.37 to 1.59 s; report and screenshots in `artifacts/v3-proof/` proof directory `browser/`.
+- [x] A3. Infographic required: the build fails without a gated, published infographic (11a9309, `InfographicMissingError`). Proven on the v3 proof PR in `artifacts/v3-proof/`: rebuilt through `prc explain --voice kokoro --infographic <candidate>`, exit 0, the baoyu-infographic candidate passed the gate and is published byte-identical; the Parakeet listening gate passed on the rebuilt video with no lost names. Full suite 1002 passed, 0 skipped; ruff, format and mypy clean; `uv build` succeeds. Limit: the brief depends on git sources; with a git cache the brief gains docstring nodes and this candidate fails as invented.
+- [x] B1. Candidate pool: komaksym Python agent PRs from the last month with genuine Lens comments at the pinned head; 3 pairs plus 1 practice pair, same repo, similar size.
+- [x] B2. Frozen questions and answer keys, 3 per PR, review level, checked by a second model. GLM reviewed all 24 questions. Its one remaining anchor mismatch was fixed in b9f0709. Current captured original diffs match the candidate revisions.
+- [x] A4. Bind high-level infographics to cited storyboard flow, including test-only changes. Two candidate designs and independent review fixes are recorded in .audit/study-v3-storyflow.md. Four endpoint/label defects now fail before drawing. Final normalization review passed all 14 regression cases.
+- [x] B3. V2 is preserved with file hashes. Eight matching-revision Lens CI captures and PRC sets are built. Three scored pairs and one separate practice pair are sealed. Rebuilding the outro kept the original questions and assignment seeds. Hosted Lens interactive maps require separate sign-in; captured Lens CI diagrams work locally. GitHub comments and original PR visuals can expose other aids; these limits are disclosed in the seal.
 - [ ] B4. Button-level end-to-end pass on a copy of the sealed study, supervised handoff of the live hub, browser screenshots.
 
 Throughput checkpoint:
@@ -693,3 +702,19 @@ Collect coverage from the existing isolated release test run. Upload its XML rep
 - Independent workstreams. PRC reporting and shared ruleset support use separate writing worktrees. The parent investigates music-saver and owns live ruleset writes.
 - Shared mutable state. Each writer owns one checkout. The parent applies remote settings after integration.
 - Smallest safe decomposition. Reuse PRC's existing release test run. Do not add a second full test suite.
+
+---
+
+# PRC output v5, 2026-10-15
+
+## Summary
+
+Rebuild the PRC output after the operator's v4 review of linkedin-mdp #33. One five-color key for infographic, video and page. Every page reference links to its GitHub line. The page explains every changed unit, including CI steps and tests. Videos stay at 150 s or less. Opus 5.5 authors three PRs (linkedin-mdp #5, linkedin-automation #22, leads-discovery #43); a judge labels every claim; the notes hub serves the result with per-PR cost. Report: `artifacts/output-v5/REPORT.md` (local, gitignored).
+
+## Milestones
+
+- [x] V1. Units, reading path, box and receipt links, five-color key (b7557fa, 5892d7b).
+- [x] V2. OCR gate reads colored header bars through dark-ink reads (57c0e52).
+- [x] V3. Author, judge and fix three boards; render with Kokoro; Parakeet listen passes; videos 111 to 134 s.
+- [x] V4. Link every bare reference the click audit found (c580959).
+- [x] V5. Live notes hub: handoff check, browser pass and click audits pass; cost per PR $1.98 to $3.52.

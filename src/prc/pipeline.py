@@ -18,7 +18,8 @@ from prc.changemap import ChangeMap, build_change_map
 from prc.controller import ModelSuite, analyze, semantic_artifact_id
 from prc.explainer import render as explain_render
 from prc.explainer.check import verify_board
-from prc.explainer.doc import render_doc as render_explain_doc
+from prc.explainer.evidence import load_beside
+from prc.explainer.page import render_page as render_explain_page
 from prc.explainer.timing import estimate as estimate_seconds
 from prc.explainer.timing import predict as predict_seconds
 from prc.explainer.voice import Backend
@@ -29,9 +30,6 @@ from prc.identity import PublicationKey, SemanticArtifactId, content_id, sha256_
 from prc.model import PrRef
 from prc.presentation import infographic
 from prc.presentation.build import build_document
-from prc.presentation.card import CardError
-from prc.presentation.card import build_card_html as build_pr_card_html
-from prc.presentation.card import render_card as render_pr_card
 from prc.presentation.check import (
     check_document,
     check_entry,
@@ -42,7 +40,6 @@ from prc.presentation.comment import render_comment as render_pr_comment
 from prc.presentation.render_brief import render_brief
 from prc.presentation.render_entry import render_entry
 from prc.presentation.render_html import render_html
-from prc.presentation.render_map import render_map
 from prc.presentation.render_svg import render_flow, render_infographic
 from prc.presentation.versions import PRESENTATION_POLICY_VERSION, RENDERER_VERSIONS
 from prc.semantics import ValidatedSemanticArtifact
@@ -224,7 +221,6 @@ def run_brief(
 class MapResult:
     snapshot_id: str
     map: ChangeMap
-    html: Path
     json: Path
 
 
@@ -244,12 +240,12 @@ def run_map(
     out_dir = _write_bundle(
         out_root,
         snapshot_id,
-        {"index.html": render_map(change_map).encode()},
+        {},
         {"map.json": to_jsonable(change_map)},
         replace=True,
     )
 
-    return MapResult(snapshot_id, change_map, out_dir / "index.html", out_dir / "map.json")
+    return MapResult(snapshot_id, change_map, out_dir / "map.json")
 
 
 def _write_bundle(
@@ -349,12 +345,9 @@ class ExplainCheckError(RuntimeError):
 class ExplainResult:
     out_dir: Path
     map_json: Path
-    map_html: Path
     board_json: Path | None
     video: Path | None
-    doc_html: Path | None
-    card_html: Path
-    card_png: Path | None
+    page_html: Path | None
     comment_md: Path
     run_json: Path
     duration: float
@@ -564,9 +557,8 @@ def run_explain(
         work.mkdir()
         rebuilt = to_jsonable(change_map)
         (work / "map.json").write_text(json.dumps(rebuilt, indent=2, sort_keys=True))
-        (work / "map.html").write_text(render_map(change_map))
 
-        check_passed, board_out, video, doc_out, duration, estimate, predicted, warnings = (
+        check_passed, board_out, video, page_out, duration, estimate, predicted, warnings = (
             False,
             None,
             None,
@@ -580,8 +572,9 @@ def run_explain(
         board: dict[str, Any] | None = None
         if board_path is not None:
             board = json.loads(board_path.read_text())
+            evidence = load_beside(map_path)
             try:
-                facts = verify_board(board, used)
+                facts = verify_board(board, used, evidence)
             except SystemExit as error:
                 raise ExplainCheckError(str(error)) from error
             check_passed = True
@@ -600,6 +593,9 @@ def run_explain(
                 work,
                 backend,
                 git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
+                evidence_dir=map_path.parent
+                if evidence is not None and map_path is not None
+                else None,
             )
             board_out = out_dir / "board.json"
             (work / "board.json").write_text(json.dumps(board, indent=2, sort_keys=True))
@@ -660,34 +656,23 @@ def run_explain(
         else:
             info_status = "missing"
         if board is not None:
-            render_explain_doc(
-                board, used, work, duration, has_video=True, infographic=graphic_bytes
+            render_explain_page(
+                board,
+                used,
+                work,
+                duration,
+                has_video=True,
+                infographic=graphic_bytes,
+                git_dir=git_dir if git_dir is not None else (str(repo) if repo.exists() else None),
             )
-            doc_out = out_dir / "doc.html"
+            page_out = out_dir / "page.html"
 
-        card_html = out_dir / "card.html"
-        card_png: Path | None = None
-        card_warning: str | None = None
-        try:
-            render_pr_card(
-                rebuilt, rebuilt.get("brief"), board, work / "card.html", work / "card.png"
-            )
-            card_png = out_dir / "card.png"
-        except CardError as error:
-            (work / "card.html").write_text(
-                build_pr_card_html(rebuilt, rebuilt.get("brief"), board)
-            )
-            (work / "card.png").unlink(missing_ok=True)
-            card_warning = str(error)
-            warnings = [*warnings, card_warning]
         comment_md = out_dir / "comment.md"
         (work / "comment.md").write_text(
             render_pr_comment(
                 rebuilt,
                 rebuilt.get("brief"),
                 board,
-                card_available=card_png is not None,
-                card_warning=card_warning,
                 infographic=published_path is not None,
             )
         )
@@ -705,8 +690,7 @@ def run_explain(
             "predicted_seconds": round(predicted, 2),
             "duration_seconds": round(duration, 2),
             "fps": explain_render.FPS,
-            "doc": str(doc_out) if doc_out else None,
-            "card": str(card_png) if card_png else None,
+            "page": str(page_out) if page_out else None,
             "comment": str(comment_md),
             "infographic": {
                 "status": info_status,
@@ -730,18 +714,15 @@ def run_explain(
                 + str(out_dir / "infographic" / "brief.json")
                 + " and re-run with --infographic <png>; evidence in "
                 + str(out_dir / "infographic" / "check.json")
-                + ". The build fails instead of publishing the card fallback."
+                + ". The build fails instead of publishing without a gated infographic."
             )
 
         return ExplainResult(
             out_dir,
             out_dir / "map.json",
-            out_dir / "map.html",
             board_out,
             video,
-            doc_out,
-            card_html,
-            card_png,
+            page_out,
             comment_md,
             run_json,
             duration,
