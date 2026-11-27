@@ -1,7 +1,9 @@
 name: PR infographic provenance
 
 on:
-  pull_request_target:
+  # The verifier executes only the base checkout. The fetched head supplies Git blobs.
+  # The token is scoped to publishing a status on that head and is absent from verification.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     branches: [main]
     types: [opened, edited, synchronize, reopened, ready_for_review]
 
