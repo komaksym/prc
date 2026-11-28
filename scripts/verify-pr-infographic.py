@@ -58,7 +58,8 @@ def verify(pull_request: dict[str, Any]) -> None:
         raise ValueError("The pull request head must be a Git commit SHA.")
     declaration = json.loads(blob(sha, PurePosixPath(".github/pr-infographic.json")))
     number = pull_request["number"]
-    if not isinstance(declaration, dict) or declaration.get("number") != number:
+    declared_number = declaration.get("number") if isinstance(declaration, dict) else None
+    if type(declared_number) is not int or declared_number != number:
         raise ValueError(f"Set number to PR number {number} in pr-infographic.json.")
     path = declaration.get("path")
     if not isinstance(path, str) or not re.fullmatch(

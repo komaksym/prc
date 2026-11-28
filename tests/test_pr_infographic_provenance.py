@@ -25,6 +25,7 @@ PROMPT = b"Draw the release workflow."
         ("wrong-prompt-hash", "prompt_sha256"),
         ("missing-declaration", "pr-infographic.json"),
         ("inherited-declaration", "PR number 15"),
+        ("float-pr-number", "PR number 15"),
         ("invalid-path", "infographic.png"),
         ("edited-description", ""),
         ("different-base", ""),
@@ -76,7 +77,7 @@ def test_pr_infographic_checks_the_committed_artifacts(
         declared = (
             "../visual/infographic.png" if case == "invalid-path" else "visual/infographic.png"
         )
-        number = 14 if case == "inherited-declaration" else 15
+        number = {"inherited-declaration": 14, "float-pr-number": 15.0}.get(case, 15)
         (tmp_path / ".github/pr-infographic.json").write_text(
             json.dumps({"number": number, "path": declared})
         )
