@@ -8,6 +8,8 @@ project and community a harassment-free experience for everyone.
 - Assume good faith while asking for evidence.
 - Do not publish private source, credentials, or personal information.
 
+To report abusive conduct directly, message
+[the maintainer on LinkedIn](https://www.linkedin.com/in/komaksym/).
 To report abusive behavior on GitHub privately, follow
 [GitHub's instructions for reporting abuse](https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam).
 

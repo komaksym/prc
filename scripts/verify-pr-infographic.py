@@ -12,6 +12,8 @@ from typing import Any
 from zlib import crc32, decompressobj
 from zlib import error as ZlibError
 
+MAX_DECODED_PNG_BYTES = 128 * 1024 * 1024
+
 
 def blob(head: str, path: PurePosixPath) -> bytes:
     result = subprocess.run(
@@ -28,7 +30,7 @@ def complete_png(image: bytes) -> bool:
         return False
     offset = len(signature)
     decoder = decompressobj()
-    seen_data = False
+    decoded_size = 0
     while offset + 12 <= len(image):
         length = int.from_bytes(image[offset : offset + 4])
         chunk_type = image[offset + 4 : offset + 8]
@@ -51,15 +53,14 @@ def complete_png(image: bytes) -> bool:
                 for start in range(offset + 8, data_end, 65536):
                     pending = image[start : min(start + 65536, data_end)]
                     while pending:
-                        if decoder.decompress(pending, 65536):
-                            seen_data = True
-                        if decoder.unused_data:
+                        decoded_size += len(decoder.decompress(pending, 65536))
+                        if decoded_size > MAX_DECODED_PNG_BYTES or decoder.unused_data:
                             return False
                         pending = decoder.unconsumed_tail
             except ZlibError:
                 return False
         if chunk_type == b"IEND":
-            return seen_data and decoder.eof and length == 0 and end == len(image)
+            return decoded_size > 0 and decoder.eof and length == 0 and end == len(image)
         offset = end
     return False
 

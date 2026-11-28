@@ -2,6 +2,7 @@ import base64
 import hashlib
 import json
 import os
+import runpy
 import subprocess
 import sys
 from pathlib import Path
@@ -14,6 +15,12 @@ IMAGE = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGNgAAIAAAUAAXpeqz8AAAAASUVORK5CYII="
 )
 PROMPT = b"Draw the release workflow."
+
+
+def test_png_rejects_decoded_data_over_the_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    check = runpy.run_path(str(CHECKER))["complete_png"]
+    monkeypatch.setitem(check.__globals__, "MAX_DECODED_PNG_BYTES", 4)
+    assert not check(IMAGE)
 
 
 @pytest.mark.parametrize(

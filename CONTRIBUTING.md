@@ -51,6 +51,7 @@ Keep the receipt and the `prompts` directory beside the PNG. After opening
 the pull request, set `number` in `.github/pr-infographic.json` to its PR number.
 Set `path` to the PNG's repository-relative path. The base-branch workflow
 checks the PR number, receipt, and both SHA-256 hashes on the pull request head.
+The PNG must decode to at most 128 MiB of image data.
 Embed the PNG in the PR description with its branch blob URL and `?raw=true`.
 For an agent-drawn fallback, commit the source beside the PNG and record its
 file name and approval in the receipt.
