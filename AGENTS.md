@@ -2,7 +2,8 @@
 
 Guidance for coding agents working in this repository. Read `README.md`,
 `CONTEXT.md`, and the relevant files under `docs/agents/` before you change
-behavior.
+behavior. Read [Start here](START-HERE.md) for the MVP decision record and
+the repository's install, external action, and verification rules.
 
 ## Project
 

@@ -58,8 +58,9 @@ file name and approval in the receipt.
 When installing the check, first verify a passing and failing
 `baoyu/provenance` status on pull request heads. Then require that status
 alongside `gate` and `codecov/patch` in the main ruleset.
-The existing `gate` also checks the bundle during rollout. If a provenance
-run is canceled with a pending status, rerun it on the current head.
+The existing `gate` also checks the bundle during rollout. The workflow posts
+the provenance result after verification. If a run is canceled before it posts
+a result for the current head, rerun it.
 
 ## Issues and labels
 

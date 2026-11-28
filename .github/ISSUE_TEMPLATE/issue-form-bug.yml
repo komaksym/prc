@@ -66,7 +66,7 @@ body:
     attributes:
       label: Environment
       description: Include the operating system, Python version, and available media tools.
-      value: |
+      placeholder: |
         - OS:
         - Python:
         - ffmpeg / ffprobe:

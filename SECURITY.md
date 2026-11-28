@@ -18,7 +18,7 @@ days.
 
 | Version | Supported |
 | --- | --- |
-| `main` and latest release | Yes |
+| `main` | Yes |
 | Older commits and local forks | Best effort |
 
 ## Security boundary

@@ -25,14 +25,6 @@ jobs:
       PR_HEAD: ${{ github.event.pull_request.head.sha }}
       STATUS_CONTEXT: baoyu/provenance
     steps:
-      - name: Mark the exact PR head as pending
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$PR_HEAD" \
-            -f state=pending -f context="$STATUS_CONTEXT" \
-            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
-            --silent
       - name: Check out the trusted base commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
