@@ -224,18 +224,33 @@ def test_dense_map_draws_edges_only_for_the_hovered_symbol(
     for i in range(cards.count()):
         cards.nth(i).click()
 
+    opened.page.evaluate(
+        """() => new Promise(resolve => {
+          const world = document.getElementById("world");
+          let transform = world.style.transform;
+          let stableFrames = 0;
+          function settle() {
+            const next = world.style.transform;
+            stableFrames = next === transform ? stableFrames + 1 : 0;
+            transform = next;
+            if (stableFrames >= 5) resolve();
+            else requestAnimationFrame(settle);
+          }
+          requestAnimationFrame(settle);
+        })"""
+    )
     on_screen = opened.page.evaluate(
         """() => [...document.querySelectorAll("[data-node]")]
-          .filter((n) => { const r = n.getBoundingClientRect(); return r.top > 100 && r.bottom < 800 && r.left > 0 && r.right < 1400; })
+          .filter((n) => { const r = n.getBoundingClientRect(); return !n.classList.contains("concealed") && r.top > 100 && r.bottom < 800 && r.left > 0 && r.right < 1400; })
           .map((n) => n.dataset.node)"""
     )
     sid = next(e.source for e in change_map.edges if node(change_map, e.source)[12:-2] in on_screen)
     opened.page.hover(node(change_map, sid))
-    opened.page.wait_for_timeout(300)
     lit = opened.page.locator("[data-edge].lit")
 
-    assert lit.count() == sum(sid in (e.source, e.target) for e in change_map.edges)
-    assert all(lit.nth(i).evaluate(opacity) != "0" for i in range(lit.count()))
+    playwright.expect(lit).to_have_count(sum(sid in (e.source, e.target) for e in change_map.edges))
+    for i in range(lit.count()):
+        playwright.expect(lit.nth(i)).not_to_have_css("opacity", "0")
     assert opened.problems == []
 
 
