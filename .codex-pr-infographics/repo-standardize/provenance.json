@@ -1,0 +1,9 @@
+{
+  "skill": "baoyu-infographic",
+  "backend": "codex-imagegen",
+  "image_sha256": "693aa60e405bea4d2b64690fd4dc906e872654a64ad8a40b52ea26e0266ae0a4",
+  "prompt_sha256": "792629a99dd71654ece06652bd4c88282cd7600d5fe5f09fe51b876b2509f037",
+  "purpose": "Shows how the trusted base-branch verifier posts Baoyu provenance on the exact pull request commit.",
+  "visual_note": "Read “PR infographic provenance”, “Base-branch verifier”, “baoyu/provenance”, and “Require this status after the workflow is live”.",
+  "created_at": "2026-11-27T22:35:43.002225+00:00"
+}
