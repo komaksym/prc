@@ -9,7 +9,8 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path, PurePosixPath
 from typing import Any
-from zlib import crc32
+from zlib import crc32, decompressobj
+from zlib import error as ZlibError
 
 
 def blob(head: str, path: PurePosixPath) -> bytes:
@@ -26,6 +27,7 @@ def complete_png(image: bytes) -> bool:
     if not image.startswith(signature):
         return False
     offset = len(signature)
+    decoder = decompressobj()
     seen_data = False
     while offset + 12 <= len(image):
         length = int.from_bytes(image[offset : offset + 4])
@@ -44,10 +46,20 @@ def complete_png(image: bytes) -> bool:
                 return False
         elif chunk_type == b"IHDR":
             return False
-        if chunk_type == b"IDAT" and length:
-            seen_data = True
+        if chunk_type == b"IDAT":
+            try:
+                for start in range(offset + 8, data_end, 65536):
+                    pending = image[start : min(start + 65536, data_end)]
+                    while pending:
+                        if decoder.decompress(pending, 65536):
+                            seen_data = True
+                        if decoder.unused_data:
+                            return False
+                        pending = decoder.unconsumed_tail
+            except ZlibError:
+                return False
         if chunk_type == b"IEND":
-            return seen_data and length == 0 and end == len(image)
+            return seen_data and decoder.eof and length == 0 and end == len(image)
         offset = end
     return False
 

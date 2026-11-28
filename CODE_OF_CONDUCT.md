@@ -8,7 +8,7 @@ project and community a harassment-free experience for everyone.
 - Assume good faith while asking for evidence.
 - Do not publish private source, credentials, or personal information.
 
-Instances of abusive behavior may be reported privately to the repository
-owner through their [GitHub profile](https://github.com/komaksym).
+To report abusive behavior on GitHub privately, follow
+[GitHub's instructions for reporting abuse](https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam).
 
 *Adapted from the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).*

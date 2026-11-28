@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from zlib import crc32
 
 import pytest
 
@@ -30,6 +31,7 @@ PROMPT = b"Draw the release workflow."
         ("edited-description", ""),
         ("different-base", ""),
         ("truncated-png", "complete PNG"),
+        ("invalid-image-stream", "complete PNG"),
         ("uncommitted-replacement", "image_sha256"),
     ],
 )
@@ -53,6 +55,9 @@ def test_pr_infographic_checks_the_committed_artifacts(
     folder = tmp_path / "visual"
     (folder / "prompts").mkdir(parents=True)
     image = IMAGE[:-12] if case == "truncated-png" else IMAGE
+    if case == "invalid-image-stream":
+        idat = b"IDATx"
+        image = IMAGE[:33] + b"\x00\x00\x00\x01" + idat + crc32(idat).to_bytes(4) + IMAGE[-12:]
     (folder / "infographic.png").write_bytes(image)
     (folder / "prompts/infographic.md").write_bytes(PROMPT)
     receipt = {
