@@ -24,6 +24,7 @@ PROMPT = b"Draw the release workflow."
         ("wrong-image-hash", "image_sha256"),
         ("wrong-prompt-hash", "prompt_sha256"),
         ("missing-declaration", "pr-infographic.json"),
+        ("inherited-declaration", "PR number 15"),
         ("invalid-path", "infographic.png"),
         ("edited-description", ""),
         ("different-base", ""),
@@ -75,7 +76,10 @@ def test_pr_infographic_checks_the_committed_artifacts(
         declared = (
             "../visual/infographic.png" if case == "invalid-path" else "visual/infographic.png"
         )
-        (tmp_path / ".github/pr-infographic.json").write_text(json.dumps({"path": declared}))
+        number = 14 if case == "inherited-declaration" else 15
+        (tmp_path / ".github/pr-infographic.json").write_text(
+            json.dumps({"number": number, "path": declared})
+        )
     git("add", ".")
     git("-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "-qm", "test")
     base = "1" * 40 if case == "different-base" else git("rev-parse", "HEAD^")
@@ -87,6 +91,7 @@ def test_pr_infographic_checks_the_committed_artifacts(
         json.dumps(
             {
                 "pull_request": {
+                    "number": 15,
                     "body": body,
                     "head": {"sha": git("rev-parse", "HEAD")},
                     "base": {"sha": base},
