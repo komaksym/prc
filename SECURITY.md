@@ -2,12 +2,8 @@
 
 ## Reporting a vulnerability
 
-Do not open a public issue for a suspected vulnerability. Contact the
-maintainer privately through their [GitHub profile](https://github.com/komaksym)
-to request a private reporting channel.
-
-If GitHub shows a **Report a vulnerability** action on this repository's
-Security tab, use that private advisory form.
+Use [GitHub's private advisory form](https://github.com/komaksym/prc/security/advisories/new)
+to report a suspected vulnerability directly to the maintainers.
 
 Include the affected commit, reproduction steps, impact, and any relevant
 logs. Remove GitHub tokens, private repository data, and personal information
